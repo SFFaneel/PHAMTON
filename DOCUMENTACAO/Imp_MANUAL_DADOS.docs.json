@@ -1,0 +1,710 @@
+[
+  {
+    "funcao": {
+      "nome": "_identificar",
+      "tipo": "function",
+      "linha_inicio": 44,
+      "linha_fim": 51,
+      "parametros": [
+        {
+          "nome": "arquivo",
+          "tipo": "Path",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "tuple[str, str, str]",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "datetime.datetime"
+        ],
+        "chamadas": [
+          "PADRAO.fullmatch",
+          "ValueError",
+          "datetime.strptime",
+          "match.groups"
+        ]
+      },
+      "codigo": "def _identificar(arquivo: Path) -> tuple[str, str, str]:\n    match = PADRAO.fullmatch(arquivo.name)\n    if match is None:\n        raise ValueError(\"Nome inválido: esperado NOME_12345_YYYYMMDD.csv\")\n    from datetime import datetime\n    tabela, empresa, data = match.groups()\n    datetime.strptime(data, \"%Y%m%d\")\n    return tabela, empresa, data"
+    },
+    "documentacao": {
+      "resumo": "Identifica informações específicas de um arquivo com base em seu nome.",
+      "descricao": "A função extrai a tabela, empresa e data de um arquivo cujo nome segue o padrão 'NOME_12345_YYYYMMDD.csv'. Valida se o nome do arquivo está no formato correto e lança uma exceção caso contrário. A data é validada para garantir que esteja no formato 'YYYYMMDD'.",
+      "parametros": [
+        {
+          "nome": "arquivo",
+          "tipo": "Path",
+          "categoria": "posicional",
+          "descricao": "Caminho do arquivo cujo nome será analisado."
+        }
+      ],
+      "retorno": {
+        "tipo": "tuple[str, str, str]",
+        "descricao": "Uma tupla contendo a tabela, empresa e data extraídas do nome do arquivo."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o nome do arquivo não está no formato esperado 'NOME_12345_YYYYMMDD.csv'."
+        }
+      ],
+      "dependencias": [
+        "datetime.datetime"
+      ],
+      "docstring": "Identifica informações específicas de um arquivo com base em seu nome.\n\nArgs:\n    arquivo (Path): Caminho do arquivo cujo nome será analisado.\n\nReturns:\n    tuple[str, str, str]: Uma tupla contendo a tabela, empresa e data extraídas do nome do arquivo.\n\nRaises:\n    ValueError: Quando o nome do arquivo não está no formato esperado 'NOME_12345_YYYYMMDD.csv'.\n\nDependencies:\n    datetime.datetime: Utilizado para validar a data."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_identificador_sql",
+      "tipo": "function",
+      "linha_inicio": 53,
+      "linha_fim": 54,
+      "parametros": [
+        {
+          "nome": "nome",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "str",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "nome.replace"
+        ]
+      },
+      "codigo": "def _identificador_sql(nome: str) -> str:\n    return \"'\" + nome.replace('\"', '\"\"') + \"'\""
+    },
+    "documentacao": {
+      "resumo": "Converte um nome em uma string SQL segura.",
+      "descricao": "Adiciona aspas simples ao redor do nome e substitui as aspas duplas dentro do nome por duas aspas duplas para garantir que a string seja válida no contexto de uma consulta SQL.",
+      "parametros": [
+        {
+          "nome": "nome",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome que será convertido em uma string SQL segura."
+        }
+      ],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "String SQL segura com aspas adicionadas e caracteres especiais escapados."
+      },
+      "excecoes": [],
+      "dependencias": [],
+      "docstring": "Converte um nome em uma string SQL segura.\n\nArgs:\n    nome (str): Nome que será convertido em uma string SQL segura.\n\nReturns:\n    str: String SQL segura com aspas adicionadas e caracteres especiais escapados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "importar_csv",
+      "tipo": "function",
+      "linha_inicio": 57,
+      "linha_fim": 141,
+      "parametros": [
+        {
+          "nome": "arquivo",
+          "tipo": "Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd",
+          "tipo": "sqlite3.Connection",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "sanear_csv",
+          "tipo": "Callable",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "determinar_tipo",
+          "tipo": "Callable",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "converter_decimal",
+          "tipo": "Callable",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "progresso",
+          "tipo": "Callable[[str], None] | None",
+          "default": "None",
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "chunksize",
+          "tipo": "int",
+          "default": "250000",
+          "categoria": "somente_keyword"
+        }
+      ],
+      "retorno": "int",
+      "decorators": [
+        "rastrear_funcao"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.determinar_tipo",
+          "pandas"
+        ],
+        "chamadas": [
+          "ValueError",
+          "_identificador_sql",
+          "_identificar",
+          "any",
+          "bd.execute",
+          "bd.executemany",
+          "chunk.astype",
+          "chunk.itertuples",
+          "columns.tolist",
+          "determinar_tipo",
+          "dt.strftime",
+          "enumerate",
+          "fetchall",
+          "fetchone",
+          "issubset",
+          "join",
+          "len",
+          "pd.notna",
+          "pd.read_csv",
+          "pd.to_datetime",
+          "progresso",
+          "set",
+          "tipos.items",
+          "where"
+        ]
+      },
+      "codigo": "def importar_csv(\n                    arquivo: Path,\n                    bd: sqlite3.Connection,\n                    *,\n                    sanear_csv: Callable,\n                    determinar_tipo: Callable,\n                    converter_decimal: Callable,\n                    progresso: Callable[[str], None] | None = None,\n                    chunksize: int = 250_000,\n                ) -> int:\n\n    tabela, empresa, data = _identificar(arquivo)\n    \n    colunas = pd.read_csv(arquivo, nrows=0, sep=\"|\", encoding=\"Latin-1\", dtype=str).columns.tolist()\n    if not colunas:\n        raise ValueError(\"Arquivo CSV sem cabeçalho\")\n    if len(colunas) != len(set(colunas)):\n        raise ValueError(\"Cabeçalho com colunas duplicadas\")\n    if any(c in {\"Cd_Emp\", \"dt_ARQ\"} for c in colunas):\n        raise ValueError(\"Cabeçalho contém coluna reservada: Cd_Emp ou dt_ARQ\")\n\n    tipos = {c: determinar_tipo(c) for c in colunas}\n    conversores = {c: converter_decimal for c, tipo in tipos.items() if tipo == \"float\"}\n    dtypes = {c: tipo for c, tipo in tipos.items() if tipo not in (\"date\", \"float\")}\n    datas = [c for c, tipo in tipos.items() if tipo == \"date\"]\n    tabela_sql = _identificador_sql(tabela)\n    total = 0\n\n    bd.execute(\"SAVEPOINT importacao_arquivo\")\n    try:\n        existe = bd.execute(\n                                \"SELECT 1 FROM sqlite_master WHERE type='table' AND name=?\", (tabela,)\n                            ).fetchone() is not None\n        if existe:\n            info = bd.execute(f\"PRAGMA table_info({tabela_sql})\").fetchall()\n            atuais = {row[1] for row in info}\n            if not {\"Cd_Emp\", \"dt_ARQ\"}.issubset(atuais):\n                raise ValueError(f\"Tabela {tabela} sem colunas Cd_Emp/dt_ARQ\")\n            bd.execute(f\"DELETE FROM {tabela_sql} WHERE Cd_Emp=? AND dt_ARQ=?\", (empresa, data))\n\n        reader = pd.read_csv(\n                                arquivo, sep=\"|\", encoding=\"Latin-1\", decimal=\",\",\n                                dtype=dtypes, converters=conversores, parse_dates=datas,\n                                date_format=\"%Y/%m/%d\", chunksize=chunksize,\n                                engine=\"python\", on_bad_lines=\"error\",\n                            )\n        for numero, chunk in enumerate(reader, start=1):\n            chunk[\"Cd_Emp\"] = empresa\n            chunk[\"dt_ARQ\"] = data\n            if not existe:\n                cols = \", \".join(\n                                    f'\"{coluna}\" TEXT'\n                                    for coluna in chunk.columns\n                                )\n\n                bd.execute(f'CREATE TABLE IF NOT EXISTS {tabela_sql} ({cols})')\n                existe = True\n            atuais = {row[1] for row in bd.execute(f\"PRAGMA table_info({tabela_sql})\")}\n            for coluna in chunk.columns:\n                if coluna not in atuais:\n                    bd.execute(f\"ALTER TABLE {tabela_sql} ADD COLUMN {_identificador_sql(coluna)} TEXT\")\n            for coluna in datas:\n                if coluna in chunk.columns:\n                    chunk[coluna] = (\n                                        pd.to_datetime(\n                                            chunk[coluna],\n                                            format=\"%Y/%m/%d\",\n                                            errors=\"coerce\"\n                                        )\n                                        .dt.strftime(\"%Y-%m-%d\")\n                                    )\n            chunk = chunk.astype(object).where(pd.notna(chunk), None)\n            cols_sql = \", \".join(_identificador_sql(c) for c in chunk.columns)\n            marcadores = \", \".join(\"?\" for _ in chunk.columns)\n            sql = f\"INSERT INTO {tabela_sql} ({cols_sql}) VALUES ({marcadores})\"\n            bd.executemany(sql, chunk.itertuples(index=False, name=None))\n            total += len(chunk)\n            if progresso:\n                progresso(f\"{arquivo.name}: lote {numero} — {total:,} linhas\")\n        bd.execute(\"RELEASE SAVEPOINT importacao_arquivo\")\n        return total\n    except Exception:\n        bd.execute(\"ROLLBACK TO SAVEPOINT importacao_arquivo\")\n        bd.execute(\"RELEASE SAVEPOINT importacao_arquivo\")\n        raise"
+    },
+    "documentacao": {
+      "resumo": "Importa dados de um arquivo CSV para uma base de dados SQLite.",
+      "descricao": "A função lê um arquivo CSV, normaliza os dados e insere-os em uma tabela do banco de dados SQLite. Ela suporta a sanitização dos dados, determinação dos tipos de coluna, conversão de valores decimais e atualização parcial da tabela se já existir.",
+      "parametros": [
+        {
+          "nome": "arquivo",
+          "tipo": "Path",
+          "categoria": "posicional",
+          "descricao": "Caminho para o arquivo CSV a ser importado."
+        },
+        {
+          "nome": "bd",
+          "tipo": "sqlite3.Connection",
+          "categoria": "posicional",
+          "descricao": "Conexão com o banco de dados SQLite onde os dados serão inseridos."
+        },
+        {
+          "nome": "sanear_csv",
+          "tipo": "Callable",
+          "categoria": "somente_keyword",
+          "descricao": "Função que sanitiza o conteúdo do CSV antes da importação."
+        },
+        {
+          "nome": "determinar_tipo",
+          "tipo": "Callable",
+          "categoria": "somente_keyword",
+          "descricao": "Função que determina o tipo de dados para cada coluna no arquivo CSV."
+        },
+        {
+          "nome": "converter_decimal",
+          "tipo": "Callable",
+          "categoria": "somente_keyword",
+          "descricao": "Função que converte valores decimais em um formato específico."
+        },
+        {
+          "nome": "progresso",
+          "tipo": "Callable[[str], None] | None",
+          "categoria": "somente_keyword",
+          "default": "None",
+          "descricao": "Função chamada para atualizar o progresso da importação. Recebe uma string com a mensagem de progresso."
+        },
+        {
+          "nome": "chunksize",
+          "tipo": "int",
+          "categoria": "somente_keyword",
+          "default": "250000",
+          "descricao": "Tamanho do chunk (lote) de linhas lidas e inseridas no banco de dados."
+        }
+      ],
+      "retorno": {
+        "tipo": "int",
+        "descricao": "Número total de linhas importadas."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "categoria": "lançada internamente",
+          "descricao": "Quando o arquivo CSV não contém cabeçalho, possui colunas duplicadas ou contém colunas reservadas (Cd_Emp ou dt_ARQ)."
+        }
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.determinar_tipo",
+          "pandas"
+        ],
+        "chamadas": [
+          "_identificador_sql",
+          "_identificar",
+          "any",
+          "bd.execute",
+          "bd.executemany",
+          "chunk.astype",
+          "chunk.itertuples",
+          "columns.tolist",
+          "determinar_tipo",
+          "dt.strftime",
+          "enumerate",
+          "fetchall",
+          "fetchone",
+          "issubset",
+          "join",
+          "len",
+          "pd.notna",
+          "pd.read_csv",
+          "pd.to_datetime",
+          "progresso",
+          "set",
+          "tipos.items",
+          "where"
+        ]
+      },
+      "docstring": "Importa dados de um arquivo CSV para uma base de dados SQLite.\n\nArgs:\n    arquivo (Path): Caminho para o arquivo CSV a ser importado.\n    bd (sqlite3.Connection): Conexão com o banco de dados SQLite onde os dados serão inseridos.\n    sanear_csv (Callable): Função que sanitiza o conteúdo do CSV antes da importação.\n    determinar_tipo (Callable): Função que determina o tipo de dados para cada coluna no arquivo CSV.\n    converter_decimal (Callable): Função que converte valores decimais em um formato específico.\n    progresso (Callable[[str], None] | None, optional): Função chamada para atualizar o progresso da importação. Recebe uma string com a mensagem de progresso. Padrão é None.\n    chunksize (int, optional): Tamanho do chunk (lote) de linhas lidas e inseridas no banco de dados. Padrão é 250000.\n\nReturns:\n    int: Número total de linhas importadas.\n\nRaises:\n    ValueError: Quando o arquivo CSV não contém cabeçalho, possui colunas duplicadas ou contém colunas reservadas (Cd_Emp ou dt_ARQ)."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "preparar_tabelas",
+      "tipo": "function",
+      "linha_inicio": 143,
+      "linha_fim": 213,
+      "parametros": [
+        {
+          "nome": "bd",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "UTILS.criar_tabela"
+        ],
+        "chamadas": [
+          "criar_tabela",
+          "tuple"
+        ]
+      },
+      "codigo": "def preparar_tabelas(bd):\n    criar_tabela(\"II_MCPSE\", bull.dic_ATR_TNS_II_MCPSE, bd)\n    criar_tabela(\"IIIA_MCPSE\", bull.dic_ATR_POT_IIIA_MCPSE, bd)\n    criar_tabela(\"IIIB_MCPSE\", bull.dic_ATR_POT_IIIB_MCPSE, bd)\n    criar_tabela(\"IV_MCPSE\", bull.dic_ATR_NrFases_IV_MCPSE, bd)\n    criar_tabela(\"V_MCPSE\", bull.dic_ATR_COR_IV_MCPSE, bd)\n    criar_tabela(\"VI_MCPSE\", bull.dic_ATR_TPCONTROLE_VI_MCPSE, bd)\n    criar_tabela(\"VII_MCPSE\", bull.dic_ATR_TPISOLAMENTO_VII_MCPSE, bd)\n    criar_tabela(\"VIII_MCPSE\", bull.dic_ATR_BITOLA_VIII_MCPSE, bd)\n    criar_tabela(\"IX_MCPSE\", bull.dic_ATR_ALTURA_IX_MCPSE, bd)\n    criar_tabela(\"X_MCPSE\", bull.dic_ATR_ESFORCO_X_MCPSE, bd)\n    criar_tabela(\"XI_MCPSE\", bull.dic_ATR_RELT_XI_MCPSE, bd)\n    criar_tabela(\"XII_MCPSE\", bull.dic_ATR_RELC_XII_MCPSE, bd)\n    criar_tabela(\"XIII_MCPSE\", bull.dic_ATR_CLSE_XIII_MCPSE, bd)\n    criar_tabela(\"XIV_MCPSE\", bull.dic_ATR_RELT_XIV_MCPSE, bd)\n    criar_tabela(\"XV_MCPSE\", bull.dic_ATR_COR_XV_MCPSE, bd)\n\n    criar_tabela(\n                    \"tbl_CFOP\",\n                    [(item.value[0], item.value[1]) for item in VAL.ValoresCFOP],\n                    bd,\n                    [\"CFOP\", \"Txt_DESC\"],\n                )\n\n    criar_tabela(\n                    \"tbl_TPSERV\",\n                    [(item.name, item.value) for item in VAL.ValoresTPSERV],\n                    bd,\n                    [\"TP_SERV\", \"Txt_DESC\"],\n                )\n\n    criar_tabela(\n                    \"tbl_RACCOM\",\n                    [(item.name, item.value) for item in VAL.ValoresRACCOM],\n                    bd,\n                    [\"Nm_Variavel\", \"Txt_DESC\"],\n                )\n\n    criar_tabela(\n                    \"tbl_TUC\",\n                    [(item.value[0], item.value[1]) for item in VAL.ValoresTUC],\n                    bd,\n                    [\"Nr_TUC\", \"Txt_DESC\"],\n                )\n\n    criar_tabela(\n                    \"tbl_TI\",\n                    [(item.name, item.value) for item in VAL.ValoresTI],\n                    bd,\n                    [\"Nr_TI\", \"Txt_DESC\"],\n                )\n\n    criar_tabela(\n                    \"tbl_CCOE\",\n                    [(item.value[0], item.value[1]) for item in VAL.ValoresCCOE],\n                    bd,\n                    [\"Cd_CC\", \"Txt_DESC\"],\n                )\n\n    criar_tabela(\n                    \"tbl_CC\",\n                    [\n                        tuple(item.value[0][:7])\n                        for item in VAL.ValoresCC\n                    ],\n                    bd,\n                    [\n                        \"Cd_CC\", \"Txt_VAR1\", \"Txt_VAR2\", \"Txt_VAR3\",\n                        \"TP_ATIVO\", \"Cd_5\", \"Txt_VAR4\"\n                    ],\n                )"
+    },
+    "documentacao": {
+      "resumo": "Prepara tabelas em um banco de dados.",
+      "descricao": "Esta função cria várias tabelas no banco de dados fornecido, utilizando funções auxiliares para cada tabela. As tabelas são criadas com base em dicionários e listas específicas definidas em módulos externos.",
+      "parametros": [
+        {
+          "nome": "bd",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Banco de dados onde as tabelas serão criadas."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "imports": [
+            "UTILS.criar_tabela"
+          ],
+          "chamadas": [
+            "criar_tabela",
+            "tuple"
+          ]
+        },
+        {
+          "nome": "bull",
+          "categoria": "externo",
+          "descricao": "Módulo contendo dicionários específicos para as tabelas 'II_MCPSE' a 'XIII_MCPSE'."
+        },
+        {
+          "nome": "VAL",
+          "categoria": "externo",
+          "descricao": "Módulo contendo listas e valores específicos para as tabelas 'tbl_CFOP', 'tbl_TPSERV', 'tbl_RACCOM', 'tbl_TUC', 'tbl_TI' e 'tbl_CCOE'."
+        }
+      ],
+      "docstring": "Prepara tabelas em um banco de dados.\n\nArgs:\n    bd: Banco de dados onde as tabelas serão criadas.\n\nNotes:\n    A função utiliza funções auxiliares para criar cada tabela, baseadas em dicionários e listas específicas definidas em módulos externos.\n\nDependencies:\n    UTILS.criar_tabela: Função utilizada para criar as tabelas no banco de dados.\n    bull: Módulo contendo dicionários específicos para as tabelas 'II_MCPSE' a 'XIII_MCPSE'.\n    VAL: Módulo contendo listas e valores específicos para as tabelas 'tbl_CFOP', 'tbl_TPSERV', 'tbl_RACCOM', 'tbl_TUC', 'tbl_TI' e 'tbl_CCOE'."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "executar_importacao",
+      "tipo": "function",
+      "linha_inicio": 215,
+      "linha_fim": 291,
+      "parametros": [
+        {
+          "nome": "local",
+          "tipo": "str | Path",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "ano",
+          "tipo": "int",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "sanear_csv",
+          "tipo": "Callable",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "determinar_tipo",
+          "tipo": "Callable",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "converter_decimal",
+          "tipo": "Callable",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "preparar_tabelas",
+          "tipo": "Callable[[sqlite3.Connection], None] | None",
+          "default": "None",
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "progresso",
+          "tipo": "Callable[[str], None] | None",
+          "default": "None",
+          "categoria": "somente_keyword"
+        }
+      ],
+      "retorno": "ResultadoImportacao",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "MANIFESTO.registrar_artefato",
+          "MANIFESTO.registrar_evento",
+          "MANIFESTO.registrar_metrica",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "FileNotFoundError",
+          "Path",
+          "ResultadoImportacao",
+          "_identificar",
+          "bd.commit",
+          "bd.execute",
+          "bd.rollback",
+          "caminho_manifesto.parent.mkdir",
+          "destino.is_file",
+          "enumerate",
+          "execucao_trilha",
+          "importar_csv",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "len",
+          "origem.is_dir",
+          "origem.iterdir",
+          "p.is_file",
+          "p.name.upper",
+          "p.suffix.lower",
+          "preparar_tabelas",
+          "progresso",
+          "registrar_artefato",
+          "registrar_evento",
+          "registrar_metrica",
+          "resultado.reprovados.append",
+          "sorted",
+          "sqlite3.connect",
+          "st.error",
+          "startswith",
+          "str"
+        ]
+      },
+      "codigo": "def executar_importacao(\n                            *,\n                            local: str | Path,\n                            empresa: str,\n                            ano: int,\n                            sanear_csv: Callable,\n                            determinar_tipo: Callable,\n                            converter_decimal: Callable,\n                            preparar_tabelas: Callable[[sqlite3.Connection], None] | None = None,\n                            progresso: Callable[[str], None] | None = None,\n                        ) -> ResultadoImportacao:\n    raiz = Path(local)\n    caminho_manifesto = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n    caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n    inicializa_database(str(caminho_manifesto))\n    inicializa_detalhes(str(caminho_manifesto))\n    inicializar_rastreamento(str(caminho_manifesto))\n\n    origem = raiz / \"DADOS_BRUTOS_MANUAL\"\n    destino = raiz / \"BD_LOCAL\" / f\"{empresa}_{ano}.db\"\n    with sqlite3.connect(str(destino)) as bd:\n        bd.execute(\"PRAGMA foreign_keys = ON\")\n\n    if not origem.is_dir():\n        raise FileNotFoundError(f\"Diretório de CSVs não encontrado: {origem}\")\n    if not destino.is_file():\n        raise FileNotFoundError(f\"Banco de destino não encontrado: {destino}\")\n\n    arquivos = sorted(p for p in origem.iterdir() if p.is_file()\n                      and p.suffix.lower() == \".csv\" and not p.name.upper().startswith(\"IPCA\"))\n    resultado = ResultadoImportacao()\n    database = str(caminho_manifesto)\n    with execucao_trilha(\n                            db_path=database, script_nome=\"Importação Manual de Dados SFF\",\n                            parametros={\"empresa\": empresa, \"ano\": ano, \"arquivos\": len(arquivos)},\n                         ) as execucao_id:\n\n        registrar_evento(database, execucao_id, \"IMPORTACAO_INICIADA\",\n                         mensagem=f\"Iniciando importação de {len(arquivos)} arquivo(s)\")\n        with sqlite3.connect(destino) as bd:\n            if preparar_tabelas:\n                preparar_tabelas(bd)\n                bd.commit()\n            for indice, arquivo in enumerate(arquivos, start=1):\n                if progresso:\n                    progresso(f\"Arquivo {indice}/{len(arquivos)}: {arquivo.name}\")\n                try:\n                    _identificar(arquivo)\n                    linhas = importar_csv(\n                                            arquivo, bd, sanear_csv=sanear_csv,\n                                            determinar_tipo=determinar_tipo,\n                                            converter_decimal=converter_decimal, progresso=progresso,\n                                            )\n                    bd.commit()\n                except Exception as exc:\n                    bd.rollback()\n                    resultado.reprovados.append(arquivo.name)\n                    registrar_evento(database, execucao_id, \"ARQUIVO_REPROVADO\",\n                                     mensagem=f\"{arquivo.name}: {exc}\", nivel=\"ERRO\",\n                                     detalhes={\"arquivo\": arquivo.name, \"erro\": str(exc)})\n                    st.error(f\"{arquivo.name}: {exc}\")\n                    continue\n                resultado.importados += 1\n                resultado.linhas += linhas\n                registrar_evento(database, execucao_id, \"ARQUIVO_IMPORTADO\",\n                                 mensagem=f\"{arquivo.name}: {linhas} linha(s)\")\n                registrar_artefato(database, execucao_id, str(arquivo), \"ENTRADA\")\n\n        for nome, valor, unidade in (\n                                        (\"arquivos_importados\", resultado.importados, \"arquivos\"),\n                                        (\"arquivos_reprovados\", len(resultado.reprovados), \"arquivos\"),\n                                        (\"linhas_importadas\", resultado.linhas, \"linhas\"),\n                                    ):\n            registrar_metrica(database, execucao_id, nome, valor, unidade)\n        registrar_evento(database, execucao_id, \"IMPORTACAO_CONCLUIDA\",\n                         mensagem=f\"Importados: {resultado.importados}; reprovados: {len(resultado.reprovados)}\")\n    return resultado"
+    },
+    "documentacao": {
+      "resumo": "Executa a importação de dados CSVs em um banco de dados SQLite.",
+      "descricao": "Realiza a importação de arquivos CSVs localizados em um diretório especificado, normalizando e convertendo os dados conforme as funções fornecidas. Registra eventos e métricas durante o processo.",
+      "parametros": [
+        {
+          "nome": "local",
+          "tipo": "str | Path",
+          "categoria": "somente_keyword",
+          "descricao": "Caminho para o diretório contendo os arquivos CSVs."
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "categoria": "somente_keyword",
+          "descricao": "Nome da empresa associada aos dados."
+        },
+        {
+          "nome": "ano",
+          "tipo": "int",
+          "categoria": "somente_keyword",
+          "descricao": "Ano dos dados a serem importados."
+        },
+        {
+          "nome": "sanear_csv",
+          "tipo": "Callable",
+          "categoria": "somente_keyword",
+          "descricao": "Função para sanear os dados CSVs antes da importação."
+        },
+        {
+          "nome": "determinar_tipo",
+          "tipo": "Callable",
+          "categoria": "somente_keyword",
+          "descricao": "Função para determinar o tipo dos dados durante a importação."
+        },
+        {
+          "nome": "converter_decimal",
+          "tipo": "Callable",
+          "categoria": "somente_keyword",
+          "descricao": "Função para converter valores decimais durante a importação."
+        },
+        {
+          "nome": "preparar_tabelas",
+          "tipo": "Callable[[sqlite3.Connection], None] | None",
+          "categoria": "somente_keyword",
+          "default": "None",
+          "descricao": "Função para preparar as tabelas no banco de dados antes da importação."
+        },
+        {
+          "nome": "progresso",
+          "tipo": "Callable[[str], None] | None",
+          "categoria": "somente_keyword",
+          "default": "None",
+          "descricao": "Função para atualizar o progresso do processo de importação."
+        }
+      ],
+      "retorno": {
+        "tipo": "ResultadoImportacao",
+        "descricao": "Objeto contendo os resultados da importação, incluindo arquivos importados e reprovados."
+      },
+      "excecoes": [
+        {
+          "tipo": "FileNotFoundError",
+          "categoria": "chamada",
+          "descricao": "Quando o diretório de CSVs ou o banco de destino não são encontrados."
+        }
+      ],
+      "dependencias": [
+        "MANIFESTO.execucao_trilha",
+        "MANIFESTO.inicializa_database",
+        "MANIFESTO.inicializa_detalhes",
+        "MANIFESTO.inicializar_rastreamento",
+        "MANIFESTO.registrar_artefato",
+        "MANIFESTO.registrar_evento",
+        "MANIFESTO.registrar_metrica",
+        "pathlib.Path",
+        "sqlite3",
+        "streamlit"
+      ],
+      "docstring": "Executa a importação de dados CSVs em um banco de dados SQLite.\n\nArgs:\n    local (str | Path): Caminho para o diretório contendo os arquivos CSVs.\n    empresa (str): Nome da empresa associada aos dados.\n    ano (int): Ano dos dados a serem importados.\n    sanear_csv (Callable): Função para sanear os dados CSVs antes da importação.\n    determinar_tipo (Callable): Função para determinar o tipo dos dados durante a importação.\n    converter_decimal (Callable): Função para converter valores decimais durante a importação.\n    preparar_tabelas (Callable[[sqlite3.Connection], None] | None, optional): Função para preparar as tabelas no banco de dados antes da importação. Defaults to None.\n    progresso (Callable[[str], None] | None, optional): Função para atualizar o progresso do processo de importação. Defaults to None.\n\nReturns:\n    ResultadoImportacao: Objeto contendo os resultados da importação, incluindo arquivos importados e reprovados.\n\nRaises:\n    FileNotFoundError: Quando o diretório de CSVs ou o banco de destino não são encontrados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "imp_arq",
+      "tipo": "function",
+      "linha_inicio": 294,
+      "linha_fim": 343,
+      "parametros": [
+        {
+          "nome": "sanear_csv",
+          "tipo": "Callable",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "determinar_tipo",
+          "tipo": "Callable",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "converter_decimal",
+          "tipo": "Callable",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "preparar_tabelas",
+          "tipo": "Callable[[sqlite3.Connection], None] | None",
+          "default": "None",
+          "categoria": "somente_keyword"
+        }
+      ],
+      "retorno": "None",
+      "decorators": [
+        "st.fragment"
+      ],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.criar_manifesto",
+          "UTILS.bsc_dados_reg",
+          "pandas",
+          "streamlit"
+        ],
+        "chamadas": [
+          "UserWarning",
+          "bsc_dados_reg",
+          "criar_manifesto",
+          "executar_importacao",
+          "len",
+          "pd.DataFrame",
+          "progresso.empty",
+          "st.button",
+          "st.columns",
+          "st.container",
+          "st.dataframe",
+          "st.empty",
+          "st.html",
+          "st.spinner",
+          "st.success",
+          "st.warning"
+        ]
+      },
+      "codigo": "def imp_arq(\n                            *, sanear_csv: Callable, determinar_tipo: Callable,\n                            converter_decimal: Callable,\n                            preparar_tabelas: Callable[[sqlite3.Connection], None] | None = None,\n                        ) -> None:\n    if \"tra_dir\" not in st.session_state:\n        st.warning(\"Configure o diretório de trabalho antes de importar.\")\n        return\n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    st.html(f\"<style>{css}</style>\")\n\n    with st.container():\n        col1 = st.columns([1,5,1], gap='small')\n        with col1[1]:\n            st.html(\"<h1>Importação dos arquivos do Manual de Dados da SFF</h1>\")\n            st.html(\"\"\"\n                            <p  style=\"text-align: justify;text-indent: 40px\">\n                            Nesta etapa, carregamos \n                            os Arquivos CSV do Manual de Dados na base local.\n                            É relevante que tenha sido processada a etapa de validação \n                            dos arquivos, pois alguns dos\n                            erros podem provocar problemas na importação.</p>\n                        \"\"\")\n            col2 = st.columns(5, gap='small')\n            with col2[2]:\n                importar = st.button(\"Importar\")\n            if importar:\n                progresso = st.empty()\n                try:\n                    with st.spinner(\"Importando arquivos...\"):\n                        resultado = executar_importacao(\n                                                            local=local, empresa=empresa, ano=ano,\n                                                            sanear_csv=sanear_csv,\n                                                            determinar_tipo=determinar_tipo,\n                                                            converter_decimal=converter_decimal,\n                                                            preparar_tabelas=preparar_tabelas,\n                                                            progresso=progresso.info,\n                                                        )\n                        raiz = criar_manifesto()\n                except Exception as exc:\n                    raise  UserWarning((f\"Falha técnica na importação: {exc}\"))\n                else:\n                    progresso.empty()\n                    st.success(f\"{resultado.importados} arquivo(s) importado(s); {resultado.linhas} linha(s).\")\n                    if resultado.reprovados:\n                        st.warning(f\"{len(resultado.reprovados)} arquivo(s) reprovado(s).\")\n                        st.dataframe(pd.DataFrame({\"Arquivo reprovado\": resultado.reprovados}), hide_index=True)"
+    },
+    "documentacao": {
+      "resumo": "Realiza a importação de arquivos CSV do Manual de Dados da SFF em uma base local.",
+      "descricao": "Esta função realiza a importação dos arquivos CSV do Manual de Dados da SFF em uma base local. Ela utiliza funções auxiliares para sanear os dados, determinar tipos, converter decimais e preparar tabelas no banco de dados SQLite. A função também exibe um progresso visual durante o processo de importação e trata exceções que possam ocorrer.",
+      "parametros": [
+        {
+          "nome": "sanear_csv",
+          "tipo": "Callable",
+          "categoria": "somente_keyword",
+          "descricao": "Função para sanear os dados dos arquivos CSV."
+        },
+        {
+          "nome": "determinar_tipo",
+          "tipo": "Callable",
+          "categoria": "somente_keyword",
+          "descricao": "Função para determinar o tipo dos dados."
+        },
+        {
+          "nome": "converter_decimal",
+          "tipo": "Callable",
+          "categoria": "somente_keyword",
+          "descricao": "Função para converter valores decimais."
+        },
+        {
+          "nome": "preparar_tabelas",
+          "tipo": "Callable[[sqlite3.Connection], None] | None",
+          "categoria": "somente_keyword",
+          "default": "None",
+          "descricao": "Função para preparar tabelas no banco de dados SQLite. Se não for fornecida, a função não realizará esta etapa."
+        }
+      ],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "A função não retorna nenhum valor."
+      },
+      "excecoes": [
+        {
+          "tipo": "UserWarning",
+          "categoria": "somente_keyword",
+          "descricao": "Exceção levantada em caso de falha técnica na importação dos arquivos."
+        }
+      ],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.criar_manifesto",
+          "UTILS.bsc_dados_reg",
+          "pandas",
+          "streamlit"
+        ],
+        "chamadas": [
+          "UserWarning",
+          "bsc_dados_reg",
+          "criar_manifesto",
+          "executar_importacao",
+          "len",
+          "pd.DataFrame",
+          "progresso.empty",
+          "st.button",
+          "st.columns",
+          "st.container",
+          "st.dataframe",
+          "st.empty",
+          "st.html",
+          "st.spinner",
+          "st.success",
+          "st.warning"
+        ]
+      },
+      "docstring": "Realiza a importação de arquivos CSV do Manual de Dados da SFF em uma base local.\n\nArgs:\n    sanear_csv (Callable): Função para sanear os dados dos arquivos CSV.\n    determinar_tipo (Callable): Função para determinar o tipo dos dados.\n    converter_decimal (Callable): Função para converter valores decimais.\n    preparar_tabelas (Callable[[sqlite3.Connection], None] | None, optional): Função para preparar tabelas no banco de dados SQLite. Se não for fornecida, a função não realizará esta etapa. Padrão é None.\n\nRaises:\n    UserWarning: Exceção levantada em caso de falha técnica na importação dos arquivos."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "imp_arq_dados",
+      "tipo": "function",
+      "linha_inicio": 345,
+      "linha_fim": 351,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "imp_arq"
+        ]
+      },
+      "codigo": "def imp_arq_dados():\n    imp_arq(\n                            sanear_csv=sanear_csv,\n                            determinar_tipo=determinar_tipo,\n                            converter_decimal=converter_decimal,\n                            preparar_tabelas=preparar_tabelas,\n                        )"
+    },
+    "documentacao": {
+      "resumo": "Invoca uma função para importar e processar arquivos de dados.",
+      "descricao": "Esta função chama outra função chamada `imp_arq` passando várias funções auxiliares como parâmetros. Essas funções são responsáveis por sanear CSVs, determinar tipos de dados, converter valores decimais e preparar tabelas.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "imp_arq"
+        ]
+      },
+      "docstring": "Invoca uma função para importar e processar arquivos de dados.\n\nArgs:\n    Nenhum parâmetro explicitamente definido.\n\nReturns:\n    None\n\nNotes:\n    A função `imp_arq` é chamada com várias funções auxiliares como parâmetros."
+    },
+    "status": "sucesso"
+  }
+]

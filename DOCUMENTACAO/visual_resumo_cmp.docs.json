@@ -1,0 +1,631 @@
+[
+  {
+    "funcao": {
+      "nome": "moeda_br",
+      "tipo": "function",
+      "linha_inicio": 29,
+      "linha_fim": 33,
+      "parametros": [
+        {
+          "nome": "x",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "float",
+          "replace"
+        ]
+      },
+      "codigo": "def moeda_br(x):\n    try:\n        return f\"{float(x):,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\")\n    except Exception:\n        return x"
+    },
+    "documentacao": {
+      "resumo": "Converte um valor numérico em uma representação monetária brasileira.",
+      "descricao": "Formata um número como moeda brasileira, substituindo vírgula por ponto e vice-versa. Caso o valor não seja numérico, retorna o valor original.",
+      "parametros": [
+        {
+          "nome": "x",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Valor a ser formatado como moeda brasileira."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Representação monetária brasileira ou valor original em caso de erro."
+      },
+      "excecoes": [
+        {
+          "tipo": "Exception",
+          "descricao": "Caso o valor não seja numérico, uma exceção é capturada e o valor original é retornado."
+        }
+      ],
+      "dependencias": [],
+      "docstring": "Converte um valor numérico em uma representação monetária brasileira.\n\nArgs:\n    x: Valor a ser formatado como moeda brasileira.\n\nReturns:\n    Representação monetária brasileira ou valor original em caso de erro."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "perc_br",
+      "tipo": "function",
+      "linha_inicio": 35,
+      "linha_fim": 39,
+      "parametros": [
+        {
+          "nome": "x",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "float",
+          "replace"
+        ]
+      },
+      "codigo": "def perc_br(x):\n    try:\n        return f\"{float(x):,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\")\n    except Exception:\n        return x"
+    },
+    "documentacao": {
+      "resumo": "Converte um valor em percentual brasileiro.",
+      "descricao": "Transforma um número em uma string formatada como porcentagem brasileira, substituindo vírgula por ponto e vice-versa. Caso o valor não seja convertível para float, é retornado o valor original.",
+      "parametros": [
+        {
+          "nome": "x",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Valor a ser convertido em percentual brasileiro."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "String formatada como porcentagem brasileira ou valor original em caso de erro."
+      },
+      "excecoes": [
+        {
+          "tipo": "Exception",
+          "descricao": "Quando o valor não pode ser convertido para float."
+        }
+      ],
+      "dependencias": [],
+      "docstring": "Converte um valor em percentual brasileiro.\n\nArgs:\n    x: Valor a ser convertido em percentual brasileiro.\n\nReturns:\n    str ou original value: String formatada como porcentagem brasileira ou valor original em caso de erro.\n\nRaises:\n    Exception: Quando o valor não pode ser convertido para float."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "formatar_df",
+      "tipo": "function",
+      "linha_inicio": 41,
+      "linha_fim": 53,
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "apply",
+          "col.upper",
+          "col_up.startswith",
+          "df.copy"
+        ]
+      },
+      "codigo": "def formatar_df(df):\n    df_fmt = df.copy()\n\n    for col in df_fmt.columns:\n        col_up = col.upper()\n\n        if col_up.startswith((\"VL\", \"QT\", \"FA\", \"DI\")):\n            df_fmt[col] = df_fmt[col].apply(moeda_br)\n\n        elif col_up.startswith((\"TX_\", \"DEP\", \"PCT\", \"VAR\")):\n            df_fmt[col] = df_fmt[col].apply(perc_br)\n\n    return df_fmt"
+    },
+    "documentacao": {
+      "resumo": "Formata um DataFrame aplicando formatações específicas a colunas com nomes que indicam valores monetários, quantidades, taxas e porcentagens.",
+      "descricao": "A função itera sobre cada coluna do DataFrame fornecido, aplicando funções de formatação condicionalmente. As colunas são identificadas pelo prefixo em seus nomes em maiúsculas. Colunas com prefixos 'VL', 'QT', 'FA' e 'DI' são formatadas como moedas, enquanto aquelas com prefixos 'TX_', 'DEP', 'PCT' e 'VAR' são formatadas como porcentagens.",
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "DataFrame a ser formatado."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "DataFrame formatado com as colunas especificadas aplicando as formatações correspondentes."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "apply",
+        "col.upper",
+        "col_up.startswith",
+        "df.copy"
+      ],
+      "docstring": "Formata um DataFrame aplicando formatações específicas a colunas com nomes que indicam valores monetários, quantidades, taxas e porcentagens.\n\nArgs:\n    df: DataFrame a ser formatado.\n\nReturns:\n    DataFrame formatado com as colunas especificadas aplicando as formatações correspondentes."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "bloco_html",
+      "tipo": "function",
+      "linha_inicio": 55,
+      "linha_fim": 63,
+      "parametros": [
+        {
+          "nome": "titulo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "texto",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "cor",
+          "tipo": null,
+          "default": "'#111827'",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "streamlit"
+        ],
+        "chamadas": [
+          "st.html"
+        ]
+      },
+      "codigo": "def bloco_html(titulo, texto, cor=\"#111827\"):\n    st.html(f\"\"\"\n                    <h2>\n                        {titulo}\n                    </h2>\n                    <p style=\"text-align: justify;text-indent: 40px\">\n                        {texto}\n                    </p>\n                       \"\"\")"
+    },
+    "documentacao": {
+      "resumo": "Gera um bloco HTML com título e texto justificado.",
+      "descricao": "Cria um bloco HTML utilizando Streamlit, incluindo um título e um parágrafo de texto justificado. A cor do texto pode ser especificada opcionalmente.",
+      "parametros": [
+        {
+          "nome": "titulo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Título do bloco HTML."
+        },
+        {
+          "nome": "texto",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Texto a ser exibido no bloco HTML, justificado à esquerda com indentação de 40 pixels."
+        },
+        {
+          "nome": "cor",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "'#111827'",
+          "descricao": "Cor do texto no bloco HTML. O valor padrão é '#111827'."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "streamlit"
+      ],
+      "docstring": "Gera um bloco HTML com título e texto justificado.\n\nArgs:\n    titulo: Título do bloco HTML.\n    texto: Texto a ser exibido no bloco HTML, justificado à esquerda com indentação de 40 pixels.\n    cor (opcional): Cor do texto no bloco HTML. O valor padrão é '#111827'.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "exportar_tabela_png",
+      "tipo": "function",
+      "linha_inicio": 65,
+      "linha_fim": 107,
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "nome_arquivo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "titulo",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "max_linhas",
+          "tipo": null,
+          "default": "80",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "matplotlib.pyplot",
+          "os"
+        ],
+        "chamadas": [
+          "ax.axis",
+          "ax.set_title",
+          "ax.table",
+          "cell.set_edgecolor",
+          "cell.set_facecolor",
+          "cell.set_text_props",
+          "copy",
+          "df.head",
+          "fig.savefig",
+          "items",
+          "len",
+          "max",
+          "os.makedirs",
+          "plt.close",
+          "plt.subplots",
+          "plt.tight_layout",
+          "tabela.auto_set_font_size",
+          "tabela.get_celld",
+          "tabela.scale",
+          "tabela.set_fontsize"
+        ]
+      },
+      "codigo": "def exportar_tabela_png(df, nome_arquivo, titulo=None, max_linhas=80):\n    os.makedirs(rf\"{st.session_state.tra_dir}/RELATORIOS/figuras\", exist_ok=True)\n    caminho = rf\"{st.session_state.tra_dir}/RELATORIOS/figuras/{nome_arquivo}.png\"\n\n    df_img = df.head(max_linhas).copy()\n\n    fig_altura = max(2.5, 0.35 * len(df_img) + 1.6)\n    fig_largura = max(20, 2.5 * len(df_img.columns))\n\n    fig, ax = plt.subplots(figsize=(fig_largura, fig_altura))\n    ax.axis(\"off\")\n\n    if titulo:\n        ax.set_title(titulo, fontsize=14, fontweight=\"bold\", pad=16)\n\n    tabela = ax.table(\n                        cellText=df_img.values,\n                        colLabels=df_img.columns,\n                        cellLoc=\"center\",\n                        colLoc=\"center\",\n                        loc=\"center\"\n                    )\n\n    tabela.auto_set_font_size(False)\n    tabela.set_fontsize(8)\n    tabela.scale(1, 1.35)\n\n    for (row, col), cell in tabela.get_celld().items():\n        cell.set_edgecolor(\"#d1d5db\")\n\n        if row == 0:\n            cell.set_facecolor(\"#111827\")\n            cell.set_text_props(color=\"white\", weight=\"bold\")\n        elif row % 2 == 0:\n            cell.set_facecolor(\"#f9fafb\")\n        else:\n            cell.set_facecolor(\"white\")\n\n    plt.tight_layout()\n    fig.savefig(caminho, dpi=220, bbox_inches=\"tight\")\n    plt.close(fig)\n\n    return caminho"
+    },
+    "documentacao": {
+      "resumo": "Exporta uma tabela como imagem PNG.",
+      "descricao": "Gera uma imagem PNG a partir de um DataFrame e salva em um diretório específico. A função permite definir o título da tabela, limitar o número de linhas exibidas e ajustar as dimensões da figura.",
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo os dados a serem exportados."
+        },
+        {
+          "nome": "nome_arquivo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome do arquivo PNG que será gerado."
+        },
+        {
+          "nome": "titulo",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Título da tabela. Se não for fornecido, nenhum título será exibido."
+        },
+        {
+          "nome": "max_linhas",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "80",
+          "descricao": "Número máximo de linhas a serem incluídas na tabela. Se o DataFrame tiver mais linhas, apenas as primeiras serão exibidas."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Caminho completo para o arquivo PNG gerado."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "matplotlib.pyplot",
+          "categoria": "import",
+          "descricao": "Biblioteca utilizada para criar e manipular gráficos."
+        },
+        {
+          "nome": "os",
+          "categoria": "import",
+          "descricao": "Módulo do Python para interagir com o sistema operacional, utilizado para criar diretórios."
+        }
+      ],
+      "docstring": "Exporta uma tabela como imagem PNG.\n\nArgs:\n    df: DataFrame contendo os dados a serem exportados.\n    nome_arquivo: Nome do arquivo PNG que será gerado.\n    titulo (opcional): Título da tabela. Se não for fornecido, nenhum título será exibido.\n    max_linhas (opcional): Número máximo de linhas a serem incluídas na tabela. Se o DataFrame tiver mais linhas, apenas as primeiras serão exibidas.\n\nReturns:\n    Caminho completo para o arquivo PNG gerado."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "mostrar_tabela",
+      "tipo": "function",
+      "linha_inicio": 109,
+      "linha_fim": 122,
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "nome_arquivo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "titulo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "altura",
+          "tipo": null,
+          "default": "550",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "column_config",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "streamlit"
+        ],
+        "chamadas": [
+          "exportar_tabela_png",
+          "formatar_df",
+          "st.columns",
+          "st.dataframe"
+        ]
+      },
+      "codigo": "def mostrar_tabela(df, nome_arquivo, titulo, altura=550, column_config=None):\n    df_fmt = formatar_df(df)\n    cols = st.columns([1,5,1], gap='small')\n    with cols[1]:\n        st.dataframe(\n                        df_fmt,\n                        width=\"stretch\",\n                        height=altura,\n                        hide_index=True,\n                        column_config=column_config\n                    )\n    exportar_tabela_png(df_fmt, nome_arquivo, titulo)\n\n    return df_fmt"
+    },
+    "documentacao": {
+      "resumo": "Exibe uma tabela formatada no Streamlit e exporta como imagem PNG.",
+      "descricao": "Esta função recebe um DataFrame, formata-o e exibe em uma coluna do layout do Streamlit. Também exporta a tabela como uma imagem PNG com o nome especificado.",
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "DataFrame que será formatado e exibido."
+        },
+        {
+          "nome": "nome_arquivo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome do arquivo para exportação da tabela em formato PNG."
+        },
+        {
+          "nome": "titulo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Título da tabela exibida no Streamlit."
+        },
+        {
+          "nome": "altura",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "550",
+          "descricao": "Altura em pixels da tabela exibida no Streamlit."
+        },
+        {
+          "nome": "column_config",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Configuração das colunas do DataFrame, se necessário."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "DataFrame formatado que foi exibido no Streamlit."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "streamlit"
+      ],
+      "docstring": "Exibe uma tabela formatada no Streamlit e exporta como imagem PNG.\n\nArgs:\n    df: DataFrame que será formatado e exibido.\n    nome_arquivo: Nome do arquivo para exportação da tabela em formato PNG.\n    titulo: Título da tabela exibida no Streamlit.\n    altura: Altura em pixels da tabela exibida no Streamlit (padrão 550).\n    column_config: Configuração das colunas do DataFrame, se necessário (padrão None).\n\nReturns:\n    DataFrame formatado que foi exibido no Streamlit."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "painel_comparativo",
+      "tipo": "function",
+      "linha_inicio": 124,
+      "linha_fim": 202,
+      "parametros": [
+        {
+          "nome": "df_FINAL",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "nm",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "numpy",
+          "pandas",
+          "streamlit"
+        ],
+        "chamadas": [
+          "abs",
+          "c1.metric",
+          "c2.metric",
+          "c3.metric",
+          "c4.metric",
+          "copy",
+          "fillna",
+          "int",
+          "moeda_br",
+          "mostrar_tabela",
+          "nm.lower",
+          "np.where",
+          "pd.notna",
+          "replace",
+          "st.column_config.TextColumn",
+          "st.columns",
+          "st.html",
+          "sum"
+        ]
+      },
+      "codigo": "def painel_comparativo(df_FINAL, nm):\n    col_bb = f'VL_ITEM_{nm}_BB'.replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    col_avl = f'VL_ITEM_{nm}_AVL'.replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    col_sff = f'VL_ITEM_{nm}_SFF'.replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    col_total_avl = f'VL_AVL_{nm}'.replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    col_total_sff = f'VL_SFF_{nm}'.replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    col_dif = f'DIF_AVL_SFF_{nm}'.replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    col_var = f'VAR_AVL_SFF_{nm}'.replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n\n    df_FINAL[col_total_avl] = df_FINAL[col_bb].fillna(0) + df_FINAL[col_avl].fillna(0)\n    df_FINAL[col_total_sff] = df_FINAL[col_bb].fillna(0) + df_FINAL[col_sff].fillna(0)\n\n    df_FINAL[col_dif] = df_FINAL[col_total_avl] - df_FINAL[col_total_sff]\n\n    df_FINAL[col_var] = np.where(\n                                    df_FINAL[col_total_sff].abs() > 0,\n                                    df_FINAL[col_dif] / df_FINAL[col_total_sff],\n                                    0\n                                )\n\n    df_PRINT = df_FINAL[\n                            [\n                                'Nm_Item',\n                                col_bb,\n                                col_avl,\n                                col_sff,\n                                col_total_avl,\n                                col_total_sff,\n                                col_dif,\n                                col_var,\n                            ]\n                        ].copy()\n\n    total_avl = df_PRINT[col_total_avl].iloc[0].sum()\n    total_sff = df_PRINT[col_total_sff].iloc[0].sum()\n    dif_total = total_avl - total_sff\n    var_total = dif_total / total_sff if total_sff else np.nan\n    qtd_div = (df_PRINT[col_dif].abs() > 0.01).sum()\n\n    \n    st.html(\n\n                f\"\"\"<p style=\"text-align: justify;text-indent: 40px\">Esta seção compara os valores apurados pela avaliadora com os valores considerados pela SFF\n                para a natureza {nm}. A diferença positiva indica valor AVL superior ao SFF; a diferença negativa\n                indica valor SFF superior ao AVL.</p>\"\"\"\n\n            )\n    cols = st.columns([1,10,1], gap='small')\n    with cols[1]:\n        c1, c2, c3, c4 = st.columns(4)\n\n    c1.metric(\"Total AVL\", moeda_br(total_avl))\n    c2.metric(\"Total SFF\", moeda_br(total_sff))\n    c3.metric(\n                \"Diferença AVL - SFF\",\n                moeda_br(dif_total),\n                delta=f\"{var_total:.2%}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\") if pd.notna(var_total) else \"N/A\"\n            )\n    c4.metric(\"Itens divergentes\", int(qtd_div))\n    config = {\n                    \"Nm_Item\": st.column_config.TextColumn(\"Item\"),\n                    col_bb: st.column_config.TextColumn(\"Base Blindada (R$)\"),\n                    col_avl: st.column_config.TextColumn(\"Ajuste AVL (R$)\"),\n                    col_sff: st.column_config.TextColumn(\"Ajuste SFF (R$)\"),\n                    col_total_avl: st.column_config.TextColumn(\"Total AVL (R$)\"),\n                    col_total_sff: st.column_config.TextColumn(\"Total SFF (R$)\"),\n                    col_dif: st.column_config.TextColumn(\"Diferença (R$)\"),\n                    col_var: st.column_config.TextColumn(\"Variação (%)\"),\n                }\n\n    mostrar_tabela(\n                        df_PRINT,\n                        nome_arquivo=f\"comparativo_avl_sff_{nm.lower()}\",\n                        titulo=f\"Comparativo AVL vs SFF — {nm}\",\n                        altura=550,\n                        column_config=config\n                    )\n\n    return df_PRINT"
+    },
+    "documentacao": {
+      "resumo": "Gera um painel comparativo entre os valores apurados pela avaliadora (AVL) e os considerados pela SFF para uma natureza específica.",
+      "descricao": "A função processa um DataFrame contendo dados de ajuste e calcula a diferença e variação entre os valores AVL e SFF. Exibe métricas totais e gráficos no Streamlit, além de retornar o DataFrame com as colunas relevantes para a análise comparativa.",
+      "parametros": [
+        {
+          "nome": "df_FINAL",
+          "tipo": null,
+          "descricao": "DataFrame contendo os dados de ajuste para a natureza especificada."
+        },
+        {
+          "nome": "nm",
+          "tipo": null,
+          "descricao": "Nome da natureza para a qual o painel comparativo será gerado."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "DataFrame contendo as colunas relevantes para a análise comparativa entre AVL e SFF."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "numpy",
+        "pandas",
+        "streamlit"
+      ],
+      "docstring": "Gera um painel comparativo entre os valores apurados pela avaliadora (AVL) e os considerados pela SFF para uma natureza específica.\n\nArgs:\n    df_FINAL: DataFrame contendo os dados de ajuste para a natureza especificada.\n    nm: Nome da natureza para a qual o painel comparativo será gerado.\n\nReturns:\n    DataFrame contendo as colunas relevantes para a análise comparativa entre AVL e SFF."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "visualizador_resumo_cmp",
+      "tipo": "function",
+      "linha_inicio": 204,
+      "linha_fim": 306,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "UTILS.bsc_dados_reg",
+          "UTILS.existe_tabela",
+          "pandas",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "bloco_html",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "df_BB.merge",
+          "drop_duplicates",
+          "existe_tabela",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "len",
+          "mostrar_tabela",
+          "painel_comparativo",
+          "pd.DataFrame",
+          "pd.read_sql",
+          "sl.connect",
+          "st.column_config.TextColumn",
+          "st.html",
+          "str",
+          "to_list"
+        ]
+      },
+      "codigo": "def visualizador_resumo_cmp(st = None):\n    if not'tra_dir' in st.session_state:\n        st.html(\"\"\"\n                    <p style=\"text-align: justify;text-indent: 40px\">\n                    Você deve configurar o diretório de trabalho, empresa e período\n                    na aba <i>Criar Pasta de Trabalho</i>, barra lateral.</p>\n                \"\"\")\n        return\n\n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    dds = bsc_dados_reg('TBL_EMPRESAS')\n    lst_emp = dds['Nm_EMPRESA'].drop_duplicates().to_list()\n    st.html(f\"<style>{css}</style>\")\n    raiz = Path(local)\n    caminho_manifesto = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n    caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n    inicializa_database(str(caminho_manifesto))\n    inicializa_detalhes(str(caminho_manifesto))\n    inicializar_rastreamento(str(caminho_manifesto))\n    database = str(caminho_manifesto)\n    bd_path = f'{local}/BD_LOCAL/{empresa}_{ano}.db'\n    bd_BDGDAT_path = f'{local}/BD_LOCAL/BDGD_AT_{empresa}_{ano}.db'\n    bd_BDGDANT_path = f'{local}/BD_LOCAL/BDGD_ANT_{empresa}_{ano}.db'\n    bd_EFD_path = f'{local}\\BD_LOCAL\\EFD_ICMS_{empresa}_{ano}.db'\n\n    with sl.connect(bd_path) as bd:\n        ANL_LST_TUC = pd.DataFrame()\n        ANL_LST_TUC13 = pd.DataFrame()\n        if existe_tabela('BASE_INCR_COMP', bd):\n            bloco_html(\n                            \"Resumo Completo\",\n                            \"\"\"\n                            A seguir apresenta-se o resultado consolidado do arquivo incremental, organizado por atividade.\n                            A tabela permite verificar os valores informados, os valores simulados e a respectiva variação apurada.\n                            \"\"\",\n                            cor=\"#E82C1E\"\n                        )\n            sSQL = \"SELECT * FROM BASE_INCR_COMP\"\n            df_BI = pd.read_sql(sSQL, bd)\n\n            config_bi = {\n                            \"Nm_Item\": st.column_config.TextColumn(\"Item\"),\n                            \"VL_AVAL\": st.column_config.TextColumn(\"Avaliadora (R$)\"),\n                            \"VL_SIM\": st.column_config.TextColumn(\"Simulado (R$)\"),\n                            \"PCT_VAR\": st.column_config.TextColumn(\"Variação (%)\"),\n                        }\n\n            mostrar_tabela(\n                                df_BI,\n                                nome_arquivo=\"resumo_incremental\",\n                                titulo=\"Resumo Consolidado do Arquivo Incremental\",\n                                altura=550,\n                                column_config=config_bi\n                            )\n        \n        if existe_tabela('RESUMO_BB', bd):\n            bloco_html(\n                        \"Resumo da Base Blindada após Movimentação\",\n                        \"\"\"\n                        A tabela apresenta a posição consolidada da base blindada após as movimentações consideradas.\n                        Os valores estão segregados por natureza: geração, distribuição, administração e comercialização.\n                        A análise detalhada dos critérios de cálculo deve ser consultada no relatório técnico correspondente.\n                        \"\"\",\n                        cor=\"#E82C1E\"\n                    )\n\n            sSQL = \"\"\"\n                        SELECT \n                            Item AS Nm_Item,\n                            VL_SALDO_G AS VL_ITEM_GER_BB,\n                            VL_SALDO_D AS VL_ITEM_DIST_BB,\n                            VL_SALDO_A AS VL_ITEM_ADM_BB,\n                            VL_SALDO_C AS VL_ITEM_COMER_BB   \n                        FROM RESUMO_BB\n                    \"\"\"\n\n            df_BB = pd.read_sql(sSQL, bd)\n\n            mostrar_tabela(\n                                df_BB,\n                                nome_arquivo=\"resumo_base_blindada\",\n                                titulo=\"Resumo da Base Blindada após Movimentação\",\n                                altura=450\n                            )\n\n        if len(df_BI) > 0 and len(df_BB)>0:\n            df_FINAL = df_BB.merge(df_BI, how=\"left\", on=\"Nm_Item\")\n\n            bloco_html(\n                        \"Painel Comparativo de Valores — Avaliadora versus SFF\",\n                        \"\"\"\n                        Este painel consolida a comparação entre os valores calculados pela avaliadora e os valores\n                        considerados pela SFF. A análise está segregada por natureza, permitindo verificar diferenças\n                        absolutas, variações percentuais e itens com divergência relevante.\n                        \"\"\",\n                        cor=\"#E82C1E\"\n                    )\n\n            for nm in [\"GER\", \"DIST\", \"ADM\", \"COMER\"]:\n                painel_comparativo(df_FINAL, nm)"
+    },
+    "documentacao": {
+      "resumo": "Visualiza resumos comparativos de dados em uma interface Streamlit.",
+      "descricao": "A função `visualizador_resumo_cmp` é responsável por visualizar resumos comparativos de dados, incluindo valores informados e simulados, além de painéis comparativos entre diferentes categorias. A visualização é realizada usando a biblioteca Streamlit (st). A função verifica se o diretório de trabalho está configurado e, em seguida, carrega os dados do banco de dados SQLite para exibir resumos consolidados e comparativos.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit usado para criar a interface da aplicação."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "UTILS.bsc_dados_reg",
+          "UTILS.existe_tabela",
+          "pandas",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "bloco_html",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "df_BB.merge",
+          "drop_duplicates",
+          "existe_tabela",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "len",
+          "mostrar_tabela",
+          "painel_comparativo",
+          "pd.DataFrame",
+          "pd.read_sql",
+          "sl.connect",
+          "st.column_config.TextColumn",
+          "st.html",
+          "str",
+          "to_list"
+        ]
+      },
+      "docstring": "Visualiza resumos comparativos de dados em uma interface Streamlit.\n\nArgs:\n    st (streamlit): Objeto Streamlit usado para criar a interface da aplicação.\n\nReturns:\n    None\n\nNotes:\n    A função verifica se o diretório de trabalho está configurado e, em seguida, carrega os dados do banco de dados SQLite para exibir resumos consolidados e comparativos."
+    },
+    "status": "sucesso"
+  }
+]

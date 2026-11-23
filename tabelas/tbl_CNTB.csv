@@ -1,0 +1,133 @@
+Cd_CC|Nm_ATVD|Nm_RZ_SINT|Nm_RZ_ANAL|Nm_CLASS|Cd_Q1A
+123310101|Geração|Usinas|Servidões permanentes|BRR|1.1
+123310103|Geração|Usinas|Softwares|BAR|1.2
+123310199|Geração|Usinas|Outros|BAR|1.3
+123210101|Geração|Usinas|Terrenos|BRR|2.1
+123210102|Geração|Usinas|Reservatórios, barragens e adutoras|BRR|3
+123210103|Geração|Usinas|Edificações, obras civis e benfeitorias|BRR|4.1
+123210104|Geração|Usinas|Máquinas e equipamentos|BRR|5.1
+123210105|Geração|Usinas|Veículos|BAR|6.1
+123210106|Geração|Usinas|Móveis e utensílios|BAR|7.1
+123310401|Geração|Sistema de transmissão de conexão|Servidões permanentes|BRR|1.1
+123310403|Geração|Sistema de transmissão de conexão|Softwares|BAR|1.2
+123310499|Geração|Sistema de transmissão de conexão|Outros|BAR|1.3
+123210401|Geração|Sistema de transmissão de conexão|Terrenos|BRR|2.1
+123210402|Geração|Sistema de transmissão de conexão|Reservatórios, barragens e adutoras|BRR|3
+123210403|Geração|Sistema de transmissão de conexão|Edificações, obras civis e benfeitorias|BRR|4.1
+123210404|Geração|Sistema de transmissão de conexão|Máquinas e equipamentos|BRR|5.1
+123210405|Geração|Sistema de transmissão de conexão|Veículos|BAR|6.1
+123210406|Geração|Sistema de transmissão de conexão|Móveis e utensílios|BAR|7.1
+123320101|Transmissão|Rede básica|Servidões permanentes|BRR|1.1
+123320103|Transmissão|Rede básica|Softwares|BAR|1.2
+123320199|Transmissão|Rede básica|Outros|BAR|1.3
+123220101|Transmissão|Rede básica|Terrenos|BRR|2.5
+123220103|Transmissão|Rede básica|Edificações, obras civis e benfeitorias|BRR|4.5
+123220104|Transmissão|Rede básica|Máquinas e equipamentos|BRR|5.5
+123220105|Transmissão|Rede básica|Veículos|BAR|6.5
+123220106|Transmissão|Rede básica|Móveis e utensílios|BAR|7.5
+123320401|Transmissão|Demais instalações / Demais instalações de transmissão|Servidões permanentes|BRR|1.1
+123320403|Transmissão|Demais instalações / Demais instalações de transmissão|Softwares|BAR|1.2
+123320499|Transmissão|Demais instalações / Demais instalações de transmissão|Outros|BAR|1.3
+123220401|Transmissão|Demais instalações / Demais instalações de transmissão|Terrenos|BRR|2.5
+123220403|Transmissão|Demais instalações / Demais instalações de transmissão|Edificações, obras civis e benfeitorias|BRR|4.5
+123220404|Transmissão|Demais instalações / Demais instalações de transmissão|Máquinas e equipamentos|BRR|5.5
+123220405|Transmissão|Demais instalações / Demais instalações de transmissão|Veículos|BAR|6.5
+123220406|Transmissão|Demais instalações / Demais instalações de transmissão|Móveis e utensílios|BAR|7.5
+123330101|Distribuição|Linhas, Redes e Subestações|Servidões permanentes|BRR|1.1
+123330103|Distribuição|Linhas, Redes e Subestações|Softwares|BAR|1.2
+123330199|Distribuição|Linhas, Redes e Subestações|Outros|BAR|1.3
+123230101|Distribuição|Linhas, Redes e Subestações|Terrenos|BRR|2.2
+123230103|Distribuição|Linhas, Redes e Subestações|Edificações, obras civis e benfeitorias|BRR|4.2
+123230104|Distribuição|Linhas, Redes e Subestações|Máquinas e equipamentos|BRR|5.2
+123230105|Distribuição|Linhas, Redes e Subestações|Veículos|BAR|6.2
+123230106|Distribuição|Linhas, Redes e Subestações|Móveis e utensílios|BAR|7.2
+123330401|Distribuição|Sistema de transmissão associado|Servidões permanentes|BRR|1.1
+123330403|Distribuição|Sistema de transmissão associado|Softwares|BAR|1.2
+123330499|Distribuição|Sistema de transmissão associado|Outros|BAR|1.3
+123230401|Distribuição|Sistema de transmissão associado|Terrenos|BRR|2.2
+123230403|Distribuição|Sistema de transmissão associado|Edificações, obras civis e benfeitorias|BRR|4.2
+123230404|Distribuição|Sistema de transmissão associado|Máquinas e equipamentos|BRR|5.2
+123230405|Distribuição|Sistema de transmissão associado|Veículos|BAR|6.2
+123230406|Distribuição|Sistema de transmissão associado|Móveis e utensílios|BAR|7.2
+123340101|Administração|Administração|Servidões permanentes|BAR|1.1
+123340103|Administração|Administração|Softwares|BAR|1.2
+123340199|Administração|Administração|Outros|BAR|1.3
+123240101|Administração|Administração|Terrenos|BAR|2.3
+123240103|Administração|Administração|Edificações, obras civis e benfeitorias|BAR|4.3
+123240104|Administração|Administração|Máquinas e equipamentos|BAR|5.3
+123240105|Administração|Administração|Veículos|BAR|6.3
+123240106|Administração|Administração|Móveis e utensílios|BAR|7.3
+123350101|Comercialização|Comercialização|Servidões permanentes|BAR|1.1
+123350103|Comercialização|Comercialização|Softwares|BAR|1.2
+123350199|Comercialização|Comercialização|Outros|BAR|1.3
+123250101|Comercialização|Comercialização|Terrenos|BAR|2.4
+123250103|Comercialização|Comercialização|Edificações, obras civis e benfeitorias|BAR|4.4
+123250104|Comercialização|Comercialização|Máquinas e equipamentos|BAR|5.4
+123250105|Comercialização|Comercialização|Veículos|BAR|6.4
+123250106|Comercialização|Comercialização|Móveis e utensílios|BAR|7.4
+a23310101|Geração|Usinas|Servidões permanentes|BRR|1.1
+a23310103|Geração|Usinas|Softwares|BAR|1.2
+a23310199|Geração|Usinas|Outros|BAR|1.3
+a23210101|Geração|Usinas|Terrenos|BRR|2.1
+a23210102|Geração|Usinas|Reservatórios, barragens e adutoras|BRR|3
+a23210103|Geração|Usinas|Edificações, obras civis e benfeitorias|BRR|4.1
+a23210104|Geração|Usinas|Máquinas e equipamentos|BRR|5.1
+a23210105|Geração|Usinas|Veículos|BAR|6.1
+a23210106|Geração|Usinas|Móveis e utensílios|BAR|7.1
+a23310401|Geração|Sistema de transmissão de conexão|Servidões permanentes|BRR|1.1
+a23310403|Geração|Sistema de transmissão de conexão|Softwares|BAR|1.2
+a23310499|Geração|Sistema de transmissão de conexão|Outros|BAR|1.3
+a23210401|Geração|Sistema de transmissão de conexão|Terrenos|BRR|2.1
+a23210402|Geração|Sistema de transmissão de conexão|Reservatórios, barragens e adutoras|BRR|3
+a23210403|Geração|Sistema de transmissão de conexão|Edificações, obras civis e benfeitorias|BRR|4.1
+a23210404|Geração|Sistema de transmissão de conexão|Máquinas e equipamentos|BRR|5.1
+a23210405|Geração|Sistema de transmissão de conexão|Veículos|BAR|6.1
+a23210406|Geração|Sistema de transmissão de conexão|Móveis e utensílios|BAR|7.1
+a23320101|Transmissão|Rede básica|Servidões permanentes|BRR|1.1
+a23320103|Transmissão|Rede básica|Softwares|BAR|1.2
+a23320199|Transmissão|Rede básica|Outros|BAR|1.3
+a23220101|Transmissão|Rede básica|Terrenos|BRR|2.5
+a23220103|Transmissão|Rede básica|Edificações, obras civis e benfeitorias|BRR|4.5
+a23220104|Transmissão|Rede básica|Máquinas e equipamentos|BRR|5.5
+a23220105|Transmissão|Rede básica|Veículos|BAR|6.5
+a23220106|Transmissão|Rede básica|Móveis e utensílios|BAR|7.5
+a23320401|Transmissão|Demais instalações / Demais instalações de transmissão|Servidões permanentes|BRR|1.1
+a23320403|Transmissão|Demais instalações / Demais instalações de transmissão|Softwares|BAR|1.2
+a23320499|Transmissão|Demais instalações / Demais instalações de transmissão|Outros|BAR|1.3
+a23220401|Transmissão|Demais instalações / Demais instalações de transmissão|Terrenos|BRR|2.5
+a23220403|Transmissão|Demais instalações / Demais instalações de transmissão|Edificações, obras civis e benfeitorias|BRR|4.5
+a23220404|Transmissão|Demais instalações / Demais instalações de transmissão|Máquinas e equipamentos|BRR|5.5
+a23220405|Transmissão|Demais instalações / Demais instalações de transmissão|Veículos|BAR|6.5
+a23220406|Transmissão|Demais instalações / Demais instalações de transmissão|Móveis e utensílios|BAR|7.5
+a23330101|Distribuição|Linhas, Redes e Subestações|Servidões permanentes|BRR|1.1
+a23330103|Distribuição|Linhas, Redes e Subestações|Softwares|BAR|1.2
+a23330199|Distribuição|Linhas, Redes e Subestações|Outros|BAR|1.3
+a23230101|Distribuição|Linhas, Redes e Subestações|Terrenos|BRR|2.2
+a23230103|Distribuição|Linhas, Redes e Subestações|Edificações, obras civis e benfeitorias|BRR|4.2
+a23230104|Distribuição|Linhas, Redes e Subestações|Máquinas e equipamentos|BRR|5.2
+a23230105|Distribuição|Linhas, Redes e Subestações|Veículos|BAR|6.2
+a23230106|Distribuição|Linhas, Redes e Subestações|Móveis e utensílios|BAR|7.2
+a23330401|Distribuição|Sistema de transmissão associado|Servidões permanentes|BRR|1.1
+a23330403|Distribuição|Sistema de transmissão associado|Softwares|BAR|1.2
+a23330499|Distribuição|Sistema de transmissão associado|Outros|BAR|1.3
+a23230401|Distribuição|Sistema de transmissão associado|Terrenos|BRR|2.2
+a23230403|Distribuição|Sistema de transmissão associado|Edificações, obras civis e benfeitorias|BRR|4.2
+a23230404|Distribuição|Sistema de transmissão associado|Máquinas e equipamentos|BRR|5.2
+a23230405|Distribuição|Sistema de transmissão associado|Veículos|BAR|6.2
+a23230406|Distribuição|Sistema de transmissão associado|Móveis e utensílios|BAR|7.2
+a23340101|Administração|Administração|Servidões permanentes|BAR|1.1
+a23340103|Administração|Administração|Softwares|BAR|1.2
+a23340199|Administração|Administração|Outros|BAR|1.3
+a23240101|Administração|Administração|Terrenos|BAR|2.3
+a23240103|Administração|Administração|Edificações, obras civis e benfeitorias|BAR|4.3
+a23240104|Administração|Administração|Máquinas e equipamentos|BAR|5.3
+a23240105|Administração|Administração|Veículos|BAR|6.3
+a23240106|Administração|Administração|Móveis e utensílios|BAR|7.3
+a23350101|Comercialização|Comercialização|Servidões permanentes|BAR|1.1
+a23350103|Comercialização|Comercialização|Softwares|BAR|1.2
+a23350199|Comercialização|Comercialização|Outros|BAR|1.3
+a23250101|Comercialização|Comercialização|Terrenos|BAR|2.4
+a23250103|Comercialização|Comercialização|Edificações, obras civis e benfeitorias|BAR|4.4
+a23250104|Comercialização|Comercialização|Máquinas e equipamentos|BAR|5.4
+a23250105|Comercialização|Comercialização|Veículos|BAR|6.4
+a23250106|Comercialização|Comercialização|Móveis e utensílios|BAR|7.4

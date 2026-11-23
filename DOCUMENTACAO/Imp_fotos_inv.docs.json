@@ -1,0 +1,251 @@
+[
+  {
+    "funcao": {
+      "nome": "rastrear_metados",
+      "tipo": "function",
+      "linha_inicio": 64,
+      "linha_fim": 86,
+      "parametros": [
+        {
+          "nome": "arquivo",
+          "tipo": "Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd",
+          "tipo": "sl.Connection",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "ler_metadados",
+          "tipo": "Callable",
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "database",
+          "tipo": null,
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": null,
+          "default": null,
+          "categoria": "somente_keyword"
+        }
+      ],
+      "retorno": "tuple[int, int]",
+      "decorators": [
+        "rastrear_funcao"
+      ],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.registrar_metrica",
+          "UTILS.ler_metadados"
+        ],
+        "chamadas": [
+          "ler_metadados",
+          "registrar_metrica"
+        ]
+      },
+      "codigo": "def rastrear_metados(\n                    arquivo: Path,\n                    bd: sl.Connection,\n                    st = None,\n                    *,\n                    ler_metadados: Callable,\n                    database,\n                    execucao_id,\n                ) -> tuple[int, int]:\n    y_meta, y_ind = ler_metadados(arquivo, bd, st)\n    registrar_metrica(\n                            database,\n                            execucao_id,\n                            \"arquivos_encontrados\",\n                            y_meta,\n                        )\n    registrar_metrica(\n                                database,\n                                execucao_id,\n                                \"arquivos_encontrados_com_indícios\",\n                                y_ind,\n                            )\n    return y_meta, y_ind"
+    },
+    "documentacao": {
+      "resumo": "Rastreia metadados de um arquivo e registra métricas no banco de dados.",
+      "descricao": "Esta função lê os metadados de um arquivo utilizando uma função fornecida, e então registra duas métricas no banco de dados: a quantidade total de arquivos encontrados e a quantidade de arquivos com índícios. Retorna essas duas quantidades como um par de inteiros.",
+      "parametros": [
+        {
+          "nome": "arquivo",
+          "tipo": "Path",
+          "categoria": "posicional",
+          "descricao": "Caminho para o arquivo que será analisado."
+        },
+        {
+          "nome": "bd",
+          "tipo": "sl.Connection",
+          "categoria": "posicional",
+          "descricao": "Conexão com o banco de dados onde as métricas serão registradas."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Parâmetro opcional que pode ser utilizado pela função `ler_metadados`."
+        },
+        {
+          "nome": "ler_metadados",
+          "tipo": "Callable",
+          "categoria": "somente_keyword",
+          "descricao": "Função que lê os metadados do arquivo e retorna dois valores: a quantidade de arquivos encontrados e a quantidade de arquivos com índícios."
+        },
+        {
+          "nome": "database",
+          "tipo": null,
+          "categoria": "somente_keyword",
+          "descricao": "Nome da base de dados onde as métricas serão registradas."
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": null,
+          "categoria": "somente_keyword",
+          "descricao": "ID da execução que está sendo monitorada."
+        }
+      ],
+      "retorno": {
+        "tipo": "tuple[int, int]",
+        "descricao": "Um par de inteiros representando a quantidade total de arquivos encontrados e a quantidade de arquivos com índícios."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.registrar_metrica",
+          "tipo": "função",
+          "categoria": "importada"
+        },
+        {
+          "nome": "UTILS.ler_metadados",
+          "tipo": "função",
+          "categoria": "importada"
+        }
+      ],
+      "docstring": "Rastreia metadados de um arquivo e registra métricas no banco de dados.\n\nArgs:\n    arquivo (Path): Caminho para o arquivo que será analisado.\n    bd (sl.Connection): Conexão com o banco de dados onde as métricas serão registradas.\n    st: Parâmetro opcional que pode ser utilizado pela função `ler_metadados`.\n    ler_metadados (Callable): Função que lê os metadados do arquivo e retorna dois valores: a quantidade de arquivos encontrados e a quantidade de arquivos com índícios.\n    database: Nome da base de dados onde as métricas serão registradas.\n    execucao_id: ID da execução que está sendo monitorada.\n\nReturns:\n    tuple[int, int]: Um par de inteiros representando a quantidade total de arquivos encontrados e a quantidade de arquivos com índícios."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "dados_fotos_inv",
+      "tipo": "function",
+      "linha_inicio": 88,
+      "linha_fim": 234,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "MANIFESTO.registrar_artefato",
+          "MANIFESTO.registrar_evento",
+          "RELATORIOS.imp_ck_list",
+          "UTILS.bsc_dados_reg",
+          "UTILS.existe_tabela",
+          "pandas",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "df.to_csv",
+          "df1.replace",
+          "df1.to_csv",
+          "encode",
+          "execucao_trilha",
+          "existe_tabela",
+          "fillna",
+          "imp_ck_list",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "pasta_fotos.is_dir",
+          "pd.read_sql",
+          "rastrear_metados",
+          "registrar_artefato",
+          "registrar_evento",
+          "sl.connect",
+          "st.button",
+          "st.column_config.TextColumn",
+          "st.columns",
+          "st.container",
+          "st.dataframe",
+          "st.divider",
+          "st.download_button",
+          "st.html",
+          "st.info",
+          "st.spinner",
+          "st.warning",
+          "str"
+        ]
+      },
+      "codigo": "def dados_fotos_inv():\n    if not 'tra_dir' in st.session_state:\n        st.html(\"\"\"\n                    <p>Você deve configurar o diretório de trabalho na aba \n                    <i>Criar Pasta de Trabalho</i>, barra lateral.</p>\n                \"\"\")\n        return\n    \n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    st.html(f\"<style>{css}</style>\")\n\n    caminho_manifesto = Path(local) / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n    caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n    inicializa_database(str(caminho_manifesto))\n    inicializa_detalhes(str(caminho_manifesto))\n    inicializar_rastreamento(str(caminho_manifesto))\n    database = str(caminho_manifesto)\n    pasta_fotos = Path(local) / \"IMAGENS_SUMARIO\"\n\n    bd = sl.connect(f'{local}\\BD_LOCAL\\{empresa}_{ano}.db')\n\n    col1a = st.columns([1,5,1], gap='small')\n    with col1a[1]:\n        st.html(f\"\"\"<h1>Painel para Análises de Metadados das Fotos de Inventário</h1><br><br>\n                    <p  style=\"text-align: justify;text-indent: 40px\">Desenvolvido para \n                    apoiar a análise de laudos técnicos por meio da leitura automatizada de metadados de \n                    imagens, especialmente data, hora e coordenadas de geolocalização. A partir das \n                    informações EXIF incorporadas nos arquivos fotográficos, é possível verificar se as \n                    fotos foram capturadas no local e período compatíveis com o objeto analisado, garantindo \n                    maior confiabilidade, rastreabilidade e adequação das evidências visuais utilizadas. \n                    Ao identificar automaticamente possíveis inconsistências temporais ou espaciais, o \n                    sistema contribui para a validação e integridade dos registros apresentados no laudo.\n                    Para reprocessar use o botão a seguir.\"\"\")\n        st.divider()\n        cols = st.columns([1,2,1,2,1], gap='small')\n        with cols[1]:\n            x = st.button(\"(Re)Fazer\", key=\"ANL_FOTOS_INV\")\n        with cols[3]:\n            x1 = st.button(\"Check List\", key=\"CHECKLIST_LAUDO\")\n        st.divider()\n        if x1:\n            with execucao_trilha(\n                                    db_path=database, script_nome=\"APOIO_ANL_LAUDO\",\n                                    parametros={\"empresa\": empresa, \"ano\": ano},\n                                ) as execucao_id:\n        \n                registrar_evento(database, execucao_id, \"GERACAO_ARQ_APOIO_LAUDO_INICIADO\",\n                                    mensagem=f\"Iniciando geração de arquivo de apoio para análise do Sumário Executivo\")\n                saida = imp_ck_list(f'{local}//RELATORIOS//checklist_sumario.xlsx', dados)\n                registrar_artefato(database, execucao_id, f'{local}//RELATORIOS//checklist_sumario.xlsx', \"SAIDA\")\n                registrar_evento(database, execucao_id, \"GERACAO_ARQ_APOIO_LAUDO_FINALIZADO\",\n                                mensagem=f\"Finalizado geração de arquivo de apoio para análise do Sumário Executivo\")\n            if saida == \"Falhou\":\n                st.warning(\"Geração do checklist falhou!\")\n\n            else:\n                st.info(f\"Executado com sucesso, arquivo na pasta {local}/RELATORIOS/checklist_sumario.xlsx.\")\n\n        if x:\n            \n            if not pasta_fotos.is_dir():\n                st.warning(\n                    f\"Diretório de imagens não encontrado: {pasta_fotos}\"\n                )\n            with st.spinner(\"Lendo metadados das fotos\"):\n                with execucao_trilha(\n                                        db_path=database, script_nome=\"Leitura_METADADOS_FOTOS\",\n                                        parametros={\"empresa\": empresa, \"ano\": ano},\n                                    ) as execucao_id:\n            \n                    registrar_evento(database, execucao_id, \"IMPORTACAO_LEITURA_METADADOS_FOTOS_INICIADO\",\n                                        mensagem=f\"Iniciando leitura de de metadados das fotos de inventário\")\n                    try:\n                        y1, y2 = rastrear_metados(\n                                                        pasta_fotos,\n                                                        bd,\n                                                        st,\n                                                        ler_metadados=ler_metadados,\n                                                        database=database,\n                                                        execucao_id=execucao_id,\n                                                    )\n                        registrar_evento(database, execucao_id, \"IMPORTACAO_LEITURA_METADADOS_FOTOS_FINALIZADO\",\n                                            mensagem=f\"Finalizado leitura de metadados das fotos de inventário\")\n                    except Exception as e:\n                        registrar_evento(database, execucao_id, \"ARQUIVO_REPROVADO\",\n                                            mensagem=f\"GERACAO ARQAPOIO METDADOS FALHOU\", nivel=\"ERRO\",\n                                            detalhes={\"erro\": f\"{e}\"})\n\n        if (existe_tabela('tbl_FOTOS', bd)):\n            cont1, _, cont2 = st.columns([15,1,15], gap = 'small')\n            with cont1:\n                with st.container(border=True):\n                    st.html(f\"\"\"<h3 style=\"text-align: center;\">Resumo Fotos Analisadas</h3><br>\n                                <p  style=\"text-align: justify;text-indent: 40px\">Resumo das fotos \n                                disponiveis na pasta {pasta_fotos} e que foram avaliadas.\"\"\")\n                    sSQL = \"SELECT * FROM tbl_FOTOS\"\n                    df = pd.read_sql(sSQL, bd)\n                    config = {\n                                \"arquivo\": st.column_config.TextColumn(\"Foto\"),\n                                \"latitude\": st.column_config.TextColumn(\"Latitude\"),\n                                \"longitude\": st.column_config.TextColumn(\"Longitude\"),\n                                \"lat_dms\": st.column_config.TextColumn(\"Latitude DMS\"),\n                                \"lon_dms\": st.column_config.TextColumn(\"Longitude DMS\"),\n                                \"data_original\": st.column_config.TextColumn(\"Data Original\"),\n                                \"data_digitizacao\": st.column_config.TextColumn(\"Data Digitalização\"),\n                                \"data_modificacao\": st.column_config.TextColumn(\"Data Modificação\"),\n                                \"software\": st.column_config.TextColumn(\"Software\")\n                            }\n                    st.dataframe(df, width='stretch', hide_index=True,  column_config=config)\n                    st.download_button(\n                                        \"Exportar em CSV\",\n                                        data=df.to_csv(index=False, sep=\"|\").encode(\"latin-1\"),\n                                        file_name=f\"fotos_metadados.csv\",\n                                        mime=\"text/csv\",\n                                        key=f\"fotos_exportar_dados\",\n                                        disabled=df.empty,\n                                      )\n            \n            if (existe_tabela('tbl_FOTOS_indicios', bd)):\n                with cont2:\n                    with st.container(border=True):\n                        st.html(f\"\"\"<h3 style=\"text-align: center;\">Resumo de Indícios</h3><br>\n                                    <p  style=\"text-align: justify;text-indent: 40px\">Resumo das fotos \n                                    disponiveis na pasta {pasta_fotos} e indícios.\"\"\")\n                        sSQL = \"SELECT * FROM tbl_FOTOS_indicios\"\n                        df1 = pd.read_sql(sSQL, bd)\n                        df1 = df1.replace(r'^\\s*$', \"ND\", regex=True).fillna(\"ND\")\n                        config = {\n                                    \"arquivo\": st.column_config.TextColumn(\"Foto\"),\n                                    \"indicio_1\": st.column_config.TextColumn(\"Indicio de datas\"),\n                                    \"indicio_2\": st.column_config.TextColumn(\"Indicio de Software\"),\n                                    \"indicio_3\": st.column_config.TextColumn(\"Indicio de Marca/Modelo\")\n                                }\n                        st.dataframe(df1, width='stretch', hide_index=True,  column_config=config)\n                        st.download_button(\n                                            \"Exportar em CSV\",\n                                            data=df1.to_csv(index=False, sep=\"|\").encode(\"latin-1\"),\n                                            file_name=f\"fotos_metadados_indicios.csv\",\n                                            mime=\"text/csv\",\n                                            key=f\"fotos_exportar_dados1\",\n                                            disabled=df.empty,\n                                            )\n        else:\n            st.warning(\"Sem fotos para analisar!\")"
+    },
+    "documentacao": {
+      "resumo": "Gera um painel para análise de metadados das fotos de inventário.",
+      "descricao": "A função verifica se o diretório de trabalho está configurado e, em seguida, inicializa uma série de operações relacionadas a dados, banco de dados e relatórios. Ela também cria botões para reprocessar e gerar um checklist, além de exibir resumos das fotos analisadas e indícios associados.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.execucao_trilha",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializa_database",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializa_detalhes",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializar_rastreamento",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.registrar_artefato",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.registrar_evento",
+          "tipo": "função"
+        },
+        {
+          "nome": "RELATORIOS.imp_ck_list",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.bsc_dados_reg",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.existe_tabela",
+          "tipo": "função"
+        },
+        {
+          "nome": "pandas",
+          "tipo": "biblioteca"
+        },
+        {
+          "nome": "pathlib.Path",
+          "tipo": "classe"
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": "biblioteca"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca"
+        }
+      ],
+      "docstring": "Gera um painel para análise de metadados das fotos de inventário.\n\nReturns:\n    None\n\nDependencies:\n    MANIFESTO.execucao_trilha: Função para gerenciar a execução de scripts.\n    MANIFESTO.inicializa_database: Inicializa o banco de dados.\n    MANIFESTO.inicializa_detalhes: Inicializa detalhes do processo.\n    MANIFESTO.inicializar_rastreamento: Inicializa rastreamento de eventos.\n    MANIFESTO.registrar_artefato: Registra artefatos no banco de dados.\n    MANIFESTO.registrar_evento: Registra eventos no banco de dados.\n    RELATORIOS.imp_ck_list: Gera um checklist.\n    UTILS.bsc_dados_reg: Retorna um estilo CSS.\n    UTILS.existe_tabela: Verifica a existência de uma tabela no banco de dados.\n    pandas: Biblioteca para manipulação de dados.\n    pathlib.Path: Classe para manipulação de caminhos de arquivo.\n    sqlite3: Biblioteca para interação com bancos de dados SQLite.\n    streamlit: Biblioteca para criação de interfaces web."
+    },
+    "status": "sucesso"
+  }
+]

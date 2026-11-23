@@ -1,0 +1,31 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,A1,Categoria do nível de tensão A1
+3,A2,Categoria do nível de tensão A2
+4,A3,Categoria do nível de tensão A3
+5,A3A,Categoria do nível de tensão A3a
+6,A4,Categoria do nível de tensão A4
+7,B,Categoria do nível de tensão B
+8,MED,Categoria de Medidores
+9,RAM,Categoria de Ramais
+10,REG,Categoria de Reguladores
+11,A1-A2,Categoria dos segmentos de transformação A1-A2
+12,A1-A3,Categoria dos segmentos de transformação A1-A3
+13,A1-A3A,Categoria dos segmentos de transformação A1-A3A
+14,A1-A4,Categoria dos segmentos de transformação A1-A4
+15,A2-A3,Categoria dos segmentos de transformação A2-A3
+16,A2-A3A,Categoria dos segmentos de transformação A2-A3a
+17,A2-A4,Categoria dos segmentos de transformação A2-A4
+18,A3-A3A,Categoria dos segmentos de transformação A3-A3a
+19,A3-A4,Categoria dos segmentos de transformação A3-A4
+20,A3A-A4,Categoria dos segmentos de transformação A3a-A4
+21,A3A-B,Categoria dos segmentos de transformação A3a-B
+22,A4-A4,Categoria dos segmentos de transformação A4-A4
+23,A4-B,Categoria dos segmentos de transformação A4-B
+24,A3-A2,Categoria dos segmentos de transformação A3-A2
+25,A3A-A2,Categoria dos segmentos de transformação A3a-A2
+26,A4-A2,Categoria dos segmentos de transformação A4-A2
+27,A4-A3,Categoria dos segmentos de transformação A4-A3
+28,A4-A3A,Categoria dos segmentos de transformação A4-A3a
+29,B-A3A,Categoria dos segmentos de transformação B-A3a
+30,B-A4,Categoria dos segmentos de transformação B-A4

@@ -1,0 +1,5 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,AT,Alta Tensão
+3,MT,Média Tensão
+4,BT,Baixa Tensão

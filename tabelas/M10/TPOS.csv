@@ -1,0 +1,10 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,PD,Próprio distribuidor
+3,OD,Outro distribuidor
+4,T,Transmissor
+5,G,Gerador
+6,CS,Consumidor
+7,CO,Cooperativa
+8,A,Autorizado
+9,O,Outro agente

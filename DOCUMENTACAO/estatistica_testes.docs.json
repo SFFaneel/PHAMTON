@@ -1,0 +1,2412 @@
+[
+  {
+    "funcao": {
+      "nome": "TCCU",
+      "tipo": "function",
+      "linha_inicio": 19,
+      "linha_fim": 180,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.sqlfnc",
+          "decoradores.monitor_completo",
+          "numpy",
+          "pandas",
+          "sklearn.ensemble.IsolationForest",
+          "sklearn.preprocessing.RobustScaler",
+          "sqlite3"
+        ],
+        "chamadas": [
+          "IsolationForest",
+          "RobustScaler",
+          "UC_TI",
+          "any",
+          "apply",
+          "calc_z",
+          "copy",
+          "df_FILTRO.copy",
+          "df_ordenado.to_csv",
+          "df_ordenado.to_sql",
+          "df_sai.apply",
+          "df_sai.sort_values",
+          "df_ti.apply",
+          "fillna",
+          "isinstance",
+          "iso.fit_predict",
+          "join",
+          "len",
+          "map",
+          "median",
+          "monitor_completo",
+          "np.abs",
+          "np.where",
+          "np.zeros_like",
+          "pd.DataFrame",
+          "pd.concat",
+          "reset_index",
+          "s.median",
+          "s.quantile",
+          "scaler.fit_transform",
+          "set",
+          "sl.connect",
+          "sorted",
+          "sql.imp_tbl_forma_001",
+          "str",
+          "to_dict",
+          "tuple",
+          "value_counts"
+        ]
+      },
+      "codigo": "def TCCU(st=None):\n    if st == None:\n        return \"Falhou\"\n    \n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n\n    bd = sl.connect(f'{local}\\BD_LOCAL\\{empresa}_{ano}.db')\n\n    SQLq = f\"\"\"\n                SELECT\n                    Cd_ODI,\n                    Cd_SubODI,\n                    Nr_TI,\n                    Nr_TUC,\n                    Nr_A1, Nr_A2, Nr_A3, Nr_A4, Nr_A5, Nr_A6, COD_ITEM,\n\n                    CASE \n                        WHEN Qtd_AIS = '' THEN 0 \n                        ELSE CAST(Qtd_AIS AS REAL)\n                    END AS Qtd,\n\n                    CASE \n                        WHEN VL_VOC = '' THEN 0 \n                        ELSE CAST(VL_VOC AS REAL)\n                    END AS VL_VOC,\n                    CAST(VL_VOC_VF_AVAL AS REAL) AS VL_VOC_VF_AVAL,\n                    CAST(VL_VOC_COM_AVAL AS REAL) AS VL_VOC_COM_AVAL,\n                    CAST(VL_VOC_CA_AVAL AS REAL) AS VL_VOC_CA_AVAL,\n                    CAST(VL_VOC_JOA_AVAL AS REAL) AS VL_VOC_JOA_AVAL\n                FROM INCR WHERE FLG_ELIG = 1 AND Cd_CONC = 1 AND (FLG_OAT = 0 OR Cd_TP_AVAL = 2) AND Dt_ARQ = ?\n\n            \"\"\"\n\n    df_cu = sql.imp_tbl_forma_001(\"INCR\", SQLq, bd, st, empresa)\n    \n    df_cu['CM_UC'] = np.where(\n                                    df_cu['Qtd'] != 0,\n                                    df_cu['VL_VOC_VF_AVAL'] / df_cu['Qtd'],\n                                    df_cu['VL_VOC_VF_AVAL']\n                              )\n    df_cu['CM_COM'] = np.where(\n                                    df_cu['Qtd'] != 0,\n                                    df_cu['VL_VOC_COM_AVAL'] / df_cu['Qtd'],\n                                    df_cu['VL_VOC_COM_AVAL']\n                              )\n    df_cu['CM_CA'] = np.where(\n                                    df_cu['Qtd'] != 0,\n                                    df_cu['VL_VOC_CA_AVAL'] / df_cu['Qtd'],\n                                    df_cu['VL_VOC_CA_AVAL']\n                              )\n    df_cu['CM_JOA'] = np.where(\n                                    df_cu['Qtd'] != 0,\n                                    df_cu['VL_VOC_JOA_AVAL'] / df_cu['Qtd'],\n                                    df_cu['VL_VOC_JOA_AVAL']\n                              )\n\n    def calc_iqr_limiar(s):\n        Q1 = s.quantile(0.25)\n        Q3 = s.quantile(0.75)\n        IQR = Q3 - Q1\n        lower = Q1 - 1.5 * IQR\n        upper = Q3 + 1.5 * IQR\n        return lower, upper\n    \n    def calc_percentil_limiar(s, lower_q=0.05, upper_q=0.95):\n        lower = s.quantile(lower_q)\n        upper = s.quantile(upper_q)\n        return lower, upper\n\n    def calc_z(s):\n        med = s.median()\n        MAD = (np.abs(s - med)).median()\n        rob_z = (s - med) / (1.4826 * MAD) if MAD != 0 else np.zeros_like(s)\n        return rob_z\n\n    def UC_TI(df, Nr_TI):\n        df_ti = df[df['Nr_TI'] == Nr_TI].copy()\n        if df_ti.empty:\n            return []\n\n        df_ti['UC_Tupla'] = df_ti.apply(\n                                            lambda row: tuple(\n                                                row[['Nr_TUC','Nr_A1','Nr_A2','Nr_A3','Nr_A4','Nr_A5','Nr_A6','COD_ITEM']]\n                                            ),\n                                            axis=1\n                                       )\n\n        contagens = df_ti['UC_Tupla'].value_counts().to_dict()\n        df_ti['Qtd_UC'] = df_ti['UC_Tupla'].map(contagens)\n        return df_ti\n\n    cols_cu = ['CM_UC', 'CM_COM', 'CM_CA', 'CM_JOA', 'Qtd']\n    df_cu[cols_cu] = df_cu[cols_cu].fillna(0)\n    LST_TI = ['40','41','93','96']\n\n\n    df_sai = pd.DataFrame()\n    for Nr_TI in LST_TI:\n        Grp_UC = UC_TI(df_cu, Nr_TI) \n        if len(Grp_UC)==0:\n            continue  \n         \n        Grp_UCanl = Grp_UC[Grp_UC['Qtd_UC'] > 5].copy()\n        tuplas_unicas = sorted(set(Grp_UCanl['UC_Tupla']))\n        for comb in tuplas_unicas:\n            df_FILTRO = Grp_UCanl[Grp_UCanl['UC_Tupla'] == comb].copy()\n            scaler = RobustScaler()\n            X = scaler.fit_transform(df_FILTRO[cols_cu])\n\n            iso = IsolationForest(\n                                    contamination=0.01, \n                                    n_estimators=200,\n                                    random_state=42\n                                )\n            df_FILTRO['FLG_MV_OUT'] = (iso.fit_predict(X) == -1)\n            texto = \"\"\"Esse registro é estatisticamente diferente do padrão geral, dada a tipologia, tucagem e não ser atípica.\n            Recomendamos revisar o registro analítico no ERP. Exemplo: o custo da UC está incorretamente classificado, ou foi \n            lançado em TI diferente; os custos de CA, COM estão inflando indevidamente certas obras; o \n            custo elevado ou muito baixo tem justificativa técnica (ex.: obra em terreno difícil, tecnologia diferente, \n            reaproveitamento de materiais; item muito antigo no estoque etc).\n            \"\"\"\n            df_FILTRO['ANOMALIA'] = np.where(df_FILTRO['FLG_MV_OUT'], texto, 'NO')\n            for col in cols_cu:\n                df_FILTRO[f'{col}_Zr'] = calc_z(df_FILTRO[col])\n                df_FILTRO[f'{col}_Zr_OUT'] = np.abs(df_FILTRO[f'{col}_Zr']) > 3.5\n\n            df_FILTRO['FLG_UV_OUT'] = df_FILTRO[[f'{c}_Zr_OUT' for c in cols_cu]].any(axis=1)\n\n            if len(df_sai):\n                df_sai = pd.concat([df_sai, df_FILTRO], ignore_index=True)\n            else:\n                df_sai = df_FILTRO.copy()  \n\n    def texto_severidade(nivel):\n        if nivel == 3:\n            return \"Outlier Forte (Alta prioridade): valor extremo e estrutura multivariada atípica.\"\n        elif nivel == 2:\n            return \"Outlier Multivariado (Média prioridade): combinação rara sem valor individual extremo.\"\n        elif nivel == 1:\n            return \"Outlier Univariado (Baixa prioridade): valor individual extremo sem estrutura atípica.\"\n        else:\n            return \"Normal (Sem ação).\"\n    def calc_severidade(row):\n        if row['FLG_UV_OUT'] and row['FLG_MV_OUT']:\n            return 3\n        elif row['FLG_MV_OUT']:\n            return 2\n        elif row['FLG_UV_OUT']:\n            return 1\n        else:\n            return 0\n\n    df_sai['SEVERIDADE'] = df_sai.apply(calc_severidade, axis=1)\n    df_sai['SEVERIDADE_TEXTO'] = df_sai['SEVERIDADE'].apply(texto_severidade)\n    df_ordenado = df_sai.sort_values('ANOMALIA').reset_index(drop=True)\n    saida = f\"{local}\\\\AIS_ANLS\\\\ANL_ANOMALIAS_CMU.csv\"\n    df_ordenado.to_csv(saida, sep='|', index=False, decimal=',')\n    df_ordenado['UC_Tupla'] = df_ordenado['UC_Tupla'].apply(lambda x: '|'.join(map(str, x)) if isinstance(x, tuple) else str(x))\n    df_ordenado.to_sql('tbl_anomalias_cmu', bd, if_exists='replace', index=False)\n    return \"OK\""
+    },
+    "documentacao": {
+      "resumo": "Realiza o processamento de dados para identificar anomalias em uma base de dados SQLite.",
+      "descricao": "A função TCCU realiza um processo complexo de análise de dados, incluindo a leitura de uma tabela SQLite, cálculos estatísticos e aplicação de algoritmos de detecção de anomalias. O resultado é salvo em um arquivo CSV e uma tabela SQL.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "descricao": "Objeto do Streamlit, utilizado para acessar o estado da sessão."
+        }
+      ],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "Mensagem indicando sucesso ou falha no processamento."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "UTILS.sqlfnc",
+        "decoradores.monitor_completo",
+        "numpy",
+        "pandas",
+        "sklearn.ensemble.IsolationForest",
+        "sklearn.preprocessing.RobustScaler",
+        "sqlite3"
+      ],
+      "docstring": "Realiza o processamento de dados para identificar anomalias em uma base de dados SQLite.\n\nArgs:\n    st (objeto): Objeto do Streamlit, utilizado para acessar o estado da sessão.\n\nReturns:\n    str: Mensagem indicando sucesso ou falha no processamento."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "banda_otima",
+      "tipo": "function",
+      "linha_inicio": 183,
+      "linha_fim": 229,
+      "parametros": [
+        {
+          "nome": "X",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "cv",
+          "tipo": null,
+          "default": "3",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "seed",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "decoradores.monitor_completo",
+          "numpy",
+          "sklearn.model_selection.GridSearchCV",
+          "sklearn.neighbors.KernelDensity"
+        ],
+        "chamadas": [
+          "GridSearchCV",
+          "KernelDensity",
+          "ValueError",
+          "X.reshape",
+          "all",
+          "grid.fit",
+          "grid_refino.fit",
+          "len",
+          "max",
+          "mean",
+          "monitor_completo",
+          "np.asarray",
+          "np.isfinite",
+          "np.linspace",
+          "np.random.choice",
+          "np.random.seed",
+          "np.std"
+        ]
+      },
+      "codigo": "def banda_otima(X, cv=3, seed=None):\n    X = np.asarray(X, dtype=float)\n    if X.ndim == 1:\n        X = X.reshape(-1, 1)\n    mask = np.isfinite(X).all(axis=1)\n    X = X[mask]\n    if len(X) == 0:\n        raise ValueError(\"X ficou vazio após remover NaN/inf.\")\n    if seed is not None:\n        np.random.seed(seed)\n\n    n, d = X.shape\n    std = np.std(X, axis=0).mean()\n\n    h_silverman = 1.06 * std * n ** (-1 / (d + 4))\n\n    if len(X) > 1000:\n        idx = np.random.choice(len(X), 1000, replace=False)\n        X_sub = X[idx]\n    else:\n        X_sub = X\n\n    h_min = max(h_silverman * 0.3, 1e-3)\n    h_max = h_silverman * 3\n    grid_vals = np.linspace(h_min, h_max, 10)\n\n    grid = GridSearchCV(\n                            KernelDensity(kernel='gaussian'),\n                            {'bandwidth': grid_vals},\n                            cv=cv,\n                            n_jobs=-1\n                        )\n    grid.fit(X_sub)\n    h_best = grid.best_estimator_.bandwidth\n\n\n    h_refino = np.linspace(h_best * 0.8, h_best * 1.2, 6)\n    grid_refino = GridSearchCV(\n                                    KernelDensity(kernel='gaussian'),\n                                    {'bandwidth': h_refino},\n                                    cv=cv,\n                                    n_jobs=-1\n                                )\n    grid_refino.fit(X_sub)\n    h_otimo = grid_refino.best_estimator_.bandwidth\n\n    return h_otimo"
+    },
+    "documentacao": {
+      "resumo": "Determina a largura de banda ótima para uma distribuição de dados usando o método de seleção de hiperparâmetros.",
+      "descricao": "A função utiliza um processo iterativo para encontrar a largura de banda ótima (bandwidth) para estimar a densidade de probabilidade de um conjunto de dados. Inicia com uma seleção inicial de hiperparâmetros usando o método de Silverman e refina essa seleção em uma segunda etapa.",
+      "parametros": [
+        {
+          "nome": "X",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Conjunto de dados para o qual será determinada a largura de banda ótima."
+        },
+        {
+          "nome": "cv",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "3",
+          "descricao": "Número de folds para validação cruzada no processo de seleção de hiperparâmetros."
+        },
+        {
+          "nome": "seed",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Semente para o gerador de números aleatórios, usada para reproduzibilidade dos resultados."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Largura de banda ótima determinada para a distribuição dos dados fornecidos."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o conjunto de dados resulta em uma lista vazia após remover valores NaN ou infinitos."
+        }
+      ],
+      "dependencias": [
+        "decoradores.monitor_completo",
+        "numpy",
+        "sklearn.model_selection.GridSearchCV",
+        "sklearn.neighbors.KernelDensity"
+      ],
+      "docstring": "Determina a largura de banda ótima para uma distribuição de dados usando o método de seleção de hiperparâmetros.\n\nArgs:\n    X: Conjunto de dados para o qual será determinada a largura de banda ótima.\n    cv: Número de folds para validação cruzada no processo de seleção de hiperparâmetros. Default é 3.\n    seed: Semente para o gerador de números aleatórios, usada para reproduzibilidade dos resultados. Default é None.\n\nReturns:\n    Largura de banda ótima determinada para a distribuição dos dados fornecidos.\n\nRaises:\n    ValueError: Quando o conjunto de dados resulta em uma lista vazia após remover valores NaN ou infinitos."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "TCKdEa1a6",
+      "tipo": "function",
+      "linha_inicio": 232,
+      "linha_fim": 347,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.registrar_artefato",
+          "decoradores.monitor_completo",
+          "numpy",
+          "pandas",
+          "sklearn.neighbors.KernelDensity",
+          "sklearn.preprocessing.StandardScaler",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "KernelDensity",
+          "StandardScaler",
+          "ValueError",
+          "X_df.to_numpy",
+          "a.empty",
+          "a.progress",
+          "all",
+          "apply",
+          "banda_otima",
+          "copy",
+          "df_anls.to_csv",
+          "df_anls.to_sql",
+          "enumerate",
+          "fit",
+          "int",
+          "kde.score_samples",
+          "len",
+          "min",
+          "monitor_completo",
+          "np.isfinite",
+          "np.percentile",
+          "np.random.choice",
+          "pd.DataFrame",
+          "pd.Series",
+          "pd.concat",
+          "pd.read_sql_query",
+          "registrar_artefato",
+          "scaler.fit_transform",
+          "sl.connect",
+          "st.progress"
+        ]
+      },
+      "codigo": "def TCKdEa1a6(st=None):\n    if st == None:\n        return \"Falhou\"\n    \n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n\n    bd = sl.connect(f'{local}\\BD_LOCAL\\{empresa}_{ano}.db')\n\n    query = \"\"\"\n    WITH base AS (\n                    SELECT Ide_RO_Analitico, Nr_TI, Nr_TUC,\n                           Nr_A1, Nr_A2, Nr_A3, Nr_A4, Nr_A5, Nr_A6\n                    FROM ROA WHERE Cd_NG = 1\n                )\n                SELECT * FROM base;\n    \"\"\"\n\n    df_atr = pd.read_sql_query(query, bd)\n    df_anls = pd.DataFrame()\n\n    grupos = [\n        {'filtro': (df_atr['Nr_TUC'] == '565'), 'nome': 'Transformador de Distribuição'},\n        {'filtro': (df_atr['Nr_TUC'] == '255') & (df_atr['Nr_A1'] == '1'), 'nome': 'Poste'},\n        {'filtro': (df_atr['Nr_TUC'] == '255') & (df_atr['Nr_A1'] == '2'), 'nome': 'Torre'},\n        {'filtro': (df_atr['Nr_TUC'] == '295') & (df_atr['Nr_A1'] == '1'), 'nome': 'Medidor Eletromecânico'},\n        {'filtro': (df_atr['Nr_TUC'] == '295') & (df_atr['Nr_A1'] == '11'), 'nome': 'Medidor Eletronico'},\n        {'filtro': (df_atr['Nr_TUC'] == '125') & (df_atr['Nr_A1'] == '1'),  'nome': 'Banco de Capacitor Parelelo'},\n        {'filtro': (df_atr['Nr_TUC'] == '125') & (df_atr['Nr_A1'] == '2'), 'nome': 'Banco de Capacitor Parelelo'},\n        {'filtro': (df_atr['Nr_TUC'] == '160'),  'nome': 'Chave'},\n        {'filtro': (df_atr['Nr_TUC'] == '190') & (df_atr['Nr_A1'] == '1'),  'nome': 'Condutor (>=69kV)'},\n        {'filtro': (df_atr['Nr_TUC'] == '190') & (df_atr['Nr_A1'] == '2'),  'nome': 'Condutor (<69kV)'},\n        {'filtro': (df_atr['Nr_TUC'] == '190') & (df_atr['Nr_A1'] == '3'),  'nome': 'Cadeia de Isoladores'},\n        {'filtro': (df_atr['Nr_TUC'] == '210') & (df_atr['Nr_A1'] == '1'),  'nome': 'Disjuntor (>=69kV)'},\n        {'filtro': (df_atr['Nr_TUC'] == '210') & (df_atr['Nr_A1'] == '2'),  'nome': 'Disjuntor (<69kV)'},\n        {'filtro': (df_atr['Nr_TUC'] == '210') & (df_atr['Nr_A1'] == '3'),  'nome': 'Disjuntor (SF6)'},\n        {'filtro': (df_atr['Nr_TUC'] == '310') & (df_atr['Nr_A1'] == '1'),  'nome': 'Para-raios'},\n        {'filtro': (df_atr['Nr_TUC'] == '340') & (df_atr['Nr_A1'] == '1'),  'nome': 'Regulador'},\n        {'filtro': (df_atr['Nr_TUC'] == '345') & (df_atr['Nr_A1'] == '1'),  'nome': 'Religador'},\n        {'filtro': (df_atr['Nr_TUC'] == '575') & (df_atr['Nr_A1'] == '1'),  'nome': 'TC'},\n        {'filtro': (df_atr['Nr_TUC'] == '575') & (df_atr['Nr_A1'] == '2'),  'nome': 'TC'},\n    ]\n\n    a = st.progress(0, \"Iniciando\")\n    total = len(grupos)\n\n    for i, grupo in enumerate(grupos):\n        a.progress(\n                        int((i + 1) / total * 100),\n                        f\"Iniciado grupo {grupo['nome']} ({i + 1}/{total})\"\n                    )\n\n        df_prov = df_atr[grupo['filtro']].copy()\n        if df_prov.empty:\n            continue\n\n        cols_kde = ['Nr_A1', 'Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A5', 'Nr_A6']\n\n        X_df = df_prov[cols_kde].apply(pd.to_numeric, errors='coerce')\n        X_np = X_df.to_numpy(dtype=float)\n\n        mask_valid = np.isfinite(X_np).all(axis=1)\n        X_valid = X_np[mask_valid]\n        df_prov['score_kde'] = np.nan\n        df_prov['anomalia'] = 'NO'\n\n        if len(X_valid) > 3:\n            scaler = StandardScaler()\n            X_scaled = scaler.fit_transform(X_valid)\n\n            h_otimo = banda_otima(X_scaled, cv=3)\n\n            idx = np.random.choice(\n                                        len(X_scaled),\n                                        size=min(1000, len(X_scaled)),\n                                        replace=False\n                                    )\n            X_fit = X_scaled[idx]\n\n            if len(X_fit) == 0:\n                raise ValueError(\"Não há observações válidas após a amostragem para ajuste do KDE.\")\n\n            kde = KernelDensity(kernel='gaussian', bandwidth=h_otimo).fit(X_fit)\n            scores_valid = kde.score_samples(X_scaled)\n            score_series = pd.Series(np.nan, index=df_prov.index, dtype=float)\n            score_series.loc[mask_valid] = scores_valid\n\n            df_prov['score_kde'] = score_series\n\n            limiar = np.percentile(scores_valid, 1)\n            mask_anom = df_prov['score_kde'] < limiar\n            df_prov.loc[mask_anom, 'anomalia'] = (\n                                                    f\"{grupo['nome']}: valor de atributos com combinação rara.\"\n                                                 )\n\n        df_anom = df_prov[df_prov['anomalia'] != 'NO']\n        if not df_anom.empty:\n            df_anls = pd.concat([df_anls, df_anom], ignore_index=True)\n\n        a.progress(\n                        int((i + 1) / total * 100),\n                        f\"Concluído grupo {grupo['nome']} ({i + 1}/{total})\"\n                    )\n\n    saida = f\"{local}\\\\AIS_ANLS\\\\ANL_ANOMALIAS_ATRIBUTOS_A1A6.csv\"\n    df_anls.to_csv(saida, sep='|', index=False, decimal=',')\n    df_anls.to_sql('tbl_atributos_anomalos_A1A6', bd, if_exists='replace', index=False)\n    if st:\n        registrar_artefato(st.session_state.database_MAN, \n                            st.session_state.execucao_id, \n                            file_path = rf\"{local}\\\\AIS_ANLS\\\\ANL_ANOMALIAS_ATRIBUTOS_A1A6.csv\",\n                            tipo_artefato = \"SAIDA\", \n                            calcular_hash = True)\n        a.empty()\n    return \"OK\""
+    },
+    "documentacao": {
+      "resumo": "Realiza a detecção de anomalias em atributos específicos de um banco de dados SQLite.",
+      "descricao": "A função processa os dados armazenados em um banco de dados SQLite, identificando anomalias com base em uma análise KDE (Kernel Density Estimation). Os grupos de interesse são definidos por filtros específicos e a detecção de anomalias é realizada para cada grupo. Os resultados são salvos em um arquivo CSV e no banco de dados.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit, usado para interação com a interface do usuário."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Mensagem indicando o sucesso ou falha da operação."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando não há observações válidas após a amostragem para ajuste do KDE."
+        }
+      ],
+      "dependencias": [
+        "MANIFESTO.registrar_artefato",
+        "decoradores.monitor_completo",
+        "numpy",
+        "pandas",
+        "sklearn.neighbors.KernelDensity",
+        "sklearn.preprocessing.StandardScaler",
+        "sqlite3",
+        "streamlit"
+      ],
+      "docstring": "Realiza a detecção de anomalias em atributos específicos de um banco de dados SQLite.\n\nArgs:\n    st (objeto Streamlit): Objeto usado para interação com a interface do usuário.\n\nReturns:\n    str: Mensagem indicando o sucesso ou falha da operação.\n\nRaises:\n    ValueError: Quando não há observações válidas após a amostragem para ajuste do KDE."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "TCKdE",
+      "tipo": "function",
+      "linha_inicio": 350,
+      "linha_fim": 454,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.registrar_artefato",
+          "decoradores.monitor_completo",
+          "numpy",
+          "pandas",
+          "sklearn.neighbors.KernelDensity",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "KernelDensity",
+          "ValueError",
+          "X.reshape",
+          "X_fit.reshape",
+          "a.empty",
+          "a.progress",
+          "all",
+          "astype",
+          "banda_otima",
+          "copy",
+          "df_anls.to_csv",
+          "df_anls.to_sql",
+          "enumerate",
+          "fit",
+          "int",
+          "kde.score_samples",
+          "len",
+          "min",
+          "monitor_completo",
+          "np.asarray",
+          "np.full",
+          "np.isfinite",
+          "np.percentile",
+          "np.random.choice",
+          "np.where",
+          "pd.DataFrame",
+          "pd.concat",
+          "pd.read_sql_query",
+          "registrar_artefato",
+          "sl.connect",
+          "st.progress"
+        ]
+      },
+      "codigo": "def TCKdE(st=None):\n    if st == None:\n        return \"Falhou\"\n    \n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n\n    bd = sl.connect(f'{local}\\BD_LOCAL\\{empresa}_{ano}.db')\n\n    query = \"\"\"\n    WITH base AS (\n                    SELECT Ide_RO_Analitico, Nr_TI, Nr_TUC,\n                           Nr_A1, Nr_A2, Nr_A3, Nr_A4, Nr_A5, Nr_A6\n                    FROM ROA WHERE Cd_NG = 1\n                )\n                SELECT * FROM base;\n    \"\"\"\n\n    df_atr = pd.read_sql_query(query, bd)\n\n    df_anls = pd.DataFrame()\n\n    # Define os grupos e atributos a analisar\n    grupos = [\n        {'filtro': (df_atr['Nr_TUC'] == '565'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4'], 'nome': 'Transformador de Distribuição'},\n        {'filtro': (df_atr['Nr_TUC'] == '255') & (df_atr['Nr_A1'] == '1'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A5'], 'nome': 'Poste'},\n        {'filtro': (df_atr['Nr_TUC'] == '255') & (df_atr['Nr_A1'] == '2'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A5'], 'nome': 'Torre'},\n        {'filtro': (df_atr['Nr_TUC'] == '295') & (df_atr['Nr_A1'] == '1'), 'atributos': ['Nr_A2', 'Nr_A3'], 'nome': 'Medidor Eletromecânico'},\n        {'filtro': (df_atr['Nr_TUC'] == '295') & (df_atr['Nr_A1'] == '11'), 'atributos': ['Nr_A2', 'Nr_A3'], 'nome': 'Medidor Eletronico'},\n        {'filtro': (df_atr['Nr_TUC'] == '125') & (df_atr['Nr_A1'] == '1'), 'atributos': ['Nr_A2', 'Nr_A4'], 'nome': 'Banco de Capacitor Parelelo'},\n        {'filtro': (df_atr['Nr_TUC'] == '125') & (df_atr['Nr_A1'] == '2'), 'atributos': ['Nr_A2', 'Nr_A4'], 'nome': 'Banco de Capacitor Parelelo'},\n        {'filtro': (df_atr['Nr_TUC'] == '160'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A6'], 'nome': 'Chave'},\n        {'filtro': (df_atr['Nr_TUC'] == '190') & (df_atr['Nr_A1'] == '1'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A5'], 'nome': 'Condutor (>=69kV)'},\n        {'filtro': (df_atr['Nr_TUC'] == '190') & (df_atr['Nr_A1'] == '2'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A5'], 'nome': 'Condutor (<69kV)'},\n        {'filtro': (df_atr['Nr_TUC'] == '210') & (df_atr['Nr_A1'] == '1'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A6'], 'nome': 'Disjuntor (>=69kV)'},\n        {'filtro': (df_atr['Nr_TUC'] == '210') & (df_atr['Nr_A1'] == '2'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A6'], 'nome': 'Disjuntor (<69kV)'},\n        {'filtro': (df_atr['Nr_TUC'] == '210') & (df_atr['Nr_A1'] == '3'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A6'], 'nome': 'Disjuntor (SF6)'},\n        {'filtro': (df_atr['Nr_TUC'] == '310') & (df_atr['Nr_A1'] == '1'), 'atributos': ['Nr_A2'], 'nome': 'Para-raios'},\n        {'filtro': (df_atr['Nr_TUC'] == '340') & (df_atr['Nr_A1'] == '1'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A5'], 'nome': 'Regulador'},\n        {'filtro': (df_atr['Nr_TUC'] == '345') & (df_atr['Nr_A1'] == '1'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A6'], 'nome': 'Religador'},\n        {'filtro': (df_atr['Nr_TUC'] == '575') & (df_atr['Nr_A1'] == '1'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A5'], 'nome': 'TC'},\n        {'filtro': (df_atr['Nr_TUC'] == '575') & (df_atr['Nr_A1'] == '2'), 'atributos': ['Nr_A2', 'Nr_A3', 'Nr_A4', 'Nr_A5'], 'nome': 'TC'},\n    ]\n\n    a = st.progress(0,\"Iniciando\")\n    total = len(grupos)\n    for i, grupo in enumerate(grupos):\n        a.progress(int((i + 1) / total * 100),\n                   f\"Iniciado grupo {grupo['nome']} ({i + 1}/{total})\")\n        df_prov = df_atr[grupo['filtro']].copy()\n        if df_prov.empty:\n            continue\n        for cmp in grupo['atributos']:\n            X = df_prov[[cmp]].astype(float).values  # garante tipo numérico\n            if len(X)>3:\n                X = np.asarray(X, dtype=float)\n                if X.ndim == 1:\n                    X = X.reshape(-1, 1)\n                mask_valid = np.isfinite(X).all(axis=1)\n                X_valid = X[mask_valid]\n                if len(X_valid) == 0:\n                    raise ValueError(\"Não há observações válidas em X após remover NaN/inf.\")\n\n                h_otimo = banda_otima(X, cv=3)\n                idx = np.random.choice(len(X), size=min(2000, len(X)), replace=False)\n                X_fit = np.asarray(X[idx], dtype=float)\n\n                if X_fit.ndim == 1:\n                    X_fit = X_fit[np.isfinite(X_fit)]\n                    X_fit = X_fit.reshape(-1, 1)\n                else:\n                    X_fit = X_fit[np.isfinite(X_fit).all(axis=1)]\n\n                if len(X_fit) == 0:\n                    raise ValueError(\"Não há observações válidas após remover NaN/inf de X[idx].\")\n                \n                kde = KernelDensity(kernel='gaussian', bandwidth=h_otimo).fit(X_fit)\n                scores = np.full(X.shape[0], np.nan)\n                scores[mask_valid] = kde.score_samples(X_valid)\n\n                df_prov['score_kde'] = scores\n\n                limiar = np.percentile(scores, 1)\n                df_prov['anomalia'] = np.where(scores < limiar, f'{grupo[\"nome\"]}: valor de {cmp} anômalo', 'NO')\n\n                df_anom = df_prov[df_prov['anomalia'] != 'NO']\n                if not df_anom.empty:\n                    df_anls = pd.concat([df_anls, df_anom], ignore_index=True)\n            else:\n                continue\n        a.progress(int((i + 1) / total * 100),\n                   f\"Concluído grupo {grupo['nome']} ({i + 1}/{total})\")\n\n    saida = f\"{local}\\\\AIS_ANLS\\\\ANL_ANOMALIAS_ATRIBUTOS.csv\"\n    df_anls.to_csv(saida, sep='|', index=False, decimal=',')\n    df_anls.to_sql('tbl_atributos_anomalos', bd, if_exists='replace', index=False)\n    if st:\n        registrar_artefato(st.session_state.database_MAN, \n                            st.session_state.execucao_id, \n                            file_path = rf\"{local}\\\\AIS_ANLS\\\\ANL_ANOMALIAS_ATRIBUTOS.csv\",\n                            tipo_artefato = \"SAIDA\", \n                            calcular_hash = True)\n        a.empty()\n    return \"OK\""
+    },
+    "documentacao": {
+      "resumo": "Realiza a detecção de anomalias em atributos específicos de um banco de dados SQLite.",
+      "descricao": "A função `TCKdE` lê dados de um banco de dados SQLite, aplica filtros e detecta anomalias em vários grupos de atributos. Os resultados são salvos em um arquivo CSV e no banco de dados SQLite.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para interação com a interface do usuário."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Mensagem indicando o sucesso ou falha da operação."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando não há observações válidas em X após remover NaN/inf."
+        }
+      ],
+      "dependencias": [
+        "MANIFESTO.registrar_artefato",
+        "decoradores.monitor_completo",
+        "numpy",
+        "pandas",
+        "sklearn.neighbors.KernelDensity",
+        "sqlite3",
+        "streamlit"
+      ],
+      "docstring": "Realiza a detecção de anomalias em atributos específicos de um banco de dados SQLite.\n\nArgs:\n    st (objeto Streamlit): Objeto para interação com a interface do usuário.\n\nReturns:\n    str: Mensagem indicando o sucesso ou falha da operação.\n\nRaises:\n    ValueError: Quando não há observações válidas em X após remover NaN/inf."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_auto_banda_silverman",
+      "tipo": "function",
+      "linha_inicio": 457,
+      "linha_fim": 465,
+      "parametros": [
+        {
+          "nome": "y",
+          "tipo": "np.ndarray",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "float",
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "decoradores.monitor_completo",
+          "numpy"
+        ],
+        "chamadas": [
+          "float",
+          "len",
+          "max",
+          "min",
+          "monitor_completo",
+          "np.asarray",
+          "np.percentile",
+          "np.std",
+          "np.subtract",
+          "ravel"
+        ]
+      },
+      "codigo": "def _auto_banda_silverman(y: np.ndarray) -> float:\n    y = np.asarray(y).ravel()\n    n = len(y)\n    if n < 2:\n        return 0.1\n    sigma = np.std(y, ddof=1)\n    iqr = np.subtract(*np.percentile(y, [75, 25]))\n    h = 0.9 * min(sigma, iqr / 1.34) * n ** (-1/5)\n    return max(float(h), 1e-3)"
+    },
+    "documentacao": {
+      "resumo": "Calcula a largura de banda de Silverman para uma amostra unidimensional.",
+      "descricao": "Estima a largura de banda de Silverman, que é usada em estatística não paramétrica para estimar funções densidade de probabilidade. A função retorna um valor mínimo de 1e-3 para evitar zeros ou valores muito pequenos.",
+      "parametros": [
+        {
+          "nome": "y",
+          "tipo": "np.ndarray",
+          "descricao": "Amostra unidimensional dos dados."
+        }
+      ],
+      "retorno": {
+        "tipo": "float",
+        "descricao": "Largura de banda estimada de Silverman."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "decoradores.monitor_completo",
+        "numpy"
+      ],
+      "docstring": "Calcula a largura de banda de Silverman para uma amostra unidimensional.\n\nArgs:\n    y (np.ndarray): Amostra unidimensional dos dados.\n\nReturns:\n    float: Largura de banda estimada de Silverman.\n\nNotes:\n    Retorna um valor mínimo de 1e-3 para evitar zeros ou valores muito pequenos."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_auto_banda_cv",
+      "tipo": "function",
+      "linha_inicio": 468,
+      "linha_fim": 494,
+      "parametros": [
+        {
+          "nome": "y",
+          "tipo": "np.ndarray",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "sample_weight",
+          "tipo": "np.ndarray | None",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "grid",
+          "tipo": "np.ndarray | None",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "cv",
+          "tipo": "int | None",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "random_state",
+          "tipo": "int | None",
+          "default": "42",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "float",
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "decoradores.monitor_completo",
+          "numpy",
+          "sklearn.model_selection.GridSearchCV"
+        ],
+        "chamadas": [
+          "GridSearchCV",
+          "_KDEw",
+          "fit",
+          "float",
+          "len",
+          "max",
+          "min",
+          "monitor_completo",
+          "np.asarray",
+          "np.logspace",
+          "reshape",
+          "search.fit",
+          "super"
+        ]
+      },
+      "codigo": "def _auto_banda_cv(\n                            y: np.ndarray,\n                            sample_weight: np.ndarray | None = None,\n                            grid: np.ndarray | None = None,\n                            cv: int | None = None,\n                            random_state: int | None = 42\n                        ) -> float:\n\n    y = np.asarray(y).reshape(-1, 1)\n    n = len(y)\n    if grid is None:\n        grid = np.logspace(-2, 1, 40)\n    cv = min(10, n) if (cv is None or cv > n) else cv\n\n    class _KDEw(KernelDensity):\n        def fit(self, X, y=None, sample_weight=None):\n            return super().fit(X, sample_weight=sample_weight)\n\n    search = GridSearchCV(\n        _KDEw(kernel='gaussian'),\n        {'bandwidth': grid},\n        cv=cv,\n        n_jobs=1\n    )\n    search.fit(y, **({'sample_weight': sample_weight} if sample_weight is not None else {}))\n    bw = float(search.best_estimator_.bandwidth)\n    return max(bw, 1e-3)"
+    },
+    "documentacao": {
+      "resumo": "Seleciona automaticamente a largura de banda para uma estimativa de densidade de probabilidade (KDE) usando validação cruzada.",
+      "descricao": "Esta função ajusta um modelo KDE com diferentes larguras de banda e seleciona a melhor largura de banda utilizando validação cruzada. Se não for fornecido um grid de larguras de banda, ele será gerado automaticamente. A função também permite especificar pesos amostrais.",
+      "parametros": [
+        {
+          "nome": "y",
+          "tipo": "np.ndarray",
+          "categoria": "posicional",
+          "descricao": "Dados unidimensionais para os quais a largura de banda será estimada."
+        },
+        {
+          "nome": "sample_weight",
+          "tipo": "np.ndarray | None",
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Pesos amostrais associados aos dados. Se for `None`, todos os pesos são considerados iguais."
+        },
+        {
+          "nome": "grid",
+          "tipo": "np.ndarray | None",
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Grid de valores para a largura de banda. Se for `None`, um grid padrão será gerado."
+        },
+        {
+          "nome": "cv",
+          "tipo": "int | None",
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Número de folds para a validação cruzada. Se for `None` ou maior que o número de amostras, será usado 10."
+        },
+        {
+          "nome": "random_state",
+          "tipo": "int | None",
+          "categoria": "posicional",
+          "default": "42",
+          "descricao": "Estado aleatório para a geração do grid e da validação cruzada. Se for `None`, será usado um estado aleatório fixo."
+        }
+      ],
+      "retorno": {
+        "tipo": "float",
+        "descricao": "A melhor largura de banda encontrada, garantida ser pelo menos 1e-3."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "decoradores.monitor_completo",
+          "categoria": "import"
+        },
+        {
+          "nome": "numpy",
+          "categoria": "import"
+        },
+        {
+          "nome": "sklearn.model_selection.GridSearchCV",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Seleciona automaticamente a largura de banda para uma estimativa de densidade de probabilidade (KDE) usando validação cruzada.\n\nArgs:\n    y (np.ndarray): Dados unidimensionais para os quais a largura de banda será estimada.\n    sample_weight (np.ndarray | None, optional): Pesos amostrais associados aos dados. Se for `None`, todos os pesos são considerados iguais. Defaults to None.\n    grid (np.ndarray | None, optional): Grid de valores para a largura de banda. Se for `None`, um grid padrão será gerado. Defaults to None.\n    cv (int | None, optional): Número de folds para a validação cruzada. Se for `None` ou maior que o número de amostras, será usado 10. Defaults to None.\n    random_state (int | None, optional): Estado aleatório para a geração do grid e da validação cruzada. Se for `None`, será usado um estado aleatório fixo. Defaults to 42.\n\nReturns:\n    float: A melhor largura de banda encontrada, garantida ser pelo menos 1e-3."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "val_qtd_RTE",
+      "tipo": "function",
+      "linha_inicio": 497,
+      "linha_fim": 663,
+      "parametros": [
+        {
+          "nome": "df_t0",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_t1",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_t2",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "cols_chave",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "col_qtd",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "relaxar",
+          "tipo": null,
+          "default": "True",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "t1",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "t2",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "meia_vida_anos",
+          "tipo": null,
+          "default": "3",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "usar_cv",
+          "tipo": null,
+          "default": "True",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "grid_bw",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "cv_folds",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "banda_min",
+          "tipo": null,
+          "default": "0.001",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "jitter_inteiros",
+          "tipo": null,
+          "default": "True",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "jitter_scale",
+          "tipo": null,
+          "default": "0.05",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "max_n_ref",
+          "tipo": null,
+          "default": "5000",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "seed",
+          "tipo": null,
+          "default": "42",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "decoradores.monitor_completo",
+          "numpy",
+          "pandas",
+          "scipy.signal.find_peaks",
+          "sklearn.neighbors.KernelDensity"
+        ],
+        "chamadas": [
+          "KernelDensity",
+          "RuntimeError",
+          "_auto_banda_cv",
+          "_auto_banda_silverman",
+          "achar_referencia",
+          "astype",
+          "chave_dict.items",
+          "dens.sum",
+          "df_ref.dropna",
+          "df_t0.iterrows",
+          "df_t1.assign",
+          "df_t2.assign",
+          "find_peaks",
+          "float",
+          "kde.fit",
+          "kde.score_samples",
+          "len",
+          "logdens.max",
+          "map",
+          "max",
+          "monitor_completo",
+          "np.abs",
+          "np.all",
+          "np.array",
+          "np.cumsum",
+          "np.equal",
+          "np.exp",
+          "np.floor",
+          "np.isnan",
+          "np.linspace",
+          "np.log",
+          "np.log10",
+          "np.max",
+          "np.median",
+          "np.min",
+          "np.mod",
+          "np.ones",
+          "np.random.default_rng",
+          "np.searchsorted",
+          "pd.DataFrame",
+          "pd.Timestamp",
+          "pd.concat",
+          "peso_exp",
+          "q_ref.max",
+          "q_ref.min",
+          "q_ref.reshape",
+          "range",
+          "reshape",
+          "resultados.append",
+          "rng.choice",
+          "rng.uniform",
+          "to_numpy"
+        ]
+      },
+      "codigo": "def val_qtd_RTE(\n                    df_t0, df_t1, df_t2, cols_chave, col_qtd,\n                    relaxar=True, t1 = None, t2 = None,\n                    meia_vida_anos=3,\n                    usar_cv=True,\n                    grid_bw=None,\n                    cv_folds=None,\n                    banda_min=1e-3,\n                    jitter_inteiros=True,\n                    jitter_scale=0.05,\n                    max_n_ref=5000,\n                    seed=42,\n                ):\n\n    rng = np.random.default_rng(seed)\n    data_t1, data_t2 = map(pd.Timestamp, [t1, t2])\n\n    lam = np.log(2) / float(meia_vida_anos)\n\n    def peso_exp(data):\n        delta = (data_t2 - pd.Timestamp(data)).days / 365.0\n        return np.exp(-lam * delta)\n\n    w_t1, w_t2 = peso_exp(data_t1), peso_exp(data_t2)\n\n    resultados = []\n    df_ref = pd.concat([\n                            df_t1.assign(__peso=w_t1),\n                            df_t2.assign(__peso=w_t2)\n                        ], ignore_index=True)\n    df_ref = df_ref.dropna(subset=[col_qtd])\n\n    def achar_referencia(chave_dict):\n        if not relaxar:\n            mask = np.ones(len(df_ref), dtype=bool)\n            for k, v in chave_dict.items():\n                mask &= df_ref[k] == v\n            grupo = df_ref[mask]\n            return grupo, cols_chave\n\n        for i in range(len(cols_chave), 0, -1):\n            subset = cols_chave[:i]\n            mask = np.ones(len(df_ref), dtype=bool)\n            for k in subset:\n                mask &= df_ref[k] == chave_dict[k]\n            grupo = df_ref[mask]\n            if not grupo.empty:\n                return grupo, subset\n        return pd.DataFrame(), [] \n\n    for _, linha in df_t0.iterrows():\n        chave = {k: linha[k] for k in cols_chave}\n        qtd_t0 = float(linha[col_qtd])\n        grp, subset = achar_referencia(chave)\n\n        if grp.empty or grp.shape[0] < 2:\n            resultados.append({**chave,\n                               \"nivel_relaxamento\": None,\n                               \"qtd_t0\": qtd_t0,\n                               \"q_low\": np.nan, \"q_med\": np.nan, \"q_high\": np.nan,\n                               \"banda\": np.nan,\n                               \"score\": 0.0,\n                               \"metodo\": \"sem_referencia\", \"escala\": 1.0, \"legenda_escala\" : \"\",\n                               \"modas\": 0, \"observacao\": \"Sem dados de referência.\",\n                               \"consistente\": None})\n            continue\n\n        if grp.shape[0] > max_n_ref:\n            grp = grp.iloc[rng.choice(grp.index, size=max_n_ref, replace=False)]\n\n        q_ref = grp[col_qtd].astype(float).to_numpy()\n        w_ref = grp[\"__peso\"].astype(float).to_numpy()\n        n_ref = len(q_ref)\n        metodo = None\n        num_modas = 0\n        observacao = \"\"\n\n        max_abs = np.max(np.abs(q_ref))\n        if max_abs > 1e3:\n            fator_escala = 10 ** np.floor(np.log10(max_abs) - 3)\n            q_ref = q_ref / fator_escala\n            qtd_t0 = qtd_t0 / fator_escala\n            escala_label = f\"/{fator_escala:,.0f}\"\n        else:\n            fator_escala = 1.0\n            escala_label = \"\"\n\n        if n_ref < 5:\n            qmin, qmax = np.min(q_ref), np.max(q_ref)\n            delta = 0.1 + 0.02 * (5 - n_ref)  \n            q_low = qmin * (1 - delta)\n            q_high = qmax * (1 + delta)\n            q_med = np.median(q_ref)\n            score = 0.5 \n            metodo = \"intervalo_empirico\"\n            observacao = f\"Amostra pequena (n={n_ref}). Faixa empírica ±{delta*100:.1f}%.\"\n            resultados.append({\n                **chave,\n                \"nivel_relaxamento\": len(subset),\n                \"qtd_t0\": qtd_t0,\n                \"q_low\": q_low, \"q_med\": q_med, \"q_high\": q_high,\n                \"banda\": np.nan,\n                \"score\": score,\n                \"metodo\": metodo, \"escala\": fator_escala, \"legenda_escala\" : escala_label,\n                \"modas\": 0, \"observacao\": observacao,\n                \"consistente\": q_low <= qtd_t0 <= q_high\n            })\n            continue\n\n        if n_ref > max_n_ref:\n            grp = grp.iloc[rng.choice(grp.index, size=max_n_ref, replace=False)]\n            q_ref = grp[col_qtd].astype(float).to_numpy()\n            w_ref = grp[\"__peso\"].astype(float).to_numpy()\n\n        if jitter_inteiros and np.all(np.equal(np.mod(q_ref, 1), 0)):\n            q_ref = q_ref + rng.uniform(-jitter_scale, jitter_scale, size=q_ref.size)\n\n        try:\n            if usar_cv:\n                bw = _auto_banda_cv(q_ref, sample_weight=w_ref, grid=grid_bw, cv=cv_folds, random_state=seed)\n                metodo = \"kde_cv\"\n            else:\n                raise RuntimeError(\"CV desativado\")\n        except Exception:\n            bw = _auto_banda_silverman(q_ref)\n            metodo = \"kde_silverman\"\n\n        bw = float(max(bw, banda_min))\n\n        kde = KernelDensity(kernel=\"gaussian\", bandwidth=bw)\n        kde.fit(q_ref.reshape(-1, 1), sample_weight=w_ref)\n        q_min, q_max = float(q_ref.min()), float(q_ref.max())\n        pad = 0.1 * max(1.0, (q_max - q_min))\n        grid = np.linspace(q_min - pad, q_max + pad, 400).reshape(-1, 1)\n        logdens = kde.score_samples(grid)\n        dens = np.exp(logdens)\n        dens /= dens.sum()\n        cdf = np.cumsum(dens)\n\n        peaks, _ = find_peaks(dens, prominence=0.01)\n        num_modas = len(peaks)\n        if num_modas >= 2:\n            observacao = f\"Distribuição multimodal ({num_modas} modas) — interpretação visual recomendada.\"\n        else:\n            observacao = \"Distribuição unimodal.\"\n\n        q_low = grid[np.searchsorted(cdf, 0.025)][0]\n        q_med = grid[np.searchsorted(cdf, 0.5)][0]\n        q_high = grid[np.searchsorted(cdf, 0.975)][0]\n        logp = kde.score_samples(np.array([[qtd_t0]]))[0]\n        score = float(np.exp(logp - logdens.max()))\n        if np.isnan(score) or score < 1e-20:\n            score = 0.0\n\n        resultados.append({\n            **chave,\n            \"nivel_relaxamento\": len(subset),\n            \"qtd_t0\": qtd_t0,\n            \"q_low\": float(q_low), \"q_med\": float(q_med), \"q_high\": float(q_high),\n            \"banda\": bw,\n            \"score\": score,\n            \"metodo\": metodo, \"escala\": fator_escala, \"legenda_escala\" : escala_label,\n            \"modas\": num_modas, \"observacao\": observacao,\n            \"consistente\": (q_low <= qtd_t0 <= q_high)\n        })\n\n    return pd.DataFrame(resultados)"
+    },
+    "documentacao": {
+      "resumo": "Realiza a validação de uma quantidade em relação a referências históricas.",
+      "descricao": "A função `val_qtd_RTE` valida uma quantidade (`qtd_t0`) em relação a dados históricos (`df_t1`, `df_t2`) utilizando um método baseado em distribuições KDE (Kernel Density Estimation). A validação considera diferentes parâmetros como meia-vida, banda de kernel, e métodos de seleção de banda. O resultado inclui intervalos de confiança e uma pontuação de consistência.",
+      "parametros": [
+        {
+          "nome": "df_t0",
+          "tipo": "DataFrame",
+          "descricao": "O DataFrame contendo a quantidade a ser validada (`qtd_t0`) em relação às referências."
+        },
+        {
+          "nome": "df_t1",
+          "tipo": "DataFrame",
+          "descricao": "O DataFrame contendo os dados históricos de referência no período t1."
+        },
+        {
+          "nome": "df_t2",
+          "tipo": "DataFrame",
+          "descricao": "O DataFrame contendo os dados históricos de referência no período t2."
+        },
+        {
+          "nome": "cols_chave",
+          "tipo": "list[str]",
+          "descricao": "Lista de colunas usadas como chave para identificar as referências."
+        },
+        {
+          "nome": "col_qtd",
+          "tipo": "str",
+          "descricao": "Nome da coluna no DataFrame que contém a quantidade a ser validada."
+        },
+        {
+          "nome": "relaxar",
+          "tipo": "bool",
+          "default": "True",
+          "descricao": "Se `True`, permite um relaxamento na busca por referências, considerando subconjuntos das colunas chave."
+        },
+        {
+          "nome": "t1",
+          "tipo": "datetime | None",
+          "default": "None",
+          "descricao": "Data do período t1. Se `None`, usa a data mínima de `df_t1`."
+        },
+        {
+          "nome": "t2",
+          "tipo": "datetime | None",
+          "default": "None",
+          "descricao": "Data do período t2. Se `None`, usa a data máxima de `df_t2`."
+        },
+        {
+          "nome": "meia_vida_anos",
+          "tipo": "float",
+          "default": "3",
+          "descricao": "Meia-vida em anos para calcular o peso exponencial."
+        },
+        {
+          "nome": "usar_cv",
+          "tipo": "bool",
+          "default": "True",
+          "descricao": "Se `True`, usa validação cruzada para selecionar a banda de kernel KDE."
+        },
+        {
+          "nome": "grid_bw",
+          "tipo": "array-like | None",
+          "default": "None",
+          "descricao": "Grid de valores para seleção da banda de kernel. Se `None`, usa um grid padrão."
+        },
+        {
+          "nome": "cv_folds",
+          "tipo": "int | None",
+          "default": "None",
+          "descricao": "Número de folds para validação cruzada. Se `None`, usa 5 folds."
+        },
+        {
+          "nome": "banda_min",
+          "tipo": "float",
+          "default": "0.001",
+          "descricao": "Banda mínima permitida para o kernel KDE."
+        },
+        {
+          "nome": "jitter_inteiros",
+          "tipo": "bool",
+          "default": "True",
+          "descricao": "Se `True`, adiciona jitter aos valores inteiros para evitar problemas numericos."
+        },
+        {
+          "nome": "jitter_scale",
+          "tipo": "float",
+          "default": "0.05",
+          "descricao": "Escala do jitter a ser aplicada."
+        },
+        {
+          "nome": "max_n_ref",
+          "tipo": "int",
+          "default": "5000",
+          "descricao": "Máximo número de referências a considerar para cada amostra."
+        },
+        {
+          "nome": "seed",
+          "tipo": "int",
+          "default": "42",
+          "descricao": "Seed para o gerador de números aleatórios."
+        }
+      ],
+      "retorno": {
+        "tipo": "DataFrame",
+        "descricao": "Um DataFrame contendo os resultados da validação, incluindo intervalos de confiança e pontuações de consistência."
+      },
+      "excecoes": [
+        {
+          "tipo": "RuntimeError",
+          "descricao": "Lancado se a validação cruzada estiver desativada (`usar_cv=False`) e não for possível calcular a banda de kernel usando o método Silverman."
+        }
+      ],
+      "dependencias": [
+        "decoradores.monitor_completo",
+        "numpy",
+        "pandas",
+        "scipy.signal.find_peaks",
+        "sklearn.neighbors.KernelDensity"
+      ],
+      "docstring": "Realiza a validação de uma quantidade em relação a referências históricas.\n\nArgs:\n    df_t0 (DataFrame): O DataFrame contendo a quantidade a ser validada (`qtd_t0`) em relação às referências.\n    df_t1 (DataFrame): O DataFrame contendo os dados históricos de referência no período t1.\n    df_t2 (DataFrame): O DataFrame contendo os dados históricos de referência no período t2.\n    cols_chave (list[str]): Lista de colunas usadas como chave para identificar as referências.\n    col_qtd (str): Nome da coluna no DataFrame que contém a quantidade a ser validada.\n    relaxar (bool, optional): Se `True`, permite um relaxamento na busca por referências, considerando subconjuntos das colunas chave. Padrão é True.\n    t1 (datetime | None, optional): Data do período t1. Se `None`, usa a data mínima de `df_t1`. Padrão é None.\n    t2 (datetime | None, optional): Data do período t2. Se `None`, usa a data máxima de `df_t2`. Padrão é None.\n    meia_vida_anos (float, optional): Meia-vida em anos para calcular o peso exponencial. Padrão é 3.\n    usar_cv (bool, optional): Se `True`, usa validação cruzada para selecionar a banda de kernel KDE. Padrão é True.\n    grid_bw (array-like | None, optional): Grid de valores para seleção da banda de kernel. Se `None`, usa um grid padrão. Padrão é None.\n    cv_folds (int | None, optional): Número de folds para validação cruzada. Se `None`, usa 5 folds. Padrão é None.\n    banda_min (float, optional): Banda mínima permitida para o kernel KDE. Padrão é 0.001.\n    jitter_inteiros (bool, optional): Se `True`, adiciona jitter aos valores inteiros para evitar problemas numericos. Padrão é True.\n    jitter_scale (float, optional): Escala do jitter a ser aplicada. Padrão é 0.05.\n    max_n_ref (int, optional): Máximo número de referências a considerar para cada amostra. Padrão é 5000.\n    seed (int, optional): Seed para o gerador de números aleatórios. Padrão é 42.\n\nReturns:\n    DataFrame: Um DataFrame contendo os resultados da validação, incluindo intervalos de confiança e pontuações de consistência.\n\nRaises:\n    RuntimeError: Lancado se a validação cruzada estiver desativada (`usar_cv=False`) e não for possível calcular a banda de kernel usando o método Silverman."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "TCKdeIndicadores",
+      "tipo": "function",
+      "linha_inicio": 666,
+      "linha_fim": 727,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.registrar_artefato",
+          "UTILS.sqlfnc",
+          "decoradores.monitor_completo",
+          "pandas",
+          "sklearn.ensemble.IsolationForest",
+          "sklearn.preprocessing.StandardScaler",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Exception",
+          "IsolationForest",
+          "StandardScaler",
+          "astype",
+          "copy",
+          "df.groupby",
+          "df_outliers.sort_values",
+          "df_outliers.to_csv",
+          "df_outliers.to_sql",
+          "iso.decision_function",
+          "iso.fit",
+          "iso.predict",
+          "monitor_completo",
+          "pd.concat",
+          "pd.read_sql",
+          "pd.to_numeric",
+          "registrar_artefato",
+          "replace",
+          "reset_index",
+          "results.append",
+          "scaler.fit_transform",
+          "sl.connect",
+          "sql.existe_tabela",
+          "st.spinner"
+        ]
+      },
+      "codigo": "def TCKdeIndicadores(st=None):\n    if st == None:\n        return \"Falhou\"\n    \n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n\n    bd = sl.connect(f'{local}\\BD_LOCAL\\{empresa}_{ano}.db')\n\n    if sql.existe_tabela(\"ANL_PER_OBRA\",bd):\n        df = pd.read_sql(\"SELECT * FROM ANL_PER_OBRA\", bd)\n    else:\n        raise Exception(\"Erro na leitura da tabela no BD: ANL_PER_OBRA\")\n\n    with st.spinner(\"Avaliando outliers pelos indicadores...\"):\n        numeric_cols = [\n                            \"DELTA\", \"VL_tot\", \"CTA\", \"ID_desv_pad\", \"ID_rev\", \"IRange\",\n                            \"IED_dias\", \"KPI_CRESC (%)\", \"KPI_GAP (dias)\", \"KPI_PER\",\n                            \"IEg_dias\", \"IEuc_dias\", \"CA_TOT\", \"UC_TOT\", \"CMD\"\n                        ]\n        for col in numeric_cols:\n            df[col] = pd.to_numeric(df[col].replace(\",\",\".\"), errors='coerce')\n\n        results = []\n        for ti, group in df.groupby(\"Nr_TI\"):\n            \n            X = group[numeric_cols].copy()\n            \n            scaler = StandardScaler()\n            X_scaled = scaler.fit_transform(X)\n            \n            iso = IsolationForest(\n                                    contamination=0.01,  \n                                    random_state=42\n                                 )\n            \n            iso.fit(X_scaled)\n            \n            scores = iso.decision_function(X_scaled)\n            pred = iso.predict(X_scaled)\n            \n            group_result = group[[\"Nr_TI\", \"Cd_SubODI\",\"VL_tot\"]].copy()\n            group_result[\"GRAU_ANOMALIA\"] = scores\n            group_result[\"FLG_OUT\"] = (pred == -1).astype(int)\n            \n            results.append(group_result)\n\n        df_outliers = pd.concat(results).reset_index(drop=True)\n\n    df_outliers = df_outliers.sort_values([\"Nr_TI\", \"GRAU_ANOMALIA\"])\n    df_outliers.to_sql('ANL_OUTLIERS_INDICADORES', bd, if_exists='replace', index=False)\n\n    df_outliers.to_csv(rf'{local}\\AIS_ANLS\\ANL_OUTLIERS_INDICADORES_{empresa}_{ano}.csv', sep=\"|\", decimal=',', encoding=\"Latin-1\", chunksize=100_000)\n    if st:\n        registrar_artefato(st.session_state.database_MAN, \n                            st.session_state.execucao_id, \n                            file_path = rf'{local}\\AIS_ANLS\\ANL_OUTLIERS_INDICADORES_{empresa}_{ano}.csv',\n                            tipo_artefato = \"SAIDA\", \n                            calcular_hash = True)\n\n    return \"Ok\""
+    },
+    "documentacao": {
+      "resumo": "Realiza a detecção de outliers em indicadores e salva os resultados no banco de dados e em um arquivo CSV.",
+      "descricao": "A função TCKdeIndicadores realiza a detecção de outliers em uma tabela específica do banco de dados, utilizando o método Isolation Forest. Os resultados são salvos tanto no banco de dados quanto em um arquivo CSV, e também registrados como artefato no sistema.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para interação com a interface do usuário."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Mensagem indicando o sucesso ou falha da operação."
+      },
+      "excecoes": [
+        {
+          "tipo": "Exception",
+          "descricao": "Quando ocorre um erro na leitura da tabela no banco de dados."
+        }
+      ],
+      "dependencias": [
+        "MANIFESTO.registrar_artefato",
+        "UTILS.sqlfnc",
+        "decoradores.monitor_completo",
+        "pandas",
+        "sklearn.ensemble.IsolationForest",
+        "sklearn.preprocessing.StandardScaler",
+        "sqlite3",
+        "streamlit"
+      ],
+      "docstring": "Realiza a detecção de outliers em indicadores e salva os resultados no banco de dados e em um arquivo CSV.\n\nArgs:\n    st (objeto Streamlit): Objeto para interação com a interface do usuário.\n\nReturns:\n    str: Mensagem indicando o sucesso ou falha da operação.\n\nRaises:\n    Exception: Quando ocorre um erro na leitura da tabela no banco de dados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "identificar_outliers",
+      "tipo": "function",
+      "linha_inicio": 730,
+      "linha_fim": 742,
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tipo",
+          "tipo": null,
+          "default": "'Cd_ODD'",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "decoradores.monitor_completo"
+        ],
+        "chamadas": [
+          "monitor_completo",
+          "quantile"
+        ]
+      },
+      "codigo": "def identificar_outliers(df, tipo = \"Cd_ODD\"):\n    fases = ['VL_FRT_TRN', 'VL_PRJ', 'VL_GER', 'VL_FISC', 'VL_MONT', 'VL_SUP']\n    outliers = {}\n\n    for fase in fases:\n        Q1 = df[fase].quantile(0.25)\n        Q3 = df[fase].quantile(0.75)\n        IQR = Q3 - Q1\n        limite_sup = Q3 + 1.5 * IQR\n\n        outliers[fase] = df[df[fase] > limite_sup][[tipo, fase]]\n\n    return outliers"
+    },
+    "documentacao": {
+      "resumo": "Identifica outliers em um DataFrame com base no método do intervalo interquartil (IQR).",
+      "descricao": "A função percorre cada fase especificada em um DataFrame e identifica valores considerados outliers utilizando o método IQR. Os outliers são definidos como valores maiores que Q3 + 1,5 * IQR.",
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo as colunas de fases a serem analisadas."
+        },
+        {
+          "nome": "tipo",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "'Cd_ODD'",
+          "descricao": "Nome da coluna que será usada para retornar junto com os outliers."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Um dicionário onde as chaves são as fases e os valores são DataFrames contendo os outliers identificados."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "decoradores.monitor_completo",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Identifica outliers em um DataFrame com base no método do intervalo interquartil (IQR).\n\nArgs:\n    df: DataFrame contendo as colunas de fases a serem analisadas.\n    tipo: Nome da coluna que será usada para retornar junto com os outliers. Padrão é 'Cd_ODD'.\n\nReturns:\n    Um dicionário onde as chaves são as fases e os valores são DataFrames contendo os outliers identificados.\n\nDependencies:\n    decoradores.monitor_completo: Utilizado para monitoramento completo."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "resumo_por_projeto",
+      "tipo": "function",
+      "linha_inicio": 745,
+      "linha_fim": 844,
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tipo",
+          "tipo": null,
+          "default": "'Cd_ODD'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "seed",
+          "tipo": null,
+          "default": "32",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "nm_var",
+          "tipo": null,
+          "default": "'VL_tot'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "nm_crit",
+          "tipo": null,
+          "default": "['Nr_TI', 'Cd_SubODI']",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "SRC.ais_funcoes.bsc_nr_amst",
+          "decoradores.monitor_completo",
+          "numpy",
+          "pandas"
+        ],
+        "chamadas": [
+          "amostra_final.append",
+          "apply",
+          "astype",
+          "bsc_nr_amst",
+          "cumsum",
+          "df.groupby",
+          "df.reset_index",
+          "dict.fromkeys",
+          "head",
+          "isin",
+          "isinstance",
+          "len",
+          "list",
+          "monitor_completo",
+          "notnull",
+          "np.random.seed",
+          "np.random.uniform",
+          "pd.DataFrame",
+          "range",
+          "replace",
+          "reset_index",
+          "selecionados.add",
+          "set",
+          "sort_values",
+          "sum"
+        ]
+      },
+      "codigo": "def resumo_por_projeto(df = pd.DataFrame(), tipo = \"Cd_ODD\", seed = 32, nm_var = 'VL_tot',\n                       nm_crit = ['Nr_TI','Cd_SubODI'], st = None):\n    \n    if seed is not None:\n        np.random.seed(seed)    \n    df = df.reset_index(drop=True)\n    if tipo == \"Cd_ODD\":\n        fases = ['VL_FRT_TRN', 'VL_PRJ', 'VL_GER', 'VL_FISC', 'VL_MONT', 'VL_SUP']\n        df['VL_TOT_PRJ'] = df[fases].sum(axis=1)\n        resumo = (\n                    df.groupby(tipo)[fases + ['VL_TOT_PRJ']]\n                    .sum()\n                    .sort_values(by='VL_TOT_PRJ', ascending=False)\n                    .reset_index()\n                )\n\n        resumo['VL_ACUM'] = resumo['VL_TOT_PRJ'].cumsum()\n        total_geral = resumo['VL_TOT_PRJ'].sum()\n        resumo['Pct_PRJ'] = resumo['VL_TOT_PRJ'] / total_geral\n        if isinstance(tipo, list):\n            tp_anls = tipo[0] if len(tipo)<=1 else tipo[1]\n        else:\n            tp_anls = tipo\n    else:\n        resumo = (\n                    df.groupby(nm_crit)[[nm_var]]\n                    .sum()\n                    .sort_values(by=nm_var, ascending=False)\n                    .reset_index()\n                )\n        resumo['VL_ACUM'] = resumo[nm_var].cumsum()\n        total_geral = resumo[nm_var].sum()\n        resumo['Pct_PRJ'] = resumo[nm_var] / total_geral\n        if isinstance(nm_crit, list):\n            tp_anls = nm_crit[0] if len(nm_crit)<=1 else nm_crit[1]\n        else:\n            tp_anls = nm_crit\n    \n    resumo['Pct_ACM'] = resumo['Pct_PRJ'].cumsum()\n    resumo['CLS_ABC'] = resumo['Pct_ACM'].apply(\n                                                    lambda x: 'A' if x <= 0.80 else ('B' if x <= 0.95 else 'C')\n                                                )\n\n    N = len(resumo)\n    res, risco = bsc_nr_amst(N=N, confianca=0.95, erro_aceitavel=0.05, erros_esperados=0)\n    tamanho_amostra = res['tamanho_amostra']\n    res[\"tamanho_amostra\"] = f\"{res['tamanho_amostra']:,.2f}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    res[\"metodo\"] = f\"{res['metodo']}\"\n    res[\"nivel_confianca\"] = f\"{res['nivel_confianca']:,.2%}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    res[\"erro_aceitavel\"] = f\"{res['erro_aceitavel']:,.2%}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    res[\"erros_esperados\"] = f\"{res['erros_esperados']:,.2f}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    res[\"tamanho_populacao\"] = f\"{res['tamanho_populacao']:,.2f}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    res[\"max_erros_aceitaveis\"] = f\"{res['max_erros_aceitaveis']:,.2f}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    risco[\"risco_real\"] = f\"{risco['risco_real']:,.2%}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    risco[\"nivel_confianca_real\"] = f\"{risco['nivel_confianca_real']:,.2%}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n\n    texto_anl = (\n                    f\"<p  style='text-align: justify;text-indent: 40px'>Com base no método {res['metodo']}, foi calculado um tamanho de amostra de \"\n                    f\"{res['tamanho_amostra']} indivíduos para uma população de {res['tamanho_populacao']}, \"\n                    f\"considerando nível de confiança de {res['nivel_confianca']}, erro aceitável de \"\n                    f\"{res['erro_aceitavel']} e {res['erros_esperados']} erros esperados; ao aplicar esse \"\n                    f\"plano amostral, obteve-se um risco real de {risco['risco_real']} e um nível de \"\n                    f\"confiança real de {risco['nivel_confianca_real']}.</p>\"\n                )\n\n    IA = total_geral / tamanho_amostra\n    R = np.random.uniform(0, IA)\n    pontos = [R + i * IA for i in range(tamanho_amostra)]\n    amostra_final = []\n    selecionados = set()\n\n    for p in pontos:\n        linha = resumo[resumo['VL_ACUM'] >= p].head(1)\n        if linha.empty:\n            continue\n        if isinstance(tp_anls, list):\n            col = tp_anls[0]\n        else:\n            col = tp_anls\n        try:\n            proj = linha.loc[linha.index[0], col]    \n        except:\n            proj = linha.iloc[0,0]  \n        \n        if proj in selecionados:\n            idx = resumo.loc[(resumo[col] == proj) & resumo[col].notnull()].index[0]\n            while idx < len(resumo) and resumo.loc[idx, col] in selecionados:\n                idx += 1\n            if idx < len(resumo):\n                proj = resumo.loc[idx, col]\n            else:\n                continue\n        \n        amostra_final.append(proj)\n        selecionados.add(proj)\n\n    amostra_final = list(dict.fromkeys(amostra_final))\n    resumo['FLG_AMST'] = resumo[tp_anls].isin(amostra_final).astype(int)\n\n    return resumo, amostra_final, IA, R, texto_anl"
+    },
+    "documentacao": {
+      "resumo": "Gera um resumo e amostra de dados com base em critérios específicos.",
+      "descricao": "A função gera um resumo dos dados fornecidos, calcula a porcentagem acumulada e classifica os projetos. Em seguida, determina o tamanho da amostra necessária para uma análise estatística e seleciona projetos aleatórios dentro dessa amostra.",
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": "pd.DataFrame",
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo os dados a serem analisados."
+        },
+        {
+          "nome": "tipo",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "'Cd_ODD'",
+          "descricao": "Tipo de análise a ser realizada, pode ser 'Cd_ODD' ou uma lista de critérios."
+        },
+        {
+          "nome": "seed",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "32",
+          "descricao": "Semente para o gerador de números aleatórios, para reproduzibilidade dos resultados."
+        },
+        {
+          "nome": "nm_var",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "'VL_tot'",
+          "descricao": "Nome da variável a ser utilizada na análise."
+        },
+        {
+          "nome": "nm_crit",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "['Nr_TI', 'Cd_SubODI']",
+          "descricao": "Critérios para agrupamento dos dados, pode ser uma lista de nomes de colunas."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Parâmetro não utilizado no código fornecido."
+        }
+      ],
+      "retorno": {
+        "tipo": "tuple",
+        "itens": [
+          {
+            "tipo": "pd.DataFrame",
+            "descricao": "Resumo dos dados com porcentagem acumulada e classificação ABC."
+          },
+          {
+            "tipo": "list",
+            "descricao": "Amostra de projetos selecionados."
+          },
+          {
+            "tipo": "float",
+            "descricao": "Intervalo entre amostras."
+          },
+          {
+            "tipo": "float",
+            "descricao": "Valor aleatório gerado para seleção da amostra."
+          },
+          {
+            "tipo": "str",
+            "descricao": "Texto analítico com detalhes sobre a amostra e o tamanho de amostra calculados."
+          }
+        ],
+        "descricao": "Um tuple contendo o resumo dos dados, a amostra selecionada, intervalo entre amostras, valor aleatório e texto analítico."
+      },
+      "excecoes": [],
+      "dependencias": {
+        "imports": [
+          "SRC.ais_funcoes.bsc_nr_amst",
+          "decoradores.monitor_completo",
+          "numpy",
+          "pandas"
+        ],
+        "chamadas": [
+          "amostra_final.append",
+          "apply",
+          "astype",
+          "bsc_nr_amst",
+          "cumsum",
+          "df.groupby",
+          "df.reset_index",
+          "dict.fromkeys",
+          "head",
+          "isin",
+          "isinstance",
+          "len",
+          "list",
+          "monitor_completo",
+          "notnull",
+          "np.random.seed",
+          "np.random.uniform",
+          "pd.DataFrame",
+          "range",
+          "replace",
+          "reset_index",
+          "selecionados.add",
+          "set",
+          "sort_values",
+          "sum"
+        ]
+      },
+      "docstring": "Gera um resumo e amostra de dados com base em critérios específicos.\n\nArgs:\n    df (pd.DataFrame): DataFrame contendo os dados a serem analisados.\n    tipo: Tipo de análise a ser realizada, pode ser 'Cd_ODD' ou uma lista de critérios.\n    seed (int): Semente para o gerador de números aleatórios, para reproduzibilidade dos resultados.\n    nm_var (str): Nome da variável a ser utilizada na análise.\n    nm_crit (list): Critérios para agrupamento dos dados, pode ser uma lista de nomes de colunas.\n    st: Parâmetro não utilizado no código fornecido.\n\nReturns:\n    tuple: Um tuple contendo o resumo dos dados, a amostra selecionada, intervalo entre amostras, valor aleatório e texto analítico."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "maior_impacto",
+      "tipo": "function",
+      "linha_inicio": 847,
+      "linha_fim": 861,
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "col_valor",
+          "tipo": null,
+          "default": "'DV'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "limite",
+          "tipo": null,
+          "default": "0.8",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "decoradores.monitor_completo"
+        ],
+        "chamadas": [
+          "abs",
+          "copy",
+          "cumsum",
+          "df.index.isin",
+          "df_aux.sort_values",
+          "idx_top.append",
+          "index.tolist",
+          "len",
+          "monitor_completo",
+          "sum"
+        ]
+      },
+      "codigo": "def maior_impacto(df, col_valor='DV', limite=0.80):\n\n    df_aux = df[[col_valor]].copy()\n    df_aux['abs_valor'] = df_aux[col_valor].abs()\n    df_aux_ord = df_aux.sort_values(by='abs_valor', ascending=False)\n    total_abs = df_aux_ord['abs_valor'].sum()\n    df_aux_ord['contrib'] = df_aux_ord['abs_valor'] / total_abs\n    df_aux_ord['acumulado'] = df_aux_ord['contrib'].cumsum()\n    idx_top = df_aux_ord[df_aux_ord['acumulado'] <= limite].index.tolist()\n\n    if df_aux_ord['acumulado'].iloc[len(idx_top)] < limite:\n        idx_top.append(df_aux_ord.index[len(idx_top)])\n    df['FLG_EXP'] = 0\n    df.loc[df.index.isin(idx_top), 'FLG_EXP'] = 1\n    return df"
+    },
+    "documentacao": {
+      "resumo": "Identifica os registros com maior impacto em uma coluna específica de um DataFrame.",
+      "descricao": "A função calcula a contribuição acumulada dos valores absolutos em uma coluna do DataFrame e marca os registros que contribuem para até um determinado limite. Se o limite não for atingido, o último registro é incluído.",
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo os dados a serem analisados."
+        },
+        {
+          "nome": "col_valor",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "'DV'",
+          "descricao": "Nome da coluna do DataFrame que será usada para calcular o impacto. Deve conter valores numéricos."
+        },
+        {
+          "nome": "limite",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "0.8",
+          "descricao": "Limite de contribuição acumulada que os registros devem atingir para serem marcados como de maior impacto."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "DataFrame original com uma nova coluna 'FLG_EXP' indicando quais registros têm maior impacto (1) e quais não têm (0)."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "decoradores.monitor_completo",
+          "tipo": null,
+          "categoria": "import",
+          "descricao": "Módulo ou função que pode ser usado para monitorar o desempenho da função."
+        }
+      ],
+      "docstring": "Identifica os registros com maior impacto em uma coluna específica de um DataFrame.\n\nArgs:\n    df (DataFrame): DataFrame contendo os dados a serem analisados.\n    col_valor (str, optional): Nome da coluna do DataFrame que será usada para calcular o impacto. Deve conter valores numéricos. Padrão é 'DV'.\n    limite (float, optional): Limite de contribuição acumulada que os registros devem atingir para serem marcados como de maior impacto. Padrão é 0.8.\n\nReturns:\n    DataFrame: DataFrame original com uma nova coluna 'FLG_EXP' indicando quais registros têm maior impacto (1) e quais não têm (0).\n\nNotes:\n    Se o limite não for atingido, o último registro é incluído."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "analise_FISHER",
+      "tipo": "function",
+      "linha_inicio": 864,
+      "linha_fim": 952,
+      "parametros": [
+        {
+          "nome": "df_at",
+          "tipo": "pd.DataFrame",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "y1",
+          "tipo": "float | None",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "y2",
+          "tipo": "float | None",
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "decoradores.monitor_completo",
+          "math.sqrt",
+          "numpy",
+          "pandas"
+        ],
+        "chamadas": [
+          "abs",
+          "copy",
+          "df_at.copy",
+          "fillna",
+          "float",
+          "monitor_completo",
+          "np.isnan",
+          "pd.DataFrame",
+          "pd.to_numeric",
+          "sqrt",
+          "sum"
+        ]
+      },
+      "codigo": "def analise_FISHER(df_at: pd.DataFrame, y1: float | None = None, y2: float | None = None):\n    \n    cols = ['ativo','un','p1','q1','p2','q2']\n    df_at.columns = cols\n    \n    df = df_at.copy()\n\n    for col in ['p1','q1','p2','q2']:\n        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0.0)\n    \n    C1 = float((df['p1'] * df['q1']).sum())\n    C2 = float((df['p2'] * df['q2']).sum())\n    dC = C2 - C1\n    \n    EP_L = float(((df['p2'] - df['p1']) * df['q1']).sum())\n    EP_P = float(((df['p2'] - df['p1']) * df['q2']).sum())\n    EP_F = 0.5 * (EP_L + EP_P)\n    \n    EQ_L = float(((df['q2'] - df['q1']) * df['p1']).sum())\n    EQ_P = float(((df['q2'] - df['q1']) * df['p2']).sum())\n    EQ_F = 0.5 * (EQ_L + EQ_P)\n    \n    denom_L_preco = float((df['p1'] * df['q1']).sum())\n    num_L_preco   = float((df['p2'] * df['q1']).sum())\n    PL = (num_L_preco / denom_L_preco) if denom_L_preco != 0 else np.nan\n    \n    denom_P_preco = float((df['p1'] * df['q2']).sum())\n    num_P_preco   = float((df['p2'] * df['q2']).sum())\n    PP = (num_P_preco / denom_P_preco) if denom_P_preco != 0 else np.nan\n    \n    PF = sqrt(PL * PP) if (PL > 0 and PP > 0) else np.nan\n    \n    denom_L_qty = float((df['p1'] * df['q1']).sum())\n    num_L_qty   = float((df['p1'] * df['q2']).sum())\n    QL = (num_L_qty / denom_L_qty) if denom_L_qty != 0 else np.nan\n    \n    denom_P_qty = float((df['p2'] * df['q1']).sum())\n    num_P_qty   = float((df['p2'] * df['q2']).sum())\n    QP = (num_P_qty / denom_P_qty) if denom_P_qty != 0 else np.nan\n    \n    QF = sqrt(QL * QP) if (QL > 0 and QP > 0) else np.nan\n    \n    razao_check = (C2 / C1) if C1 != 0 else np.nan\n    razao_fisher = PF * QF if (not np.isnan(PF) and not np.isnan(QF)) else np.nan\n    check_fech = (abs(razao_check - razao_fisher) < 1e-8) if (not np.isnan(razao_check) and not np.isnan(razao_fisher)) else False\n    \n    prod_index = np.nan\n    prod_pct = np.nan\n    unit_custo_razao = np.nan\n    if y1 is not None and y2 is not None and y1 != 0 and y2 != 0:\n        prod_index = (y2 / y1) / QF if (QF and QF != 0 and not np.isnan(QF)) else np.nan\n        prod_pct = (prod_index - 1.0) * 100.0 if not np.isnan(prod_index) else np.nan\n        unit_custo_razao = ( (C2 / y2) / (C1 / y1) ) if (C1 != 0 and y1 != 0) else np.nan\n    \n    sumario = {\n                    'C1_total': [C1],\n                    'C2_total': [C2],\n                    'Delta_C': [dC],\n                    'EP_Fisher': [EP_F],\n                    'EQ_Fisher': [EQ_F],\n                    'EP_mais_EQ_igual_DeltaC': [abs((EP_F + EQ_F) - dC) < 1e-8],\n                    'Indice_Preco_Fisher(PF)': [PF],\n                    'Indice_Quantidade_Fisher(QF)': [QF],\n                    'C2/C1': [razao_check],\n                    'PF*QF': [razao_fisher],\n                    'Check_(C2/C1 == PF*QF)': [check_fech],\n                    'Prod_Ind_(saida_vs_ent_qdt)': [prod_index],\n                    'Prod_%_var': [prod_pct],\n                    'Unit_custo_razao_((C2/y2)/(C1/y1))': [unit_custo_razao],\n                    'y1': [y1],\n                    'y2': [y2]\n                }\n    df_res = pd.DataFrame(sumario)\n    \n    df_dt = df[['ativo','un','p1','q1','p2','q2']].copy()\n    df_dt['Custo1'] = df_dt['p1']*df_dt['q1']\n    df_dt['Custo2'] = df_dt['p2']*df_dt['q2']\n    df_dt['DeltaCusto'] = df_dt['Custo2'] - df_dt['Custo1']\n    df_dt['EP_L'] = (df_dt['p2'] - df_dt['p1']) * df_dt['q1']\n    df_dt['EP_P'] = (df_dt['p2'] - df_dt['p1']) * df_dt['q2']\n    df_dt['EP_F'] = 0.5 * (df_dt['EP_L'] + df_dt['EP_P'])\n    df_dt['EQ_L'] = (df_dt['q2'] - df['q1']) * df_dt['p1']\n    df_dt['EQ_P'] = (df_dt['q2'] -df_dt['q1']) * df_dt['p2']\n    df_dt['EQ_F'] = 0.5 * (df_dt['EQ_L'] + df_dt['EQ_P'])\n    \n    cols = ['ativo','un','p1','q1','p2','q2','Custo1','Custo2','DeltaCusto','EP_F','EQ_F','EP_L','EP_P','EQ_L','EQ_P']\n    df_dt = df_dt[cols]\n    \n    return df_res, df_dt"
+    },
+    "documentacao": {
+      "resumo": "Realiza uma análise de Fisher em um DataFrame contendo dados de preços e quantidades.",
+      "descricao": "A função realiza cálculos relacionados a índices de preço e quantidade de Fisher, além de calcular razões entre valores e verificar consistência entre elas. Também retorna um DataFrame com os resultados detalhados.",
+      "parametros": [
+        {
+          "nome": "df_at",
+          "tipo": "pd.DataFrame",
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo as colunas 'ativo', 'un', 'p1', 'q1', 'p2' e 'q2'."
+        },
+        {
+          "nome": "y1",
+          "tipo": "float | None",
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Valor de referência para cálculos relacionados a produtos."
+        },
+        {
+          "nome": "y2",
+          "tipo": "float | None",
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Outro valor de referência para cálculos relacionados a produtos."
+        }
+      ],
+      "retorno": {
+        "tipo": "tuple[pd.DataFrame, pd.DataFrame]",
+        "descricao": "Um tuple contendo dois DataFrames: o primeiro com resumo dos cálculos e o segundo com detalhes calculados por item."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "decoradores.monitor_completo",
+          "categoria": "import"
+        },
+        {
+          "nome": "math.sqrt",
+          "categoria": "import"
+        },
+        {
+          "nome": "numpy",
+          "categoria": "import"
+        },
+        {
+          "nome": "pandas",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Realiza uma análise de Fisher em um DataFrame contendo dados de preços e quantidades.\n\nArgs:\n    df_at (pd.DataFrame): DataFrame contendo as colunas 'ativo', 'un', 'p1', 'q1', 'p2' e 'q2'.\n    y1 (float | None, optional): Valor de referência para cálculos relacionados a produtos. Defaults to None.\n    y2 (float | None, optional): Outro valor de referência para cálculos relacionados a produtos. Defaults to None.\n\nReturns:\n    tuple[pd.DataFrame, pd.DataFrame]: Um tuple contendo dois DataFrames: o primeiro com resumo dos cálculos e o segundo com detalhes calculados por item."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "sel_projetos",
+      "tipo": "function",
+      "linha_inicio": 954,
+      "linha_fim": 982,
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "coluna_valor",
+          "tipo": null,
+          "default": "'soma_estornos'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "coluna_projeto",
+          "tipo": null,
+          "default": "'projeto'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "limite",
+          "tipo": null,
+          "default": "60",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "seed",
+          "tipo": null,
+          "default": "42",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "numpy"
+        ],
+        "chamadas": [
+          "abs",
+          "cumsum",
+          "df.copy",
+          "df.sample",
+          "df.sort_values",
+          "isin",
+          "min",
+          "np.random.seed",
+          "reset_index",
+          "sum",
+          "tolist"
+        ]
+      },
+      "codigo": "def sel_projetos(df, coluna_valor='soma_estornos', coluna_projeto = 'projeto', limite=60, seed=42):\n    np.random.seed(seed)\n    \n    df = df.copy()\n    df['VL_ABS'] = df[coluna_valor].abs()\n    df = df.sort_values(by='VL_ABS', ascending=False)\n    total = df['VL_ABS'].sum()\n    df['VL_PROB'] = df['VL_ABS'] / total\n    \n    n_validos = (df['VL_PROB'] > 0).sum()\n    if (df['VL_PROB'] > 0).sum() == 0:\n        selecionados = []\n    else:\n        n = min(limite, (df['VL_PROB'] > 0).sum())\n        selecionados = df.sample(\n                                n=n,\n                                weights=df['VL_PROB'],\n                                replace=False,\n                                random_state=seed\n                             )[coluna_projeto].tolist()\n    df['FLG_AMST'] = False\n    df.loc[df[coluna_projeto].isin(selecionados), 'FLG_AMST'] = True\n    df['VL_ACUM'] = df['VL_ABS'].cumsum()\n    df['Pct_ACUM'] = df['VL_ACUM'] / total\n    df['CLS_ABC'] = 'A'\n    df.loc[df['Pct_ACUM']>=0.85, 'CLS_ABC'] = 'B'\n    df.loc[df['Pct_ACUM']>=0.95, 'CLS_ABC'] = 'C'\n    \n    return selecionados, df[[coluna_projeto,'VL_ABS','VL_PROB','FLG_AMST','CLS_ABC','VL_ACUM']].reset_index(drop=True)"
+    },
+    "documentacao": {
+      "resumo": "Seleciona projetos com base em uma coluna de valor e um limite de amostras.",
+      "descricao": "Esta função seleciona projetos a partir de um DataFrame, considerando uma coluna específica de valores. Os projetos são escolhidos com probabilidade proporcional ao valor absoluto dos dados, limitados pelo número especificado. O resultado inclui os projetos selecionados e o DataFrame original atualizado com novas colunas indicando a seleção e classificação cumulativa.",
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo os dados dos projetos."
+        },
+        {
+          "nome": "coluna_valor",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "'soma_estornos'",
+          "descricao": "Nome da coluna que contém os valores a serem considerados na seleção."
+        },
+        {
+          "nome": "coluna_projeto",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "'projeto'",
+          "descricao": "Nome da coluna que identifica os projetos."
+        },
+        {
+          "nome": "limite",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "60",
+          "descricao": "Número máximo de projetos a serem selecionados."
+        },
+        {
+          "nome": "seed",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "42",
+          "descricao": "Semente para o gerador de números aleatórios, garantindo reproducibilidade."
+        }
+      ],
+      "retorno": {
+        "tipo": "[list[str], DataFrame]",
+        "descricao": "Uma lista dos projetos selecionados e um DataFrame atualizado com novas colunas indicando a seleção, probabilidade, acumulação de valores e classificação cumulativa."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "numpy"
+      ],
+      "docstring": "Seleciona projetos com base em uma coluna de valor e um limite de amostras.\n\nArgs:\n    df (DataFrame): DataFrame contendo os dados dos projetos.\n    coluna_valor (str, optional): Nome da coluna que contém os valores a serem considerados na seleção. Defaults to 'soma_estornos'.\n    coluna_projeto (str, optional): Nome da coluna que identifica os projetos. Defaults to 'projeto'.\n    limite (int, optional): Número máximo de projetos a serem selecionados. Defaults to 60.\n    seed (int, optional): Semente para o gerador de números aleatórios, garantindo reproducibilidade. Defaults to 42.\n\nReturns:\n    tuple: Uma lista dos projetos selecionados e um DataFrame atualizado com novas colunas indicando a seleção, probabilidade, acumulação de valores e classificação cumulativa."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "enc_outliers",
+      "tipo": "function",
+      "linha_inicio": 984,
+      "linha_fim": 996,
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": "pd.DataFrame | None",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "grupo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "valor",
+          "tipo": "str | None",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "pd.DataFrame",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "apply",
+          "df.copy",
+          "df.groupby",
+          "quantile"
+        ]
+      },
+      "codigo": "def enc_outliers(df: pd.DataFrame | None, grupo, valor: str | None) -> pd.DataFrame:\n    df = df.copy()\n    def det_flags(grupo):\n        Q1 = grupo[valor].quantile(0.25)\n        Q3 = grupo[valor].quantile(0.75)\n        IQR = Q3 - Q1\n        lower_fence = Q1 - 3 * IQR\n        upper_fence = Q3 + 3 * IQR\n        grupo['FLG_OUTLIER'] = (grupo[valor] < lower_fence) | (grupo[valor] > upper_fence)\n        return grupo\n    \n    df = df.groupby(grupo).apply(det_flags)\n    return df"
+    },
+    "documentacao": {
+      "resumo": "Identifica e marca outliers em um DataFrame agrupado por uma coluna específica.",
+      "descricao": "A função identifica outliers utilizando o método IQR (Interquartil) para cada grupo definido pela coluna de agrupamento. Os outliers são marcados com a flag 'FLG_OUTLIER'.",
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": "pd.DataFrame | None",
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo os dados a serem analisados. Se for None, uma exceção será levantada."
+        },
+        {
+          "nome": "grupo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da coluna pelo qual o DataFrame deve ser agrupado para identificar outliers."
+        },
+        {
+          "nome": "valor",
+          "tipo": "str | None",
+          "categoria": "posicional",
+          "descricao": "Nome da coluna dentro dos grupos que será usada para calcular os quartis e identificar outliers. Se for None, uma exceção será levantada."
+        }
+      ],
+      "retorno": {
+        "tipo": "pd.DataFrame",
+        "descricao": "DataFrame original com a adição de uma nova coluna 'FLG_OUTLIER' que indica se cada valor é um outlier (True) ou não (False)."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o DataFrame for None."
+        },
+        {
+          "tipo": "KeyError",
+          "descricao": "Quando a coluna de agrupamento ou a coluna de valor não existirem no DataFrame."
+        }
+      ],
+      "dependencias": [],
+      "docstring": "Identifica e marca outliers em um DataFrame agrupado por uma coluna específica.\n\nArgs:\n    df (pd.DataFrame | None): DataFrame contendo os dados a serem analisados. Se for None, uma exceção será levantada.\n    grupo: Nome da coluna pelo qual o DataFrame deve ser agrupado para identificar outliers.\n    valor (str | None): Nome da coluna dentro dos grupos que será usada para calcular os quartis e identificar outliers. Se for None, uma exceção será levantada.\n\nReturns:\n    pd.DataFrame: DataFrame original com a adição de uma nova coluna 'FLG_OUTLIER' que indica se cada valor é um outlier (True) ou não (False).\n\nRaises:\n    ValueError: Quando o DataFrame for None.\n    KeyError: Quando a coluna de agrupamento ou a coluna de valor não existirem no DataFrame."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "sorteio",
+      "tipo": "function",
+      "linha_inicio": 998,
+      "linha_fim": 1047,
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": "pd.DataFrame | None",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "coluna_valor",
+          "tipo": "str | None",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "coluna_identificador",
+          "tipo": "str | None",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "n",
+          "tipo": "Optional[int]",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "seed",
+          "tipo": "Optional[int]",
+          "default": "32",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "lista_extra",
+          "tipo": "Optional[List]",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "sorteados",
+          "tipo": "Optional[List]",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "metodo",
+          "tipo": "str",
+          "default": "'Simples'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tipo",
+          "tipo": null,
+          "default": "'Cd_ODI'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "pd.DataFrame",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "SRC.ais_funcoes.bsc_nr_amst",
+          "numpy",
+          "pandas"
+        ],
+        "chamadas": [
+          "apply",
+          "bsc_nr_amst",
+          "copy",
+          "df.groupby",
+          "df.sort_values",
+          "int",
+          "isin",
+          "len",
+          "np.random.seed",
+          "pd.DataFrame",
+          "pd.concat",
+          "pd.qcut",
+          "range",
+          "reset_index",
+          "resultados.append",
+          "resumo_por_projeto",
+          "sel_projetos",
+          "x.sample"
+        ]
+      },
+      "codigo": "def sorteio(df: pd.DataFrame | None, \n            coluna_valor: str | None, \n            coluna_identificador: str | None, \n            n: Optional[int] = None,\n            seed: Optional[int] = 32,\n            lista_extra: Optional[List] = None,\n            sorteados: Optional[List] = None,\n            metodo: str = \"Simples\",\n            tipo = \"Cd_ODI\",\n            st = None) -> pd.DataFrame:\n\n    if seed is not None:\n        np.random.seed(seed)\n\n    if n is None:\n        res, risco = bsc_nr_amst(N=len(df), confianca=0.95, erro_aceitavel=0.05, erros_esperados=0)\n        n = res['tamanho_amostra']\n\n    df = df.sort_values(by=coluna_valor, ascending =False).reset_index(drop=True)\n    resultados = []\n\n    df[\"Intervalo\"], bins = pd.qcut(df[coluna_valor], q=int(n), labels=False, duplicates=\"drop\", retbins=True)\n    df.loc[df[\"Intervalo\"] == 0, \"Limite_Inferior\"] = 0\n    df.loc[df[\"Intervalo\"] == 0, \"Limite_Superior\"] = df.loc[df[\"Intervalo\"] == 0, coluna_valor]\n    \n    for i in range(len(bins) - 1):\n        df.loc[df[\"Intervalo\"] == i, \"Limite_Inferior\"] = bins[i]\n        df.loc[df[\"Intervalo\"] == i, \"Limite_Superior\"] = bins[i + 1]\n\n    if sorteados != None:\n        amostra = df[df['Cd_SubODI'].isin(sorteados)].copy()\n        amostra = amostra[coluna_identificador + [coluna_valor, \"Limite_Inferior\", \"Limite_Superior\"]].reset_index(drop=True)\n        return amostra\n    \n    if metodo == \"Simples\":\n        amostra = df.groupby(\"Intervalo\").apply(lambda x: x.sample(1))\n        if lista_extra:\n            extras = df[df['Cd_SubODI'].isin(lista_extra)].copy()\n        else:\n            extras = pd.DataFrame()\n\n        resultados.append(amostra[coluna_identificador + [coluna_valor, \"Limite_Inferior\", \"Limite_Superior\"]].reset_index(drop=True))\n        if len(extras):\n            resultados.append(extras[coluna_identificador + [coluna_valor, \"Limite_Inferior\", \"Limite_Superior\"]].reset_index(drop=True))\n\n        return pd.concat(resultados).reset_index(drop=True)\n    elif metodo == \"Ponderada\":       \n        return sel_projetos(df, coluna_valor=coluna_valor, coluna_projeto = coluna_identificador, limite=n, seed=seed)\n    elif metodo == \"AUM\":\n        return resumo_por_projeto(df, tipo = tipo, seed = seed, nm_var = coluna_valor, nm_crit = [coluna_identificador], st=st)"
+    },
+    "documentacao": {
+      "resumo": "Realiza um sorteio de amostras a partir de um DataFrame, utilizando diferentes métodos como simples, ponderada e AUM.",
+      "descricao": "A função realiza um sorteio de amostras a partir de um DataFrame, considerando uma coluna de valor e outra de identificador. O tamanho da amostra pode ser especificado ou calculado automaticamente. Suporta três métodos: simples, ponderada e AUM.",
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": "pd.DataFrame | None",
+          "descricao": "DataFrame contendo os dados a serem sorteados."
+        },
+        {
+          "nome": "coluna_valor",
+          "tipo": "str | None",
+          "descricao": "Nome da coluna que será usada para determinar o valor dos elementos."
+        },
+        {
+          "nome": "coluna_identificador",
+          "tipo": "str | None",
+          "descricao": "Nome da coluna que será usada como identificador dos elementos sorteados."
+        },
+        {
+          "nome": "n",
+          "tipo": "Optional[int]",
+          "default": "None",
+          "descricao": "Tamanho da amostra desejado. Se None, o tamanho é calculado automaticamente."
+        },
+        {
+          "nome": "seed",
+          "tipo": "Optional[int]",
+          "default": "32",
+          "descricao": "Seed para a geração de números aleatórios."
+        },
+        {
+          "nome": "lista_extra",
+          "tipo": "Optional[List]",
+          "default": "None",
+          "descricao": "Lista de elementos adicionais que devem ser incluídos na amostra."
+        },
+        {
+          "nome": "sorteados",
+          "tipo": "Optional[List]",
+          "default": "None",
+          "descricao": "Lista de elementos já sorteados que devem ser retornados."
+        },
+        {
+          "nome": "metodo",
+          "tipo": "str",
+          "default": "'Simples'",
+          "descricao": "Método de sorteio a ser utilizado: 'Simples', 'Ponderada' ou 'AUM'."
+        },
+        {
+          "nome": "tipo",
+          "tipo": "null",
+          "default": "'Cd_ODI'",
+          "descricao": "Tipo específico para o método AUM."
+        },
+        {
+          "nome": "st",
+          "tipo": "null",
+          "default": "None",
+          "descricao": "Parâmetro adicional para o método AUM."
+        }
+      ],
+      "retorno": {
+        "tipo": "pd.DataFrame",
+        "descricao": "DataFrame contendo os elementos sorteados."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "SRC.ais_funcoes.bsc_nr_amst",
+          "categoria": "import"
+        },
+        {
+          "nome": "numpy",
+          "categoria": "import"
+        },
+        {
+          "nome": "pandas",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Realiza um sorteio de amostras a partir de um DataFrame, utilizando diferentes métodos como simples, ponderada e AUM.\n\nArgs:\n    df (pd.DataFrame | None): DataFrame contendo os dados a serem sorteados.\n    coluna_valor (str | None): Nome da coluna que será usada para determinar o valor dos elementos.\n    coluna_identificador (str | None): Nome da coluna que será usada como identificador dos elementos sorteados.\n    n (Optional[int]): Tamanho da amostra desejado. Se None, o tamanho é calculado automaticamente.\n    seed (Optional[int]): Seed para a geração de números aleatórios.\n    lista_extra (Optional[List]): Lista de elementos adicionais que devem ser incluídos na amostra.\n    sorteados (Optional[List]): Lista de elementos já sorteados que devem ser retornados.\n    metodo (str): Método de sorteio a ser utilizado: 'Simples', 'Ponderada' ou 'AUM'.\n    tipo (null): Tipo específico para o método AUM.\n    st (null): Parâmetro adicional para o método AUM.\n\nReturns:\n    pd.DataFrame: DataFrame contendo os elementos sorteados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "calc_iqr_limiar",
+      "tipo": "function",
+      "linha_inicio": 77,
+      "linha_fim": 83,
+      "parametros": [
+        {
+          "nome": "s",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "s.quantile"
+        ]
+      },
+      "codigo": "def calc_iqr_limiar(s):\n        Q1 = s.quantile(0.25)\n        Q3 = s.quantile(0.75)\n        IQR = Q3 - Q1\n        lower = Q1 - 1.5 * IQR\n        upper = Q3 + 1.5 * IQR\n        return lower, upper"
+    },
+    "documentacao": {
+      "resumo": "Calcula os limites inferior e superior para identificar outliers usando o método IQR (Interquartil).",
+      "descricao": "Esta função calcula os limites inferior e superior com base nos quartis Q1 e Q3 de uma série de dados, utilizando a regra do IQR (Interquartil) para determinar quais valores são considerados outliers.",
+      "parametros": [
+        {
+          "nome": "s",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Série de dados numéricos."
+        }
+      ],
+      "retorno": {
+        "tipo": "tuple[float, float]",
+        "descricao": "Limites inferior e superior para identificar outliers."
+      },
+      "excecoes": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "s.quantile"
+        ]
+      },
+      "docstring": "Calcula os limites inferior e superior para identificar outliers usando o método IQR (Interquartil).\n\nArgs:\n    s: Série de dados numéricos.\n\nReturns:\n    tuple[float, float]: Limites inferior e superior para identificar outliers."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "calc_percentil_limiar",
+      "tipo": "function",
+      "linha_inicio": 85,
+      "linha_fim": 88,
+      "parametros": [
+        {
+          "nome": "s",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "lower_q",
+          "tipo": null,
+          "default": "0.05",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "upper_q",
+          "tipo": null,
+          "default": "0.95",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "s.quantile"
+        ]
+      },
+      "codigo": "def calc_percentil_limiar(s, lower_q=0.05, upper_q=0.95):\n        lower = s.quantile(lower_q)\n        upper = s.quantile(upper_q)\n        return lower, upper"
+    },
+    "documentacao": {
+      "resumo": "Calcula os limites inferior e superior de um percentil em uma série de dados.",
+      "descricao": "Esta função calcula os valores limite inferior e superior para um determinado percentil em uma série de dados. Os percentis padrão são o 5º (lower_q) e o 95º (upper_q).",
+      "parametros": [
+        {
+          "nome": "s",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Série de dados para a qual os limites do percentil serão calculados."
+        },
+        {
+          "nome": "lower_q",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "0.05",
+          "descricao": "Percentil inferior para o cálculo dos limites. O padrão é 0.05 (5%)."
+        },
+        {
+          "nome": "upper_q",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "0.95",
+          "descricao": "Percentil superior para o cálculo dos limites. O padrão é 0.95 (95%)."
+        }
+      ],
+      "retorno": {
+        "tipo": "tuple[float, float]",
+        "descricao": "Uma tupla contendo os valores limite inferior e superior do percentil."
+      },
+      "excecoes": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "s.quantile"
+        ]
+      },
+      "docstring": "Calcula os limites inferior e superior de um percentil em uma série de dados.\n\nArgs:\n    s: Série de dados para a qual os limites do percentil serão calculados.\n    lower_q (float): Percentil inferior para o cálculo dos limites. O padrão é 0.05 (5%).\n    upper_q (float): Percentil superior para o cálculo dos limites. O padrão é 0.95 (95%).\n\nReturns:\n    tuple[float, float]: Uma tupla contendo os valores limite inferior e superior do percentil."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "calc_z",
+      "tipo": "function",
+      "linha_inicio": 90,
+      "linha_fim": 94,
+      "parametros": [
+        {
+          "nome": "s",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "numpy"
+        ],
+        "chamadas": [
+          "median",
+          "np.abs",
+          "np.zeros_like",
+          "s.median"
+        ]
+      },
+      "codigo": "def calc_z(s):\n        med = s.median()\n        MAD = (np.abs(s - med)).median()\n        rob_z = (s - med) / (1.4826 * MAD) if MAD != 0 else np.zeros_like(s)\n        return rob_z"
+    },
+    "documentacao": {
+      "resumo": "Calcula a medida Z robusta de um conjunto de dados.",
+      "descricao": "A função calcula a medida Z robusta, que é uma versão mais resistente aos valores atípicos em comparação com a medida Z padrão. Utiliza a mediana e a média absoluta do desvio (MAD) para normalizar os dados.",
+      "parametros": [
+        {
+          "nome": "s",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Conjunto de dados numéricos."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Medida Z robusta dos valores em 's'."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "numpy"
+      ],
+      "docstring": "Calcula a medida Z robusta de um conjunto de dados.\n\nArgs:\n    s: Conjunto de dados numéricos.\n\nReturns:\n    Medida Z robusta dos valores em 's'.\n\nNotes:\n    A função utiliza a mediana e a média absoluta do desvio (MAD) para normalizar os dados. Se MAD for zero, retorna zeros."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "UC_TI",
+      "tipo": "function",
+      "linha_inicio": 96,
+      "linha_fim": 110,
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "Nr_TI",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "copy",
+          "df_ti.apply",
+          "map",
+          "to_dict",
+          "tuple",
+          "value_counts"
+        ]
+      },
+      "codigo": "def UC_TI(df, Nr_TI):\n        df_ti = df[df['Nr_TI'] == Nr_TI].copy()\n        if df_ti.empty:\n            return []\n\n        df_ti['UC_Tupla'] = df_ti.apply(\n                                            lambda row: tuple(\n                                                row[['Nr_TUC','Nr_A1','Nr_A2','Nr_A3','Nr_A4','Nr_A5','Nr_A6','COD_ITEM']]\n                                            ),\n                                            axis=1\n                                       )\n\n        contagens = df_ti['UC_Tupla'].value_counts().to_dict()\n        df_ti['Qtd_UC'] = df_ti['UC_Tupla'].map(contagens)\n        return df_ti"
+    },
+    "documentacao": {
+      "resumo": "Filtra um DataFrame para incluir apenas as linhas onde o 'Nr_TI' é igual ao valor fornecido e adiciona uma coluna com a contagem de ocorrências de cada tupla única.",
+      "descricao": "A função filtra um DataFrame `df` para selecionar apenas as linhas onde o valor da coluna 'Nr_TI' corresponde ao parâmetro `Nr_TI`. Em seguida, cria uma nova coluna 'UC_Tupla' que contém tuplas formadas por várias colunas específicas do DataFrame. Por fim, adiciona uma coluna 'Qtd_UC' que indica a quantidade de vezes que cada tupla aparece no DataFrame filtrado.",
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo os dados a serem processados."
+        },
+        {
+          "nome": "Nr_TI",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Valor que será usado para filtrar as linhas do DataFrame `df`."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "DataFrame filtrado com as novas colunas 'UC_Tupla' e 'Qtd_UC'."
+      },
+      "excecoes": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "copy",
+          "df_ti.apply",
+          "map",
+          "to_dict",
+          "tuple",
+          "value_counts"
+        ]
+      },
+      "docstring": "Filtra um DataFrame para incluir apenas as linhas onde o 'Nr_TI' é igual ao valor fornecido e adiciona uma coluna com a contagem de ocorrências de cada tupla única.\n\nArgs:\n    df: DataFrame contendo os dados a serem processados.\n    Nr_TI: Valor que será usado para filtrar as linhas do DataFrame `df`.\n\nReturns:\n    DataFrame filtrado com as novas colunas 'UC_Tupla' e 'Qtd_UC'.\n\nNotes:\n    A função retorna um DataFrame vazio se não houver linhas correspondentes ao valor de `Nr_TI`."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "texto_severidade",
+      "tipo": "function",
+      "linha_inicio": 154,
+      "linha_fim": 162,
+      "parametros": [
+        {
+          "nome": "nivel",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": []
+      },
+      "codigo": "def texto_severidade(nivel):\n        if nivel == 3:\n            return \"Outlier Forte (Alta prioridade): valor extremo e estrutura multivariada atípica.\"\n        elif nivel == 2:\n            return \"Outlier Multivariado (Média prioridade): combinação rara sem valor individual extremo.\"\n        elif nivel == 1:\n            return \"Outlier Univariado (Baixa prioridade): valor individual extremo sem estrutura atípica.\"\n        else:\n            return \"Normal (Sem ação).\""
+    },
+    "documentacao": {
+      "resumo": "Retorna uma descrição textual com base no nível de severidade.",
+      "descricao": "A função retorna uma string descrevendo a severidade de um evento ou valor com base em seu nível. Os níveis possíveis são 1, 2 e 3, cada um correspondendo a diferentes tipos de outliers e prioridades. Se o nível não for reconhecido, a função retorna 'Normal (Sem ação)'.",
+      "parametros": [
+        {
+          "nome": "nivel",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nível de severidade do evento ou valor."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Descrição textual da severidade correspondente ao nível fornecido."
+      },
+      "excecoes": [],
+      "dependencias": [],
+      "docstring": "Retorna uma descrição textual com base no nível de severidade.\n\nArgs:\n    nivel: Nível de severidade do evento ou valor.\n\nReturns:\n    Descrição textual da severidade correspondente ao nível fornecido."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "calc_severidade",
+      "tipo": "function",
+      "linha_inicio": 163,
+      "linha_fim": 171,
+      "parametros": [
+        {
+          "nome": "row",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": []
+      },
+      "codigo": "def calc_severidade(row):\n        if row['FLG_UV_OUT'] and row['FLG_MV_OUT']:\n            return 3\n        elif row['FLG_MV_OUT']:\n            return 2\n        elif row['FLG_UV_OUT']:\n            return 1\n        else:\n            return 0"
+    },
+    "documentacao": {
+      "resumo": "Calcula a severidade com base em flags específicas de uma linha de dados.",
+      "descricao": "A função determina a severidade de um evento com base nas flags 'FLG_UV_OUT' e 'FLG_MV_OUT'. A severidade é classificada conforme as condições definidas no código.",
+      "parametros": [
+        {
+          "nome": "row",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Linha de dados contendo as flags 'FLG_UV_OUT' e 'FLG_MV_OUT'."
+        }
+      ],
+      "retorno": {
+        "tipo": "int",
+        "descricao": "Nível de severidade, onde 3 é a mais grave e 0 é a menos grave."
+      },
+      "excecoes": [],
+      "dependencias": [],
+      "docstring": "Calcula a severidade com base em flags específicas de uma linha de dados.\n\nArgs:\n    row: Linha de dados contendo as flags 'FLG_UV_OUT' e 'FLG_MV_OUT'.\n\nReturns:\n    int: Nível de severidade, onde 3 é a mais grave e 0 é a menos grave."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "peso_exp",
+      "tipo": "function",
+      "linha_inicio": 516,
+      "linha_fim": 518,
+      "parametros": [
+        {
+          "nome": "data",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "numpy",
+          "pandas"
+        ],
+        "chamadas": [
+          "np.exp",
+          "pd.Timestamp"
+        ]
+      },
+      "codigo": "def peso_exp(data):\n        delta = (data_t2 - pd.Timestamp(data)).days / 365.0\n        return np.exp(-lam * delta)"
+    },
+    "documentacao": {
+      "resumo": "Calcula o peso exponencial com base em uma data e um parâmetro lambda.",
+      "descricao": "Esta função calcula o peso exponencial utilizando a diferença entre uma data fornecida e uma data de referência (data_t2), dividida por 365 dias, e multiplicada pelo negativo de um parâmetro lambda. O resultado é então elevado à exponecial.",
+      "parametros": [
+        {
+          "nome": "data",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Data para a qual o peso exponencial será calculado."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Peso exponencial calculado."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "numpy",
+        "pandas"
+      ],
+      "docstring": "Calcula o peso exponencial com base em uma data e um parâmetro lambda.\n\nArgs:\n    data: Data para a qual o peso exponencial será calculado.\n\nReturns:\n    Peso exponencial calculado.\n\nDependencies:\n    numpy: Utilizado para calcular a função exponencial.\n    pandas: Utilizado para manipulação de datas."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "achar_referencia",
+      "tipo": "function",
+      "linha_inicio": 529,
+      "linha_fim": 545,
+      "parametros": [
+        {
+          "nome": "chave_dict",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "numpy",
+          "pandas"
+        ],
+        "chamadas": [
+          "chave_dict.items",
+          "len",
+          "np.ones",
+          "pd.DataFrame",
+          "range"
+        ]
+      },
+      "codigo": "def achar_referencia(chave_dict):\n        if not relaxar:\n            mask = np.ones(len(df_ref), dtype=bool)\n            for k, v in chave_dict.items():\n                mask &= df_ref[k] == v\n            grupo = df_ref[mask]\n            return grupo, cols_chave\n\n        for i in range(len(cols_chave), 0, -1):\n            subset = cols_chave[:i]\n            mask = np.ones(len(df_ref), dtype=bool)\n            for k in subset:\n                mask &= df_ref[k] == chave_dict[k]\n            grupo = df_ref[mask]\n            if not grupo.empty:\n                return grupo, subset\n        return pd.DataFrame(), []"
+    },
+    "documentacao": {
+      "resumo": "Acha uma referência em um DataFrame com base em um dicionário de chaves e valores.",
+      "descricao": "Procura por linhas no DataFrame `df_ref` que correspondam aos pares chave-valor fornecidos no dicionário `chave_dict`. Se `relaxar` for False, retorna todas as colunas do DataFrame. Caso contrário, tenta encontrar o menor subconjunto de chaves necessárias para identificar a linha.",
+      "parametros": [
+        {
+          "nome": "chave_dict",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Dicionário contendo as chaves e valores que devem ser correspondidos no DataFrame."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Um DataFrame contendo as linhas correspondentes e uma lista de colunas usadas na busca. Se nenhuma linha for encontrada, retorna um DataFrame vazio e uma lista vazia."
+      },
+      "excecoes": [],
+      "dependencias": {
+        "imports": [
+          "numpy",
+          "pandas"
+        ],
+        "chamadas": [
+          "chave_dict.items",
+          "len",
+          "np.ones",
+          "pd.DataFrame",
+          "range"
+        ]
+      },
+      "docstring": "Acha uma referência em um DataFrame com base em um dicionário de chaves e valores.\n\nArgs:\n    chave_dict (dict): Dicionário contendo as chaves e valores que devem ser correspondidos no DataFrame.\n\nReturns:\n    tuple: Um DataFrame contendo as linhas correspondentes e uma lista de colunas usadas na busca. Se nenhuma linha for encontrada, retorna um DataFrame vazio e uma lista vazia."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "det_flags",
+      "tipo": "function",
+      "linha_inicio": 986,
+      "linha_fim": 993,
+      "parametros": [
+        {
+          "nome": "grupo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "quantile"
+        ]
+      },
+      "codigo": "def det_flags(grupo):\n        Q1 = grupo[valor].quantile(0.25)\n        Q3 = grupo[valor].quantile(0.75)\n        IQR = Q3 - Q1\n        lower_fence = Q1 - 3 * IQR\n        upper_fence = Q3 + 3 * IQR\n        grupo['FLG_OUTLIER'] = (grupo[valor] < lower_fence) | (grupo[valor] > upper_fence)\n        return grupo"
+    },
+    "documentacao": {
+      "resumo": "Deteta outliers em um DataFrame usando o método do intervalo interquartil (IQR).",
+      "descricao": "A função calcula os quartis Q1 e Q3, determina o IQR e define faixas de limite inferior e superior. Os valores fora dessas faixas são marcados como outliers.",
+      "parametros": [
+        {
+          "nome": "grupo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo os dados a serem analisados."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "DataFrame original com uma nova coluna 'FLG_OUTLIER' indicando se cada valor é um outlier (True) ou não (False)."
+      },
+      "excecoes": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "quantile"
+        ]
+      },
+      "docstring": "Deteta outliers em um DataFrame usando o método do intervalo interquartil (IQR).\n\nArgs:\n    grupo: DataFrame contendo os dados a serem analisados.\n\nReturns:\n    DataFrame original com uma nova coluna 'FLG_OUTLIER' indicando se cada valor é um outlier (True) ou não (False)."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "fit",
+      "tipo": "function",
+      "linha_inicio": 483,
+      "linha_fim": 484,
+      "parametros": [
+        {
+          "nome": "self",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "X",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "y",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "sample_weight",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "fit",
+          "super"
+        ]
+      },
+      "codigo": "def fit(self, X, y=None, sample_weight=None):\n            return super().fit(X, sample_weight=sample_weight)"
+    },
+    "documentacao": {
+      "resumo": "Ajusta o modelo aos dados de entrada.",
+      "descricao": "Este método ajusta o modelo aos dados fornecidos, utilizando pesos amostrais se especificados. Ele chama o método `fit` da superclasse para realizar a operação de ajuste.",
+      "parametros": [
+        {
+          "nome": "self",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Instância atual do objeto."
+        },
+        {
+          "nome": "X",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Matriz de características dos dados de entrada."
+        },
+        {
+          "nome": "y",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Valores-alvo correspondentes aos dados de entrada. Pode ser None se não houver valores-alvo."
+        },
+        {
+          "nome": "sample_weight",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Pesos amostrais para cada amostra. Pode ser None se não houver pesos personalizados."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "A instância atual do objeto após o ajuste."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "fit",
+        "super"
+      ],
+      "docstring": "Ajusta o modelo aos dados de entrada.\n\nArgs:\n    self: Instância atual do objeto.\n    X (array-like): Matriz de características dos dados de entrada.\n    y (array-like, opcional): Valores-alvo correspondentes aos dados de entrada. Pode ser None se não houver valores-alvo.\n    sample_weight (array-like, opcional): Pesos amostrais para cada amostra. Pode ser None se não houver pesos personalizados.\n\nReturns:\n    A instância atual do objeto após o ajuste."
+    },
+    "status": "sucesso"
+  }
+]

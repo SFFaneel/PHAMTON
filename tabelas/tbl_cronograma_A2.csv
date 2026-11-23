@@ -1,0 +1,116 @@
+Item|Responsável|Arq_SAI|Dt_INI|Dt_FIM|EXEC|REV|APR|Dt_APR|SIT|OBS|ITEM_SDI|Cd_Matriz_Mestra|Cd_TESTE
+1 Planejamento da fiscalização|||1|5|A|B|C|||||MM-DA-000|—
+1.1 Qualidade de dados e planejamento da fiscalização|||1|1|A|B|C| || ||MM-DA-000|—
+1.1.1 Verificar a tempestividade da entrega dos arquivos e a integridade do conjunto documental||erros_YYYYMMDD.pdf|1|1|A|B|C|||||MM-DA-000|DQ-001
+1.1.2 Levantar últimas observações da fiscalização anterior e fazer acompanhamento|||1|5|A|B|C|||||MM-DA-000|—
+1.1.3 Elaborar o planejamento operacional da fiscalização||Saida_CRONO_F0.xlsx|1|5|A|B|C|||||MM-DA-000|—
+2 Consistência das bases|||1|21|A|B|C|||||MM-DA-000|—
+2.1 Conciliação AIS versus Base Georefenciada|||1|21|A|B|C|||||MM-DA-000|—
+2.1.1 Conciliação da base incremental, considerando como chave completa, com relaxamento por etapas: ODI+TUC+A1-A6+ANO.||REL_CONCILIACAO_INCR.xlsx|1|17|A|B|C|||||MM-DA-000|REC-001
+2.1.2 Conciliação da base total, considerando como chave: UC. Avaliação da mutação de ativos da BDGD (BDGD anterior mais movimentações contábeis versus BDGD atual)||RCP_TOT.csv|1|21|A|B|C|||||MM-DA-000|REC-002 / MOV-001
+2.1.3 Consistência da base georeferenciada encaminhada com o levantamento de campo da credenciada|||1|1|A|B|C|||||MM-DA-000|REC-003
+2.1.4 Consistência dos fatores de conversão de cabos com a engenharia.|||1|21|A|B|C|||||MM-DA-000|REC-004
+2.1.5 Consistência dos vão médio rural e urbano||"VAO_MEDIO_RAMAL_NU_EMPRESA.png, 
+VAO_MEDIO_RAMAL_UB_EMPRESA.png, 
+VAO_MEDIO_REDE_NU_EMPRESA.png, 
+VAO_MEDIO_REDE_UB_EMPRESA.png"|1|4|A|B|C|||||MM-DA-000|ANA-002
+2.1.6 Consistência dos arquivos de reserva imobilizada (TI 98), AIS vs BDGD, incremental e total||Em desenvolvimento|1|1|A|B|C|||||MM-DA-000|REC-005
+2.1.7 Validação dos ativos de controle individual (AIS vs BDGD)||"CONDUTORES.xlsx, 
+REAT.xlsx, 
+REG.xlsx, 
+SECC.xlsx,
+TRAFO.xlsx"|1|4|A|B|C|||||MM-DA-000|REC-006
+2.2 Conciliação AIS versus ROA|||1|39|A|B|C|||||MM-DA-000|—
+2.2.1 Conciliação da base incremental, quantidade, considerando como chave:  ODI+TUC+A1-A6.||REL_CONCILIACAO_INCR_QTD_CHV_CMP.xlsx|1|30|A|B|C|||||MM-DA-000|REC-007
+2.2.2 Consistência do AIS com as bases de dados da empresa.||Arquivo credenciada|1|3|A|B|C|||||MM-DA-000|REC-008
+2.2.3 Validar a consistência do valor total por TI entre AIS e ROA||REL_CONCILIACAO_INCR_VL_CHV_SMP.xlsx|1|33|A|B|C|||||MM-DA-000|REC-009
+2.2.4 Validar a consistência do valor total dos medidores entre AIS e o sistema comercial||ANL_MEDIDORES_TIPO_FASE_EMPRESA.csv|1|3|A|B|C|||||MM-DA-000|REC-010
+2.2.5 Validar a consistência da formação das famílias de ativos||Arquivo credenciada|1|17|A|B|C|||||MM-DA-000|ELG-001
+2.2.6 Validar a compatibilidade entre UC e TI (ex.: ativos classificados como TI 255 em subestações)||ANL_LST_TUC_EMPRESA.csv|1|23|A|B|C|||||MM-DA-000|ELG-002
+2.2.7 Avaliar a classificação contábil dos ativos (conta contábil, TI, CM, TUC e atributos)||Arquivo credenciada|1|23|A|B|C|||||MM-DA-000|ELG-003
+2.2.8 Validar a classificação BAR/BRR dos ativos||Arquivo credenciada|1|22|A|B|C|||||MM-DA-000|ELG-004
+2.2.9 Validar a codificação contábil em relação à descrição técnica do ativo||Arquivo credenciada|1|21|A|B|C|||||MM-DA-000|ELG-005
+2.2.10 Identificar ativos vinculados a Obras Especiais (OE) e conciliar seus valores com os registros contábeis||Arquivo credenciada|1|17|A|B|C|||||MM-DA-000|REC-011
+2.2.11 Avaliar projetos com atipicidades na composição da Natureza de Gasto (ausência de COM ausência de CA, CA reduzido ou CA atípico)||Saida_ABT_F0.xlsx|1|2|A|B|C|||||MM-DA-000|ANA-003
+2.2.12 Avaliar a consistência do Valor de Fábrica (VF) e do JOA por item ou projeto||Saida_ABT_F1.xlsx|1|33|A|B|C|||||MM-DA-000|VAL-001 / CAL-001 / VAL-002 / CAL-002
+2.2.13 Validar o atendimento aos critérios mínimos de capitalização (vão mínimo, valor mínimo e demais limites aplicáveis)||BASE_INCR_ALERTAS_EMPRESA.csv,|1|33|A|B|C|||||MM-DA-000|LIM-001
+2.2.14 Solicitar e validar os critérios utilizados para abertura do VOC durante a unitização||TST_CONDUTORES_MIN_xxxxx.csv, ALERTAS.csv|1|39|A|B|C|||||MM-DA-000|ELG-006
+2.2.15 Validar a data de unitização registrada no ER||TST_MEDIDORES_xxxxx.csv|1|22|A|B|C|||||MM-DA-000|LIM-002
+2.2.16 Avaliar a pertinência técnica dos equipamentos de reserva, conforme critérios de engenharia||Arquivo credenciada|2|3|A|B|C|||||MM-DA-000|ELG-007
+2.2.17 Validar a classificação dos terrenos como regularizados||Arquivo credenciada|1|1|A|B|C|||||MM-DA-000|ELG-008
+2.2.18 Identificar ativos associados a Cd_SubODI específicos (incorporação de DIT, programas estaduais, compensações de ICMS e demais situações especiais)||Arquivo credenciada|1|24|A|B|C|||||MM-DA-000|ANA-004
+2.3 Análises do ROA|||1|4|A|B|C|||||MM-DA-000|—
+2.3.1 Validar a integridade estrutural do arquivo ROA||Arquivo credenciada|1|33|A|B|C|||||MM-DA-000|DQ-005
+2.3.2 Avaliação da lista de materiais, de serviços, de grupos de UC||"LST_MAT_AJ_EMPRESA.csv,
+LST_SER_AJ_EMPRESA.csv"|3|21|A|B|C|||||MM-DA-000|DQ-006
+2.3.3 Análise do critério de apropriação de MOP|||1|23|A|B|C|||||MM-DA-000|—
+2.3.3.1 Avaliar a metodologia de apropriação da MOP adotada pela distribuidora||Equipe (fiscal e credenciada)|1|3|A|B|C|||||MM-DA-000|VAL-003
+2.3.3.2 Validar as rubricas da FOPAG passíveis de capitalização||tbl_analises_mop.csv|1|3|A|B|C|||||MM-DA-000|—
+2.3.3.2.1 Validar as rubricas elegíveis à capitalização.||tbl_analises_mop.csv|1|21|A|B|C|||||MM-DA-000|ELG-009
+2.3.3.2.2 Conciliar os valores capitalizados da FOPAG com os valores apropriados ao ROA.||tbl_comparativa_mop_fopag_roa.csv|1|33|A|B|C|||||MM-DA-000|REC-012
+2.3.3.3 Para métodos baseados em tempo padrão, avaliar os estudos de tempos, a periodicidade de revisão, a parametrização do sistema e a aderência dos lançamentos às premissas aprovadas||Equipe (fiscal e credenciada)|1|33|A|B|C|||||MM-DA-000|VAL-004
+2.3.3.4 Validar a aplicação do método de apropriação conforme o tipo de Custos Adicionais (CA)||Equipe (fiscal e credenciada)|1|16|A|B|C|||||MM-DA-000|VAL-005
+2.3.3.5 Verificar a existência de controle das atividades e serviços executados pela MOP e validar os lançamentos em ODI e ODD nas amostras||Equipe (fiscal e credenciada)|1|16|A|B|C|||||MM-DA-000|DQ-007 / ELG-010 / DQ-008 / ELG-011
+2.3.3.6 Validar a classificação do tipo de Custos Adicionais (CA)||Equipe (fiscal e credenciada)|1|16|A|B|C|||||MM-DA-000|ELG-012
+2.3.4 Análise do critério de apropriação de ST||Equipe (fiscal e credenciada)|1|16|A|B|C|||||MM-DA-000|—
+2.3.4.1 Avaliar a metodologia de apropriação de Serviços de Terceiros||Equipe (fiscal e credenciada)|3|3|A|B|C|||||MM-DA-000|VAL-006
+2.3.4.2 Validar os procedimentos apresentados pela empresa e sua aderência aos contratos e às amostras selecionadas||Equipe (fiscal e credenciada)|1|4|A|B|C|||||MM-DA-000|VAL-006
+2.3.4.3 Verificar a existência de controle por atividades e serviços nas contratações de montagem||Equipe (fiscal e credenciada)|1|33|A|B|C|||||MM-DA-000|VAL-007 / DQ-009
+2.3.4.4 Validar a classificação do tipo de Custos Adicionais (CA)||Equipe (fiscal e credenciada)|1|19|A|B|C|||||MM-DA-000|ELG-012
+2.3.4.5 Levantar e avaliar o montante de penalidades aplicadas às prestadoras de serviços||Equipe (fiscal e credenciada)|1|33|A|B|C|||||MM-DA-000|ANA-005
+2.3.4.6 Avaliar as variações dos custos por tipo de serviço e por localidade||Equipe (fiscal e credenciada)|1|23|A|B|C|||||MM-DA-000|ANA-006
+2.3.5 Análise do critério e teste de consistência da segregação ODD/ODI.||Saida_AMS_F0.xlsx|1|23|A|B|C|||||MM-DA-000|DQ-008 / ELG-011
+2.3.6 Análise da racionalização de COM.||"ANALITICO_AJS_RAC_COM_EMPRESA.csv,
+RESUMO_AJS_RAC_COM_EMPRESA.csv,
+RESUMO_MAT_CMU_QTD_EMPRESA.csv"|3|30|A|B|C|||||MM-DA-000|VAL-008
+2.3.7 Verificar os critérios de apropriação por TI (diretos e indiretos) para os projetos.|||1|23|A|B|C|||||MM-DA-000|ELG-006
+2.3.8 Análise das amostras definidas por sorteio (as built, contratos, NFe, etc.).||Saida_AMS_F0.xlsx|1|23|A|B|C|||||MM-DA-000|—
+2.3.9 Análise do fluxo temporal||"AMST_INDICADORES.csv,
+AJST_FLX_TEMP_EMPRESA.csv, 
+DD_LMT_ROA_EMPRESA.csv, 
+DT_FLX_TEMP_EMPRESA.csv,
+ANL_PER_OBRA_EMPRESA.csv"|1|16|A|B|C|||||MM-DA-000|ANA-007
+2.3.10 Validação das datas de energização||Saida_AMS_F0.xlsx|1|23|A|B|C|||||MM-DA-000|LIM-003
+2.3.11 Análise de lançamentos do ROA fora do período da obra definido no ROS (data de início do projeto e de unitização)||ANL_DTS_FP_LANC_ROS_EMPRESA.csv|1|24|A|B|C|||||MM-DA-000|LIM-004
+2.3.12 Classificação dos projetos:  investimento e manutenção||Saida_AMS_F0.xlsx|1|16|A|B|C|||||MM-DA-000|ELG-013
+2.3.13 Classificação dos projetos: OE, IR, PLpT etc.||Saida_AMS_F0.xlsx|1|4|A|B|C|||||MM-DA-000|ELG-014
+2.3.14 Classificação dos projetos:  tipologia.||Saida_AMS_F0.xlsx|3|14|A|B|C|||||MM-DA-000|ELG-015
+2.3.15 Análise de projetos sem UC/UAR||"ANL_ROA_ROS_AIS_OEMG_CMP_EMPRESA.csv,
+ANL_MANUTENCAO_LISTAS_EMPRESA.csv"|1|4|A|B|C|||||MM-DA-000|ELG-016
+2.3.16 Análise dos estornos.||AMST_ESTORNOS.csv|1|4|A|B|C|||||MM-DA-000|MOV-002
+2.3.17 Racionalização de serviços||RAC_ST_EMPRESA.csv|1|4|A|B|C|||||MM-DA-000|VAL-010
+2.3.18 Medidores fora de TI de medição||ANL_MEDIDORES_EMPRESA.csv|1|21|A|B|C|||||MM-DA-000|ELG-017
+2.3.19 Consistir o arquivo ROS com o ROD||REL_CONCILIACAO_ROD_ROS_BAIXAS.xlsx |2|17|A|B|C|||||MM-DA-000|REC-013
+2.3.20 Análise de valores repetidos e Benford||"ROA_VALORES_REPETIDOS_EMPRESA.csv,
+BENFORD.png"|1|24|A|B|C|||||MM-DA-000|ANA-008
+2.3.21 Anomalias em termos de valores médios por tipo||ANL_ANOMALIAS_CMU.csv|1|3|A|B|C|||||MM-DA-000|ANA-009
+2.3.22 Análise de platôs||ANL_PLATOS_MED_EMPRESA.csv|1|4|A|B|C|||||MM-DA-000|ANA-010
+2.3.23 Análise de outlier (codificação TI + tucagem) usando kde-score||ANL_ANOMALIAS_ATRIBUTOS_A1A6.csv|1|22|A|B|C|||||MM-DA-000|ANA-011
+3.1 Banco de preços|||1|33|A|B|C|||||MM-DA-000|—
+3.1.1 Conciliação SPED EFD ICMS vs BP_EC||Saida_BP_F0.xlsx|1|33|A|B|C|||||MM-DA-000|—
+3.1.1.1 Conciliação pelo Cd_Nfe, valor e quantidade global||Saida_BP_F0.xlsx|1|33|A|B|C|||||MM-DA-000|REC-014/ ELG-018
+3.1.1.2 Conciliação pelo Cd_Nfe, valor e quantidade item a item||Saida_BP_F0.xlsx|1|33|A|B|C|||||MM-DA-000|REC-014/ ELG-018
+3.1.1.3 Verificar notas apresentadas no arquivo do ERP e não presentes no EFD, criticas as que compõe BPR||Saida_BP_F0.xlsx|1|33|A|B|C|||||MM-DA-000|REC-014/ ELG-018
+3.1.1.4 Verificar notas apresentadas no arquivo do EFD e não presentes no ERP, criticas as que compõe BPR||Saida_BP_F0.xlsx|1|33|A|B|C|||||MM-DA-000|REC-014/ ELG-018
+3.1.1.5 Verificar consistência de notas complementares, ERP vs EFD||Saida_BP_F0.xlsx|1|33|A|B|C|||||MM-DA-000|REC-014/ ELG-018
+3.1.1.6 Verificar se há notas canceladas no EFD e declaradas no ERP||Saida_BP_F0.xlsx|1|33|A|B|C|||||MM-DA-000|REC-014/ ELG-018
+3.1.1.7 Verificar divergência por CFOP, valor, Crítico, CFOP de investimento.||Saida_BP_F0.xlsx|1|33|A|B|C|||||MM-DA-000|REC-015 / ELG-019
+3.1.1.8 Conciliar CIAP, BLOCO G, com ERP e avaliar se houve mudanças significativas no fator CIAP||Saida_BP_F1.xlsx|1|33|A|B|C|||||MM-DA-000|REC-016 / ANA-012
+3.1.1.9 Validação dos arquivos de SPED EFD ICMS IPI||Saida_BP_F0.xlsx|1|33|A|B|C|||||MM-DA-000|DQ-010
+3.1.1.10 Validação do IPI pelo NCM||Saida_BP_F0.xlsx|1|33|A|B|C|||||MM-DA-000|CAL-004
+3.1.1.11 Levantar transações entre partes relacionadas||Saida_BP_F0.xlsx|1|33|A|B|C|||||MM-DA-000|ANA-014
+3.1.1.12 Segregação das compras entre consumo e investimento||Saida_BP_F0.xlsx|1|33|A|B|C|||||MM-DA-000|ELG-020
+3.1.2 Verificar se a NFe pertence ao período, data do documento||Saida_BP_F1.xlsx|1|33|A|B|C|||||MM-DA-000|LIM-005
+3.1.3 Verificar a classificação dos materiais em UC/UAR/COM||Saida_BP_F1.xlsx|1|33|A|B|C|||||MM-DA-000|ELG-021
+3.1.4 Verificar as discrepâncias nos valores unitários para mesmo item (usar MAD e Tukey e CV)||Saida_BP_F1.xlsx|1|33|A|B|C|||||MM-DA-000|ANA-015
+3.1.5 Verificar os custos de ODC e seu critério de rateio||Saida_BP_F1.xlsx|1|33|A|B|C|||||MM-DA-000|VAL-011
+3.1.6 Verificar o tratamento dado a notas complementares||Saida_BP_F1.xlsx|1|33|A|B|C|||||MM-DA-000|ELG-022 / VAL-012
+3.1.7 Verificar a consistência das unidades dos itens||Saida_BP_F1.xlsx|1|33|A|B|C|||||MM-DA-000|DQ-011
+3.3 Consistência dos dados de OE|||1|33|A|B|C|||||MM-DA-000|—
+3.3.1 Conciliar os lançamentos mês a mês com os dados da base incremental||Arquivo credenciada|1|33|A|B|C|||||MM-DA-000|—
+3.3.1.1 Obrigação especial, validação com BMP (2223 para as atividades de geração, transmissão, distribuição, comercialização; AIS e amortização acumulada)||Saida_OE_F0.xlsx|1|33|A|B|C|||||MM-DA-000|REC-024
+3.4 Analisar os dados de partida|||1|33|A|B|C|||||MM-DA-000|—
+3.4.1 Verificar se o valor consolidado é consistente com o dado da última revisão||Saida_BB_F0.xlsx|1|33|A|B|C|||||MM-DA-000|REC-027
+3.4.2 Verificar a depreciação acumulada||Saida_BB_F0.xlsx|1|33|A|B|C|||||MM-DA-000|CAL-012
+3.4.3 Verificar a atualização||Saida_BB_F0.xlsx|1|33|A|B|C|||||MM-DA-000|CAL-013
+4. Elaborar relatório/NT de fiscalização||Fiscal|1|33|A|B|C|||||MM-DA-000|—

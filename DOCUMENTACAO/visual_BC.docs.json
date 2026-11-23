@@ -1,0 +1,1556 @@
+[
+  {
+    "funcao": {
+      "nome": "formatar_cnpj",
+      "tipo": "function",
+      "linha_inicio": 38,
+      "linha_fim": 44,
+      "parametros": [
+        {
+          "nome": "cnpj",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "filter",
+          "join",
+          "len",
+          "str",
+          "upper"
+        ]
+      },
+      "codigo": "def formatar_cnpj(cnpj):\n    cnpj = ''.join(filter(str.isalnum, str(cnpj))).upper()\n\n    if len(cnpj) != 14:\n        return cnpj\n\n    return f\"{cnpj[:2]}.{cnpj[2:5]}.{cnpj[5:8]}/{cnpj[8:12]}-{cnpj[12:]}\""
+    },
+    "documentacao": {
+      "resumo": "Formata um CNPJ removendo caracteres não numéricos e adicionando pontos e hífen conforme o formato padrão.",
+      "descricao": "A função remove todos os caracteres que não são alfanuméricos do CNPJ fornecido, converte para maiúsculas e formata de acordo com o padrão brasileiro (XX.XXX.XXXX/XXXX-XX). Se o CNPJ tiver menos de 14 dígitos após a remoção dos caracteres não numéricos, ele é retornado como está.",
+      "parametros": [
+        {
+          "nome": "cnpj",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "CNPJ que será formatado."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "CNPJ formatado ou original, se não atender ao formato esperado."
+      },
+      "excecoes": [],
+      "dependencias": [],
+      "docstring": "Formata um CNPJ removendo caracteres não numéricos e adicionando pontos e hífen conforme o formato padrão.\n\nArgs:\n    cnpj: CNPJ que será formatado.\n\nReturns:\n    CNPJ formatado ou original, se não atender ao formato esperado."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_001",
+      "tipo": "function",
+      "linha_inicio": 47,
+      "linha_fim": 257,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.carga_sqlite_cache",
+          "UTILS.existe_tabela",
+          "pandas",
+          "plotly.express",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "BL_G125cmp1.copy",
+          "IND_PER_SAI_CIAP.columns.to_list",
+          "IND_PER_SAI_CIAP.to_csv",
+          "apply",
+          "carga_sqlite_cache",
+          "dict",
+          "dt.strftime",
+          "encode",
+          "enumerate",
+          "existe_tabela",
+          "fig.add_annotation",
+          "fig.add_shape",
+          "fig.update_layout",
+          "fig.update_traces",
+          "fig.update_xaxes",
+          "fig.update_yaxes",
+          "formatar_cnpj",
+          "map",
+          "max",
+          "mean",
+          "min",
+          "pd.DataFrame",
+          "pd.notna",
+          "pd.read_sql",
+          "pd.to_datetime",
+          "px.scatter",
+          "quantile",
+          "replace",
+          "set",
+          "sl.connect",
+          "sorted",
+          "st.column_config.DateColumn",
+          "st.column_config.TextColumn",
+          "st.columns",
+          "st.dataframe",
+          "st.divider",
+          "st.download_button",
+          "st.fragment",
+          "st.html",
+          "st.plotly_chart",
+          "std",
+          "t.split",
+          "t.startswith",
+          "tolist",
+          "upper"
+        ]
+      },
+      "codigo": "def _vis_001(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\"):\n  \n    with sl.connect(bd_path) as bd_EFD:\n        tabelas = pd.read_sql(\"SELECT name FROM sqlite_master WHERE type='table'\", con=bd_EFD)\n        tabelas = tabelas['name'].tolist()\n        cnpjs = [t.split('_')[-1] for t in tabelas if t.startswith('BLF_G110_')]\n        cnpjs = sorted(set(cnpjs))\n\n        for i, cnpj in enumerate(cnpjs):\n            nome = \"NI\"\n            if existe_tabela(f\"BL_Z\", bd_EFD):\n                sSQL = f'SELECT \"6\" AS Nome FROM BL_Z WHERE \"7\" = \"{cnpj}\" LIMIT 1'\n                df_NM = carga_sqlite_cache(sSQL, bd_EFD)\n                nome = df_NM.iloc[0]['Nome'] if not df_NM.empty else 'NI'\n\n            if existe_tabela(f\"BLF_G126_{cnpj}\", bd_EFD):\n                sSQL = f\"SELECT * FROM BLF_G126_{cnpj}\"\n                BL_G126 = carga_sqlite_cache(sSQL, bd_EFD)\n            else:\n                BL_G126 = pd.DataFrame()\n            sSQL = f\"SELECT * FROM tbl_icms_fin_{cnpj}\"\n            df = carga_sqlite_cache(sSQL, bd_EFD)\n            sSQL = f\"SELECT * FROM BLF_G110_{cnpj}\"\n            BL_G110 = carga_sqlite_cache(sSQL, bd_EFD)\n            sSQL = f\"SELECT * FROM BLF_G125_{cnpj}\"\n            BL_G125 = carga_sqlite_cache(sSQL, bd_EFD)\n            sSQL = f\"SELECT * FROM BLF_G125cmp_{cnpj}\"\n            BL_G125cmp1 = carga_sqlite_cache(sSQL, bd_EFD)\n            sSQL = f\"SELECT * FROM BLF_UN_{cnpj}\"\n            BL_UN = carga_sqlite_cache(sSQL, bd_EFD)\n\n            st.html(f\"\"\"<h3>Resultado das análises do ICMS para {nome}, CNPJ {formatar_cnpj(cnpj)}</h3>\n                        <hr></hr>\n                        <div style=\"text-align: justify; text-indent: 40px;\">Apresenta-se o resultado do cálculo \n                        financeiro relacionado ao ICMS, global, com base nos dados  fornecidos e na metodologia aplicada. \n                        Abaixo estão descritos os resultados obtidos e os argumentos que justificam o processo \n                        utilizado.\n                        </div>\"\"\")\n\n            WACC_POND = f\"{df[df['Item']=='WACC Ponderado (%)'].iloc[-1,-1]/100:.2%}\".replace(\".\",\",\")\n            WACC_MES = f\"{df[df['Item']=='i (%)'].iloc[-1,-1]/100:.2%}\".replace(\".\",\",\")\n            VL_ICMS_CRED = f\"{df[df['Item']=='Cicms(R) (R$)'].iloc[-1,-1]:,.2f}\".replace(\".\",\"#\").replace(\",\",\".\").replace(\"#\",\",\")\n            VL_ICMS_NCRED = f\"{df[df['Item']=='Cicms(NR) (R$)'].iloc[-1,-1]:,.2f}\".replace(\".\",\"#\").replace(\",\",\".\").replace(\"#\",\",\")\n            VL_VP = f\"{df[df['Item']=='VP (R$)'].iloc[-1,-1]:,.2f}\".replace(\".\",\"#\").replace(\",\",\".\").replace(\"#\",\",\")\n            \n            st.html(f\"\"\"\n                        <div style=\"text-align: justify; padding-left: 60px;\">\n                            <b>WACC<sub>POND</sub> (WACC Ponderado):</b> O Weighted Average Cost of Capital (WACC) ponderado representa a taxa de desconto aplicada com base nos custos ponderados de capital. Este valor foi calculado considerando a estrutura de financiamento da empresa e as taxas aplicáveis.\n                            <b>Foi obtido {WACC_POND} para a {empresa} ({formatar_cnpj(cnpj)})</b>.\n                        </div>\n\n                        <div style=\"text-align: justify; padding-left: 60px;\">\n                        <b>WACC<sub>MES</sub> (WACC por Mês):</b> O WACC mensal foi derivado da taxa anualizada, ajustada para períodos mensais, e aplicada no cálculo dos fluxos de caixa futuros associados aos créditos de ICMS.\n                        <b>Foi obtido {WACC_MES} para a {empresa} ({formatar_cnpj(cnpj)})</b>.\n                        </div>\n\n                        <div style=\"text-align: justify; padding-left: 60px;\">\n                            <b>VL<sub>ICMS_CRED</sub> (Valor dos Créditos de ICMS):</b> Este valor representa o montante total de créditos de ICMS que foram reconhecidos como recuperáveis. O cálculo foi baseado no EFD ICMS, nas notas fiscais e na legislação vigente sobre a recuperação de créditos tributários.\n                            <b>Foi obtido R$ {VL_ICMS_CRED} para a {empresa} ({formatar_cnpj(cnpj)})</b>.\n                        </div>\n\n                        <div style=\"text-align: justify; padding-left: 60px;\">\n                            <b>VL<sub>ICMS_NCRED</sub> (Valor do ICMS Não Creditado):</b> O ICMS não creditado inclui valores que, por restrições legais ou documentais, não puderam ser considerados no cálculo de recuperação de crédito. Este montante também foi considerado no cálculo financeiro global.\n                            <b>Foi obtido R$ {VL_ICMS_NCRED} para a {empresa} ({formatar_cnpj(cnpj)})</b>.\n                        </div>\n\n                        <div style=\"text-align: justify; padding-left: 60px;\">\n                            <b>VP (Valor Presente do ICMS):</b> O valor presente inclui:\n                            <ul style = \"padding-left:80px;\">\n                                <li>Os créditos de ICMS recuperáveis (VL<sub>ICMS_CRED</sub>).</li>\n                                <li>Os valores não creditados (VL<sub>ICMS_NCRED</sub>).</li>\n                                <li>A remuneração aplicada devido ao período de recuperação dos créditos.</li>\n                            </ul>\n                            O cálculo do VP foi realizado utilizando o WACC mensal como taxa de desconto, obtendo <b>R$ {VL_VP} para a {empresa}</b>.\n                        </div>\n                        \"\"\")\n\n            st.html(\"\"\"<div style=\"text-align: justify; text-indent: 40px; padding-top: 5px; padding-botton: 20px;\">\n                        A seguir temos a matriz demonstrando os passos de cálculo.<br><br>\n                        </div>\"\"\")\n\n            BL_G110F = BL_G125cmp1.copy()\n            \n            for n in ['VL_TRIB_EXP', 'VL_TOTAL', 'VL_ICMS_COMPRA_ATIVO', 'VL_DIFAL_COMPRA_ATIVO',\n                    'VL_SUBST_TRIB', 'COEF_CRED_EST', 'VL_CRED_ICMS', 'Tx_WACC', 'VL_SALDO_AMT',\n                    'VL_SALDO_RED', 'VL_SALDO_ACUMULADO', 'VL_ICMS_CREDIT', 'VL_ICMS_CRED',\n                    'VL_ICMS_NCRED']:\n                if n == 'Tx_WACC':\n                    BL_G110F[n] = BL_G110F[n].apply(lambda x: f\"{x:.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                else:\n                    BL_G110F[n] = BL_G110F[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n            \n            config = {\n                    \"REG\": st.column_config.TextColumn(\"Bloco do SPED ICMS\"),\n                    \"DT_INI\": st.column_config.DateColumn(\"Data de Início\", format=\"DD/MM/YYYY\"),\n                    \"DT_FIM\": st.column_config.DateColumn(\"Data de Fim\", format=\"DD/MM/YYYY\"),\n                }\n            st.dataframe(BL_G110F, use_container_width=True, hide_index=True,  column_config=config)\n        st.divider()\n\n\n        with sl.connect(bd_path2) as bd:\n            if existe_tabela(\"IND_PER_SAI_CIAP\",bd):\n                sSQL = \"\"\"\n                            SELECT \n                                    DT_DOC_CIAP, IND_PER_SAI_CIAP, FLG_OUTLIER\n                            FROM IND_PER_SAI_CIAP\n                        \"\"\"\n                IND_PER_SAI_CIAP = pd.read_sql(sSQL, bd, parse_dates=['DT_DOC_CIAP'])\n                st.html(f\"\"\"<h3>Análise do fator de recuperação de ICMS para a concessionária {nome}</h3>\n                            <hr></hr>\n                            \"\"\")\n                st.html(f\"\"\"\n                            <p  style=\"text-align: justify;text-indent: 40px\">Abaixo, temos o fator de recuperação por mês. Também, há \n                        indicação dos meses atípicos, para discutir com a concessionária.</p>\n                            \"\"\")\n                IND_PER_SAI_CIAP['FLG_OUTLIER_LABEL'] = IND_PER_SAI_CIAP['FLG_OUTLIER'].map({\n                                                                    0: 'Não outlier',\n                                                                    1: 'Outlier'\n                                                                })\n                q1 = IND_PER_SAI_CIAP['IND_PER_SAI_CIAP'].quantile(0.25)\n                q3 = IND_PER_SAI_CIAP['IND_PER_SAI_CIAP'].quantile(0.75)\n                iqr = q3 - q1\n\n                lim_inf = q1 - 1.5 * iqr\n                lim_sup = q3 + 1.5 * iqr\n\n                media = IND_PER_SAI_CIAP['IND_PER_SAI_CIAP'].mean()\n                desvio = IND_PER_SAI_CIAP['IND_PER_SAI_CIAP'].std()\n                cv = desvio / media if pd.notna(media) and media != 0 else None\n\n                fig = px.scatter(\n                                        IND_PER_SAI_CIAP,\n                                        x='DT_DOC_CIAP',\n                                        y='IND_PER_SAI_CIAP',\n                                        color='FLG_OUTLIER_LABEL',\n                                        color_discrete_map={\n                                            'Não outlier': '#A9B8C9',\n                                            'Outlier': '#E76F51'\n                                        },\n                                        opacity=0.75,\n                                        title='Outliers vs Dados Normais',\n                                        hover_data=['FLG_OUTLIER']\n                                    )\n                fig.add_shape(\n                                type=\"rect\",\n                                xref=\"paper\",   \n                                yref=\"y\",\n                                x0=0,\n                                x1=1,\n                                y0=lim_inf,\n                                y1=lim_sup,\n                                fillcolor=\"rgba(42, 157, 143, 0.16)\", \n                                line=dict(width=0),\n                                layer=\"below\"\n                            )\n\n                fig.update_traces(\n                                    selector=dict(name='True'),\n                                    marker=dict(size=9, opacity=1)\n                                )\n\n                fig.update_layout(\n                                    template='plotly_white',\n                                    legend_title='Outlier',\n                                    xaxis_title='Data',\n                                    yaxis_title='Fator de recuperação',\n                                    margin=dict(l=20, r=20, t=40, b=20)\n                                )\n                \n                fig.update_yaxes(range=[min(0,lim_inf*1.1), max(1,lim_sup*1.1)], title='Fator de recuperação', gridcolor='rgba(180,180,180,0.18)')\n                fig.update_xaxes(title='Data', gridcolor='rgba(180,180,180,0.10)')\n                texto_cv = f'CV = {cv:.2%}'.replace(\".\",\",\") if cv is not None else 'CV = NA'\n                fig.add_annotation(\n                                        x=0.01,\n                                        y=0.99,\n                                        xref='paper',\n                                        yref='paper',\n                                        text=texto_cv,\n                                        showarrow=False,\n                                        align='left',\n                                        bgcolor='rgba(255,255,255,0.85)',\n                                        bordercolor='lightgray',\n                                        borderwidth=1\n                                    )\n                colsA = st.columns([2,10,1], gap='small')\n                with colsA[1]:\n                    st.plotly_chart(fig, width='content')\n\n                st.html(f\"\"\"\n                            <p  style=\"text-align: justify;text-indent: 40px\">Os dados tabulares são apresentados a seguir.</p>\n                            \"\"\")\n                \n                for n in IND_PER_SAI_CIAP.columns.to_list():\n                    if n[:2].upper() == 'VL':\n                        if not (IND_PER_SAI_CIAP[n].dtype == 'object'):\n                            IND_PER_SAI_CIAP[n] = IND_PER_SAI_CIAP[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                    if n[:3].upper() == 'IND':\n                        if not (IND_PER_SAI_CIAP[n].dtype == 'object'):\n                            IND_PER_SAI_CIAP[n] = IND_PER_SAI_CIAP[n].apply(lambda x: f\"{x:,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                    if n[:2].upper() == 'DT':\n                        if not (IND_PER_SAI_CIAP[n].dtype == 'object'):\n                            IND_PER_SAI_CIAP[n] = pd.to_datetime(IND_PER_SAI_CIAP[n]).dt.strftime('%d/%m/%Y')\n\n                st.dataframe(IND_PER_SAI_CIAP, width='stretch', hide_index=True)\n                st.download_button(label=\"📥 Baixar CSV\",\n                                   data=IND_PER_SAI_CIAP.to_csv(index=False, sep=\"|\", decimal=\",\").encode(\"latin-1\"),\n                                   file_name=\"fator_ciap.csv\",\n                                    mime=\"text/csv\",\n                                    key=f\"{cnpj}_chv\"\n                                  )"
+    },
+    "documentacao": {
+      "resumo": "Realiza análises financeiras relacionadas ao ICMS e gera relatórios interativos usando Streamlit.",
+      "descricao": "A função `_vis_001` realiza várias operações de análise financeira baseadas em dados armazenados em bancos de dados SQLite. Ela lê tabelas específicas, processa os dados, calcula métricas como WACC e valores presentes do ICMS, e gera relatórios interativos usando Streamlit.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o banco de dados SQLite principal."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit usado para renderizar a interface do usuário."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa para o qual os dados estão sendo analisados."
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para um segundo banco de dados SQLite, usado para análise adicional."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": {
+        "imports": [
+          "UTILS.carga_sqlite_cache",
+          "UTILS.existe_tabela",
+          "pandas",
+          "plotly.express",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "BL_G125cmp1.copy",
+          "IND_PER_SAI_CIAP.columns.to_list",
+          "IND_PER_SAI_CIAP.to_csv",
+          "apply",
+          "carga_sqlite_cache",
+          "dict",
+          "dt.strftime",
+          "encode",
+          "enumerate",
+          "existe_tabela",
+          "fig.add_annotation",
+          "fig.add_shape",
+          "fig.update_layout",
+          "fig.update_traces",
+          "fig.update_xaxes",
+          "fig.update_yaxes",
+          "formatar_cnpj",
+          "map",
+          "max",
+          "mean",
+          "min",
+          "pd.DataFrame",
+          "pd.notna",
+          "pd.read_sql",
+          "pd.to_datetime",
+          "px.scatter",
+          "quantile",
+          "replace",
+          "set",
+          "sl.connect",
+          "sorted",
+          "st.column_config.DateColumn",
+          "st.column_config.TextColumn",
+          "st.columns",
+          "st.dataframe",
+          "st.divider",
+          "st.download_button",
+          "st.fragment",
+          "st.html",
+          "st.plotly_chart",
+          "std",
+          "t.split",
+          "t.startswith",
+          "tolist",
+          "upper"
+        ]
+      },
+      "docstring": "Realiza análises financeiras relacionadas ao ICMS e gera relatórios interativos usando Streamlit.\n\nArgs:\n    bd_path (str): Caminho para o banco de dados SQLite principal.\n    st (streamlit._internal.app_state.ScriptRunner): Objeto Streamlit usado para renderizar a interface do usuário.\n    empresa (str): Nome da empresa para o qual os dados estão sendo analisados.\n    bd_path2 (str): Caminho para um segundo banco de dados SQLite, usado para análise adicional.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_002",
+      "tipo": "function",
+      "linha_inicio": 260,
+      "linha_fim": 451,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.carga_sqlite_cache",
+          "UTILS.existe_tabela",
+          "pandas",
+          "plotly.express",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "BP_EC.columns.to_list",
+          "BP_EC.groupby",
+          "BP_EC.set_index",
+          "BP_EC.sort_values",
+          "BP_EC.to_csv",
+          "BP_EC.to_sql",
+          "apply",
+          "astype",
+          "carga_sqlite_cache",
+          "dict",
+          "dt.to_period",
+          "encode",
+          "existe_tabela",
+          "fig.add_hline",
+          "fig.add_scatter",
+          "fig.update_layout",
+          "fig_dist_tempo.update_layout",
+          "kpi1.metric",
+          "kpi2.metric",
+          "kpi3.metric",
+          "kpi4.metric",
+          "kpi5.metric",
+          "len",
+          "max",
+          "median",
+          "pd.to_datetime",
+          "px.bar",
+          "px.box",
+          "px.scatter",
+          "quantile",
+          "replace",
+          "resample",
+          "reset_index",
+          "sl.connect",
+          "st.columns",
+          "st.container",
+          "st.dataframe",
+          "st.download_button",
+          "st.fragment",
+          "st.html",
+          "st.plotly_chart",
+          "sum",
+          "upper",
+          "valor_por_mes.mean",
+          "valor_por_mes.reset_index",
+          "valor_por_mes.std"
+        ]
+      },
+      "codigo": "def _vis_002(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\"):\n    with sl.connect(bd_path2) as bd:\n        if not existe_tabela('BP_EC_AVALc', bd):\n            return\n        if not existe_tabela('tbl_resumo_compras', bd):\n            sSQL = \"\"\"\n                    SELECT \n                        COD_ITEM,\n                        Dt_NF,\n                        NUM_DOC,\n                        SUM(COALESCE(QTD,0)) AS QTD,\n                        SUM(\n                                COALESCE(VL_TOT_LIQ, 0) + \n                                COALESCE(VL_TOT_ICMS, 0) + \n                                COALESCE(VL_TOT_IPI, 0) + \n                                COALESCE(VL_DIFAL, 0) + \n                                COALESCE(VL_ST, 0)\n                            ) AS VL_ITEM_CONSOLIDADO\n                    FROM BP_EC_AVALc\n                    WHERE COD_ITEM IS NOT NULL AND Cd_NG_EC = 1\n                    GROUP BY COD_ITEM, NUM_DOC, Dt_NF\n                \"\"\"\n            BP_EC = carga_sqlite_cache(sSQL, bd)\n            BP_EC.to_sql('tbl_resumo_compras', bd, if_exists='replace', index=False)\n        else:\n            BP_EC = carga_sqlite_cache(\"SELECT * FROM tbl_resumo_compras\", bd)\n        \n        st.html(f\"\"\"<h3>Compras para {empresa}</h3>\n                    <hr></hr>\n                    \"\"\")\n\n        BP_EC['Dt_NF'] = pd.to_datetime(BP_EC['Dt_NF'], errors='coerce')\n        BP_EC = BP_EC.groupby(by=['NUM_DOC','Dt_NF'])[\"VL_ITEM_CONSOLIDADO\"].sum().reset_index()\n        p50 = BP_EC[\"VL_ITEM_CONSOLIDADO\"].median()\n        p90 = BP_EC[\"VL_ITEM_CONSOLIDADO\"].quantile(0.90)\n        p99 = BP_EC[\"VL_ITEM_CONSOLIDADO\"].quantile(0.99)\n\n        BP_EC[\"Risco\"] = BP_EC[\"VL_ITEM_CONSOLIDADO\"].apply(\n                                                                lambda x: \"Exceção (≥ P99)\" if x >= p99 else \"Padrão\"\n                                                            )\n\n        mediana_mensal = (\n                            BP_EC\n                            .set_index(\"Dt_NF\")\n                            .resample(\"M\")[\"VL_ITEM_CONSOLIDADO\"]\n                            .median()\n                            .reset_index()\n                        )\n        \n        st.html(f\"\"\"\n                    <p  style=\"text-align: justify;text-indent: 40px\">Abaixo, temos a relação entre o tempo e o valor \n                    dos itens adquiridos, tratados como UC/UAR, com base nas datas de emissão das notas fiscais. Cada observação corresponde \n                    a um item de compra individual, permitindo avaliar a distribuição temporal dos gastos e a variabilidade \n                    dos valores praticados. A aplicação de escala logarítmica no eixo vertical reduz o efeito de assimetria \n                    da distribuição e viabiliza a análise conjunta de itens de baixo e alto valor, característica comum em \n                    dados de compras. Os histogramas marginais evidenciam a densidade de ocorrências tanto ao longo do tempo \n                    quanto por faixa de valor.</p>\n                    \"\"\")\n        fig = px.scatter(\n                            BP_EC,\n                            x=\"Dt_NF\",\n                            y=\"VL_ITEM_CONSOLIDADO\",\n                            color=\"Risco\",\n                            color_discrete_map={\n                                \"Padrão\": \"#9aa0a6\",\n                                \"Exceção (≥ P99)\": \"#fef603\"\n                            },\n                            opacity=0.15,\n                            log_y=True,\n                            height=450,\n                            labels={\n                                \"Dt_NF\": \"Data da NFe\",\n                                \"VL_ITEM_CONSOLIDADO\": \"Valor do Item (Escala Log)\"\n                            },\n                            title=(\n                                \"Distribuição Temporal dos Valores de Itens Adquiridos\"\n                            )\n                        )\n        \n        fig.add_scatter(\n                            x=mediana_mensal[\"Dt_NF\"],\n                            y=mediana_mensal[\"VL_ITEM_CONSOLIDADO\"],\n                            mode=\"lines\",\n                            name=\"Mediana Mensal\",\n                            line=dict(color=\"#000000\", width=4)\n                        )\n\n        fig.add_hline(y=p50, line_dash=\"dot\", line_color=\"blue\", annotation_text=\"Mediana\")\n        fig.add_hline(y=p90, line_dash=\"dash\", line_color=\"orange\", annotation_text=\"P90\")\n        fig.add_hline(y=p99, line_dash=\"solid\", line_color=\"red\", annotation_text=\"P95 (Exceção)\")\n\n        fig.update_layout(\n                                legend_title=\"Classificação de Risco\",\n                                xaxis_tickformat=\"%m/%Y\",\n                                title_x=0.5\n                            )\n\n        BP_EC[\"AnoMes\"] = BP_EC[\"Dt_NF\"].dt.to_period(\"M\").astype(str)\n\n        fig_dist_tempo = px.box(\n                                    BP_EC,\n                                    x=\"AnoMes\",\n                                    y=\"VL_ITEM_CONSOLIDADO\",\n                                    log_y=True,\n                                    points=\"outliers\",\n                                    height=300,\n                                    labels={\n                                        \"AnoMes\": \"Período (Ano-Mês)\",\n                                        \"VL_ITEM_CONSOLIDADO\": \"Valor NFe (escala log)\"\n                                    },\n                                    title=(\n                                        \"Distribuição dos Valores por NFe ao Longo do Tempo\"\n                                    )\n                                )\n\n        fig_dist_tempo.update_layout(\n                                        xaxis_tickangle=45,\n                                        title_x=0.5\n                                    )\n        valor_por_mes = (\n                            BP_EC\n                            .groupby(BP_EC[\"Dt_NF\"].dt.to_period(\"M\"))[\"VL_ITEM_CONSOLIDADO\"]\n                            .sum()\n                        )\n        cv_valor = valor_por_mes.std() / valor_por_mes.mean()\n        df_valor_mes = valor_por_mes.reset_index()\n        df_valor_mes.columns = [\"Periodo\", \"Valor\"]\n        df_valor_mes[\"Periodo\"] = df_valor_mes[\"Periodo\"].astype(str)\n\n        figa = px.bar(\n                        df_valor_mes,\n                        x=\"Periodo\",\n                        y=\"Valor\",\n                        title=\"Valor Total de Compras por Período\"\n                    )\n        \n        _, kpi1, _, kpi2, _, kpi3, _ = st.columns([1,5,1,5,1,2,1], gap='small')\n        _, kpi4, _, kpi5, _ = st.columns([1,5,1,5,4], gap='small')\n        kpi1.metric(\n                        \"Total das Compras\",\n                        f\"R$ {BP_EC['VL_ITEM_CONSOLIDADO'].sum():,.2f}\".replace(\".\", \"x\").replace(\",\", \".\").replace(\"x\", \",\")\n                    )\n\n        kpi2.metric(\n                        \"Maior Nota\",\n                        f\"R$ {BP_EC['VL_ITEM_CONSOLIDADO'].max():,.2f}\".replace(\".\", \"x\").replace(\",\", \".\").replace(\"x\", \",\")\n                    )\n\n        kpi3.metric(\"CV\", f\"{cv_valor:,.2f}\".replace(\".\", \"x\").replace(\",\", \".\").replace(\"x\", \",\"))\n\n        kpi4.metric(\n                        \"Média Mensal\",\n                        f\"R$ {valor_por_mes.mean():,.2f}\".replace(\".\", \"x\").replace(\",\", \".\").replace(\"x\", \",\")\n                    )\n\n        kpi5.metric(\n                        \"Desvio Padrão Mensal\",\n                        f\"R$ {valor_por_mes.std():,.2f}\".replace(\".\", \"x\").replace(\",\", \".\").replace(\"x\", \",\")\n                    )\n\n        col_left, col_main, col_right = st.columns([1, 15, 1])\n        with col_main:\n            with st.container(border=True):\n                st.plotly_chart(fig, width=\"stretch\")\n\n            with st.container(border=True):\n                st.plotly_chart(fig_dist_tempo, width=\"stretch\")\n\n            with st.container(border=True):\n                st.plotly_chart(figa, width=\"stretch\")\n\n            with st.container(border=True):\n                st.html(f\"\"\"\n                            <p  style=\"text-align: justify;text-indent: 40px\">Segue os dados brutos do gráfico. Há \n                        {(BP_EC[\"VL_ITEM_CONSOLIDADO\"] >= p99).sum()} NFe com valores mais elevados de um total de \n                        {len(BP_EC)} NFe.</p>\n                        \"\"\")\n                colu = st.columns([1,6,1], gap=\"large\")\n                with colu[1]:\n                    BP_EC = BP_EC.sort_values(by='VL_ITEM_CONSOLIDADO', ascending=False)\n                    for n in BP_EC.columns.to_list():\n                        if n[:2].upper() == 'VL':\n                            if not (BP_EC[n].dtype == 'object'):\n                                BP_EC[n] = BP_EC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n\n                    st.dataframe(BP_EC, width='stretch', hide_index=True)\n                    st.download_button(label=\"📥 Baixar CSV\",\n                                   data=BP_EC.to_csv(index=False, sep=\"|\", decimal=\",\").encode(\"utf-8\"),\n                                   file_name=\"dados_compras.csv\",\n                                    mime=\"text/csv\",\n                                    key=f\"compras_chv\"\n                                  )"
+    },
+    "documentacao": {
+      "resumo": "Gera um relatório de compras com base em dados de uma base de dados SQLite.",
+      "descricao": "A função carrega dados de uma tabela específica, processa esses dados para calcular resumos e medias, e gera visualizações interativas usando a biblioteca Plotly. Além disso, exibe métricas importantes como total de compras, maior nota, CV (Coeficiente de Variação), média mensal e desvio padrão mensal.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para a base de dados SQLite."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para renderizar a interface do usuário."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa para o qual o relatório será gerado."
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho alternativo para a base de dados SQLite, usado para carregar os dados."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "imports",
+          "itens": [
+            "UTILS.carga_sqlite_cache",
+            "UTILS.existe_tabela",
+            "pandas",
+            "plotly.express",
+            "sqlite3",
+            "streamlit"
+          ]
+        },
+        {
+          "nome": "chamadas",
+          "itens": [
+            "BP_EC.columns.to_list",
+            "BP_EC.groupby",
+            "BP_EC.set_index",
+            "BP_EC.sort_values",
+            "BP_EC.to_csv",
+            "BP_EC.to_sql",
+            "apply",
+            "astype",
+            "carga_sqlite_cache",
+            "dict",
+            "dt.to_period",
+            "encode",
+            "existe_tabela",
+            "fig.add_hline",
+            "fig.add_scatter",
+            "fig.update_layout",
+            "fig_dist_tempo.update_layout",
+            "kpi1.metric",
+            "kpi2.metric",
+            "kpi3.metric",
+            "kpi4.metric",
+            "kpi5.metric",
+            "len",
+            "max",
+            "median",
+            "pd.to_datetime",
+            "px.bar",
+            "px.box",
+            "px.scatter",
+            "quantile",
+            "replace",
+            "resample",
+            "reset_index",
+            "sl.connect",
+            "st.columns",
+            "st.container",
+            "st.dataframe",
+            "st.download_button",
+            "st.fragment",
+            "st.html",
+            "st.plotly_chart",
+            "sum",
+            "upper",
+            "valor_por_mes.mean",
+            "valor_por_mes.reset_index",
+            "valor_por_mes.std"
+          ]
+        }
+      ],
+      "docstring": "Gera um relatório de compras com base em dados de uma base de dados SQLite.\n\nArgs:\n    bd_path (str): Caminho para a base de dados SQLite.\n    st (streamlit._internal.app_state.ScriptRunner): Objeto Streamlit para renderizar a interface do usuário.\n    empresa (str): Nome da empresa para o qual o relatório será gerado.\n    bd_path2 (str): Caminho alternativo para a base de dados SQLite, usado para carregar os dados.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_003",
+      "tipo": "function",
+      "linha_inicio": 454,
+      "linha_fim": 499,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.existe_tabela",
+          "UTILS.max_arq",
+          "pandas",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "abs",
+          "apply",
+          "existe_tabela",
+          "fillna",
+          "max_arq",
+          "pd.read_sql",
+          "replace",
+          "sl.connect",
+          "st.dataframe",
+          "st.fragment",
+          "st.html",
+          "upper"
+        ]
+      },
+      "codigo": "def _vis_003(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\"):\n    with sl.connect(bd_path2) as bd:\n        if not existe_tabela('CONSOL_TOT_QTD_FISICO', bd):\n            return\n        dt_ARQ = max_arq(\"LST_MAT\", bd, empresa)\n        if dt_ARQ:\n            st.html(f\"\"\"<h2>Destino dos materiais</h2>\n                        <p  style=\"text-align: justify;text-indent: 40px\">A análise dos materiais distribuídos entre diferentes \n                        categorias, função de sua aplicação, apresenta visão do emprego das compras observadas. A síntese proposta \n                        busca consolidar quantitativamente os materiais alocados em quatro perspectivas: ativo imobilizado (bens já \n                        incorporados ao patrimônio e em operação), ativo imobilizado em curso (bens em processo de implantação ou \n                        construção), estoque (materiais disponíveis para uso imediato) e obras de manutenção (materiais aplicados \n                        em intervenções corretivas ou preventivas que não são unitizáveis). Esta abordagem permite avaliar o fluxo dos \n                        materiais, além da contabilização patrimonial, proporcionando uma descrição do fluxo de utilização dos recursos \n                        materiais, bem como fluxo financeiro associado, apresentando um reflexo dos gastos com a disponibilidade operacional \n                        e a aplicação de recursos na sustentação da infraestrutura existente.</p>\n                        \"\"\")\n            \n            sSQL = \"\"\"\n                        SELECT \n                            t1.COD_ITEM, COALESCE(t2.DESCR_ITEM,'AUSENTE EM LST_MAT') AS DESCR_ITEM, \n                            t1.Cd_Unid, t1.QTD_ROA, t1.QTD_ROA_CURSO, \n                            t1.IND_DESTINO_ODI_CURSO_IMOB, t1.QTD_AO, t1.IND_DESTINO_ODI_ESTOQUE, \n                            t1.QTD_MAN, t1.IND_DESTINO_ODI_ODS, t1.QTD\n                        FROM \n                                CONSOL_TOT_QTD_FISICO t1 LEFT JOIN (SELECT COD_ITEM, DESCR_ITEM FROM\n                                LST_MAT WHERE dt_ARQ = ?) t2 \n                        ON \n                                t1.COD_ITEM = t2.COD_ITEM\n                        \n                    \"\"\"\n            ANL_LST_TUC = pd.read_sql(sSQL, bd, params=(dt_ARQ,))\n            ANL_LST_TUC[['QTD_ROA','QTD_ROA_CURSO','QTD_AO',\n                                    'QTD_MAN','QTD']] = ANL_LST_TUC[['QTD_ROA','QTD_ROA_CURSO','QTD_AO',\n                                    'QTD_MAN','QTD']].fillna(0)\n            crit = ANL_LST_TUC['QTD_MAN'].abs() < 0.1\n            ANL_LST_TUC.loc[crit, 'IND_USO'] = \"Somente \" + ANL_LST_TUC.loc[crit, 'IND_DESTINO_ODI_ESTOQUE']\n            ANL_LST_TUC.loc[~crit, 'IND_USO'] = ANL_LST_TUC.loc[~crit, 'IND_DESTINO_ODI_ESTOQUE'] + \" e Manutenção\"\n            for n in ANL_LST_TUC.columns:\n                if n[:2].upper() in ['VL','QT']:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].fillna(0)\n                    if not (ANL_LST_TUC[n].dtype == 'object'):\n                        ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n\n            st.dataframe(ANL_LST_TUC[['DESCR_ITEM','COD_ITEM','Cd_Unid','QTD_ROA','QTD_ROA_CURSO','QTD_AO',\n                                    'QTD_MAN','QTD','IND_USO']], width='stretch', hide_index=True)"
+    },
+    "documentacao": {
+      "resumo": "Visualiza dados de materiais distribuídos entre diferentes categorias.",
+      "descricao": "A função lê dados de uma base de dados SQLite, filtra e formata esses dados para exibição em um aplicativo Streamlit. A visualização inclui informações sobre a quantidade de materiais em diferentes destinos (ativo imobilizado, estoque, obras de manutenção) e apresenta uma descrição justificada do contexto da análise.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para a base de dados SQLite."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit usado para renderizar a interface do usuário."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa, utilizado na consulta SQL."
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para a segunda base de dados SQLite."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "UTILS.existe_tabela",
+          "tipo": null,
+          "categoria": "importado"
+        },
+        {
+          "nome": "UTILS.max_arq",
+          "tipo": null,
+          "categoria": "importado"
+        },
+        {
+          "nome": "pandas",
+          "tipo": null,
+          "categoria": "importado"
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": null,
+          "categoria": "importado"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": null,
+          "categoria": "importado"
+        }
+      ],
+      "docstring": "Visualiza dados de materiais distribuídos entre diferentes categorias.\n\nArgs:\n    bd_path (str): Caminho para a base de dados SQLite.\n    st (streamlit._internal.app_state.ScriptRunner): Objeto Streamlit usado para renderizar a interface do usuário.\n    empresa (str): Nome da empresa, utilizado na consulta SQL.\n    bd_path2 (str): Caminho para a segunda base de dados SQLite.\n\nReturns:\n    None\n\nNotes:\n    A função filtra e formata os dados para exibição em um aplicativo Streamlit. A visualização inclui informações sobre a quantidade de materiais em diferentes destinos (ativo imobilizado, estoque, obras de manutenção) e apresenta uma descrição justificada do contexto da análise."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_004",
+      "tipo": "function",
+      "linha_inicio": 502,
+      "linha_fim": 527,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.existe_tabela",
+          "UTILS.max_arq",
+          "pandas",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "existe_tabela",
+          "max_arq",
+          "pd.read_sql",
+          "sl.connect",
+          "st.dataframe",
+          "st.fragment",
+          "st.html"
+        ]
+      },
+      "codigo": "def _vis_004(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\"):\n    with sl.connect(bd_path2) as bd:\n        if not existe_tabela('TBL_MAT_ATIVOS_SPED', bd):\n            return\n\n        dt_ARQ = max_arq(\"LST_MAT\", bd, empresa)\n        if dt_ARQ:\n            st.html(f\"\"\"<h2>Materiais com DE-PARA entre EFD e ERP</h2>\n                        <p  style=\"text-align: justify;text-indent: 40px\">A tabela a seguir apresenta o resultado da\n                        conciliação entre ativos do EFD e do ERP, pelo COD_ITEM. Quando conciliado preenchemos a natureza\n                        de gasto.</p>\n                        \"\"\")\n            sSQL = \"\"\"\n                        SELECT \n                            t1.COD_ITEM, COALESCE(t2.DESCR_ITEM,'AUSENTE EM LST_MAT') AS DESCR_ITEM, \n                            t1.COD_ITEM_SPD, \n                            t1.Cd_NG\n                        FROM \n                                TBL_MAT_ATIVOS_SPED t1 LEFT JOIN (SELECT COD_ITEM, DESCR_ITEM FROM\n                                LST_MAT WHERE dt_ARQ = ?) t2 \n                        ON \n                                t1.COD_ITEM = t2.COD_ITEM\n                        \n                    \"\"\"\n            ANL_LST_TUC = pd.read_sql(sSQL, bd, params=(dt_ARQ,))\n            st.dataframe(ANL_LST_TUC, width='stretch', hide_index=True)"
+    },
+    "documentacao": {
+      "resumo": "Realiza a conciliação entre ativos do EFD e ERP, exibindo os resultados em uma tabela no Streamlit.",
+      "descricao": "A função conecta-se a dois bancos de dados, verifica se a tabela 'TBL_MAT_ATIVOS_SPED' existe no segundo banco de dados. Se existir, busca a data mais recente dos arquivos na tabela 'LST_MAT' e executa uma consulta SQL para conciliar ativos do EFD e ERP pelo COD_ITEM. Os resultados são exibidos em uma tabela no Streamlit.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o primeiro banco de dados."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit usado para exibir a tabela."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa usada na consulta SQL."
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o segundo banco de dados."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "imports": [
+            "UTILS.existe_tabela",
+            "UTILS.max_arq",
+            "pandas",
+            "sqlite3",
+            "streamlit"
+          ],
+          "chamadas": [
+            "existe_tabela",
+            "max_arq",
+            "pd.read_sql",
+            "sl.connect",
+            "st.dataframe",
+            "st.fragment",
+            "st.html"
+          ]
+        }
+      ],
+      "docstring": "Realiza a conciliação entre ativos do EFD e ERP, exibindo os resultados em uma tabela no Streamlit.\n\nArgs:\n    bd_path (str): Caminho para o primeiro banco de dados.\n    st (streamlit._internal.app_state.ScriptRunner): Objeto Streamlit usado para exibir a tabela.\n    empresa (str): Nome da empresa usada na consulta SQL.\n    bd_path2 (str): Caminho para o segundo banco de dados.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_005",
+      "tipo": "function",
+      "linha_inicio": 530,
+      "linha_fim": 1288,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "apr2",
+          "tipo": null,
+          "default": "False",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.carga_sqlite_cache",
+          "UTILS.consultar_empresa",
+          "UTILS.existe_tabela",
+          "UTILS.max_arq",
+          "UTILS.sorteio",
+          "htmldocx.HtmlToDocx",
+          "matplotlib.pyplot",
+          "numpy",
+          "pandas",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "BP_ANLS.drop",
+          "BP_ANLS.merge",
+          "BP_ANLS.to_csv",
+          "CNPJ_EFD.groupby",
+          "CNPJ_EFD_AMST.iterrows",
+          "CNPJ_ERP.groupby",
+          "HtmlToDocx",
+          "LST_NFe_CONC.fillna",
+          "LST_NFe_CONC.rename",
+          "LST_NFe_CONC.to_csv",
+          "PASTA_RELATORIOS.mkdir",
+          "Path",
+          "TBL_BP_EC_CONC.columns.to_list",
+          "TBL_BP_EC_CONC.head",
+          "_ger_html",
+          "abs",
+          "agg",
+          "apply",
+          "arquivo_html.exists",
+          "arquivo_html.read_text",
+          "arquivo_html.write_text",
+          "astype",
+          "carga_sqlite_cache",
+          "consultar_empresa",
+          "copy",
+          "crit.sum",
+          "dados.get",
+          "dds_df.to_excel",
+          "df.groupby",
+          "existe_tabela",
+          "fillna",
+          "filter",
+          "grafico_A",
+          "groupby",
+          "index.max",
+          "int",
+          "isin",
+          "isnull",
+          "iterrows",
+          "join",
+          "len",
+          "lst_impr.append",
+          "max",
+          "max_arq",
+          "n.upper",
+          "new_parser.parse_html_file",
+          "nome.replace",
+          "np.arange",
+          "pd.read_sql",
+          "pd.to_numeric",
+          "plt.axvspan",
+          "plt.close",
+          "plt.cm.plasma",
+          "plt.figure",
+          "plt.grid",
+          "plt.plot",
+          "plt.savefig",
+          "plt.scatter",
+          "plt.tight_layout",
+          "plt.title",
+          "plt.xticks",
+          "plt.ylabel",
+          "replace",
+          "reset_index",
+          "round",
+          "sl.connect",
+          "socio.get",
+          "sort_values",
+          "sorteio",
+          "st.columns",
+          "st.dataframe",
+          "st.fragment",
+          "st.html",
+          "st.pyplot",
+          "st.write",
+          "str",
+          "str.contains",
+          "str.replace",
+          "str.startswith",
+          "sum",
+          "texto_anl.replace",
+          "upper"
+        ]
+      },
+      "codigo": "def _vis_005(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\", local=\"\", apr2=False):\n    with sl.connect(bd_path2) as bd:\n        if not existe_tabela('LST_NFe_CONC', bd):\n            return\n\n        st.html(f\"\"\"<h2>Validação das Compras entre EFD e ERP e apropriação de Créditos Fiscais</h2>\n                <p  style=\"text-align: justify;text-indent: 40px\">O processo de conciliação entre ERP e EFD ICMS por Nota Fiscal \n                Eletrônica (NFE) consiste em uma análise comparativa que confronta os registros contábeis declarados pela Empresa,\n                conforme Manual de Dados e extraídos do ERP com os dados declarados na EFD ICMS, utilizando como elemento de \n                reconciliação a chave da NFE. Esta conciliação opera em duas dimensões críticas: o valor fiscal (base de cálculo \n                do ICMS, valor da mercadoria e impostos incidentes) e a quantidade global dos itens transacionados, assegurando \n                que as informações declaradas na base contábil estejam refletindo a fiscal. A importância desta prática reside \n                na verificação automatizada da apropriação dos créditos fiscais recuperáveis, uma vez que discrepâncias podem \n                gerar diferenças no custo médio do equipamento. Adicionalmente, podemos avaliar falhas nos processos de lançamento, \n                inconsistências na integração entre sistemas e possíveis erros de digitação, funcionando como controle  \n                que assegura a conformidade regulatória, com base na perspectiva fiscal. A seguir apresentamos o resultado:</p>\n                \"\"\")\n        sSQL = \"\"\"SELECT * FROM LST_NFe_CONC\"\"\"\n        LST_NFe_CONC = pd.read_sql(sSQL, bd)\n        LST_NFe_CONC = LST_NFe_CONC.fillna(0)\n        crit_NFe = LST_NFe_CONC['CHV_NFE']!=0\n        crit_QTD = LST_NFe_CONC['TST_GLB_QTD']==\"OK\"\n        crit_VL = LST_NFe_CONC['TST_GLB_VL']==\"OK\"\n        crit_GL = LST_NFe_CONC['TST_GLB']==\"OK\"\n        Nr_NFe = f\"{len(LST_NFe_CONC[crit_NFe]):,.0f}\".replace(\",\",\".\")\n        Nr_NFe_nCONC_QTD = f\"{len(LST_NFe_CONC[crit_NFe & ~crit_QTD]):,.0f}\".replace(\",\",\".\")\n        Nr_NFe_nCONC_VL = f\"{len(LST_NFe_CONC[crit_NFe & ~crit_VL]):,.0f}\".replace(\",\",\".\")\n        Nr_NFe_CONC_GL = f\"{len(LST_NFe_CONC[crit_NFe & crit_GL]):,.0f}\".replace(\",\",\".\")\n\n        crit_IT1 = crit_NFe & crit_QTD\n        VL_NFe_CONC_QTD = (f\"{max(LST_NFe_CONC[crit_IT1]['VL_ERP_TOT'].sum(),LST_NFe_CONC[crit_IT1]['VL_EFD_TOT'].sum()):,.2f}\"\n                           .replace(\".\",\"x\")\n                           .replace(\",\",\".\")\n                           .replace(\"x\",\",\"))\n        crit_IT2 = crit_NFe & crit_VL\n        VL_NFe_CONC_VL = (f\"{max(LST_NFe_CONC[crit_IT2]['VL_ERP_TOT'].sum(),LST_NFe_CONC[crit_IT2]['VL_EFD_TOT'].sum()):,.2f}\"\n                          .replace(\".\",\"x\")\n                          .replace(\",\",\".\")\n                          .replace(\"x\",\",\"))\n        crit_IT3 = crit_NFe & crit_GL\n        VL_NFe_CONC_GL = (f\"{max(LST_NFe_CONC[crit_IT3]['VL_ERP_TOT'].sum(),LST_NFe_CONC[crit_IT3]['VL_EFD_TOT'].sum()):,.2f}\"\n                          .replace(\".\",\"x\")\n                          .replace(\",\",\".\")\n                          .replace(\"x\",\",\"))\n        VL_NFe = (f\"{max(LST_NFe_CONC['VL_ERP_TOT'].sum() * 0,LST_NFe_CONC['VL_EFD_TOT'].sum()):,.2f}\"\n                  .replace(\".\",\"x\")\n                  .replace(\",\",\".\")\n                  .replace(\"x\",\",\"))\n        crit_IT4 = (LST_NFe_CONC['VL_ERP_TOT'].abs() < 0.1) | LST_NFe_CONC['VL_ERP_TOT'].isnull()\n        VL_NFe_nCONC_ausERP = (f\"{LST_NFe_CONC[crit_IT4]['VL_EFD_TOT'].sum():,.2f}\"\n                          .replace(\".\",\"x\")\n                          .replace(\",\",\".\")\n                          .replace(\"x\",\",\"))\n        PCT = (f\"{max(LST_NFe_CONC[crit_IT3]['VL_ERP_TOT'].sum(),LST_NFe_CONC[crit_IT3]['VL_EFD_TOT'].sum()) / max(LST_NFe_CONC['VL_ERP_TOT'].sum() * 0,LST_NFe_CONC['VL_EFD_TOT'].sum()):,.2%}\"\n                            .replace(\".\",\"x\")\n                            .replace(\",\",\".\")\n                            .replace(\"x\",\",\"))\n        PCT_EFD = (f\"{LST_NFe_CONC[crit_IT4]['VL_EFD_TOT'].sum() / max(LST_NFe_CONC['VL_ERP_TOT'].sum(),LST_NFe_CONC['VL_EFD_TOT'].sum()):,.2%}\"\n                            .replace(\".\",\"x\")\n                            .replace(\",\",\".\")\n                            .replace(\"x\",\",\"))\n        vl_ctr = (LST_NFe_CONC[crit_IT4]['VL_EFD_TOT'].sum() / \n                  max(LST_NFe_CONC[~crit_IT3]['VL_ERP_TOT'].sum(),LST_NFe_CONC[~crit_IT3]['VL_EFD_TOT'].sum()))\n        PCT_PART_ERRO = (f\"\"\"{vl_ctr:,.2%}\"\"\"\n                            .replace(\".\",\"x\")\n                            .replace(\",\",\".\")\n                            .replace(\"x\",\",\"))\n        vl_total = max(LST_NFe_CONC['VL_ERP_TOT'].sum() * 0,LST_NFe_CONC['VL_EFD_TOT'].sum())\n        vl_conc = max(LST_NFe_CONC[crit_IT3]['VL_ERP_TOT'].sum(),LST_NFe_CONC[crit_IT3]['VL_EFD_TOT'].sum())\n        DELTA = (vl_total - vl_conc)\n        if vl_ctr <=0.1:\n            txt_ctr = \" Ausências que representem até 10% do valor total conciliado representam operações de baixo valor \" \\\n            \"unitário ou eventuais atrasos no processamento.\"\n        else:\n            txt_ctr = \" Ausências que representam operações \" \\\n            \"com diferenças significativas e que devem ser detalhadas.\"\n        dic_map = {}\n        lst_impr = []\n        for n in LST_NFe_CONC.columns:\n            if n not in ['_merge']:\n                dic_map[n] = n.upper()\n                lst_impr.append(dic_map[n])\n            if n[:2].upper() in ['VL','QT']:\n                LST_NFe_CONC[n] = LST_NFe_CONC[n].fillna(0)\n                if not (LST_NFe_CONC[n].dtype == 'object'):\n                    LST_NFe_CONC[n] = LST_NFe_CONC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n        LST_NFe_CONC = LST_NFe_CONC.rename(columns=dic_map)\n        st.dataframe(LST_NFe_CONC[lst_impr], width='stretch', hide_index=True)\n        LST_NFe_CONC.to_csv(rf\"{local}/BP_ANLS/saida_conciliacao_NFE.csv\", index=False, encoding='latin-1', sep = \"|\")\n        \n        dt_ARQ = max_arq(\"BP_EC\", bd, empresa)\n        if dt_ARQ:\n            sSQL = \"\"\"SELECT Cd_NG, Cd_CFOP, Cd_NFe, VL_TOT_ICMS, VL_TOT_IPI, VL_TOT_LIQ,\n                             VL_DIFAL, VL_ST FROM BP_EC\"\"\"\n            BP = pd.read_sql(sSQL, bd)\n            for n in BP.columns:\n                if n[:2].upper() in ['VL','QT']:\n                    BP[n] = BP[n].fillna('0')\n                    if (BP[n].dtype == 'object'):\n                        BP[n] = pd.to_numeric(BP[n].str.replace(\",\",\".\"), errors='coerce')\n            crit = BP['Cd_NFe'].isnull()\n            BP['VL_TOT'] = (BP['VL_TOT_ICMS'].fillna(0) + \n                            BP['VL_TOT_IPI'].fillna(0) + \n                            BP['VL_TOT_LIQ'].fillna(0) +\n                            BP['VL_DIFAL'].fillna(0) )\n            if crit.sum() > 0:\n                pct = crit.sum() / len(BP)\n                if pct < 0.1:\n                    txt = \"\"\n                elif pct < 0.6:\n                    txt = \", valor considerado alto, empresa deve justificar\"\n                else:\n                    txt = \", percentual inadimissível, empresa deve justificar\"\n                pct_txt = f\"{pct:,.2%}\".replace(\",\",'X').replace(\".\",',').replace(\"x\",',')\n                st.html(f\"\"\"\n                <p  style=\"text-align: justify;text-indent: 40px\">Foram encontrados {crit.sum()} itens sem código de nota \n                fiscal associado, no extrato de compras. Representa {pct_txt} dos lançamentos{txt}.\n                </p>\n                \"\"\")\n            BP_ANLS = BP[crit].groupby(['Cd_CFOP'], dropna=False)[['VL_TOT']].sum().reset_index()\n            df1 = BP[~crit].groupby(['Cd_CFOP'], dropna=False)[['VL_TOT']].sum().reset_index()\n            df1['Cd_CFOP'] = df1['Cd_CFOP'].astype(str)\n            BP_ANLS['Cd_CFOP'] = BP_ANLS['Cd_CFOP'].astype(str)\n\n            BP_ANLS = BP_ANLS.merge(df1, how='outer', on = 'Cd_CFOP', suffixes=(\"_sem_CHV\", \"_com_CHV\"), indicator=True)\n\n            map_res = {\n                    'both' : 'CFOP presente em ambos',\n                    'left_only' : 'Somente em itens sem código da chave',\n                    'right_only' : 'Somente em itens com código da chave',\n                        }\n            BP_ANLS['IND_CONC'] = BP_ANLS['_merge'].replace(map_res)\n            BP_ANLS = BP_ANLS.drop(columns='_merge')\n            BP_ANLS['VL_TOT_sem_CHV'] = BP_ANLS['VL_TOT_sem_CHV'].fillna(0)\n            BP_ANLS['VL_TOT_com_CHV'] = BP_ANLS['VL_TOT_com_CHV'].fillna(0)\n            introito = \"\"\"\n                            <div style=\"\n                                margin-bottom: 18px;\n                                padding: 14px;\n                                background-color: #f8f9fa;\n                                border-left: 5px solid #d9534f;\n                                border-radius: 6px;\n                                font-family: Arial;\n                                font-size: 15px;\n                                line-height: 1.6;\n                                color: #333;\n                            \">\n                                <b>Análise de CFOP:</b><br><br>\n\n                                A tabela abaixo apresenta os valores consolidados por CFOP, contemplando os\n                                montantes calculados com e sem chave da NFe, bem como o indicador de\n                                CFOP por chave. As linhas destacadas em vermelho representam\n                                operações classificadas como <b>CFOP_INV = 1</b>, indicando CFOP considerados\n                                como de investimento.\n                            </div>\n                            \"\"\"\n\n            st.html(introito)\n            BP_ANLS['CFOP_INV'] = 0\n            BP_ANLS.loc[\n                            BP_ANLS['Cd_CFOP'].astype(str).str[1:].str.contains(r'406|551|553|555', na=False),\n                            'CFOP_INV'\n                        ] = 1\n\n            BP_ANLS.to_csv(rf\"{local}/BP_ANLS/resultado_nfe_cfop.csv\", index=False, encoding='latin-1', sep = \"|\")\n            cols = [\"Cd_CFOP\", \"VL_TOT_sem_CHV\", \"VL_TOT_com_CHV\", \"IND_CONC\", \"CFOP_INV\"]\n\n            html = \"\"\"\n                        <table style=\"\n                            border-collapse: collapse;\n                            width: 100%;\n                            font-family: Arial;\n                        \">\n                            <thead>\n                                <tr style=\"background-color:#f0f0f0;\">\n                        \"\"\"\n\n            for col in cols:\n                html += f\"\"\"\n                    <th style=\"\n                        border:1px solid #ccc;\n                        padding:8px;\n                        text-align:center;\n                    \">\n                        {col}\n                    </th>\n                \"\"\"\n\n            html += \"</tr></thead><tbody>\"\n\n            for _, row in BP_ANLS[cols].iterrows():\n\n                destaque = (\n                                \"background-color:#ffcccc; font-weight:bold;\"\n                                if row[\"CFOP_INV\"] == 1\n                                else \"\"\n                            )\n\n                html += f'<tr style=\"{destaque}\">'\n\n                html += f\"\"\"\n                    <td style=\"border:1px solid #ccc;padding:6px;text-align:center;\">\n                        {row[\"Cd_CFOP\"]}\n                    </td>\n\n                    <td style=\"border:1px solid #ccc;padding:6px;text-align:right;\">\n                        {row[\"VL_TOT_sem_CHV\"]:,.2f}\n                    </td>\n\n                    <td style=\"border:1px solid #ccc;padding:6px;text-align:right;\">\n                        {row[\"VL_TOT_com_CHV\"]:,.2f}\n                    </td>\n\n                    <td style=\"border:1px solid #ccc;padding:6px;text-align:center;\">\n                        {row[\"IND_CONC\"]}\n                    </td>\n\n                    <td style=\"border:1px solid #ccc;padding:6px;text-align:center;\">\n                        {row[\"CFOP_INV\"]}\n                    </td>\n                \"\"\"\n\n                html += \"</tr>\"\n\n            html += \"</tbody></table>\"\n\n            st.html(html)\n\n        sSQL = \"\"\"SELECT * FROM TBL_BP_EC_CONC\"\"\"\n        TBL_BP_EC_CONC = carga_sqlite_cache(sSQL, bd)\n\n        for n in TBL_BP_EC_CONC.columns:\n            if n[:2].upper() in ['VL','QT']:\n                TBL_BP_EC_CONC[n] = pd.to_numeric(TBL_BP_EC_CONC[n].astype(str).fillna(\"0.0\"), errors='coerce')\n\n        dds_df = TBL_BP_EC_CONC[TBL_BP_EC_CONC['Cd_CFOP_SUF'].astype(str).str.contains(r'406|551|553|555', na=False)]\n        dds_df.to_excel(\n                            rf\"{local}/BP_ANLS/resultado_conciliacao.xlsx\",\n                            index=False\n                        )\n\n\n        crit_NFe_inv = ~dds_df['SIT_CONC'].str.startswith(\"SOM\")\n        crit_QTD_inv = dds_df['DIV_QTD'].abs() > 0.01\n        crit_VL_inv = dds_df['DIV_VL'].abs() > 0.01\n        crit_GL_inv = ~crit_QTD_inv & ~crit_VL_inv\n\n        Nr_NFe_inv = f\"{len(dds_df):,.0f}\".replace(\",\",\".\")\n        Nr_NFe_nCONC_QTD_inv = f\"{len(dds_df[crit_NFe_inv & crit_QTD_inv]):,.0f}\".replace(\",\",\".\")\n        Nr_NFe_nCONC_VL_inv = f\"{len(dds_df[crit_NFe_inv & crit_VL_inv]):,.0f}\".replace(\",\",\".\")\n        Nr_NFe_CONC_GL_inv = f\"{len(dds_df[crit_NFe_inv & crit_GL_inv]):,.0f}\".replace(\",\",\".\")\n\n        dds_df['VL_ERP_TOT'] = dds_df['VL_TOT_ICMS'] + dds_df['VL_TOT_IPI'] + dds_df['VL_ITEM']\n\n        crit_IT1_inv = crit_NFe_inv & ~crit_QTD_inv\n        VL_NFe_CONC_QTD_inv = (f\"{max(dds_df[crit_IT1_inv]['VL_ERP_TOT'].sum(),dds_df[crit_IT1_inv]['VL_ITEM_EFD'].sum()):,.2f}\"\n                            .replace(\".\",\"x\")\n                            .replace(\",\",\".\")\n                            .replace(\"x\",\",\"))\n        crit_IT2_inv = crit_NFe_inv & ~crit_VL_inv\n        VL_NFe_CONC_VL_inv = (f\"{max(dds_df[crit_IT2_inv]['VL_ERP_TOT'].sum(),dds_df[crit_IT2_inv]['VL_ITEM_EFD'].sum()):,.2f}\"\n                            .replace(\".\",\"x\")\n                            .replace(\",\",\".\")\n                            .replace(\"x\",\",\"))\n        crit_IT3_inv = crit_NFe_inv & crit_GL_inv\n        VL_NFe_CONC_GL_inv = (f\"{max(dds_df[crit_IT3_inv]['VL_ERP_TOT'].sum(),dds_df[crit_IT3_inv]['VL_ITEM_EFD'].sum()):,.2f}\"\n                            .replace(\".\",\"x\")\n                            .replace(\",\",\".\")\n                            .replace(\"x\",\",\"))\n        VL_NFe_inv = (f\"{max(dds_df['VL_ERP_TOT'].sum() * 0,dds_df['VL_ITEM_EFD'].sum()):,.2f}\"\n                    .replace(\".\",\"x\")\n                    .replace(\",\",\".\")\n                    .replace(\"x\",\",\"))\n        crit_IT4_inv = (dds_df['VL_ERP_TOT'].abs() < 0.1) | dds_df['VL_ERP_TOT'].isnull()\n        VL_NFe_nCONC_ausERP_inv = (f\"{dds_df[crit_IT4_inv]['VL_ITEM_EFD'].sum():,.2f}\"\n                            .replace(\".\",\"x\")\n                            .replace(\",\",\".\")\n                            .replace(\"x\",\",\"))\n\n        PCT_inv = (f\"{max(dds_df[crit_IT3_inv]['VL_ERP_TOT'].sum(),dds_df[crit_IT3_inv]['VL_ITEM'].sum()) / max(dds_df['VL_ERP_TOT'].sum() * 0,dds_df['VL_ITEM'].sum()):,.2%}\"\n                                    .replace(\".\",\"x\")\n                                    .replace(\",\",\".\")\n                                    .replace(\"x\",\",\"))\n        PCT_EFD_inv = (f\"{dds_df[crit_IT4_inv]['VL_ITEM'].sum() / max(dds_df['VL_ERP_TOT'].sum(),dds_df['VL_ITEM'].sum()):,.2%}\"\n                            .replace(\".\",\"x\")\n                            .replace(\",\",\".\")\n                            .replace(\"x\",\",\"))\n        vl_ctr_inv = (dds_df[crit_IT4_inv]['VL_ITEM_EFD'].sum() / \n                    (\n                        max(dds_df['VL_ERP_TOT'].sum() * 0,dds_df['VL_ITEM_EFD'].sum()) -\n                        max(dds_df[crit_IT3_inv]['VL_ERP_TOT'].sum(),dds_df[crit_IT3_inv]['VL_ITEM_EFD'].sum())\n                    )\n                    )\n        PCT_PART_ERRO_inv = (f\"\"\"{vl_ctr_inv:,.2%}\"\"\"\n                            .replace(\".\",\"x\")\n                            .replace(\",\",\".\")\n                            .replace(\"x\",\",\"))\n\n        \n        st.html(f\"\"\"\n                <p  style=\"text-align: justify;text-indent: 40px\">Foram encontradas {Nr_NFe}, sendo que {Nr_NFe_CONC_GL} conciliaram \n                tanto em valor quanto em quantidade. Adicionalmente, {Nr_NFe_nCONC_QTD} apresentaram divergência de quantidade e \n                {Nr_NFe_nCONC_VL} apresentaram divergência em unidades monetárias. O valor total, cruzando ERP e EFD ICMS, é de \n                R$ {VL_NFe}, EFD de referência, com R$ {VL_NFe_CONC_GL} conciliados em valor e quantidade, isto é, {PCT} de conciliação em valor. O \n                valor consolidado de NFe encontradas no EFD e não localizadas no ERP é de R$ {VL_NFe_nCONC_ausERP} ou \n                {PCT_PART_ERRO} do erro. {txt_ctr}</p> \n                <p  style=\"text-align: justify;text-indent: 40px\">Se considerarmos CFOP de investimento, foram encontradas {Nr_NFe_inv}, sendo que {Nr_NFe_CONC_GL_inv} conciliaram \n                tanto em valor quanto em quantidade. Adicionalmente, {Nr_NFe_nCONC_QTD_inv} apresentaram divergência de quantidade e \n                {Nr_NFe_nCONC_VL_inv} apresentaram divergência em unidades monetárias. O valor total, cruzando ERP e EFD ICMS, é de \n                R$ {VL_NFe_inv}, EFD de referência, com R$ {VL_NFe_CONC_GL_inv} conciliados em valor e quantidade, isto é, {PCT_inv} de conciliação em valor. O \n                valor consolidado de NFe encontradas no EFD e não localizadas no ERP é de R$ {VL_NFe_nCONC_ausERP_inv} ou \n                {PCT_PART_ERRO_inv} do erro.\n                Nota-se que o foco neste trabalho é nas operações com CFOP de investimento, cuja população constituem o segmento \n                crítico desta fiscalização, demandando atenção devido ao impacto direto na constituição do ativo imobilizado.</p>\n                \"\"\")\n\n        st.html(f\"\"\"<h3>Conciliação do ERP com o EFD ICMS, visão analítica</h3>\n                    <p style=\"text-align: justify;text-indent: 40px; padding-top: 20px\">Foi \n                    solicitado para a empresa, Manual de Dados, o extrato de compras, conforme ERP. Nesse teste, \n                    faz-se a comparação dos dados dos materiais apresentados no ERP com os declarados no sistema de \n                    escrituração fiscal, EFD ICMS. Para fazer isso, aplicou-se heurística simples, usando as seguintes\n                    chaves em cada base:</p>\n                        <div class=\"rules-list\" style=\"margin: 20px 0; padding-left: 60px;\">\n                            <ol style=\"list-style-type: decimal; line-height: 1.6;\">\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Quantidade, Unidade, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 1, VL_TOT_LIQ como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Quantidade, Unidade, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 2, VL_TOT_LIQ + VL_TOT_ICMS + VL_ST como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Quantidade, Unidade, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 3, VL_TOT_LIQ + VL_TOT_IPI + VL_TOT_ICMS + VL_ST como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Quantidade, Unidade, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 4, VL_TOT_LIQ + VL_TOT_IPI + VL_TOT_ICMS como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Quantidade, Unidade, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 5, VL_TOT_LIQ + VL_TOT_IPI como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                \n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Quantidade, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 1 SEM UNIDADE, VL_TOT_LIQ como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Quantidade, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 2 SEM UNIDADE, VL_TOT_LIQ + VL_TOT_ICMS + VL_ST como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Quantidade, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 3 SEM UNIDADE, VL_TOT_LIQ + VL_TOT_IPI + VL_TOT_ICMS + VL_ST como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Quantidade, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 4 SEM UNIDADE, VL_TOT_LIQ + VL_TOT_IPI + VL_TOT_ICMS como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Quantidade, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 5 SEM UNIDADE, VL_TOT_LIQ + VL_TOT_IPI como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                \n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Quantidade, Unidade</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA_QTD_COM_UND)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Quantidade</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA_QTD_SEM_UND)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 1 VALOR, VL_TOT_LIQ como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 2 VALOR, VL_TOT_LIQ + VL_TOT_ICMS + VL_ST como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 3 VALOR, VL_TOT_LIQ + VL_TOT_IPI + VL_TOT_ICMS + VL_ST como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 4 VALOR, VL_TOT_LIQ + VL_TOT_IPI + VL_TOT_ICMS  como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                                <li style=\"margin-bottom: 10px;\">\n                                    <strong>Código NFe, Valor</strong> \n                                    <span style=\"color: #666; font-style: italic;\">\n                                        (REGRA 5 VALOR, VL_TOT_LIQ + VL_TOT_IPI como valor no ERP e VL_ITEM no EFD)\n                                    </span>\n                                </li>\n                            </ol>\n                        </div>\n\n                    <p style=\"text-align: justify;text-indent: 40px; padding-top: 20px\">Segue o resultado:</p>    \n                    \"\"\")\n        TBL_BP_EC_CONC = carga_sqlite_cache(sSQL, bd)\n        for n in TBL_BP_EC_CONC.columns.to_list():\n            if n[:2].upper() in ['VL', 'QT'] and not (TBL_BP_EC_CONC[n].dtype == 'object'):\n                TBL_BP_EC_CONC[n] = TBL_BP_EC_CONC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n\n        st.dataframe(TBL_BP_EC_CONC.head(1000), width='stretch', hide_index=True)\n\n        CNPJ_EFD = TBL_BP_EC_CONC[TBL_BP_EC_CONC['SIT_CONC'] == 'SOMENTE EFD'][['Nm_EMP','CNPJ_EFD', \n                                                                               'CHV_NFE_EFD', 'Cd_CFOP_EFD','VL_ITEM_EFD']].copy()\n        \n        CNPJ_EFD['VL_ITEM_EFD'] = pd.to_numeric(CNPJ_EFD['VL_ITEM_EFD'].astype(str).str.replace(\",\",\"x\").str.replace(\".\",\"\").str.replace(\"x\",\".\"), errors='coerce')\n        CNPJ_ERP = TBL_BP_EC_CONC[TBL_BP_EC_CONC['SIT_CONC'] == 'SOMENTE ERP'][['Txt_Nom_Forn','CNPJ', \n                                                                               'CHV_NFE', 'Cd_CFOP','VL_ITEM',\n                                                                               'VL_TOT_IPI','VL_TOT_ICMS']].copy()\n        for col in ['VL_ITEM','VL_TOT_IPI','VL_TOT_ICMS']:\n            CNPJ_ERP[col] = pd.to_numeric(CNPJ_ERP[col].astype(str).str.replace(\",\",\"x\").str.replace(\".\",\"\").str.replace(\"x\",\".\"), errors='coerce').fillna(0)\n        CNPJ_ERP['VL_ITEM'] += CNPJ_ERP['VL_TOT_IPI']\n        CNPJ_ERP['VL_ITEM'] += CNPJ_ERP['VL_TOT_ICMS']\n        if len(CNPJ_EFD)>0:\n            st.html(\"\"\"<p style=\"text-align: justify; text-indent: 40px; padding-top: 20px\">\n                        Com base na análise de conciliação fiscal realizada entre os sistemas ERP e EFD ICMS, foram identificados \n                            itens que não apresentaram correspondência perfeita entre as bases de dados, tabela abaixo. Do total de registros não \n                            conciliados presentes na tabela EFD, procedeu-se com um filtro adicional para selecionar \n                            especificamente aqueles operações cujo CFOP (Código Fiscal de Operações e Prestações) está associado \n                            a transações de investimento.                     \n                        </p>\n                        \"\"\")\n            st.dataframe(CNPJ_EFD, width='stretch', hide_index=True)\n            LST_CFOP_INV = ['1406', '1551', '1553', '1555', '2406', '2553', '2551', '2555']\n            txt_CFOP = (\", \").join(LST_CFOP_INV)\n            st.html(f\"\"\"<p style=\"text-align: justify; text-indent: 40px; padding-top: 20px\">\n                        A seleção por CFOP de investimento ({txt_CFOP}) visa priorizar a análise de operações que envolvem aquisições de \n                        bens para o ativo imobilizado, capitalização ou outras movimentações dessa natureza. \n                        Esta etapa de filtragem permitiu isolar um subconjunto mais crítico dos registros \n                        não conciliados para aprofundamento analítico. Para garantir uma amostragem representativa e \n                        metodologicamente consistente, aplicou-se um processo de sorteio por unidades monetárias. Esta abordagem \n                        assegura que os casos selecionados para fiscalização reflitam adequadamente a população total de não \n                        conciliações relacionadas a investimentos, evitando vieses de seleção e permitindo inferências \n                        estatisticamente válidas sobre as causas-raiz dos discrepâncias identificadas. Os casos sorteados serão \n                        analisados, considerando: verificação do documento fiscal, conferência com ERP e EFD ICMS, avaliação da adequação da \n                        classificação fiscal ou no ERP e identificação de possíveis erros de digitação.                   \n                        </p>\n                        \"\"\")\n            \n            CNPJ_EFD = (CNPJ_EFD\n                        .groupby(['Nm_EMP','CNPJ_EFD','Cd_CFOP_EFD'], dropna=False)\n                        .agg(\n                            VL_TOTAL= ('VL_ITEM_EFD', 'sum'),\n                            QTD_NFE = ('VL_ITEM_EFD', 'count'), \n                        )\n                        .reset_index()\n                        .sort_values(by='VL_TOTAL', ascending=False)\n                        )\n            CNPJ_EFD_INV = CNPJ_EFD[CNPJ_EFD['Cd_CFOP_EFD'].isin(LST_CFOP_INV) & (CNPJ_EFD['VL_TOTAL']>0)].copy().reset_index(drop=True)\n            CNPJ_EFD_CON = CNPJ_EFD[(~CNPJ_EFD['Cd_CFOP_EFD'].isin(LST_CFOP_INV)) & (CNPJ_EFD['VL_TOTAL']>0)].copy().reset_index(drop=True)\n        \n        def grafico_A(df, nome, nm_agrup):\n            \n            CNPJ_EFD_AMST = df.groupby(nm_agrup)[['VL_TOTAL']].sum().reset_index()\n            CNPJ_EFD_AMST, amostra_final, IA, R, texto_anl = sorteio(CNPJ_EFD_AMST, \n                            coluna_valor = 'VL_TOTAL', \n                            coluna_identificador = nm_agrup,\n\n                            metodo = \"AUM\",\n                            tipo = \"INDICADORES\", st=st)\n            \n            def _ger_html(dados, valor_padrao = \"ND\"):\n                if nome != 'EFD_INV_NC':\n                    return \"\"\n                html_content = f\"\"\"\n                                    <style>\n                                        body {{\n                                            font-family: Arial, sans-serif;\n                                            margin: 0;\n                                            padding: 20px;\n                                            background-color: #f9f9f9;\n                                        }}\n                                        .container {{\n                                            max-width: 800px;\n                                            margin: auto;\n                                            background: white;\n                                            padding: 20px;\n                                            border-radius: 8px;\n                                            box-shadow: 0 0 10px rgba(0,0,0,0.1);\n                                        }}\n                                        h1 {{\n                                            color: #2c3e50;\n                                            text-align: center;\n                                        }}\n                                        h2 {{\n                                            color: #34495e;\n                                            border-bottom: 1px solid #ccc;\n                                            padding-bottom: 5px;\n                                        }}\n                                        p {{\n                                            line-height: 1.6em;\n                                        }}\n                                        ul {{\n                                            list-style-type: none;\n                                            padding-left: 0;\n                                        }}\n                                        li {{\n                                            margin-bottom: 10px;\n                                        }}\n                                        .section {{\n                                            margin-top: 20px;\n                                        }}\n                                    </style>\n\n                                    <div class=\"container\">\n                                        <h3>{dados.get('razao_social', valor_padrao)}</h3>\n                                        \n                                        <p><strong>Nome Fantasia:</strong> {dados.get('nome_fantasia', valor_padrao)}</p>\n                                        <p><strong>CNPJ:</strong> {dados.get('cnpj', valor_padrao)}</p>\n                                        <p><strong>Data Início Atividade:</strong> {dados.get('data_inicio_atividade', valor_padrao)}</p>\n                                        <p><strong>Situação Cadastral:</strong> {dados.get('descricao_situacao_cadastral', valor_padrao)} ({dados.get('data_situacao_cadastral', valor_padrao)})</p>\n                                        <p><strong>Natureza Jurídica:</strong> {dados.get('natureza_juridica', valor_padrao)}</p>\n                                        <p><strong>Porte:</strong> {dados.get('porte', valor_padrao)}</p>\n                                        <p><strong>Capital Social:</strong> R$ {dados.get('capital_social', valor_padrao):,.2f}</p>\n\n                                        <div class=\"section\">\n                                            <h4>Endereço</h4>\n                                            <p><strong>Tipo Logradouro:</strong> {dados.get('descricao_tipo_de_logradouro', valor_padrao)}</p>\n                                            <p><strong>Logradouro:</strong> {dados.get('logradouro', valor_padrao)}, {dados.get('numero', valor_padrao)}</p>\n                                            <p><strong>Bairro:</strong> {dados.get('bairro', valor_padrao)}</p>\n                                            <p><strong>Município:</strong> {dados.get('municipio', valor_padrao)} - {dados.get('uf', valor_padrao)}</p>\n                                            <p><strong>CEP:</strong> {dados.get('cep', valor_padrao)}</p>\n                                            <p><strong>Complemento:</strong> {dados.get('complemento', valor_padrao)}</p>\n                                        </div>\n\n                                        <div class=\"section\">\n                                            <h4>Contato</h4>\n                                            <p><strong>Telefone:</strong> {dados.get('ddd_telefone_1', valor_padrao)}</p>\n                                            <p><strong>Fax:</strong> {dados.get('ddd_fax', valor_padrao)}</p>\n                                        </div>\n\n                                        <div class=\"section\">\n                                            <h4>CNAE Fiscal</h4>\n                                            <p>{dados.get('cnae_fiscal_descricao', valor_padrao)}</p>\n                                            \n                                            <h3>CNAEs Secundários</h3>\n                                            <ul>\n                                                {''.join([f'<li>{item[\"descricao\"]}</li>' for item in dados['cnaes_secundarios']])}\n                                            </ul>\n                                        </div>\n\n                                        <div class=\"section\">\n                                            <h4>Regime Tributário</h4>\n                                            <table style=\"width:100%; border-collapse: collapse;\">\n                                                <thead>\n                                                    <tr style=\"background:#eee;\"><th>Ano</th><th>Forma Tributação</th></tr>\n                                                </thead>\n                                                <tbody>\n                                                    {''.join([f'<tr><td>{item[\"ano\"]}</td><td>{item[\"forma_de_tributacao\"]}</td></tr>' for item in dados['regime_tributario']])}\n                                                </tbody>\n                                            </table>\n                                        </div>\n\n                                        <div class=\"section\">\n                                            <h4>Quadro Societário</h4>\n                                            <ul>\n                                                {''.join([\n                                                    f\"<li><strong>{socio['nome_socio']}</strong><br/>Qualificação: {socio['qualificacao_socio']}<br/>Entrada: {socio['data_entrada_sociedade']}<br/>País: {socio.get('pais', 'Brasil')}</li>\"\n                                                    for socio in dados['qsa']\n                                                ])}\n                                            </ul>\n                                        </div>\n                                    </div>\n                                    \"\"\"\n                return html_content\n            \n            amostra_final1 = \", \".join(amostra_final)\n            st.html(texto_anl.replace('</p>','') + f\"\"\" A amostra considera os seguintes CNPJ: {amostra_final1}. O resultado \n                    aberto é dado a seguir:</p>\"\"\")\n   \n            st.dataframe(CNPJ_EFD_AMST, width='stretch', hide_index=True)\n\n\n            if (nome == 'EFD_INV_NC') and (len(amostra_final)>0) and apr2:\n                st.html(f\"\"\"<p style=\"text-align: justify; text-indent: 40px; padding-top: 20px\">\n                            Informações adicionais para os CNPJ selecionados:                   \n                            </p>\n                            \"\"\")\n                PASTA_RELATORIOS = Path(rf\"{local}/BP_ANLS/RELATORIOS_CNPJ\")\n                PASTA_RELATORIOS.mkdir(parents=True, exist_ok=True)\n                for cnpj in amostra_final:\n                    cnpj_limpo = \"\".join(filter(str.isdigit, str(cnpj)))\n                    arquivo_html = PASTA_RELATORIOS / f\"{cnpj_limpo}.html\"\n                    arquivo_docx = PASTA_RELATORIOS / f\"{cnpj_limpo}\"\n                    if arquivo_html.exists():\n                        txt_html = arquivo_html.read_text(encoding=\"utf-8\")\n                    else:\n                        dic_prov = consultar_empresa(cnpj)\n                        txt_html = _ger_html(dic_prov)\n                        if txt_html != \"\":\n                            arquivo_html.write_text(txt_html, encoding=\"utf-8\")\n                            new_parser = HtmlToDocx()\n                            new_parser.parse_html_file(arquivo_html, arquivo_docx)\n                    if txt_html != \"\":\n                        st.html(txt_html)\n\n            x = np.arange(len(CNPJ_EFD_AMST))\n            y = CNPJ_EFD_AMST[\"VL_ACUM\"]\n\n            limA = CNPJ_EFD_AMST[CNPJ_EFD_AMST[\"CLS_ABC\"] == \"A\"].index.max()\n            limB = CNPJ_EFD_AMST[CNPJ_EFD_AMST[\"CLS_ABC\"] == \"B\"].index.max()\n\n            fig17b = plt.figure(figsize=(14, 6))\n            cmap_line = plt.cm.plasma(0.75)\n            cmap_points = plt.cm.plasma(0.25)\n            plt.axvspan(0, limA, alpha=0.18, color=\"#f70a0a\")\n            plt.axvspan(limA, limB, alpha=0.15, color=\"#0404f3\")\n            plt.axvspan(limB, len(CNPJ_EFD_AMST), alpha=0.12, color=\"#09f567\")\n            plt.plot(x, y, linewidth=2, color=cmap_line)\n\n            for idx, row in CNPJ_EFD_AMST.iterrows():\n                if row[\"FLG_AMST\"] == 1:\n                    plt.scatter(idx, row[\"VL_ACUM\"], \n                                s=80, \n                                edgecolor=\"black\", \n                                linewidth=1.2, \n                                facecolor=cmap_points)\n            txt = nome.replace(\"_\",\" \")\n            plt.title(f\"Curva Acumulada de Fornecedores não Conciliados, lado {txt}, com Destaque ABC e Amostragem (AUM)\", fontsize=16)\n            plt.ylabel(\"Valor Acumulado\", fontsize=12)\n\n            passo = max(1, int(round(len(CNPJ_EFD_AMST) / 10, 0)))\n            plt.xticks(\n                            x[::passo], \n                            CNPJ_EFD_AMST[nm_agrup][::passo], \n                            rotation=45, \n                            ha=\"right\",\n                            fontsize=12\n                        )\n\n            plt.grid(alpha=0.2)\n            plt.tight_layout()\n            st.html(\"\"\"<p style=\"text-align: justify; text-indent: 40px; padding-top: 20px\">\n                       Para melhor visualizarmos segue o gráfico com a região de classificação ABC e as amostras sorteadas. \n                       Como observa-se as amostras se concentram na região de maior criticidade.                     \n                       </p>\n                    \"\"\")\n            col1ka, col2ka, col3ka = st.columns([1,2,1], gap='small')\n            with col2ka:\n                st.pyplot(fig17b)\n            plt.close()\n\n            plt.savefig(f\"{local}//RELATORIOS//figuras//amostra_NFe_{nome}.png\", dpi=300, bbox_inches='tight')\n        if len(CNPJ_EFD_INV)>0:\n            grafico_A(CNPJ_EFD_INV, 'EFD_INV_NC', 'CNPJ_EFD')\n \n        if len(CNPJ_EFD_CON)>0:\n            st.html(\"\"\"<p style=\"text-align: justify; text-indent: 40px; padding-top: 20px\">\n                       A seguir procedimento similar para itens de despesa.                     \n                       </p>\n                    \"\"\")\n            st.write(CNPJ_EFD_CON)\n            grafico_A(CNPJ_EFD_CON, 'EFD_DESP_NC', 'CNPJ_EFD')\n        \n        if len(CNPJ_ERP)>0:\n            st.html(\"\"\"<p style=\"text-align: justify; text-indent: 40px; padding-top: 20px\">\n                        Com base na análise de conciliação fiscal realizada entre os sistemas ERP e EFD ICMS, foram identificados \n                        itens que não apresentaram correspondência perfeita entre as bases de dados, tabela abaixo. Do total de registros não \n                        conciliados presentes na tabela ERP, procedeu-se com um filtro adicional para selecionar \n                        especificamente aqueles operações cujo CFOP (Código Fiscal de Operações e Prestações) está associado \n                        a transações de investimento.                     \n                       </p>\n                    \"\"\")\n            st.dataframe(CNPJ_ERP, width='stretch', hide_index=True)\n            st.html(f\"\"\"<p style=\"text-align: justify; text-indent: 40px; padding-top: 20px\">\n                        A seleção por CFOP de investimento ({txt_CFOP}) visa priorizar a análise de operações que envolvem aquisições de \n                        bens para o ativo imobilizado, capitalização ou outras movimentações dessa natureza. \n                        Esta etapa de filtragem permitiu isolar um subconjunto mais crítico dos registros \n                        não conciliados para aprofundamento analítico. Para garantir uma amostragem representativa e \n                        metodologicamente consistente, aplicou-se um processo de sorteio por unidades monetárias. Esta abordagem \n                        assegura que os casos selecionados para fiscalização reflitam adequadamente a população total de não \n                        conciliações relacionadas a investimentos, evitando vieses de seleção e permitindo inferências \n                        estatisticamente válidas sobre as causas-raiz dos discrepâncias identificadas. Os casos sorteados serão \n                        analisados, considerando: verificação do documento fiscal, conferência com ERP e EFD ICMS, avaliação da adequação da \n                        classificação fiscal ou no ERP e identificação de possíveis erros de digitação.                   \n                        </p>\n                        \"\"\")\n            \n            CNPJ_ERP = (CNPJ_ERP\n                        .groupby(['Txt_Nom_Forn','CNPJ','Cd_CFOP'], dropna=False)\n                        .agg(\n                            VL_TOTAL= ('VL_ITEM', 'sum'),\n                            QTD_NFE = ('VL_ITEM', 'count'), \n                        )\n                        .reset_index()\n                        .sort_values(by='VL_TOTAL', ascending=False)\n                        )\n            CNPJ_ERP_INV = CNPJ_ERP[CNPJ_ERP['Cd_CFOP'].isin(LST_CFOP_INV) & (CNPJ_ERP['VL_TOTAL']>0)].copy().reset_index(drop=True)\n            CNPJ_ERP_CON = CNPJ_ERP[(~CNPJ_ERP['Cd_CFOP'].isin(LST_CFOP_INV)) & (CNPJ_ERP['VL_TOTAL']>0)].copy().reset_index(drop=True)\n        \n        if len(CNPJ_ERP_INV)>0:\n            grafico_A(CNPJ_ERP_INV, 'ERP_INV_NC', 'CNPJ')\n \n        if len(CNPJ_ERP_CON)>0:\n            st.html(\"\"\"<p style=\"text-align: justify; text-indent: 40px; padding-top: 20px\">\n                       A seguir procedimento similar para itens de despesa.                     \n                       </p>\n                    \"\"\")\n            grafico_A(CNPJ_ERP_CON, 'ERP_DESP_NC', 'CNPJ')\n\n        st.html(\"\"\"<p style=\"text-align: justify; text-indent: 40px; padding-top: 20px\">\n                        O sistema de análise utiliza diversas variáveis para identificar riscos e situações específicas \n                        nas operações. A variável <strong>OBS_SFF_ST</strong> indica possibilidade de substituição tributária, \n                        enquanto <strong>OBS_SFF_DIFAL</strong> sinaliza operações com diferimento de ICMS. \n                        Já <strong>OBS_SFF_IMP</strong> identifica possíveis operações de importação que requerem atenção especial.\n                        A variável <strong>SIT_CONC</strong> representa o resultado da conciliação fiscal conforme a heurística \n                        definida previamente, indicando o nível de correspondência entre os dados do ERP e o sistema fiscal. \n                        O <strong>Cd_Estrato</strong>, por sua vez, é um indicador de risco calculado com base em múltiplos fatores \n                        que avaliam a criticidade da operação.\n                        O cálculo do Cd_Estrato considera o <strong>Peso_SIT_CONC</strong>, que atribui pontuação 0 para operações \n                        conciliadas e 10 para não conciliadas. O <strong>Peso_CFOP</strong> adiciona 3 pontos se o CFOP possuir \n                        sufixo de investimento, ou 1 ponto caso contrário. O <strong>Peso_Materialidade</strong> é determinado \n                        pelo logaritmo de base 10 da diferença em valor entre as bases analisadas.\n                        O <strong>Fator_Risco</strong> é obtido através da soma dos pesos mencionados anteriormente. \n                        A classificação final do risco segue a seguinte escala: quando o Fator_Risco é superior a 20 pontos, \n                        o Cd_Estrato é considerado <strong>crítico</strong> e a operação deve ser obrigatoriamente avaliada; \n                        valores entre 15 e 20 indicam <strong>risco alto</strong>; operações com Fator_Risco igual a zero \n                        são classificadas como <strong>risco zero</strong>; e valores entre 0 e 15 são considerados \n                        <strong>risco residual</strong>, indicando menor prioridade de análise.\n                    </p>\n                \"\"\")"
+    },
+    "documentacao": {
+      "nome": "script_python",
+      "categoria": "script",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": "string",
+          "default": "",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": "objeto",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": "string",
+          "default": "",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": "string",
+          "default": "",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": "string",
+          "default": "",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "apr2",
+          "tipo": "booleano",
+          "default": "False",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "dependencias": {
+        "imports": [
+          "UTILS.carga_sqlite_cache",
+          "UTILS.consultar_empresa",
+          "UTILS.existe_tabela",
+          "UTILS.max_arq",
+          "UTILS.sorteio",
+          "htmldocx.HtmlToDocx",
+          "matplotlib.pyplot",
+          "numpy",
+          "pandas",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "BP_ANLS.drop",
+          "BP_ANLS.merge",
+          "BP_ANLS.to_csv",
+          "CNPJ_EFD.groupby",
+          "CNPJ_EFD_AMST.iterrows",
+          "CNPJ_ERP.groupby",
+          "HtmlToDocx",
+          "LST_NFe_CONC.fillna",
+          "LST_NFe_CONC.rename",
+          "LST_NFe_CONC.to_csv",
+          "PASTA_RELATORIOS.mkdir",
+          "Path",
+          "TBL_BP_EC_CONC.columns.to_list",
+          "TBL_BP_EC_CONC.head",
+          "_ger_html",
+          "abs",
+          "agg",
+          "apply",
+          "arquivo_html.exists",
+          "arquivo_html.read_text",
+          "arquivo_html.write_text",
+          "astype",
+          "carga_sqlite_cache",
+          "consultar_empresa",
+          "copy",
+          "crit.sum",
+          "dados.get",
+          "dds_df.to_excel",
+          "df.groupby",
+          "existe_tabela",
+          "fillna",
+          "filter",
+          "grafico_A",
+          "groupby",
+          "index.max",
+          "int",
+          "isin",
+          "isnull",
+          "iterrows",
+          "join",
+          "len",
+          "lst_impr.append",
+          "max",
+          "max_arq",
+          "n.upper",
+          "new_parser.parse_html_file",
+          "nome.replace",
+          "np.arange",
+          "pd.read_sql",
+          "pd.to_numeric",
+          "plt.axvspan",
+          "plt.close",
+          "plt.cm.plasma",
+          "plt.figure",
+          "plt.grid",
+          "plt.plot",
+          "plt.savefig",
+          "plt.scatter",
+          "plt.tight_layout",
+          "plt.title",
+          "plt.xticks",
+          "plt.ylabel",
+          "replace",
+          "reset_index",
+          "round",
+          "sl.connect",
+          "socio.get",
+          "sort_values",
+          "sorteio",
+          "st.columns",
+          "st.dataframe",
+          "st.fragment",
+          "st.html",
+          "st.pyplot",
+          "st.write",
+          "str",
+          "str.contains",
+          "str.replace",
+          "str.startswith",
+          "sum",
+          "texto_anl.replace",
+          "upper"
+        ]
+      }
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_006",
+      "tipo": "function",
+      "linha_inicio": 1291,
+      "linha_fim": 1399,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "apr2",
+          "tipo": null,
+          "default": "False",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "SRC.calculos.conv_num",
+          "UTILS.carga_sqlite_cache",
+          "UTILS.existe_tabela",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "ANL_LST_TUC.columns.to_list",
+          "ANL_LST_TUC2.columns.to_list",
+          "ANL_LST_TUC3.columns.to_list",
+          "ANL_LST_TUC4.columns.to_list",
+          "apply",
+          "carga_sqlite_cache",
+          "conv_num",
+          "existe_tabela",
+          "fillna",
+          "replace",
+          "sl.connect",
+          "st.columns",
+          "st.dataframe",
+          "st.fragment",
+          "st.html",
+          "st.image",
+          "upper"
+        ]
+      },
+      "codigo": "def _vis_006(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\", local=\"\", apr2=False):\n    with sl.connect(bd_path2) as bd:\n        if not existe_tabela('CONSOL_TOT_QTD_EC', bd):\n            return\n        st.html(f\"\"\"<h3>\n                    Conciliação da aplicação dos materiais com as compras declaradas</h3>\n                    <p  style=\"text-align: justify;text-indent: 40px\">Avalie os resultados para\n                    a conciliação, em valor e quantidade, entre compras e as quantidades do razão de ODI, \n                    razão de ODC, almoxarifado e de ODS.</p>\n                    \"\"\")\n        sSQL = \"\"\"SELECT * FROM CONSOL_TOT_QTD_EC\"\"\"\n        ANL_LST_TUC = carga_sqlite_cache(sSQL, bd)\n        for n in ANL_LST_TUC.columns.to_list():\n            if n[:2].upper() in ['VL', 'QT']:\n                ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n\n        st.dataframe(ANL_LST_TUC, width='stretch', hide_index=True)\n\n        if existe_tabela('TAB_CALC_BP', bd):\n            st.html(f\"\"\"<h2>Memória de cálculo do VF atualizado</h2>\n                        <p  style=\"text-align: justify;text-indent: 40px\">Avalie os resultados para\n                        o memorial de cálculo para determinação do valor de fábrica, visão analítica.</p><br>\n                        \"\"\")\n            sSQL = \"\"\"\n                    SELECT * FROM TAB_CALC_BP\n\n                    \"\"\"\n            ANL_LST_TUC1 = carga_sqlite_cache(sSQL, bd)\n            ANL_LST_TUC1 = conv_num(ANL_LST_TUC1, lista = ['VL', 'QT'])\n\n            st.dataframe(ANL_LST_TUC1, width='stretch', hide_index=True)\n\n        if existe_tabela('TAB_OUTLIERS', bd):\n            st.html(f\"\"\"<h2>Análise de OUTLIERS</h2>\n                        <p  style=\"text-align: justify;text-indent: 40px\">Avalie os resultados para\n                        entender o porquê de estar sendo indicado a existência de OUTLIERS nas compras. \n                        Abaixo é apresentado s resultados.</p><br>\n                        \"\"\")\n            sSQL = \"\"\"\n                    SELECT * FROM TAB_OUTLIERS\n\n                    \"\"\"\n            ANL_LST_TUC2 = carga_sqlite_cache(sSQL, bd)\n            for n in ANL_LST_TUC2.columns.to_list():\n                if n in ['DELTA_PC', 'VAR_PER']:\n                    ANL_LST_TUC2[n] = ANL_LST_TUC2[n].fillna(0).apply(lambda x: f\"{x:,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                elif n[:2].upper() in ['VL', 'Q1', 'Q3', 'QT', 'CM', 'IN', 'ME', 'ST', 'DE', \n                                    'MA', 'LI']:\n                    ANL_LST_TUC2[n] = ANL_LST_TUC2[n].fillna(0).apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n\n            st.dataframe(ANL_LST_TUC2, width='stretch', hide_index=True)\n\n        if existe_tabela('TAB_FIM_BPC', bd):\n            st.html(f\"\"\"<h2>Resumo do BC UC</h2>\n                        \"\"\")\n            \n            img1 = st.columns([1, 1, 1], gap='small')\n            with img1[1]:\n                st.image('Imagens/VF_F1.png', caption=\"Representação da Análise do BP\", width='stretch')\n            st.html(\"\"\"\n                        <p  style=\"text-align: justify;text-indent: 40px\">Avalie os resultados para\n                        entender os valores obtidos no processamento dos dados encaminhados em decorrência do Manual de Dados. \n                        Nesta etapa do cálculo, busca-se os dados do extrato de compra e faz um \n                        cruzamento pelo código de material com o ROA. Deste cruzamento, faz-se a \n                        classificação dos itens (TUCAGEM e Natureza de gasto). Busca-se fazer o \n                        rateio do financeiro do ICMS e do VL_ODC, caso ocorra. No fim, prepara-se \n                        uma estatistica descritiva, por item, com valores máximo, mínimo e desvio \n                        padrão (identificar maiores variações). Também se aplica os fatores de \n                        atualização, de acordo com a TUCAGEM definida anteriormente. No fim, \n                        consolida-se os resultados em duas formas: TUCAGEM e Item.\n                        Abaixo é apresentado os resultados:</p>\n                        \"\"\")\n            sSQL = \"\"\"\n                    SELECT * FROM TAB_FIM_BPC\n\n                    \"\"\"\n            ANL_LST_TUC3 = carga_sqlite_cache(sSQL, bd)\n            for n in ANL_LST_TUC3.columns.to_list():\n                if n in ['DELTA_PC', 'VAR_PER']:\n                    ANL_LST_TUC3[n] = ANL_LST_TUC3[n].apply(lambda x: f\"{x:,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                elif n[:2].upper() in ['VL', 'Q1', 'Q3', 'QT', 'CM', 'IN', 'ME', 'ST', 'DE', \n                                    'MA', 'LI']:\n                    ANL_LST_TUC3[n] = ANL_LST_TUC3[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n\n            st.dataframe(ANL_LST_TUC3, width='stretch', hide_index=True)\n\n        if existe_tabela('BP_COMP', bd):\n            st.html(f\"\"\"<h2>\n                        Resumo comparação entre cálculo e valor encaminhado</h2>\n                        <p  style=\"text-align: justify;text-indent: 40px\">Avalie os resultados para\n                        entender os valores obtidos no processamento dos dados encaminhados na SDI-001. \n                        Abaixo é apresentado resultados para análise.</p>\n                        \"\"\")\n            sSQL = \"\"\"\n                    SELECT * FROM BP_COMP\n\n                    \"\"\"\n            ANL_LST_TUC4 = carga_sqlite_cache(sSQL, bd)\n            for n in ANL_LST_TUC4.columns.to_list():\n                \n                if n in ['DELTA_PC', 'VAR_PER', 'TST_04']:\n                    if not (ANL_LST_TUC4[n].dtype == 'object'):\n                        ANL_LST_TUC4[n] = ANL_LST_TUC4[n].apply(lambda x: f\"{x:,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                elif n[:2].upper() in ['VL', 'Q1', 'Q3', 'QT', 'CM', 'IN', 'ME', 'ST', 'DE', \n                                    'MA', 'LI']:\n                    if not (ANL_LST_TUC4[n].dtype == 'object'):\n                        ANL_LST_TUC4[n] = ANL_LST_TUC4[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n    \n            st.dataframe(ANL_LST_TUC4, width='stretch', hide_index=True)"
+    },
+    "documentacao": {
+      "resumo": "Realiza a conciliação entre compras e quantidades do razão de ODI, ODC, almoxarifado e ODS.",
+      "descricao": "A função realiza uma análise detalhada dos dados armazenados em várias tabelas de um banco de dados SQLite. Ela exibe os resultados em uma interface Streamlit, formatando valores monetários e percentuais conforme necessário.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o banco de dados SQLite."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit usado para renderizar a interface da aplicação."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa, embora não seja utilizado no código fornecido."
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o segundo banco de dados SQLite."
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Localização, embora não seja utilizado no código fornecido."
+        },
+        {
+          "nome": "apr2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Flag booleana, embora não seja utilizado no código fornecido."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "SRC.calculos.conv_num",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "UTILS.carga_sqlite_cache",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "UTILS.existe_tabela",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": "biblioteca"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca"
+        }
+      ],
+      "docstring": "Realiza a conciliação entre compras e quantidades do razão de ODI, ODC, almoxarifado e ODS.\n\nArgs:\n    bd_path (str): Caminho para o banco de dados SQLite.\n    st (streamlit.ScriptRunner.ScriptContext): Objeto Streamlit usado para renderizar a interface da aplicação.\n    empresa (str): Nome da empresa, embora não seja utilizado no código fornecido.\n    bd_path2 (str): Caminho para o segundo banco de dados SQLite.\n    local (str): Localização, embora não seja utilizado no código fornecido.\n    apr2 (bool): Flag booleana, embora não seja utilizado no código fornecido."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_007",
+      "tipo": "function",
+      "linha_inicio": 1402,
+      "linha_fim": 1541,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.existe_tabela",
+          "numpy",
+          "pandas",
+          "plotly.express",
+          "plotly.graph_objects",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "UserWarning",
+          "apply",
+          "copy",
+          "df.columns.to_list",
+          "df_filt5.sort_values",
+          "dict",
+          "drop_duplicates",
+          "existe_tabela",
+          "fig.add_annotation",
+          "fig.update_layout",
+          "fig1.add_annotation",
+          "fig1.add_scatter",
+          "fig1.update_layout",
+          "fillna",
+          "go.Box",
+          "go.Figure",
+          "len",
+          "mean",
+          "np.corrcoef",
+          "np.mean",
+          "np.polyfit",
+          "np.polyval",
+          "pd.read_sql",
+          "px.scatter",
+          "replace",
+          "sl.connect",
+          "sorted",
+          "st.columns",
+          "st.dataframe",
+          "st.divider",
+          "st.error",
+          "st.fragment",
+          "st.html",
+          "st.plotly_chart",
+          "st.selectbox",
+          "to_list",
+          "tuple",
+          "upper"
+        ]
+      },
+      "codigo": "def _vis_007(bd_path=\"\", st=None):\n    with sl.connect(bd_path) as bd:\n        if not existe_tabela('TAB_OUTLIERS', bd):\n            return\n        st.html(f\"\"\"<h2 style=\"text-align: center;font-size: 30px;\">\n                            Itens que apresentam variações significativas</h2>\n                    <p  style=\"text-align: justify;text-indent: 40px\">Itens que tem valores \n                    que são um padrão diferente do esperado. Isso inclui compras muito \n                    eficientes ou ineficientes, que alteram significativamente o valor\n                        médio ponderado. Pode ocorrer, também, de haver concentração em dois \n                    preços; importante avaliar. É importante avaliar as notas associados \n                    aos itens destacados. Leia o relatório de Cálculos para análise \n                    completa. Pode não ter ocorrências (quadro desabilitado).</p><br>\n                    \"\"\")\n\n        if existe_tabela('TAB_OUTLIERS', bd):\n            sSQL = \"\"\"SELECT DISTINCT * FROM TAB_OUTLIERS;\"\"\"\n            teste = pd.read_sql(sSQL, bd)\n            LST_ITENS3 = teste[teste['OBS_FISC'] != 'OK']['COD_ITEM'].drop_duplicates().to_list()\n            LST_ITENS3 = sorted(LST_ITENS3)\n            TST1 = tuple(LST_ITENS3)\n            cols5A = st.columns([0.4,0.6], gap='small')\n\n            with cols5A[0]:\n                opcao5 = st.selectbox(\n                                        \"Selecione o item\",\n                                        TST1\n                                    )\n\n            if opcao5:\n                df_filt4 = teste[teste['COD_ITEM'] == opcao5].copy()\n\n                nome = df_filt4['CMU'].mean()\n                box_trace = go.Box(y=df_filt4['CMU'], boxpoints='all', name='CMU_ITEM',\n                                    jitter=0.3, pointpos=-1.8, marker_color='royalblue',\n                                    boxmean='sd')\n \n                fig = go.Figure(data=[box_trace])\n                fig.update_layout(title=f'Valor médio de todos os registros do código {opcao5}.',\n                                    yaxis_title='R$/UND')\n                \n                a = f\"{nome:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\")\n                fig.add_annotation(\n                                        x=1,\n                                        y=1.0,\n                                        xref=\"paper\",\n                                        yref=\"paper\",\n                                        text=f\"Valor médio de R$ {a}\",\n                                        showarrow=False\n                                    )\n                img1 = st.columns([1, 5, 1], gap='small')\n                with img1[1]:\n                    st.plotly_chart(fig, width='stretch')\n\n                st.html(f\"\"\"\n                            <p style=\"text-align: justify;text-indent: 40px;\">Itens que \n                            chamaram atenção:</p>\n                            \"\"\")\n                df = df_filt4[df_filt4['OBS_FISC'] != 'OK']                \n                for n in df.columns.to_list():\n                    if n[:2].upper() in ['VL', 'QT']:\n                        if not (df[n].dtype == 'object'):\n                            df[n] = df[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n\n                st.dataframe(df, width='stretch', hide_index=True)\n                \n        else:\n            if st:\n                st.error('Falha ao importar o arquivo TST_04 da base local.')\n            else:\n                raise UserWarning('Falha ao importar o arquivo TST_04 da base local.')  \n\n        if existe_tabela('BP_COMP', bd):\n            sSQL = \"\"\"SELECT DISTINCT * FROM BP_COMP;\"\"\"\n            BP_COMP = pd.read_sql(sSQL, bd)\n            LST_ITENS4 = BP_COMP['Nr_TUC_AVL'].drop_duplicates().to_list()\n            if len(LST_ITENS4)>0:\n                st.divider()\n                st.html(f\"\"\"<h2 style=\"text-align: center;font-size: 30px;\">\n                            Comparação entre dados do LAUDO e cálculo</h2>\n        \n                            <p  style=\"text-align: justify;text-indent: 40px\">Espera-se encontrar uma \n                            reta. Caso ocorram diversos segmentos de reta, é necessário ver a existência \n                            de divergências entre os dados apresentados e os empregados no \n                            cálculo da avaliadora. Caso o valor calculado seja zero, verifique o modelo empregado\n                            pela fiscalização para identificar a origem. Leia o relatório de Cálculos para análise \n                            completa. Pode não ter ocorrências (quadro desabilitado).</p><br>\n                            \"\"\")\n                LST_ITENS4 = sorted(item for item in LST_ITENS4\n                                    if item is not None and item != \"\")\n                TST2 = tuple(LST_ITENS4)\n                cols6A = st.columns([0.4,0.6], gap='small')\n\n                with cols6A[0]:\n                    opcao6 = st.selectbox(\n                                            \"Selecione o item\",\n                                            TST2\n                                        )\n                if opcao6:\n                    df_filt5 = BP_COMP.loc[BP_COMP['Nr_TUC_AVL'] == opcao6].copy()            \n                    for n in ['VL_VF_UNIT_AT_AVL', 'VL_UNI_AT_SIM']:\n                        if n[:2].upper() in ['VL']:\n                            if (df_filt5[n].dtype == 'object'):\n                                df_filt5[n] = df_filt5[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                                df_filt5[n] = df_filt5[n].fillna(0)\n                    df_filt5 = df_filt5.sort_values(by='VL_VF_UNIT_AT_AVL')\n\n                    correlation = np.corrcoef(df_filt5['VL_VF_UNIT_AT_AVL'], df_filt5['VL_UNI_AT_SIM'])[0, 1]\n\n                    coefficients = np.polyfit(df_filt5['VL_VF_UNIT_AT_AVL'], df_filt5['VL_UNI_AT_SIM'], 1)\n                    trendline = np.polyval(coefficients, df_filt5['VL_VF_UNIT_AT_AVL'])\n                    \n                    std_dev = np.mean(df_filt5['VL_UNI_AT_SIM'])*0.25\n                    upper_band = trendline + std_dev\n                    lower_band = trendline - std_dev\n                    \n                    fig1 = px.scatter(df_filt5, x='VL_VF_UNIT_AT_AVL', y='VL_UNI_AT_SIM')\n                    fig1.add_scatter(x=df_filt5['VL_VF_UNIT_AT_AVL'], y=trendline, mode='lines', \n                                    name='Linha de Tendência')\n                    fig1.add_scatter(x=df_filt5['VL_VF_UNIT_AT_AVL'], y=upper_band, fill='tonexty', fillcolor='rgba(173, 216, 230, 0.1)', mode='lines', line=dict(color='lightblue'),\n                                        name='Banda de 1,25 vezes a média')\n                    fig1.add_scatter(x=df_filt5['VL_VF_UNIT_AT_AVL'], y=lower_band, fill='tonexty', fillcolor='rgba(173, 216, 230, 0.1)', mode='lines', line=dict(color='lightblue'), name='Banda de 0,75 vezes a média')\n                    fig1.update_layout(\n                                        title=f\"Gráfico de Dispersão entre o VF da avaliadora e o calculado para {opcao6}\",\n                                        xaxis_title='Valor de fábrica, VF, avaliadora (R$)',\n                                        yaxis_title='Valor de fábrica, VF, calculado (R$)'\n                                        )\n                    \n                    a = f\"{correlation:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\")\n                    fig1.add_annotation(\n                                            x=0.02,\n                                            y=1,\n                                            xref=\"paper\",\n                                            yref=\"paper\",\n                                            text=f\"Correlação: {a}\",\n                                            showarrow=False\n                                        )\n                    img2 = st.columns([1, 5, 1], gap='small')\n                    with img2[1]:\n                        st.plotly_chart(fig1, width='stretch')"
+    },
+    "documentacao": {
+      "resumo": "Gera uma interface interativa para visualizar outliers e comparações de dados em um banco de dados SQLite.",
+      "descricao": "A função `_vis_007` conecta a um banco de dados SQLite, verifica a existência de tabelas específicas e gera uma interface interativa usando Streamlit para visualizar outliers e comparar dados entre o LAUDO e cálculos. A interface permite selecionar itens e visualizar gráficos de dispersão e caixas de bigodes.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o arquivo do banco de dados SQLite."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para renderizar a interface interativa."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "UserWarning",
+          "categoria": "lançada internamente",
+          "descricao": "Quando ocorre um erro ao importar o arquivo TST_04 da base local."
+        }
+      ],
+      "dependencias": [
+        {
+          "nome": "UTILS.existe_tabela",
+          "categoria": "importado",
+          "descricao": "Função para verificar a existência de tabelas no banco de dados."
+        },
+        {
+          "nome": "numpy",
+          "categoria": "importado",
+          "descricao": "Biblioteca para cálculos numéricos."
+        },
+        {
+          "nome": "pandas",
+          "categoria": "importado",
+          "descricao": "Biblioteca para manipulação de dados."
+        },
+        {
+          "nome": "plotly.express",
+          "categoria": "importado",
+          "descricao": "Módulo do Plotly para criação de gráficos interativos."
+        },
+        {
+          "nome": "plotly.graph_objects",
+          "categoria": "importado",
+          "descricao": "Módulo do Plotly para criação de objetos gráficos."
+        },
+        {
+          "nome": "sqlite3",
+          "categoria": "importado",
+          "descricao": "Biblioteca padrão do Python para interação com bancos de dados SQLite."
+        },
+        {
+          "nome": "streamlit",
+          "categoria": "importado",
+          "descricao": "Framework para criação de aplicativos web interativos."
+        }
+      ],
+      "docstring": "Gera uma interface interativa para visualizar outliers e comparações de dados em um banco de dados SQLite.\n\nArgs:\n    bd_path (str): Caminho para o arquivo do banco de dados SQLite.\n    st (streamlit.runtime.Runtime): Objeto Streamlit para renderizar a interface interativa.\n\nReturns:\n    None\n\nRaises:\n    UserWarning: Quando ocorre um erro ao importar o arquivo TST_04 da base local."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "visualizador_BC",
+      "tipo": "function",
+      "linha_inicio": 1543,
+      "linha_fim": 1757,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "UTILS.bsc_dados_reg",
+          "UTILS.executar_vis",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "drop_duplicates",
+          "executar_vis",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "st.divider",
+          "st.html",
+          "st.markdown",
+          "st.toggle",
+          "str",
+          "to_list"
+        ]
+      },
+      "codigo": "def visualizador_BC(st = None):\n    if not'tra_dir' in st.session_state:\n        st.html(\"\"\"\n                    <p style=\"text-align: justify;text-indent: 40px\">\n                    Você deve configurar o diretório de trabalho, empresa e período\n                    na aba <i>Criar Pasta de Trabalho</i>, barra lateral.</p>\n                \"\"\")\n        return\n\n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    dds = bsc_dados_reg('TBL_EMPRESAS')\n    lst_emp = dds['Nm_EMPRESA'].drop_duplicates().to_list()\n    st.html(f\"<style>{css}</style>\")\n    raiz = Path(local)\n    caminho_manifesto = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n    caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n    inicializa_database(str(caminho_manifesto))\n    inicializa_detalhes(str(caminho_manifesto))\n    inicializar_rastreamento(str(caminho_manifesto))\n    database = str(caminho_manifesto)\n    bd_path = f'{local}/BD_LOCAL/{empresa}_{ano}.db'\n    bd_BDGDAT_path = f'{local}/BD_LOCAL/BDGD_AT_{empresa}_{ano}.db'\n    bd_BDGDANT_path = f'{local}/BD_LOCAL/BDGD_ANT_{empresa}_{ano}.db'\n    bd_EFD_path = f'{local}\\BD_LOCAL\\EFD_ICMS_{empresa}_{ano}.db'\n\n    st.html(\"\"\"\n                <h2>Análise do Banco de Compras</h2>\n\n                <hr></hr>\n                                \n                <h3>Observações iniciais</h3>\n                <div style=\"text-align: justify;text-indent: 40px; padding-top: 10px\">Esse é um documento base \n                        para se executar análise do banco de compras e do valor de fábrica do material. Pode-se \n                        alterar o arquivo, porém somente será aplicado a versão original para análise do \n                        valor empregado no laudo. Sugere-se usar este arquivo como base para modificações e \n                        inclusões de análises, para discussões com a fiscalização.<p></p></div>\n\n\n                <h3>Licença Pública Geral GNU (GPL)</h3>\n                <div style=\"text-align: justify; padding-top: 10px\">Versão 3, 29 de junho de 2007<p></p></div>\n                <div style=\"text-align: justify\">Copyright (C) 2025, SFF/ANEEL.<p></p></div>\n                <div style=\"text-align: justify;text-indent: 40px; padding-top: 10px\">Este é um documento de uso livre: você pode redistribuí-lo ou modificá-lo sob os termos da Licença Pública Geral GNU, conforme publicada pela Free Software Foundation, tanto na versão 3 da Licença, ou qualquer versão posterior. Ele é distribuído na expectativa de que seja útil, mas SEM QUALQUER GARANTIA; sem mesmo a garantia implícita de COMERCIALIZAÇÃO ou ADEQUAÇÃO A UM PROPÓSITO ESPECÍFICO. Consulte a Licença Pública Geral GNU para obter mais detalhes, no sitio <a>http://www.gnu.org/licenses/</a>.<p></p></div>\n\n                <hr></hr>\n                                \n                <h3>Normas</h3>\n\n                <div style=\"text-align: justify;text-indent: 40px\">Conforme PRORET 2.3, item 4.1.1.1, §41 e \n                                §42:<br><br></div>\n\n                <p style='text-align: justify;padding-left:60px;'><i>40. Os equipamentos principais são aqueles definidos como\n                                Unidades de Cadastro – UC, ou unidades de Adição e/ou Retirada – UAR, pelo \n                                MCPSE. Para os equipamentos principais, o valor de um bem novo, idêntico ou \n                                similar ao avaliado é obtido a partir do Banco de Preços da \n                                Concessionária.</i></p>\n\n                <p style='text-align: justify; padding-left:60px;'><i>41. Entende-se como Banco de Preços da Concessionária o \n                                banco formado com base em informações de todas as compras efetivamente \n                                realizadas pela concessionária, incluindo os custos de Ordem de Compra (ODC),\n                                sendo que, para apuração do valor unitário médio ponderado na data-base do \n                                laudo da RTP, deverão ser consideradas, por código de material, todas as \n                                aquisições dos bens ocorridas no último ciclo tarifário da empresa, \n                                compreendido entre as datas-bases do laudo atual e do anterior. </i></p>\n\n                <div style=\"text-align: justify;text-indent: 40px;\">Assim, de acordo com o PRORET 2.3, \n                                versão 2C, item 44, o valor de fábrica, VF, é calculado pela equação \n                                abaixo:</div>\"\"\")\n\n    st.markdown(r\"\"\"\n                    $$\n                    \\large\n                    \\begin{aligned}\n                    VF = C_{EP} + C_{ODC} + C_{ICMS}\n                    \\end{aligned}\n                    $$\n                    \"\"\")\n                    \n\n    st.html(\"\"\"<div style=\"text-align: justify;text-indent: 40px\">Em que:\n                    <ul style=\"text-align: justify;text-indent: 80px; margin-left: 40px;\">\n                        <li><b>VF</b> = Valor de fábrica;</li>\n                        <li><b>C<sub>EP</sub></b> = Custo do equipamento principal (nota fiscal), <b>sem ICMS</b>;</li>\n                        <li><b>C<sub>ODC</sub></b> = Parcela do custo com a ordem de compra, associado ao equipamento, conforme MCSE;</li>\n                        <li><b>C<sub>ICMS</sub></b> = Parcela do ICMS a ser incorporada ao valor de fábrica.</li>\n                    </ul></div>\n                <div style=\"text-align: justify; text-indent: 40px;\">\n                        Nada obstante, ressalte-se o §45:<br><br>\n                    </div>\n                    <div>\n                    <p style=\"text-align: justify; padding-left: 60px;\">\n                        <i>45. Os bens deverão ser atualizados de acordo com as fórmulas \n                        paramétricas constantes do Anexo III deste Submódulo. \n                        Deverá ser considerada a data de pagamento do bem e os valores \n                        deverão ser atualizados para a data-base do laudo.</i>\n                    </p>\n                    </div>\n                    <hr></hr>\n                    \n                \"\"\")\n    st.html(\"\"\"\n                <h3>Análise do Financeiro do ICMS</h3>\n                <hr></hr>\n                <h3>Normas</h3>\n                <div style=\"text-align: justify; text-indent: 40px;\">\n                    Conforme PRORET 2.3, item 4.1.1.1, §43:\n                </div>\n\n                <p style=\"text-align: justify; padding-left: 60px;padding-top: 10px;\">\n                    <i style=\"text-align: justify; text-indent: 0px;\">Os impostos recuperáveis, conforme legislação em vigor, bem como os eventuais descontos ou\n                    benefícios para compra eventualmente identificados, devem ser excluídos dos valores das compras\n                    praticadas pela concessionária. No caso do ICMS, deverá ser agregada a parcela não recuperável do\n                    imposto e o adicional decorrente da perda financeira do fluxo de crédito da parcela recuperável.</i>\n                </p>\n\n                <div style=\"text-align: justify; text-indent: 40px;\">\n                    Assim, de acordo com o PRORET 2.3, versão 2C, item 44, no caso do ICMS, deverá ser agregada a parcela não recuperável do imposto e o adicional decorrente da perda financeira do fluxo de crédito da parcela recuperável. Logo, o valor de ICMS a ser incorporado ao valor de fábrica é calculado pela equação abaixo:\n                </div> \n                \"\"\")\n    \n    st.markdown(\"\"\"\n                $$\n                \\large\n                C_{ICMS} = C_{ICMS(NR)} + \\\\frac{C_{ICMS(R)}}{n \\\\cdot i} \\\\cdot \\\\left ( \\\\frac{1}{\\\\left( 1+i \\\\right )^{n}} + n \\\\cdot i -1\\\\right )\n                $$\n\n                Em que:\n\n                \"\"\")\n    st.markdown(r\"\"\"\n                    $$\n                        \\begin{array}{rl}\n                            C_{ICMS} & = \\text{Parcela do ICMS a ser incorporado ao valor de fábrica;} \\\\\n                            C_{ICMS(NR)} & = \\text{Parcela do ICMS não recuperável;} \\\\\n                            C_{ICMS(R)} & = \\text{Parcela do ICMS recuperável;} \\\\\n                            i & = \\text{Taxa de desconto mensal;} \\\\\n                            n & = \\text{Número de meses a recuperar (48).}\n                        \\end{array}\n                    $$\n                    \"\"\")\n    \n    st.markdown(\"\"\"\n                <div style=\"text-align: justify; text-indent: 40px;\">\n                    Sendo que a taxa de desconto mensal, <i>i</i>, é dada por:\n                </div>\n\n                $$\n                \\large\n                i = \\\\left ( 1 + r_{wacc} \\\\right)^{\\\\frac{1}{12}} - 1\n                $$\n\n                <div style=\"text-align: justify; text-indent: 40px;\">\n                    <p>Lembrando que: \n                </div>\n\n                \"\"\", unsafe_allow_html=True)\n    \n    st.markdown(r\"\"\"\n                \n                $$\n                \\large\n                \\begin{aligned}\n                r_{wacc} & = \\text{é o custo médio ponderado de capital anual.}\n                \\end{aligned}\n                $$\n                \"\"\", unsafe_allow_html=True)\n\n\n    st.html(\"\"\"<p  style=\"text-align: justify; padding-left: 60px;padding-top: 10px;\">A equação será aplicada item a item do \n                imobilizado. Assim, para a extração de dados do ICMS sobre o Ativo Imobilizado (CIAP) iremos empregar o EFD ICMS. \n                Nele, o Bloco G opera de forma encadeada para demonstrar o cálculo das parcelas de crédito. O registro G125 é a \n                base da movimentação, onde se registram a entrada, a baixa e a apropriação de cada bem, servindo para \n                detalhar o valor do ICMS passível de apropriação. Já o registro G130 identifica especificamente o documento \n                fiscal (nota fiscal) que originou o bem, vinculando o ativo ao seu fornecedor e garantindo a rastreabilidade \n                do crédito. Por fim, o registro G140 discrimina os valores das parcelas, segregando o que é recuperável \n                (proporcional às saídas tributadas) e o que é não recuperável (proporcional às saídas isentas ou não tributadas), \n                assegurando que o somatório dessas frações reflita o crédito mensal do imposto a que a empresa tem direito.</p>\n            \n                <p  style=\"text-align: justify; padding-left: 60px;padding-top: 10px;\">Optamos por essa forma, pois a metodologia \n                de rateio, de forma proporcional, comumente emrpegada, apresenta uma limitação estrutural: ao consolidar valores \n                e redistribuí-los proporcionalmente, desconsidera a cronologia individualizada das compras, isto é, a influência \n                do tempo e contextos da época. Essa distorção não é corrigível por índices de preços, uma vez que tais \n                indicadores refletem médias inflacionárias e são incapazes de capturar oportunidades de mercado (ganhos de \n                oportunidade) ou momentos de estresse financeiro específicos de cada ativo. Empregando a abertura do CIAP se \n                preserva a integridade da parcela de ICMS, garantindo que a atualização reflita a realidade econômica do momento \n                da aquisição, e não uma média aritmética descolada dos eventos de mercado.</p>\n            \n                <a href=\"https://www.gov.br/aneel/pt-br/centrais-de-conteudos/procedimentos-regulatorios/proret\" target=\"_blank\">\n                    Visite o sitio da Aneel para mais detalhes!\n                </a><br>\n                <a href=\"http://sped.rfb.gov.br/pasta/show/1573\" target=\"_blank\">\n                    Visite o sitio do SPED para mais detalhes!\n                </a>\n\n                <hr></hr>\n\n                \"\"\")\n    st.html(\"\"\"<h3>Resultado das análises</h3>\n                    <hr></hr>\n                <p  style=\"text-align: justify;text-indent: 40px;margin-top:20px;\">Abaixo pode-se selecionar se irá\n                buscar dados de CNPJ com problemas. Primeiro faz-se um cálculo com valores default, caso\n                queira buscar, mude a configuração.</p><br>\"\"\")\n    \n    apr2 = st.toggle(\"Buscar dados de CNPJ das empresas não conciliadas, lado EFD?\", value=False, width='stretch')\n    st.divider()\n\n    executar_vis(_vis_001, bd_EFD_path, st, empresa, bd_path)\n    executar_vis(_vis_002, bd_EFD_path, st, empresa, bd_path)\n    executar_vis(_vis_003, bd_EFD_path, st, empresa, bd_path)\n    executar_vis(_vis_004, bd_EFD_path, st, empresa, bd_path)\n    executar_vis(_vis_005, bd_EFD_path, st, empresa, bd_path, local, apr2)\n    executar_vis(_vis_006, bd_EFD_path, st, empresa, bd_path, local)\n    executar_vis(_vis_007, bd_path, st)"
+    },
+    "documentacao": {
+      "resumo": "Visualiza e analisa dados do Banco de Compras (BC) utilizando a biblioteca Streamlit.",
+      "descricao": "A função `visualizador_BC` é responsável por configurar o ambiente de visualização dos dados do BC, inicializar bancos de dados necessários, carregar dados relevantes e exibir análises financeiras relacionadas ao ICMS. A interface é construída usando a biblioteca Streamlit.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": "objeto",
+          "categoria": "posicional",
+          "descricao": "Objeto do Streamlit para interação com a interface web."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.inicializa_database",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializa_detalhes",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializar_rastreamento",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.bsc_dados_reg",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.executar_vis",
+          "tipo": "função"
+        },
+        {
+          "nome": "pathlib.Path",
+          "tipo": "classe"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca"
+        }
+      ],
+      "docstring": "Visualiza e analisa dados do Banco de Compras (BC) utilizando a biblioteca Streamlit.\n\nArgs:\n    st (objeto): Objeto do Streamlit para interação com a interface web.\n\nReturns:\n    None\n\nNotes:\n    A função configura o ambiente de visualização dos dados do BC, inicializa bancos de dados necessários, carrega dados relevantes e exibe análises financeiras relacionadas ao ICMS."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "grafico_A",
+      "tipo": "function",
+      "linha_inicio": 1019,
+      "linha_fim": 1210,
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "nome",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "nm_agrup",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "UTILS.consultar_empresa",
+          "UTILS.sorteio",
+          "htmldocx.HtmlToDocx",
+          "matplotlib.pyplot",
+          "numpy",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "CNPJ_EFD_AMST.iterrows",
+          "HtmlToDocx",
+          "PASTA_RELATORIOS.mkdir",
+          "Path",
+          "_ger_html",
+          "arquivo_html.exists",
+          "arquivo_html.read_text",
+          "arquivo_html.write_text",
+          "consultar_empresa",
+          "dados.get",
+          "df.groupby",
+          "filter",
+          "index.max",
+          "int",
+          "join",
+          "len",
+          "max",
+          "new_parser.parse_html_file",
+          "nome.replace",
+          "np.arange",
+          "plt.axvspan",
+          "plt.close",
+          "plt.cm.plasma",
+          "plt.figure",
+          "plt.grid",
+          "plt.plot",
+          "plt.savefig",
+          "plt.scatter",
+          "plt.tight_layout",
+          "plt.title",
+          "plt.xticks",
+          "plt.ylabel",
+          "reset_index",
+          "round",
+          "socio.get",
+          "sorteio",
+          "st.columns",
+          "st.dataframe",
+          "st.html",
+          "st.pyplot",
+          "str",
+          "sum",
+          "texto_anl.replace"
+        ]
+      },
+      "codigo": "def grafico_A(df, nome, nm_agrup):\n            \n            CNPJ_EFD_AMST = df.groupby(nm_agrup)[['VL_TOTAL']].sum().reset_index()\n            CNPJ_EFD_AMST, amostra_final, IA, R, texto_anl = sorteio(CNPJ_EFD_AMST, \n                            coluna_valor = 'VL_TOTAL', \n                            coluna_identificador = nm_agrup,\n\n                            metodo = \"AUM\",\n                            tipo = \"INDICADORES\", st=st)\n            \n            def _ger_html(dados, valor_padrao = \"ND\"):\n                if nome != 'EFD_INV_NC':\n                    return \"\"\n                html_content = f\"\"\"\n                                    <style>\n                                        body {{\n                                            font-family: Arial, sans-serif;\n                                            margin: 0;\n                                            padding: 20px;\n                                            background-color: #f9f9f9;\n                                        }}\n                                        .container {{\n                                            max-width: 800px;\n                                            margin: auto;\n                                            background: white;\n                                            padding: 20px;\n                                            border-radius: 8px;\n                                            box-shadow: 0 0 10px rgba(0,0,0,0.1);\n                                        }}\n                                        h1 {{\n                                            color: #2c3e50;\n                                            text-align: center;\n                                        }}\n                                        h2 {{\n                                            color: #34495e;\n                                            border-bottom: 1px solid #ccc;\n                                            padding-bottom: 5px;\n                                        }}\n                                        p {{\n                                            line-height: 1.6em;\n                                        }}\n                                        ul {{\n                                            list-style-type: none;\n                                            padding-left: 0;\n                                        }}\n                                        li {{\n                                            margin-bottom: 10px;\n                                        }}\n                                        .section {{\n                                            margin-top: 20px;\n                                        }}\n                                    </style>\n\n                                    <div class=\"container\">\n                                        <h3>{dados.get('razao_social', valor_padrao)}</h3>\n                                        \n                                        <p><strong>Nome Fantasia:</strong> {dados.get('nome_fantasia', valor_padrao)}</p>\n                                        <p><strong>CNPJ:</strong> {dados.get('cnpj', valor_padrao)}</p>\n                                        <p><strong>Data Início Atividade:</strong> {dados.get('data_inicio_atividade', valor_padrao)}</p>\n                                        <p><strong>Situação Cadastral:</strong> {dados.get('descricao_situacao_cadastral', valor_padrao)} ({dados.get('data_situacao_cadastral', valor_padrao)})</p>\n                                        <p><strong>Natureza Jurídica:</strong> {dados.get('natureza_juridica', valor_padrao)}</p>\n                                        <p><strong>Porte:</strong> {dados.get('porte', valor_padrao)}</p>\n                                        <p><strong>Capital Social:</strong> R$ {dados.get('capital_social', valor_padrao):,.2f}</p>\n\n                                        <div class=\"section\">\n                                            <h4>Endereço</h4>\n                                            <p><strong>Tipo Logradouro:</strong> {dados.get('descricao_tipo_de_logradouro', valor_padrao)}</p>\n                                            <p><strong>Logradouro:</strong> {dados.get('logradouro', valor_padrao)}, {dados.get('numero', valor_padrao)}</p>\n                                            <p><strong>Bairro:</strong> {dados.get('bairro', valor_padrao)}</p>\n                                            <p><strong>Município:</strong> {dados.get('municipio', valor_padrao)} - {dados.get('uf', valor_padrao)}</p>\n                                            <p><strong>CEP:</strong> {dados.get('cep', valor_padrao)}</p>\n                                            <p><strong>Complemento:</strong> {dados.get('complemento', valor_padrao)}</p>\n                                        </div>\n\n                                        <div class=\"section\">\n                                            <h4>Contato</h4>\n                                            <p><strong>Telefone:</strong> {dados.get('ddd_telefone_1', valor_padrao)}</p>\n                                            <p><strong>Fax:</strong> {dados.get('ddd_fax', valor_padrao)}</p>\n                                        </div>\n\n                                        <div class=\"section\">\n                                            <h4>CNAE Fiscal</h4>\n                                            <p>{dados.get('cnae_fiscal_descricao', valor_padrao)}</p>\n                                            \n                                            <h3>CNAEs Secundários</h3>\n                                            <ul>\n                                                {''.join([f'<li>{item[\"descricao\"]}</li>' for item in dados['cnaes_secundarios']])}\n                                            </ul>\n                                        </div>\n\n                                        <div class=\"section\">\n                                            <h4>Regime Tributário</h4>\n                                            <table style=\"width:100%; border-collapse: collapse;\">\n                                                <thead>\n                                                    <tr style=\"background:#eee;\"><th>Ano</th><th>Forma Tributação</th></tr>\n                                                </thead>\n                                                <tbody>\n                                                    {''.join([f'<tr><td>{item[\"ano\"]}</td><td>{item[\"forma_de_tributacao\"]}</td></tr>' for item in dados['regime_tributario']])}\n                                                </tbody>\n                                            </table>\n                                        </div>\n\n                                        <div class=\"section\">\n                                            <h4>Quadro Societário</h4>\n                                            <ul>\n                                                {''.join([\n                                                    f\"<li><strong>{socio['nome_socio']}</strong><br/>Qualificação: {socio['qualificacao_socio']}<br/>Entrada: {socio['data_entrada_sociedade']}<br/>País: {socio.get('pais', 'Brasil')}</li>\"\n                                                    for socio in dados['qsa']\n                                                ])}\n                                            </ul>\n                                        </div>\n                                    </div>\n                                    \"\"\"\n                return html_content\n            \n            amostra_final1 = \", \".join(amostra_final)\n            st.html(texto_anl.replace('</p>','') + f\"\"\" A amostra considera os seguintes CNPJ: {amostra_final1}. O resultado \n                    aberto é dado a seguir:</p>\"\"\")\n   \n            st.dataframe(CNPJ_EFD_AMST, width='stretch', hide_index=True)\n\n\n            if (nome == 'EFD_INV_NC') and (len(amostra_final)>0) and apr2:\n                st.html(f\"\"\"<p style=\"text-align: justify; text-indent: 40px; padding-top: 20px\">\n                            Informações adicionais para os CNPJ selecionados:                   \n                            </p>\n                            \"\"\")\n                PASTA_RELATORIOS = Path(rf\"{local}/BP_ANLS/RELATORIOS_CNPJ\")\n                PASTA_RELATORIOS.mkdir(parents=True, exist_ok=True)\n                for cnpj in amostra_final:\n                    cnpj_limpo = \"\".join(filter(str.isdigit, str(cnpj)))\n                    arquivo_html = PASTA_RELATORIOS / f\"{cnpj_limpo}.html\"\n                    arquivo_docx = PASTA_RELATORIOS / f\"{cnpj_limpo}\"\n                    if arquivo_html.exists():\n                        txt_html = arquivo_html.read_text(encoding=\"utf-8\")\n                    else:\n                        dic_prov = consultar_empresa(cnpj)\n                        txt_html = _ger_html(dic_prov)\n                        if txt_html != \"\":\n                            arquivo_html.write_text(txt_html, encoding=\"utf-8\")\n                            new_parser = HtmlToDocx()\n                            new_parser.parse_html_file(arquivo_html, arquivo_docx)\n                    if txt_html != \"\":\n                        st.html(txt_html)\n\n            x = np.arange(len(CNPJ_EFD_AMST))\n            y = CNPJ_EFD_AMST[\"VL_ACUM\"]\n\n            limA = CNPJ_EFD_AMST[CNPJ_EFD_AMST[\"CLS_ABC\"] == \"A\"].index.max()\n            limB = CNPJ_EFD_AMST[CNPJ_EFD_AMST[\"CLS_ABC\"] == \"B\"].index.max()\n\n            fig17b = plt.figure(figsize=(14, 6))\n            cmap_line = plt.cm.plasma(0.75)\n            cmap_points = plt.cm.plasma(0.25)\n            plt.axvspan(0, limA, alpha=0.18, color=\"#f70a0a\")\n            plt.axvspan(limA, limB, alpha=0.15, color=\"#0404f3\")\n            plt.axvspan(limB, len(CNPJ_EFD_AMST), alpha=0.12, color=\"#09f567\")\n            plt.plot(x, y, linewidth=2, color=cmap_line)\n\n            for idx, row in CNPJ_EFD_AMST.iterrows():\n                if row[\"FLG_AMST\"] == 1:\n                    plt.scatter(idx, row[\"VL_ACUM\"], \n                                s=80, \n                                edgecolor=\"black\", \n                                linewidth=1.2, \n                                facecolor=cmap_points)\n            txt = nome.replace(\"_\",\" \")\n            plt.title(f\"Curva Acumulada de Fornecedores não Conciliados, lado {txt}, com Destaque ABC e Amostragem (AUM)\", fontsize=16)\n            plt.ylabel(\"Valor Acumulado\", fontsize=12)\n\n            passo = max(1, int(round(len(CNPJ_EFD_AMST) / 10, 0)))\n            plt.xticks(\n                            x[::passo], \n                            CNPJ_EFD_AMST[nm_agrup][::passo], \n                            rotation=45, \n                            ha=\"right\",\n                            fontsize=12\n                        )\n\n            plt.grid(alpha=0.2)\n            plt.tight_layout()\n            st.html(\"\"\"<p style=\"text-align: justify; text-indent: 40px; padding-top: 20px\">\n                       Para melhor visualizarmos segue o gráfico com a região de classificação ABC e as amostras sorteadas. \n                       Como observa-se as amostras se concentram na região de maior criticidade.                     \n                       </p>\n                    \"\"\")\n            col1ka, col2ka, col3ka = st.columns([1,2,1], gap='small')\n            with col2ka:\n                st.pyplot(fig17b)\n            plt.close()\n\n            plt.savefig(f\"{local}//RELATORIOS//figuras//amostra_NFe_{nome}.png\", dpi=300, bbox_inches='tight')"
+    },
+    "documentacao": {
+      "resumo": "Gera um gráfico e relatório para dados agrupados.",
+      "descricao": "A função processa um DataFrame, realiza uma amostra aleatória e gera um gráfico de curva acumulada. Além disso, cria um relatório HTML com informações detalhadas sobre os CNPJ sorteados.",
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo os dados a serem processados."
+        },
+        {
+          "nome": "nome",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome do relatório ou contexto em que o gráfico será utilizado."
+        },
+        {
+          "nome": "nm_agrup",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Coluna do DataFrame a ser usada para agrupamento dos dados."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "UTILS.consultar_empresa",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.sorteio",
+          "tipo": "função"
+        },
+        {
+          "nome": "htmldocx.HtmlToDocx",
+          "tipo": "classe"
+        },
+        {
+          "nome": "matplotlib.pyplot",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "numpy",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "pathlib.Path",
+          "tipo": "classe"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "módulo"
+        }
+      ],
+      "docstring": "Gera um gráfico e relatório para dados agrupados.\n\nArgs:\n    df: DataFrame contendo os dados a serem processados.\n    nome: Nome do relatório ou contexto em que o gráfico será utilizado.\n    nm_agrup: Coluna do DataFrame a ser usada para agrupamento dos dados.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_ger_html",
+      "tipo": "function",
+      "linha_inicio": 1029,
+      "linha_fim": 1132,
+      "parametros": [
+        {
+          "nome": "dados",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "valor_padrao",
+          "tipo": null,
+          "default": "'ND'",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "dados.get",
+          "join",
+          "socio.get"
+        ]
+      },
+      "codigo": "def _ger_html(dados, valor_padrao = \"ND\"):\n                if nome != 'EFD_INV_NC':\n                    return \"\"\n                html_content = f\"\"\"\n                                    <style>\n                                        body {{\n                                            font-family: Arial, sans-serif;\n                                            margin: 0;\n                                            padding: 20px;\n                                            background-color: #f9f9f9;\n                                        }}\n                                        .container {{\n                                            max-width: 800px;\n                                            margin: auto;\n                                            background: white;\n                                            padding: 20px;\n                                            border-radius: 8px;\n                                            box-shadow: 0 0 10px rgba(0,0,0,0.1);\n                                        }}\n                                        h1 {{\n                                            color: #2c3e50;\n                                            text-align: center;\n                                        }}\n                                        h2 {{\n                                            color: #34495e;\n                                            border-bottom: 1px solid #ccc;\n                                            padding-bottom: 5px;\n                                        }}\n                                        p {{\n                                            line-height: 1.6em;\n                                        }}\n                                        ul {{\n                                            list-style-type: none;\n                                            padding-left: 0;\n                                        }}\n                                        li {{\n                                            margin-bottom: 10px;\n                                        }}\n                                        .section {{\n                                            margin-top: 20px;\n                                        }}\n                                    </style>\n\n                                    <div class=\"container\">\n                                        <h3>{dados.get('razao_social', valor_padrao)}</h3>\n                                        \n                                        <p><strong>Nome Fantasia:</strong> {dados.get('nome_fantasia', valor_padrao)}</p>\n                                        <p><strong>CNPJ:</strong> {dados.get('cnpj', valor_padrao)}</p>\n                                        <p><strong>Data Início Atividade:</strong> {dados.get('data_inicio_atividade', valor_padrao)}</p>\n                                        <p><strong>Situação Cadastral:</strong> {dados.get('descricao_situacao_cadastral', valor_padrao)} ({dados.get('data_situacao_cadastral', valor_padrao)})</p>\n                                        <p><strong>Natureza Jurídica:</strong> {dados.get('natureza_juridica', valor_padrao)}</p>\n                                        <p><strong>Porte:</strong> {dados.get('porte', valor_padrao)}</p>\n                                        <p><strong>Capital Social:</strong> R$ {dados.get('capital_social', valor_padrao):,.2f}</p>\n\n                                        <div class=\"section\">\n                                            <h4>Endereço</h4>\n                                            <p><strong>Tipo Logradouro:</strong> {dados.get('descricao_tipo_de_logradouro', valor_padrao)}</p>\n                                            <p><strong>Logradouro:</strong> {dados.get('logradouro', valor_padrao)}, {dados.get('numero', valor_padrao)}</p>\n                                            <p><strong>Bairro:</strong> {dados.get('bairro', valor_padrao)}</p>\n                                            <p><strong>Município:</strong> {dados.get('municipio', valor_padrao)} - {dados.get('uf', valor_padrao)}</p>\n                                            <p><strong>CEP:</strong> {dados.get('cep', valor_padrao)}</p>\n                                            <p><strong>Complemento:</strong> {dados.get('complemento', valor_padrao)}</p>\n                                        </div>\n\n                                        <div class=\"section\">\n                                            <h4>Contato</h4>\n                                            <p><strong>Telefone:</strong> {dados.get('ddd_telefone_1', valor_padrao)}</p>\n                                            <p><strong>Fax:</strong> {dados.get('ddd_fax', valor_padrao)}</p>\n                                        </div>\n\n                                        <div class=\"section\">\n                                            <h4>CNAE Fiscal</h4>\n                                            <p>{dados.get('cnae_fiscal_descricao', valor_padrao)}</p>\n                                            \n                                            <h3>CNAEs Secundários</h3>\n                                            <ul>\n                                                {''.join([f'<li>{item[\"descricao\"]}</li>' for item in dados['cnaes_secundarios']])}\n                                            </ul>\n                                        </div>\n\n                                        <div class=\"section\">\n                                            <h4>Regime Tributário</h4>\n                                            <table style=\"width:100%; border-collapse: collapse;\">\n                                                <thead>\n                                                    <tr style=\"background:#eee;\"><th>Ano</th><th>Forma Tributação</th></tr>\n                                                </thead>\n                                                <tbody>\n                                                    {''.join([f'<tr><td>{item[\"ano\"]}</td><td>{item[\"forma_de_tributacao\"]}</td></tr>' for item in dados['regime_tributario']])}\n                                                </tbody>\n                                            </table>\n                                        </div>\n\n                                        <div class=\"section\">\n                                            <h4>Quadro Societário</h4>\n                                            <ul>\n                                                {''.join([\n                                                    f\"<li><strong>{socio['nome_socio']}</strong><br/>Qualificação: {socio['qualificacao_socio']}<br/>Entrada: {socio['data_entrada_sociedade']}<br/>País: {socio.get('pais', 'Brasil')}</li>\"\n                                                    for socio in dados['qsa']\n                                                ])}\n                                            </ul>\n                                        </div>\n                                    </div>\n                                    \"\"\"\n                return html_content"
+    },
+    "documentacao": {
+      "resumo": "Gera um conteúdo HTML com informações de dados empresariais.",
+      "descricao": "A função gera um conteúdo HTML formatado com as informações fornecidas no parâmetro 'dados'. Se o nome do dado for diferente de 'EFD_INV_NC', a função retorna uma string vazia. Caso contrário, ela cria um documento HTML com estilos e estrutura definidos para exibir os dados da empresa.",
+      "parametros": [
+        {
+          "nome": "dados",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Um dicionário contendo informações sobre a empresa."
+        },
+        {
+          "nome": "valor_padrao",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "'ND'",
+          "descricao": "Valor padrão usado para preencher campos vazios no 'dados'."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Conteúdo HTML gerado ou uma string vazia se o nome do dado for diferente de 'EFD_INV_NC'."
+      },
+      "excecoes": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "dados.get",
+          "join",
+          "socio.get"
+        ]
+      },
+      "docstring": "Gera um conteúdo HTML com informações de dados empresariais.\n\nArgs:\n    dados (dict): Um dicionário contendo informações sobre a empresa.\n    valor_padrao (str, optional): Valor padrão usado para preencher campos vazios no 'dados'. Padrão é 'ND'.\n\nReturns:\n    str: Conteúdo HTML gerado ou uma string vazia se o nome do dado for diferente de 'EFD_INV_NC'."
+    },
+    "status": "sucesso"
+  }
+]

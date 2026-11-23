@@ -1,0 +1,1179 @@
+[
+  {
+    "funcao": {
+      "nome": "_agora",
+      "tipo": "function",
+      "linha_inicio": 23,
+      "linha_fim": 24,
+      "parametros": [],
+      "retorno": "str",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "datetime.datetime"
+        ],
+        "chamadas": [
+          "datetime.now",
+          "isoformat"
+        ]
+      },
+      "codigo": "def _agora() -> str:\n    return datetime.now(timezone.utc).isoformat()"
+    },
+    "documentacao": {
+      "resumo": "Retorna a data e hora atual em formato ISO 8601 UTC.",
+      "descricao": "Obtém a data e hora atual no fuso horário UTC e formata-a como uma string conforme o padrão ISO 8601.",
+      "parametros": [],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "Data e hora atual em formato ISO 8601 UTC."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "datetime.datetime"
+      ],
+      "docstring": "Retorna a data e hora atual em formato ISO 8601 UTC.\n\nReturns:\n    str: Data e hora atual no fuso horário UTC, formatada como uma string ISO 8601."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "caminho_auditoria",
+      "tipo": "function",
+      "linha_inicio": 26,
+      "linha_fim": 38,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "sqlite3.Connection | str | Path",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "str",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pathlib.Path"
+        ],
+        "chamadas": [
+          "Path",
+          "TypeError",
+          "ValueError",
+          "database.execute",
+          "expanduser",
+          "fetchall",
+          "isinstance",
+          "next",
+          "path.startswith",
+          "resolve",
+          "str"
+        ]
+      },
+      "codigo": "def caminho_auditoria(database: sqlite3.Connection | str | Path) -> str:\n    if isinstance(database, sqlite3.Connection):\n        rows = database.execute('PRAGMA database_list').fetchall()\n        main = next((r[2] for r in rows if r[1] == 'main'), '')\n        if not main:\n            raise ValueError('Conexão em memória não suporta auditoria independente; forneça um caminho SQLite.')\n        return str(Path(main).resolve())\n    if isinstance(database, (str, Path)):\n        path = str(database)\n        if path == ':memory:' or path.startswith('file:'):\n            raise ValueError('Use um caminho de arquivo SQLite, não URI ou :memory:, para auditoria independente.')\n        return str(Path(path).expanduser().resolve())\n    raise TypeError('Database deve ser str, pathlib.Path ou sqlite3.Connection')"
+    },
+    "documentacao": {
+      "resumo": "Obtém o caminho do arquivo SQLite associado a uma conexão de banco de dados.",
+      "descricao": "Retorna o caminho absoluto do arquivo SQLite associado à conexão fornecida. Se a conexão for em memória, lança um erro. Caso contrário, retorna o caminho resolvido e expandido do arquivo SQLite.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "sqlite3.Connection | str | Path",
+          "descricao": "Conexão de banco de dados ou caminho para um arquivo SQLite."
+        }
+      ],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "Caminho absoluto do arquivo SQLite associado à conexão."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando a conexão em memória não suporta auditoria independente; forneça um caminho SQLite."
+        },
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o caminho é ':memory:' ou começa com 'file:', use um caminho de arquivo SQLite, não URI ou :memory:, para auditoria independente."
+        },
+        {
+          "tipo": "TypeError",
+          "descricao": "Quando o tipo do parâmetro database não é sqlite3.Connection, str ou Path."
+        }
+      ],
+      "dependencias": [
+        "pathlib.Path"
+      ],
+      "docstring": "Obtém o caminho do arquivo SQLite associado a uma conexão de banco de dados.\n\nArgs:\n    database (sqlite3.Connection | str | Path): Conexão de banco de dados ou caminho para um arquivo SQLite.\n\nReturns:\n    str: Caminho absoluto do arquivo SQLite associado à conexão.\n\nRaises:\n    ValueError: Quando a conexão em memória não suporta auditoria independente; forneça um caminho SQLite.\n    ValueError: Quando o caminho é ':memory:' ou começa com 'file:', use um caminho de arquivo SQLite, não URI ou :memory:, para auditoria independente.\n    TypeError: Quando o tipo do parâmetro database não é sqlite3.Connection, str ou Path."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_conexao",
+      "tipo": "function",
+      "linha_inicio": 41,
+      "linha_fim": 58,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "Database",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "Iterator[sqlite3.Connection]",
+      "decorators": [
+        "contextmanager"
+      ],
+      "dependencias": {
+        "imports": [
+          "sqlite3"
+        ],
+        "chamadas": [
+          "TypeError",
+          "ValueError",
+          "conn.close",
+          "conn.commit",
+          "conn.execute",
+          "conn.rollback",
+          "isinstance",
+          "sqlite3.connect"
+        ]
+      },
+      "codigo": "def _conexao(database: Database) -> Iterator[sqlite3.Connection]:\n    if isinstance(database, sqlite3.Connection):\n        yield database\n    elif isinstance(database, str):\n        if not database:\n            raise ValueError('Database não pode ser vazio')\n        conn = sqlite3.connect(database, timeout=30)\n        try:\n            conn.execute('PRAGMA foreign_keys = ON')\n            yield conn\n            conn.commit()\n        except BaseException:\n            conn.rollback()\n            raise\n        finally:\n            conn.close()\n    else:\n        raise TypeError('Database deve ser str ou sqlite3.Connection')"
+    },
+    "documentacao": {
+      "resumo": "Estabelece uma conexão com um banco de dados SQLite.",
+      "descricao": "A função `_conexao` é responsável por estabelecer e gerenciar a conexão com um banco de dados SQLite. Ela aceita tanto uma instância de `sqlite3.Connection` quanto uma string que representa o caminho para o arquivo do banco de dados. Se a conexão for bem-sucedida, ela retorna um iterador que pode ser usado para realizar operações no banco de dados.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "Database",
+          "categoria": "posicional",
+          "descricao": "Instância de `sqlite3.Connection` ou string com o caminho do arquivo do banco de dados."
+        }
+      ],
+      "retorno": {
+        "tipo": "Iterator[sqlite3.Connection]",
+        "descricao": "Iterador que pode ser usado para realizar operações no banco de dados."
+      },
+      "excecoes": [
+        {
+          "tipo": "TypeError",
+          "categoria": "lançada",
+          "descricao": "Quando o tipo do parâmetro `database` não é válido (neither `sqlite3.Connection` nor string)."
+        },
+        {
+          "tipo": "ValueError",
+          "categoria": "lançada",
+          "descricao": "Quando a string fornecida para o banco de dados está vazia."
+        }
+      ],
+      "dependencias": [
+        {
+          "nome": "sqlite3",
+          "categoria": "importado"
+        },
+        {
+          "nome": "TypeError",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "ValueError",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "conn.close",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "conn.commit",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "conn.execute",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "conn.rollback",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "isinstance",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "sqlite3.connect",
+          "categoria": "chamada"
+        }
+      ],
+      "docstring": "Estabelece uma conexão com um banco de dados SQLite.\n\nArgs:\n    database (Database): Instância de `sqlite3.Connection` ou string com o caminho do arquivo do banco de dados.\n\nReturns:\n    Iterator[sqlite3.Connection]: Iterador que pode ser usado para realizar operações no banco de dados.\n\nRaises:\n    TypeError: Quando o tipo do parâmetro `database` não é válido (neither `sqlite3.Connection` nor string).\n    ValueError: Quando a string fornecida para o banco de dados está vazia."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "inicializa_detalhes",
+      "tipo": "function",
+      "linha_inicio": 95,
+      "linha_fim": 99,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "Database",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "None",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "_SCHEMA.split",
+          "_conexao",
+          "conn.execute",
+          "statement.strip"
+        ]
+      },
+      "codigo": "def inicializa_detalhes(database: Database) -> None:\n    with _conexao(database) as conn:\n        for statement in _SCHEMA.split(';'):\n            if statement.strip():\n                conn.execute(statement)"
+    },
+    "documentacao": {
+      "resumo": "Inicializa detalhes no banco de dados.",
+      "descricao": "Executa uma série de instruções SQL para inicializar detalhes no banco de dados fornecido. As instruções são obtidas do atributo `_SCHEMA` e executadas em uma conexão com o banco de dados.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "Database",
+          "categoria": "posicional",
+          "descricao": "Conexão ou objeto de banco de dados que será inicializado."
+        }
+      ],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "Nenhum valor é retornado."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "_SCHEMA.split",
+        "_conexao",
+        "conn.execute",
+        "statement.strip"
+      ],
+      "docstring": "Inicializa detalhes no banco de dados.\n\nArgs:\n    database (Database): Conexão ou objeto de banco de dados que será inicializado.\n\nReturns:\n    None\n\nNotes:\n    - As instruções SQL são obtidas do atributo `_SCHEMA` e executadas em uma conexão com o banco de dados.\n    - A função assume que `_SCHEMA` é uma string contendo várias instruções SQL separadas por ponto-e-vírgula.\n    - Cada instrução é verificada para garantir que não seja uma string vazia antes de ser executada."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "serializar_json",
+      "tipo": "function",
+      "linha_inicio": 101,
+      "linha_fim": 108,
+      "parametros": [
+        {
+          "nome": "obj",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "isinstance",
+          "str",
+          "type"
+        ]
+      },
+      "codigo": "def serializar_json(obj):\n    if isinstance(obj, BaseException):\n        return {\n            \"tipo_erro\": type(obj).__name__,\n            \"mensagem\": str(obj)\n        }\n\n    return str(obj)"
+    },
+    "documentacao": {
+      "resumo": "Serializa um objeto em formato JSON.",
+      "descricao": "Converte um objeto Python em uma representação JSON. Se o objeto for uma instância de `BaseException`, retorna um dicionário com o tipo de erro e a mensagem associada. Caso contrário, retorna uma string representando o objeto.",
+      "parametros": [
+        {
+          "nome": "obj",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Python que será serializado."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Representação JSON do objeto ou dicionário com informações de erro."
+      },
+      "excecoes": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "isinstance",
+          "str",
+          "type"
+        ]
+      },
+      "docstring": "Serializa um objeto em formato JSON.\n\nArgs:\n    obj: Objeto Python que será serializado.\n\nReturns:\n    Representação JSON do objeto ou dicionário com informações de erro."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "registrar_evento",
+      "tipo": "function",
+      "linha_inicio": 110,
+      "linha_fim": 121,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "Database",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "nome_evento",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "mensagem",
+          "tipo": "str | None",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "nivel",
+          "tipo": "str",
+          "default": "'INFO'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "detalhes",
+          "tipo": "dict | None",
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "int",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "json"
+        ],
+        "chamadas": [
+          "ValueError",
+          "_agora",
+          "_conexao",
+          "conn.execute",
+          "json.dumps",
+          "nivel.upper"
+        ]
+      },
+      "codigo": "def registrar_evento(database: Database, execucao_id: str, nome_evento: str,\n                     mensagem: str | None = None, nivel: str = 'INFO',\n                     detalhes: dict | None = None) -> int:\n    nivel = nivel.upper()\n    if nivel not in {'DEBUG','INFO','ALERTA','ERRO','CRITICO'}:\n        raise ValueError('Nível inválido')\n    payload = json.dumps(detalhes, ensure_ascii=False, allow_nan=False, default=serializar_json) if detalhes is not None else None\n    with _conexao(database) as conn:\n        cursor = conn.execute('''INSERT INTO tbl_execucao_eventos\n            (execucao_id, criado_em, nivel, nome_evento, mensagem, detalhes)\n            VALUES (?,?,?,?,?,?)''', (execucao_id, _agora(), nivel, nome_evento, mensagem, payload))\n        return cursor.lastrowid"
+    },
+    "documentacao": {
+      "resumo": "Registra um evento no banco de dados.",
+      "descricao": "Insere informações sobre um evento em uma tabela específica do banco de dados, incluindo detalhes adicionais se fornecidos.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "Database",
+          "categoria": "posicional",
+          "descricao": "Conexão com o banco de dados onde o evento será registrado."
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Identificador único da execução associada ao evento."
+        },
+        {
+          "nome": "nome_evento",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome do evento a ser registrado."
+        },
+        {
+          "nome": "mensagem",
+          "tipo": "str | None",
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Mensagem associada ao evento (opcional)."
+        },
+        {
+          "nome": "nivel",
+          "tipo": "str",
+          "categoria": "posicional",
+          "default": "'INFO'",
+          "descricao": "Nível de severidade do evento, deve ser uma das opções: 'DEBUG', 'INFO', 'ALERTA', 'ERRO', 'CRITICO'."
+        },
+        {
+          "nome": "detalhes",
+          "tipo": "dict | None",
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Detalhes adicionais sobre o evento em formato de dicionário (opcional)."
+        }
+      ],
+      "retorno": {
+        "tipo": "int",
+        "descricao": "ID do registro do evento inserido no banco de dados."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o nível fornecido não é uma das opções válidas."
+        }
+      ],
+      "dependencias": [
+        "json"
+      ],
+      "docstring": "Registra um evento no banco de dados.\n\nArgs:\n    database (Database): Conexão com o banco de dados onde o evento será registrado.\n    execucao_id (str): Identificador único da execução associada ao evento.\n    nome_evento (str): Nome do evento a ser registrado.\n    mensagem (str | None, optional): Mensagem associada ao evento. Defaults to None.\n    nivel (str, optional): Nível de severidade do evento, deve ser uma das opções: 'DEBUG', 'INFO', 'ALERTA', 'ERRO', 'CRITICO'. Defaults to 'INFO'.\n    detalhes (dict | None, optional): Detalhes adicionais sobre o evento em formato de dicionário. Defaults to None.\n\nReturns:\n    int: ID do registro do evento inserido no banco de dados.\n\nRaises:\n    ValueError: Quando o nível fornecido não é uma das opções válidas."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "registrar_metrica",
+      "tipo": "function",
+      "linha_inicio": 123,
+      "linha_fim": 132,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "Database",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "nome",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "valor",
+          "tipo": "float",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "unidade",
+          "tipo": "str | None",
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "int",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "math"
+        ],
+        "chamadas": [
+          "ValueError",
+          "_agora",
+          "_conexao",
+          "conn.execute",
+          "float",
+          "math.isfinite"
+        ]
+      },
+      "codigo": "def registrar_metrica(database: Database, execucao_id: str, nome: str,\n                      valor: float, unidade: str | None = None) -> int:\n    numero = float(valor)\n    if not math.isfinite(numero):\n        raise ValueError('Valor deve ser finito')\n    with _conexao(database) as conn:\n        cursor = conn.execute('''INSERT INTO tbl_execucao_metricas\n            (execucao_id, criado_em, nome, valor, unidade) VALUES (?,?,?,?,?)''',\n            (execucao_id, _agora(), nome, numero, unidade))\n        return cursor.lastrowid"
+    },
+    "documentacao": {
+      "resumo": "Registra uma métrica no banco de dados.",
+      "descricao": "Insere uma nova métrica na tabela 'tbl_execucao_metricas' do banco de dados, associada a uma execução específica. Valida se o valor é finito e lança um erro caso contrário.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "Database",
+          "categoria": "posicional",
+          "descricao": "Conexão com o banco de dados onde a métrica será registrada."
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Identificador único da execução à qual a métrica pertence."
+        },
+        {
+          "nome": "nome",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome da métrica sendo registrada."
+        },
+        {
+          "nome": "valor",
+          "tipo": "float",
+          "categoria": "posicional",
+          "descricao": "Valor numérico da métrica a ser registrado."
+        },
+        {
+          "nome": "unidade",
+          "tipo": "str | None",
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Unidade de medida da métrica (opcional)."
+        }
+      ],
+      "retorno": {
+        "tipo": "int",
+        "descricao": "ID do registro da métrica inserido no banco de dados."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "categoria": "lançada",
+          "descricao": "Quando o valor não é finito."
+        }
+      ],
+      "dependencias": {
+        "imports": [
+          "math"
+        ],
+        "chamadas": [
+          "ValueError",
+          "_agora",
+          "_conexao",
+          "conn.execute",
+          "float",
+          "math.isfinite"
+        ]
+      },
+      "docstring": "Registra uma métrica no banco de dados.\n\nArgs:\n    database (Database): Conexão com o banco de dados onde a métrica será registrada.\n    execucao_id (str): Identificador único da execução à qual a métrica pertence.\n    nome (str): Nome da métrica sendo registrada.\n    valor (float): Valor numérico da métrica a ser registrado.\n    unidade (str | None, optional): Unidade de medida da métrica (opcional). Defaults to None.\n\nReturns:\n    int: ID do registro da métrica inserido no banco de dados.\n\nRaises:\n    ValueError: Quando o valor não é finito."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "registrar_artefato",
+      "tipo": "function",
+      "linha_inicio": 134,
+      "linha_fim": 163,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "Database",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "file_path",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tipo_artefato",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "calcular_hash",
+          "tipo": "bool",
+          "default": "True",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "int",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "hashlib",
+          "pathlib.Path"
+        ],
+        "chamadas": [
+          "FileNotFoundError",
+          "Path",
+          "ValueError",
+          "_agora",
+          "_conexao",
+          "conn.execute",
+          "digest_obj.hexdigest",
+          "digest_obj.update",
+          "expanduser",
+          "handle.read",
+          "hashlib.sha256",
+          "iter",
+          "path.exists",
+          "path.is_dir",
+          "path.open",
+          "path.stat",
+          "resolve",
+          "str",
+          "tipo_artefato.upper"
+        ]
+      },
+      "codigo": "def registrar_artefato(database: Database, execucao_id: str, file_path: str,\n                       tipo_artefato: str, calcular_hash: bool = True) -> int:\n    tipo_artefato = tipo_artefato.upper()\n    if tipo_artefato not in {'ENTRADA','SAIDA'}:\n        raise ValueError('Tipo de artefato deve ser ENTRADA ou SAIDA')\n    \n    path = Path(file_path)\n\n    if not path.exists():\n        raise FileNotFoundError(f\"Artefato não encontrado: {path}\")\n\n    if path.is_dir():\n        return\n    \n    path = Path(file_path).expanduser().resolve()\n    digest = None\n    size = path.stat().st_size\n    if calcular_hash:\n        digest_obj = hashlib.sha256()\n        with path.open('rb') as handle:\n            for block in iter(lambda: handle.read(1024 * 1024), b''):\n                digest_obj.update(block)\n        digest = digest_obj.hexdigest()\n\n    with _conexao(database) as conn:\n        cursor = conn.execute('''INSERT INTO tbl_execucao_artefatos\n            (execucao_id, criado_em, tipo_artefato, file_path, sha256, size_bytes)\n            VALUES (?,?,?,?,?,?)''',\n            (execucao_id, _agora(), tipo_artefato, str(path), digest, size))\n        return cursor.lastrowid"
+    },
+    "documentacao": {
+      "resumo": "Registra um artefato em uma base de dados.",
+      "descricao": "Insere informações sobre um artefato (arquivo) em uma tabela específica da base de dados, incluindo o tipo do artefato e opcionalmente seu hash SHA-256. Verifica a existência do arquivo e valida o tipo do artefato.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "Database",
+          "categoria": "posicional",
+          "descricao": "Conexão com a base de dados onde os dados serão registrados."
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Identificador da execução associada ao artefato."
+        },
+        {
+          "nome": "file_path",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Caminho do arquivo a ser registrado."
+        },
+        {
+          "nome": "tipo_artefato",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Tipo do artefato, deve ser 'ENTRADA' ou 'SAIDA'."
+        },
+        {
+          "nome": "calcular_hash",
+          "tipo": "bool",
+          "categoria": "posicional",
+          "default": "True",
+          "descricao": "Indica se o hash SHA-256 do arquivo deve ser calculado."
+        }
+      ],
+      "retorno": {
+        "tipo": "int",
+        "descricao": "ID da linha inserida na tabela de artefatos."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "categoria": "posicional",
+          "descricao": "Quando o tipo de artefato não é 'ENTRADA' ou 'SAIDA'."
+        },
+        {
+          "tipo": "FileNotFoundError",
+          "categoria": "posicional",
+          "descricao": "Quando o arquivo especificado pelo caminho não existe."
+        }
+      ],
+      "dependencias": [
+        {
+          "nome": "hashlib",
+          "categoria": "import",
+          "descricao": "Biblioteca utilizada para calcular o hash SHA-256 do arquivo."
+        },
+        {
+          "nome": "pathlib.Path",
+          "categoria": "import",
+          "descricao": "Classe usada para manipulação de caminhos de arquivos."
+        }
+      ],
+      "docstring": "Registra um artefato em uma base de dados.\n\nArgs:\n    database (Database): Conexão com a base de dados onde os dados serão registrados.\n    execucao_id (str): Identificador da execução associada ao artefato.\n    file_path (str): Caminho do arquivo a ser registrado.\n    tipo_artefato (str): Tipo do artefato, deve ser 'ENTRADA' ou 'SAIDA'.\n    calcular_hash (bool, optional): Indica se o hash SHA-256 do arquivo deve ser calculado. Padrão é True.\n\nReturns:\n    int: ID da linha inserida na tabela de artefatos.\n\nRaises:\n    ValueError: Quando o tipo de artefato não é 'ENTRADA' ou 'SAIDA'.\n    FileNotFoundError: Quando o arquivo especificado pelo caminho não existe."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "listar_detalhes",
+      "tipo": "function",
+      "linha_inicio": 165,
+      "linha_fim": 172,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "Database",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "execution_id",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "dict",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "_conexao",
+          "conn.execute",
+          "cursor.fetchall",
+          "dict",
+          "zip"
+        ]
+      },
+      "codigo": "def listar_detalhes(database: Database, execution_id: str) -> dict:\n    with _conexao(database) as conn:\n        result = {}\n        for key, table in [('eventos','tbl_execucao_eventos'),('metricas','tbl_execucao_metricas'),('artefatos','tbl_execucao_artefatos')]:\n            cursor = conn.execute(f'SELECT * FROM {table} WHERE execucao_id = ? ORDER BY id', (execution_id,))\n            names = [col[0] for col in cursor.description]\n            result[key] = [dict(zip(names, row)) for row in cursor.fetchall()]\n        return result"
+    },
+    "documentacao": {
+      "resumo": "Lista detalhes de execução a partir de uma base de dados.",
+      "descricao": "Recupera informações sobre eventos, métricas e artefatos associados a uma execução específica, retornando-os em um dicionário estruturado.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "Database",
+          "categoria": "posicional",
+          "descricao": "Conexão à base de dados onde os detalhes estão armazenados."
+        },
+        {
+          "nome": "execution_id",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Identificador único da execução para a qual os detalhes são recuperados."
+        }
+      ],
+      "retorno": {
+        "tipo": "dict",
+        "descricao": "Dicionário contendo listas de eventos, métricas e artefatos associados à execução especificada."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "_conexao",
+        "conn.execute",
+        "cursor.fetchall",
+        "dict",
+        "zip"
+      ],
+      "docstring": "Lista detalhes de execução a partir de uma base de dados.\n\nArgs:\n    database (Database): Conexão à base de dados onde os detalhes estão armazenados.\n    execution_id (str): Identificador único da execução para a qual os detalhes são recuperados.\n\nReturns:\n    dict: Dicionário contendo listas de eventos, métricas e artefatos associados à execução especificada."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "inicializar_rastreamento",
+      "tipo": "function",
+      "linha_inicio": 174,
+      "linha_fim": 201,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "sqlite3.Connection | str | Path",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "None",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "RuntimeError",
+          "_conexao",
+          "caminho_auditoria",
+          "conn.execute",
+          "conn.executescript",
+          "fetchone"
+        ]
+      },
+      "codigo": "def inicializar_rastreamento(database: sqlite3.Connection | str | Path) -> None:\n    path = caminho_auditoria(database)\n    with _conexao(path) as conn:\n        parent = conn.execute(\"SELECT 1 FROM sqlite_master WHERE type='table' AND name='tbl_manifesto_execucao'\").fetchone()\n        if not parent:\n            raise RuntimeError('Crie a tabela de execução de manifesto antes de inicializar o rastreamento.')\n        conn.executescript('''\n            CREATE TABLE IF NOT EXISTS tbl_execucao_chamadas (\n                chamada_id TEXT PRIMARY KEY,\n                execucao_id TEXT NOT NULL,\n                chamada_parente_id TEXT,\n                nome_funcao TEXT NOT NULL,\n                nome_modulo TEXT NOT NULL,\n                iniciado_em TEXT NOT NULL,\n                finalizado_em TEXT,\n                duracao_ms REAL,\n                estado TEXT NOT NULL CHECK (estado IN ('RODANDO','SUCESSO','FALHA')),\n                tipo_erro TEXT,\n                mensagem_erro TEXT,\n                trilha_erro TEXT,\n                FOREIGN KEY(execucao_id) REFERENCES tbl_manifesto_execucao(execucao_id),\n                FOREIGN KEY(chamada_parente_id) REFERENCES tbl_execucao_chamadas(chamada_id)\n            );\n            CREATE INDEX IF NOT EXISTS idx_execucao_chamadas_execucao\n                ON tbl_execucao_chamadas(execucao_id, iniciado_em);\n            CREATE INDEX IF NOT EXISTS idx_execucao_chamadas_parente\n                ON tbl_execucao_chamadas(chamada_parente_id);\n        ''')"
+    },
+    "documentacao": {
+      "resumo": "Inicializa o rastreamento em uma base de dados SQLite.",
+      "descricao": "Cria as tabelas necessárias para o rastreamento se elas ainda não existirem e verifica a existência da tabela 'tbl_manifesto_execucao'. Caso contrário, lança um erro indicando que a tabela deve ser criada antes de inicializar o rastreamento.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "sqlite3.Connection | str | Path",
+          "descricao": "Conexão existente com a base de dados ou caminho para o arquivo da base de dados."
+        }
+      ],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "Nenhum valor retornado."
+      },
+      "excecoes": [
+        {
+          "tipo": "RuntimeError",
+          "descricao": "Quando a tabela 'tbl_manifesto_execucao' não existe."
+        }
+      ],
+      "dependencias": [
+        "sqlite3.Connection",
+        "str",
+        "Path",
+        "RuntimeError",
+        "_conexao",
+        "caminho_auditoria"
+      ],
+      "docstring": "Inicializa o rastreamento em uma base de dados SQLite.\n\nArgs:\n    database (sqlite3.Connection | str | Path): Conexão existente com a base de dados ou caminho para o arquivo da base de dados.\n\nReturns:\n    None\n\nRaises:\n    RuntimeError: Quando a tabela 'tbl_manifesto_execucao' não existe."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "contexto_rastreamento",
+      "tipo": "function",
+      "linha_inicio": 204,
+      "linha_fim": 213,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "sqlite3.Connection | str | Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "Iterator[None]",
+      "decorators": [
+        "contextmanager"
+      ],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "_chamada.reset",
+          "_chamada.set",
+          "_contexto.reset",
+          "_contexto.set",
+          "caminho_auditoria",
+          "inicializar_rastreamento"
+        ]
+      },
+      "codigo": "def contexto_rastreamento(database: sqlite3.Connection | str | Path, execucao_id: str) -> Iterator[None]:\n    path = caminho_auditoria(database)\n    inicializar_rastreamento(path)\n    token_exec = _contexto.set((path, execucao_id))\n    token_call = _chamada.set(None)\n    try:\n        yield\n    finally:\n        _chamada.reset(token_call)\n        _contexto.reset(token_exec)"
+    },
+    "documentacao": {
+      "resumo": "Cria um contexto de rastreamento para uma execução específica.",
+      "descricao": "Este gerador configura o ambiente de rastreamento, inicializa os logs e prepara o contexto para a execução identificada por `execucao_id`. Após a execução, ele limpa o contexto e os logs.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "sqlite3.Connection | str | Path",
+          "categoria": "posicional",
+          "descricao": "Conexão com o banco de dados ou caminho para o arquivo do banco de dados."
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Identificador único da execução que está sendo rastreada."
+        }
+      ],
+      "retorno": {
+        "tipo": "Iterator[None]",
+        "descricao": "Um iterador vazio, indicando que a função não retorna um valor explícito."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "_chamada.reset",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "_chamada.set",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "_contexto.reset",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "_contexto.set",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "caminho_auditoria",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "inicializar_rastreamento",
+          "categoria": "chamada"
+        }
+      ],
+      "docstring": "Cria um contexto de rastreamento para uma execução específica.\n\nArgs:\n    database (sqlite3.Connection | str | Path): Conexão com o banco de dados ou caminho para o arquivo do banco de dados.\n    execucao_id (str): Identificador único da execução que está sendo rastreada.\n\nYields:\n    None: Este gerador não retorna um valor explícito.\n\nNotes:\n    - Configura o ambiente de rastreamento, inicializa os logs e prepara o contexto para a execução identificada por `execucao_id`.\n    - Após a execução, limpa o contexto e os logs."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "rastrear_funcao",
+      "tipo": "function",
+      "linha_inicio": 216,
+      "linha_fim": 254,
+      "parametros": [
+        {
+          "nome": "func",
+          "tipo": "F",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "F",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "functools",
+          "time",
+          "traceback",
+          "uuid.uuid4"
+        ],
+        "chamadas": [
+          "TypeError",
+          "__import__",
+          "_agora",
+          "_chamada.get",
+          "_chamada.reset",
+          "_chamada.set",
+          "_conexao",
+          "_contexto.get",
+          "conn.execute",
+          "func",
+          "functools.wraps",
+          "iscoroutinefunction",
+          "str",
+          "time.perf_counter",
+          "traceback.format_exc",
+          "type",
+          "uuid4"
+        ]
+      },
+      "codigo": "def rastrear_funcao(func: F) -> F:\n    if __import__('inspect').iscoroutinefunction(func):\n        raise TypeError('Rastrear funcao suporta apenas funções síncronas.')\n\n    @functools.wraps(func)\n    def wrapper(*args: Any, **kwargs: Any) -> Any:\n        ctx = _contexto.get()\n        if ctx is None:\n            return func(*args, **kwargs)\n        path, execucao_id = ctx\n        parent_id = _chamada.get()\n        call_id = str(uuid4())\n        with _conexao(path) as conn:\n            conn.execute('''INSERT INTO tbl_execucao_chamadas\n                (chamada_id, execucao_id, chamada_parente_id, nome_funcao,\n                 nome_modulo, iniciado_em, estado)\n                VALUES (?, ?, ?, ?, ?, ?, 'RODANDO')''',\n                (call_id, execucao_id, parent_id, func.__qualname__, func.__module__, _agora()))\n        token = _chamada.set(call_id)\n        start = time.perf_counter()\n        try:\n            result = func(*args, **kwargs)\n        except BaseException as exc:\n            with _conexao(path) as conn:\n                conn.execute('''UPDATE tbl_execucao_chamadas SET finalizado_em=?, duracao_ms=?,\n                    estado='FALHA', tipo_erro=?, mensagem_erro=?,trilha_erro=?\n                    WHERE chamada_id=?''', (_agora(), (time.perf_counter()-start)*1000,\n                    type(exc).__name__, str(exc), traceback.format_exc(), call_id))\n            raise\n        else:\n            with _conexao(path) as conn:\n                conn.execute('''UPDATE tbl_execucao_chamadas SET finalizado_em=?, duracao_ms=?,\n                    estado='SUCESSO' WHERE chamada_id=?''',\n                    (_agora(), (time.perf_counter()-start)*1000, call_id))\n            return result\n        finally:\n            _chamada.reset(token)\n\n    return wrapper"
+    },
+    "documentacao": {
+      "resumo": "Rastreia a execução de uma função, registrando informações sobre chamadas e erros em um banco de dados.",
+      "descricao": "A função `rastrear_funcao` envolve outra função (`func`) em um decorador que registra detalhes da execução, incluindo tempo de início, duração e estado (sucesso ou falha). Se ocorrer uma exceção, ela é registrada no banco de dados. A função suporta apenas funções síncronas.",
+      "parametros": [
+        {
+          "nome": "func",
+          "tipo": "F",
+          "categoria": "posicional",
+          "descricao": "Função a ser rastreada."
+        }
+      ],
+      "retorno": {
+        "tipo": "F",
+        "descricao": "A função decorada, que mantém o mesmo tipo e comportamento da função original."
+      },
+      "excecoes": [
+        {
+          "tipo": "TypeError",
+          "descricao": "Lancado se a função passada for assíncrona."
+        }
+      ],
+      "dependencias": {
+        "imports": [
+          "functools",
+          "time",
+          "traceback",
+          "uuid.uuid4"
+        ],
+        "chamadas": [
+          "__import__",
+          "_agora",
+          "_chamada.get",
+          "_chamada.reset",
+          "_chamada.set",
+          "_conexao",
+          "_contexto.get",
+          "conn.execute",
+          "func",
+          "functools.wraps",
+          "iscoroutinefunction",
+          "str",
+          "time.perf_counter",
+          "traceback.format_exc",
+          "type",
+          "uuid4"
+        ]
+      },
+      "docstring": "Rastreia a execução de uma função, registrando informações sobre chamadas e erros em um banco de dados.\n\nArgs:\n    func (F): Função a ser rastreada.\n\nReturns:\n    F: A função decorada, que mantém o mesmo tipo e comportamento da função original.\n\nRaises:\n    TypeError: Lançado se a função passada for assíncrona."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "listar_chamadas",
+      "tipo": "function",
+      "linha_inicio": 256,
+      "linha_fim": 261,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "sqlite3.Connection | str | Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "list[dict[str, Any]]",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "_conexao",
+          "caminho_auditoria",
+          "conn.execute",
+          "dict"
+        ]
+      },
+      "codigo": "def listar_chamadas(database: sqlite3.Connection | str | Path, execucao_id: str) -> list[dict[str, Any]]:\n    path = caminho_auditoria(database)\n    with _conexao(path) as conn:\n        conn.row_factory = sqlite3.Row\n        return [dict(row) for row in conn.execute('''SELECT * FROM tbl_execucao_chamadas\n            WHERE execucao_id=? ORDER BY iniciado_em, rowid''', (execucao_id,))]"
+    },
+    "documentacao": {
+      "resumo": "Lista chamadas associadas a uma execução específica no banco de dados.",
+      "descricao": "Recupera todas as chamadas de uma execução identificada por `execucao_id` do banco de dados, ordenando-as pelo tempo de início e ID da linha.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "sqlite3.Connection | str | Path",
+          "descricao": "Conexão existente com o banco de dados ou caminho para o arquivo do banco de dados."
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "descricao": "Identificador único da execução cujas chamadas serão listadas."
+        }
+      ],
+      "retorno": {
+        "tipo": "list[dict[str, Any]]",
+        "descricao": "Lista de dicionários contendo informações sobre cada chamada associada à execução especificada."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "_conexao",
+        "caminho_auditoria",
+        "conn.execute",
+        "dict"
+      ],
+      "docstring": "Lista chamadas associadas a uma execução específica no banco de dados.\n\nArgs:\n    database (sqlite3.Connection | str | Path): Conexão existente com o banco de dados ou caminho para o arquivo do banco de dados.\n    execucao_id (str): Identificador único da execução cujas chamadas serão listadas.\n\nReturns:\n    list[dict[str, Any]]: Lista de dicionários contendo informações sobre cada chamada associada à execução especificada."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "wrapper",
+      "tipo": "function",
+      "linha_inicio": 221,
+      "linha_fim": 252,
+      "parametros": [
+        {
+          "nome": "args",
+          "tipo": "Any",
+          "default": null,
+          "categoria": "varargs"
+        },
+        {
+          "nome": "kwargs",
+          "tipo": "Any",
+          "default": null,
+          "categoria": "kwargs"
+        }
+      ],
+      "retorno": "Any",
+      "decorators": [
+        "functools.wraps(func)"
+      ],
+      "dependencias": {
+        "imports": [
+          "functools",
+          "time",
+          "traceback",
+          "uuid.uuid4"
+        ],
+        "chamadas": [
+          "_agora",
+          "_chamada.get",
+          "_chamada.reset",
+          "_chamada.set",
+          "_conexao",
+          "_contexto.get",
+          "conn.execute",
+          "func",
+          "functools.wraps",
+          "str",
+          "time.perf_counter",
+          "traceback.format_exc",
+          "type",
+          "uuid4"
+        ]
+      },
+      "codigo": "def wrapper(*args: Any, **kwargs: Any) -> Any:\n        ctx = _contexto.get()\n        if ctx is None:\n            return func(*args, **kwargs)\n        path, execucao_id = ctx\n        parent_id = _chamada.get()\n        call_id = str(uuid4())\n        with _conexao(path) as conn:\n            conn.execute('''INSERT INTO tbl_execucao_chamadas\n                (chamada_id, execucao_id, chamada_parente_id, nome_funcao,\n                 nome_modulo, iniciado_em, estado)\n                VALUES (?, ?, ?, ?, ?, ?, 'RODANDO')''',\n                (call_id, execucao_id, parent_id, func.__qualname__, func.__module__, _agora()))\n        token = _chamada.set(call_id)\n        start = time.perf_counter()\n        try:\n            result = func(*args, **kwargs)\n        except BaseException as exc:\n            with _conexao(path) as conn:\n                conn.execute('''UPDATE tbl_execucao_chamadas SET finalizado_em=?, duracao_ms=?,\n                    estado='FALHA', tipo_erro=?, mensagem_erro=?,trilha_erro=?\n                    WHERE chamada_id=?''', (_agora(), (time.perf_counter()-start)*1000,\n                    type(exc).__name__, str(exc), traceback.format_exc(), call_id))\n            raise\n        else:\n            with _conexao(path) as conn:\n                conn.execute('''UPDATE tbl_execucao_chamadas SET finalizado_em=?, duracao_ms=?,\n                    estado='SUCESSO' WHERE chamada_id=?''',\n                    (_agora(), (time.perf_counter()-start)*1000, call_id))\n            return result\n        finally:\n            _chamada.reset(token)"
+    },
+    "documentacao": {
+      "resumo": "Wrapper para monitorar e registrar chamadas de funções.",
+      "descricao": "Este wrapper é responsável por monitorar e registrar todas as chamadas de funções, incluindo informações sobre o contexto da execução, tempo de execução, estado (sucesso ou falha), e qualquer exceção lançada. Ele utiliza uma conexão com um banco de dados para armazenar essas informações.",
+      "parametros": [
+        {
+          "nome": "args",
+          "tipo": "Any",
+          "categoria": "varargs",
+          "descricao": "Argumentos posicionais passados para a função."
+        },
+        {
+          "nome": "kwargs",
+          "tipo": "Any",
+          "categoria": "kwargs",
+          "descricao": "Argumentos de palavra-chave passados para a função."
+        }
+      ],
+      "retorno": {
+        "tipo": "Any",
+        "descricao": "O resultado da chamada à função original."
+      },
+      "excecoes": [
+        {
+          "tipo": "BaseException",
+          "descricao": "Qualquer exceção lançada pela função original é reexcluída após ser registrada no banco de dados."
+        }
+      ],
+      "dependencias": {
+        "imports": [
+          "functools",
+          "time",
+          "traceback",
+          "uuid.uuid4"
+        ],
+        "chamadas": [
+          "_agora",
+          "_chamada.get",
+          "_chamada.reset",
+          "_chamada.set",
+          "_conexao",
+          "_contexto.get",
+          "conn.execute",
+          "func",
+          "functools.wraps",
+          "str",
+          "time.perf_counter",
+          "traceback.format_exc",
+          "type",
+          "uuid4"
+        ]
+      },
+      "docstring": "Wrapper para monitorar e registrar chamadas de funções.\n\nArgs:\n    *args (Any): Argumentos posicionais passados para a função.\n    **kwargs (Any): Argumentos de palavra-chave passados para a função.\n\nReturns:\n    Any: O resultado da chamada à função original.\n\nRaises:\n    BaseException: Qualquer exceção lançada pela função original é reexcluída após ser registrada no banco de dados."
+    },
+    "status": "sucesso"
+  }
+]

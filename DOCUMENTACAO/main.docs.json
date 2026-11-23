@@ -1,0 +1,240 @@
+[
+  {
+    "funcao": {
+      "nome": "pagina_manifesto",
+      "tipo": "function",
+      "linha_inicio": 273,
+      "linha_fim": 289,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.visual_manifesto",
+          "MANIFESTO.visualizar_manifesto_exec",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "st.tabs",
+          "str",
+          "visual_manifesto",
+          "visualizar_manifesto_exec"
+        ]
+      },
+      "codigo": "def pagina_manifesto():\n        pasta_manifesto = (\n                                Path(st.session_state.tra_dir)\n                                / \"MANIFESTO\"\n                                / \"TRILHA_EXEC\"\n                            )\n        raiz = (\n                    Path(st.session_state.tra_dir)\n                    / \"MANIFESTO\"\n                    / \"TRILHA_DADOS\"\n                )\n        database = str(pasta_manifesto / \"execucoes.db\")\n        tabs = st.tabs(['DADOS','EXECUÇÃO'])\n        with tabs[1]:\n            visualizar_manifesto_exec(database, st)\n        with tabs[0]:\n            visual_manifesto(raiz, st=st)"
+    },
+    "documentacao": {
+      "resumo": "Exibe uma interface de usuário com duas abas: 'DADOS' e 'EXECUÇÃO'.",
+      "descricao": "A função cria uma interface de usuário utilizando Streamlit, dividida em duas abas. A aba 'EXECUÇÃO' exibe um manifesto de execução, enquanto a aba 'DADOS' exibe dados relacionados.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.visual_manifesto",
+          "tipo": "função",
+          "descricao": "Função que visualiza dados."
+        },
+        {
+          "nome": "MANIFESTO.visualizar_manifesto_exec",
+          "tipo": "função",
+          "descricao": "Função que visualiza um manifesto de execução."
+        },
+        {
+          "nome": "pathlib.Path",
+          "tipo": "classe",
+          "descricao": "Classe para manipulação de caminhos de arquivo."
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca",
+          "descricao": "Biblioteca para criação de interfaces web interativas."
+        }
+      ],
+      "docstring": "Exibe uma interface de usuário com duas abas: 'DADOS' e 'EXECUÇÃO'.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "pagina_ECD",
+      "tipo": "function",
+      "linha_inicio": 291,
+      "linha_fim": 295,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "anl_desc_hist.inic_ECD_leitura",
+          "pathlib.Path"
+        ],
+        "chamadas": [
+          "Path.cwd",
+          "caminho_CVA.exists",
+          "inic_ECD_leitura"
+        ]
+      },
+      "codigo": "def pagina_ECD():\n        caminho_CVA = Path.cwd() / \"anl_desc_hist.py\"\n        if caminho_CVA.exists():\n            from anl_desc_hist import inic_ECD_leitura\n            inic_ECD_leitura()"
+    },
+    "documentacao": {
+      "resumo": "Executa a função de leitura inicial do ECD (Eletrônico da Contabilidade Digital) se o arquivo 'anl_desc_hist.py' existir no diretório atual.",
+      "descricao": "A função verifica a existência do arquivo 'anl_desc_hist.py' no diretório atual. Se o arquivo existir, ele importa e executa a função `inic_ECD_leitura` definida nesse arquivo.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "tipo": "anl_desc_hist.inic_ECD_leitura",
+          "descricao": "Função que será chamada se o arquivo 'anl_desc_hist.py' existir."
+        },
+        {
+          "tipo": "pathlib.Path",
+          "descricao": "Classe utilizada para manipulação de caminhos de arquivos."
+        }
+      ],
+      "docstring": "Executa a função de leitura inicial do ECD (Eletrônico da Contabilidade Digital) se o arquivo 'anl_desc_hist.py' existir no diretório atual.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "pagina_CVA",
+      "tipo": "function",
+      "linha_inicio": 297,
+      "linha_fim": 301,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "anl_ECD_CVA_PTD.calc_CVA",
+          "pathlib.Path"
+        ],
+        "chamadas": [
+          "Path.cwd",
+          "calc_CVA",
+          "caminho_CVA.exists"
+        ]
+      },
+      "codigo": "def pagina_CVA():\n        caminho_CVA = Path.cwd() / \"anl_ECD_CVA_PTD.py\"\n        if caminho_CVA.exists():\n            from anl_ECD_CVA_PTD import calc_CVA\n            calc_CVA()"
+    },
+    "documentacao": {
+      "resumo": "Executa a função `calc_CVA` do módulo `anl_ECD_CVA_PTD.py`.",
+      "descricao": "A função localiza o arquivo `anl_ECD_CVA_PTD.py` no diretório de trabalho atual e, se encontrado, importa e executa a função `calc_CVA` definida nesse módulo.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "tipo": "anl_ECD_CVA_PTD.calc_CVA",
+          "descricao": "Função a ser executada."
+        },
+        {
+          "tipo": "pathlib.Path",
+          "descricao": "Classe utilizada para manipulação de caminhos de arquivo."
+        }
+      ],
+      "docstring": "Executa a função `calc_CVA` do módulo `anl_ECD_CVA_PTD.py`.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "visual",
+      "tipo": "function",
+      "linha_inicio": 303,
+      "linha_fim": 304,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "SRC.visualizar"
+        ],
+        "chamadas": [
+          "visualizar"
+        ]
+      },
+      "codigo": "def visual():\n        visualizar(st)"
+    },
+    "documentacao": {
+      "resumo": "Invoca a função de visualização.",
+      "descricao": "Esta função chama outra função chamada 'visualizar' passando um parâmetro 'st'. A função não possui parâmetros adicionais e não retorna nenhum valor explícito.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "SRC.visualizar"
+      ],
+      "docstring": "Invoca a função de visualização.\n\nArgs:\n    Nenhum parâmetro.\n\nReturns:\n    None\n\nDependencies:\n    SRC.visualizar: Função chamada para realizar a operação de visualização."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "criar_rel",
+      "tipo": "function",
+      "linha_inicio": 306,
+      "linha_fim": 307,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "RELATORIOS.exportar"
+        ],
+        "chamadas": [
+          "exportar"
+        ]
+      },
+      "codigo": "def criar_rel():\n        exportar(st)"
+    },
+    "documentacao": {
+      "resumo": "Cria um relatório utilizando a função de exportação.",
+      "descricao": "Esta função invoca a função `exportar` do módulo `RELATORIOS` para criar e exportar um relatório. Não recebe nenhum parâmetro e não retorna nada explícito.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "RELATORIOS.exportar"
+      ],
+      "docstring": "Cria um relatório utilizando a função de exportação.\n\nReturns:\n    None\n\nDependencies:\n    RELATORIOS.exportar: Função utilizada para exportar o relatório."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "ler_normas",
+      "tipo": "function",
+      "linha_inicio": 309,
+      "linha_fim": 310,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "UTILS.visualizar_docs"
+        ],
+        "chamadas": [
+          "visualizar_docs"
+        ]
+      },
+      "codigo": "def ler_normas():\n        visualizar_docs(st)"
+    },
+    "documentacao": {
+      "resumo": "Lê e exibe as normas utilizando uma função de visualização.",
+      "descricao": "Esta função não recebe nenhum parâmetro e chama outra função para visualizar os documentos relacionados às normas. Não há retorno explícito definido no código fornecido.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "UTILS.visualizar_docs"
+      ],
+      "docstring": "Lê e exibe as normas utilizando uma função de visualização.\n\nArgs:\n    Nenhum parâmetro.\n\nReturns:\n    None\n\nDependencies:\n    UTILS.visualizar_docs: Função utilizada para visualizar os documentos."
+    },
+    "status": "sucesso"
+  }
+]

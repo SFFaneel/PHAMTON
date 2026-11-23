@@ -1,0 +1,26 @@
+{
+  "nodes": [
+    {
+      "id": "Campo 2 (Nm_Variavel): Preencher com as possibilidades descritas na tabela de domínio abaixo. Caso a empresa preencha com um valor fora do domínio, o arquivo será rejeitado."
+    },
+    {
+      "id": "Exemplo de tabela:"
+    },
+    {
+      "id": "Os dados das BRR estão organizados em tabelas como apresentado a seguir:"
+    },
+    {
+      "id": "TABELA"
+    },
+    {
+      "id": "de dom"
+    }
+  ],
+  "edges": [
+    {
+      "source": "Os dados das BRR estão organizados em tabelas como apresentado a seguir:",
+      "target": "?",
+      "via": "CD_SUBODI_AIS_ROS_xxxxx_YYYYMMDD.csv"
+    }
+  ]
+}

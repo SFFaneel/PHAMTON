@@ -1,0 +1,227 @@
+[
+  {
+    "funcao": {
+      "nome": "imp_SPED_EFD_ICMS",
+      "tipo": "function",
+      "linha_inicio": 25,
+      "linha_fim": 105,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "MANIFESTO.registrar_artefato",
+          "MANIFESTO.registrar_evento",
+          "UTILS.bsc_dados_reg",
+          "UTILS.imp_sped",
+          "os",
+          "pandas",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "df_arq.sort_values",
+          "execucao_trilha",
+          "imp_sped",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "len",
+          "os.path.join",
+          "pd.DataFrame",
+          "pd.read_sql",
+          "pd.to_datetime",
+          "registrar_artefato",
+          "registrar_evento",
+          "sl.connect",
+          "st.button",
+          "st.checkbox",
+          "st.column_config.DateColumn",
+          "st.column_config.TextColumn",
+          "st.columns",
+          "st.dataframe",
+          "st.error",
+          "st.html",
+          "str"
+        ]
+      },
+      "codigo": "def imp_SPED_EFD_ICMS():\n    if not 'tra_dir' in st.session_state:\n        st.html(\"\"\"\n                    <div class=\"mensagem_tipo_1\">\n                        <p class=\"mensagem-fade-in\">\n                            Você deve configurar o diretório de trabalho na aba <i>Criar Pasta de Trabalho</i>, barra lateral.\n                        </p>\n                    </div>\n                \"\"\")\n        return\n\n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    st.html(f\"<style>{css}</style>\")\n    raiz = Path(local)\n    caminho_manifesto = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n    caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n    inicializa_database(str(caminho_manifesto))\n    inicializa_detalhes(str(caminho_manifesto))\n    inicializar_rastreamento(str(caminho_manifesto))\n    database = str(caminho_manifesto)\n\n    df_arq = pd.DataFrame()\n    col1 = st.columns([1,5,1], gap='small')\n    with col1[1]:\n        st.html(\"\"\"<h1>Importação dos arquivos EFD ICMS/IPI</h1><br><br>\n                        <p  style=\"text-align: justify;text-indent: 40px\">Nesta etapa \n                        do processo, realiza-se o carregamento dos arquivos correspondentes\n                        às escriturações fiscais do ICMS e IPI.</p><br>\n                \"\"\")\n\n        _, cola, _, _, _, colb = st.columns([1,2,1,1,1,4], gap='small')\n\n        with colb:\n            apagar = st.checkbox(\"Apagar banco de dados?\", value=False, help=\"Caso queira reimportar tudo, check\")\n        with cola:\n            importar = st.button(\"Importar EFD ICMS\", key=\"IMPORTAR_EFD_ICMS\")\n\n        if importar:\n            try:\n                with execucao_trilha(\n                                    db_path=database, script_nome=\"Importação EFD ICMS/IPI\",\n                                    parametros={\"empresa\": empresa, \"ano\": ano},\n                                    ) as execucao_id:\n                    registrar_evento(database, execucao_id, \"IMPORTACAO_INICIADA_EFD_ICMS_IPI\",\n                                        mensagem=f\"Iniciando importação de arquivo(s)\")\n                    df_arq = imp_sped(f\"{local}/EFD_ICMS\", f\"{local}/BD_LOCAL\", \"EFD_ICMS\", empresa, ano, apagar)\n                    registrar_artefato(database, execucao_id, str(f\"{local}/EFD_ICMS\"), \"ENTRADA\")\n                    registrar_evento(database, execucao_id, \"IMPORTACAO_FINALIZADA_EFD_ICMS_IPI\",\n                                        mensagem=f\"Finalizada importação de arquivo(s)\")\n\n            except Exception as e:\n                st.error(f\"Encontrado o seguinte erro: {e}.\")\n                registrar_evento(database, execucao_id, \"ARQUIVO_EFD_ICMS_IPI_REPROVADO\",\n                                    mensagem=f\"{local}/EFD_ICMS\", nivel=\"ERRO\",\n                                    detalhes={\"erro\": str(e)})\n        else:\n            db_path = os.path.join( f\"{local}/BD_LOCAL\", f\"EFD_ICMS_{empresa}_{ano}.db\")\n            with sl.connect(db_path) as bd:\n                try:\n                    df_arq = pd.read_sql(\"SELECT * FROM LST_ARQ\", bd)\n                except:\n                    df_arq = pd.DataFrame()\n\n        if not df_arq.empty:\n            st.html(\"\"\"\n                    <p>Tabela de arquivos:</p>\n                    \"\"\")\n\n            config = {\n                        \"Dt_INI\": st.column_config.DateColumn(\"Data de Início\", format=\"DD/MM/YYYY\"),\n                        \"Dt_FIM\": st.column_config.DateColumn(\"Data de Fim\", format=\"DD/MM/YYYY\"),\n                        \"CNPJ\": st.column_config.TextColumn(\"CNPJ\"),\n                        \"Nm_Arq\": st.column_config.TextColumn(\"Nome do arquivo de origem do dado\"),\n                    }\n            if len(df_arq)>0:\n                df_arq['Dt_INI'] = pd.to_datetime(df_arq['Dt_INI'])\n                df_arq = df_arq.sort_values(by=\"Dt_INI\")\n                st.dataframe(df_arq, width='stretch', hide_index=True,  column_config=config)"
+    },
+    "documentacao": {
+      "resumo": "Realiza a importação dos arquivos EFD ICMS/IPI e processa os dados.",
+      "descricao": "Esta função verifica se o diretório de trabalho está configurado, inicializa o banco de dados e realiza a importação dos arquivos EFD ICMS/IPI. Caso já existam dados no banco de dados, eles são carregados para uma tabela em um dataframe.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "Exception",
+          "descricao": "Caso ocorra qualquer erro durante o processo de importação."
+        }
+      ],
+      "dependencias": [
+        "MANIFESTO.execucao_trilha",
+        "MANIFESTO.inicializa_database",
+        "MANIFESTO.inicializa_detalhes",
+        "MANIFESTO.inicializar_rastreamento",
+        "MANIFESTO.registrar_artefato",
+        "MANIFESTO.registrar_evento",
+        "UTILS.bsc_dados_reg",
+        "UTILS.imp_sped",
+        "os",
+        "pandas",
+        "pathlib.Path",
+        "sqlite3",
+        "streamlit"
+      ],
+      "docstring": "Realiza a importação dos arquivos EFD ICMS/IPI e processa os dados.\n\nReturns:\n    None\n\nRaises:\n    Exception: Caso ocorra qualquer erro durante o processo de importação."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "imp_SPED_ECD",
+      "tipo": "function",
+      "linha_inicio": 107,
+      "linha_fim": 184,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "MANIFESTO.registrar_artefato",
+          "MANIFESTO.registrar_evento",
+          "UTILS.bsc_dados_reg",
+          "UTILS.existe_dk",
+          "UTILS.imp_sped_duck3",
+          "duckdb",
+          "os",
+          "pandas",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "bd.execute",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "df_arq.sort_values",
+          "duckdb.connect",
+          "execucao_trilha",
+          "existe_dk",
+          "fetchdf",
+          "imp_sped_duck3",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "len",
+          "os.path.join",
+          "pd.DataFrame",
+          "registrar_artefato",
+          "registrar_evento",
+          "st.button",
+          "st.column_config.DateColumn",
+          "st.column_config.TextColumn",
+          "st.columns",
+          "st.dataframe",
+          "st.error",
+          "st.html",
+          "str"
+        ]
+      },
+      "codigo": "def imp_SPED_ECD():\n\n    if not  'tra_dir' in st.session_state:\n        st.html(\"\"\"\n                    <div class=\"mensagem_tipo_1\">\n                        <p class=\"mensagem-fade-in\">\n                            Você deve configurar o diretório de trabalho na aba <i>Criar Pasta de Trabalho</i>, barra lateral.\n                        </p>\n                    </div>\n                \"\"\")\n        return\n    \n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    st.html(f\"<style>{css}</style>\")\n    raiz = Path(local)\n    caminho_manifesto = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n    caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n    inicializa_database(str(caminho_manifesto))\n    inicializa_detalhes(str(caminho_manifesto))\n    inicializar_rastreamento(str(caminho_manifesto))\n    database = str(caminho_manifesto)\n\n    caminho_bd = os.path.join(f\"{local}/BD_LOCAL\", f\"ecd_{empresa}_{ano}.duckdb\")\n\n\n    col1 = st.columns([1,5,1], gap='small')\n    with col1[1]:\n        st.html(\"\"\"<h1>Importação dos arquivos ECD</h1><br><br>\n            <p  style=\"text-align: justify;text-indent: 40px\">Nesta etapa do processo, \n            realiza-se o carregamento dos arquivos correspondentes\n            às escriturações contábeis digitais, ECD.</p>\n            \"\"\")\n\n        _, cola, _ = st.columns([5,2,5], gap='small')\n        \n        with cola:\n            importar = st.button(\"Importar ECD\", key=\"IMPORTAR_ECD\")\n\n        if importar:\n            try:\n                with execucao_trilha(\n                                    db_path=database, script_nome=\"Importação ECD\",\n                                    parametros={\"empresa\": empresa, \"ano\": ano},\n                                    ) as execucao_id:\n                    registrar_evento(database, execucao_id, \"IMPORTACAO_INICIADA_ECD\",\n                                        mensagem=f\"Iniciando importação de arquivo(s)\")\n                    \n                    df_arq = imp_sped_duck3(f\"{local}/ECD\", f\"{local}/BD_LOCAL\", \"ECD\", empresa, ano)\n                    registrar_artefato(database, execucao_id, str(f\"{local}/ECD\"), \"ENTRADA\")\n                    registrar_evento(database, execucao_id, \"IMPORTACAO_FINALIZADA_ECD\",\n                                        mensagem=f\"Finalizada importação de arquivo(s)\")\n            except Exception as e:\n                st.error(f\"{e}\")\n                df_arq = pd.DataFrame({'Dt_INI': [0], 'Dt_FIM': [0], 'CNPJ': ['0'], 'Nm_Arq': ['0']})\n                registrar_evento(database, execucao_id, \"ARQUIVO_ECD_REPROVADO\",\n                                    mensagem=f\"{local}/ECD\", nivel=\"ERRO\",\n                                    detalhes={\"erro\": str(e)})\n\n        with duckdb.connect(caminho_bd) as bd:\n            if existe_dk(bd, \"controle_importacao\"):\n                df_arq = bd.execute(\"SELECT * FROM controle_importacao\").fetchdf()\n                st.html(\"\"\"\n                        <p>Tabela de arquivos:</p>\n                        \"\"\")\n\n                config = {\n                            \"Dt_INI\": st.column_config.DateColumn(\"Data de Início\", format=\"DD/MM/YYYY\"),\n                            \"Dt_FIM\": st.column_config.DateColumn(\"Data de Fim\", format=\"DD/MM/YYYY\"),\n                            \"CNPJ\": st.column_config.TextColumn(\"CNPJ\"),\n                            \"Nm_Arq\": st.column_config.TextColumn(\"Nome do arquivo de origem do dado\"),\n                            \n                        }\n                if len(df_arq) > 0:\n                    df_arq = df_arq.sort_values(by=\"dt_ini\")\n                    st.dataframe(df_arq, width='stretch', hide_index=True,  column_config=config)"
+    },
+    "documentacao": {
+      "resumo": "Realiza a importação dos arquivos ECD (Escriturações Contábeis Digitais) e processa os dados.",
+      "descricao": "A função verifica se o diretório de trabalho foi configurado, inicializa o banco de dados e realiza a importação dos arquivos ECD. Caso ocorra algum erro durante o processo, ele é registrado e uma mensagem de erro é exibida.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.execucao_trilha",
+          "tipo": "função",
+          "descricao": "Função para executar uma trilha de processamento."
+        },
+        {
+          "nome": "MANIFESTO.inicializa_database",
+          "tipo": "função",
+          "descricao": "Função para inicializar o banco de dados."
+        },
+        {
+          "nome": "MANIFESTO.inicializa_detalhes",
+          "tipo": "função",
+          "descricao": "Função para inicializar detalhes do processo."
+        },
+        {
+          "nome": "MANIFESTO.inicializar_rastreamento",
+          "tipo": "função",
+          "descricao": "Função para inicializar o rastreamento do processo."
+        },
+        {
+          "nome": "MANIFESTO.registrar_artefato",
+          "tipo": "função",
+          "descricao": "Função para registrar artefatos no banco de dados."
+        },
+        {
+          "nome": "MANIFESTO.registrar_evento",
+          "tipo": "função",
+          "descricao": "Função para registrar eventos no banco de dados."
+        },
+        {
+          "nome": "UTILS.bsc_dados_reg",
+          "tipo": "função",
+          "descricao": "Função para obter dados de registro."
+        },
+        {
+          "nome": "UTILS.existe_dk",
+          "tipo": "função",
+          "descricao": "Função para verificar a existência de uma tabela no banco de dados."
+        },
+        {
+          "nome": "UTILS.imp_sped_duck3",
+          "tipo": "função",
+          "descricao": "Função para importar arquivos ECD usando DuckDB."
+        },
+        {
+          "nome": "duckdb",
+          "tipo": "biblioteca",
+          "descricao": "Biblioteca para manipulação de bancos de dados DuckDB."
+        },
+        {
+          "nome": "os",
+          "tipo": "biblioteca",
+          "descricao": "Biblioteca padrão do Python para operações do sistema operacional."
+        },
+        {
+          "nome": "pandas",
+          "tipo": "biblioteca",
+          "descricao": "Biblioteca de dados e análise em Python."
+        },
+        {
+          "nome": "pathlib.Path",
+          "tipo": "classe",
+          "descricao": "Classe para manipulação de caminhos de arquivo."
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca",
+          "descricao": "Biblioteca para criação de aplicativos web em Python."
+        }
+      ],
+      "docstring": "Realiza a importação dos arquivos ECD (Escriturações Contábeis Digitais) e processa os dados.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  }
+]

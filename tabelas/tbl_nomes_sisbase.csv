@@ -1,0 +1,345 @@
+Cd_SISBASE|Txt_desc_geral
+BCS301|Banco de Capacitores Paralelos_Q ≤   1.800 kVAr
+BCS302|Banco de Capacitores Paralelos_Q >   1.800 kVAr até 10.000 kVAr
+BCS303|Banco de Capacitores Paralelos_Q > 10.000 kVAr até 21.000 kVAr
+BCS304|Banco de Capacitores Paralelos_Q > 21.000 kVAr até 36.000 kVAr
+BCS305|Banco de Capacitores Paralelos_Q > 36.000 kVAr
+BCS306|Banco de Capacitores Paralelos_Q ≤   1.800 kVAr
+BCS307|Banco de Capacitores Paralelos_Q >   1.800 kVAr até 10.000 kVAr
+BCS308|Banco de Capacitores Paralelos_Q > 10.000 kVAr até 21.000 kVAr
+BCS309|Banco de Capacitores Paralelos_Q > 21.000 kVAr até 36.000 kVAr
+BCS310|Banco de Capacitores Paralelos_Q > 36.000 kVAr
+CHS301|Chave_Polifásica_ I nom ≥ 800A
+CHS302|Chave_Polifásica_ I nom < 800A
+CHS303|Chave_Monofásica_ I nom ≥ 800A
+CHS304|Chave_Monofásica_ I nom < 800A
+CCO301|Conversor de Corrente
+CFR301|Conversor de Frequência
+CHS305|Chave_Polifásica_ I nom ≥ 800A
+CHS306|Chave_Polifásica_ I nom < 800A
+CHS307|Chave_Monofásica_ I nom ≥ 800A
+CHS308|Chave_Monofásica_ I nom < 800A
+CCO302|Conversor de Corrente
+CFR302|Conversor de Frequência
+DSJ301|Disjuntor_Tensão ≥ 69 kV_Capacidade Interrupção ≥ 31,5 kA_Instalação Interna
+DSJ302|Disjuntor_Tensão ≥ 69 kV_Capacidade Interrupção < 31,5 kA_Instalação Interna
+DSJ303|Disjuntor_Tensão < 69 kV_Instalação Interna
+DSJ304|Disjuntor_Tensão ≥ 69 kV_Capacidade Interrupção ≥ 31,5 kA_Instalação Externa
+DSJ305|Disjuntor_Tensão ≥ 69 kV_Capacidade Interrupção < 31,5 kA_Instalação Externa
+DSJ306|Disjuntor_Tensão < 69 kV_Instalação Externa
+DSJ307|Disjuntor em Módulo de Manobra em SF6_Tensão ≥ 69 kV_Cap Interrupção ≥ 31,5 kA_Instalação Externa
+DSJ308|Disjuntor_Tensão ≥ 69 kV_Capacidade Interrupção ≥ 31,5 kA_Instalação Interna
+DSJ309|Disjuntor_Tensão ≥ 69 kV_Capacidade Interrupção < 31,5 kA_Instalação Interna
+DSJ310|Disjuntor_Tensão < 69 kV_Instalação Interna
+DSJ311|Disjuntor_Tensão ≥ 69 kV_Capacidade Interrupção ≥ 31,5 kA_Instalação Externa
+DSJ312|Disjuntor_Tensão ≥ 69 kV_Capacidade Interrupção < 31,5 kA_Instalação Externa
+DSJ313|Disjuntor_Tensão < 69 kV_Instalação Externa
+DSJ314|Disjuntor em Módulo de Manobra em SF6_Tensão ≥ 69 kV_Cap Interrupção ≥ 31,5 kA_Instalação Externa
+LUM301|Luminária
+PRS301|Pára-raios_Tensão ≥ 69 kV
+PRS302|Pára-raios_Tensão < 69 kV
+PRR301|Protetor de Rede
+REA301|Reator (ou Resistor)_Tensão ≥ 69 kV_Polifásico
+REA302|Reator (ou Resistor)_Tensão ≥ 69 kV_Monofásico
+REA303|Reator (ou Resistor)_Tensão < 69 kV_Polifásico
+REA304|Reator (ou Resistor)_Tensão < 69 kV_Monofásico
+RGS301|Regulador de Tensão_S  ≥  1 MVA_Polifásico
+RGS302|Regulador de Tensão_S  <  1 MVA_Polifásico
+RGS303|Regulador de Tensão_S  ≥  500 kVA_Monofásico
+RGS304|Regulador de Tensão_S  <  500 kVA_Monofásico
+RLS301|Religador_Capacidade Interrupção ≥ 31,5 kA
+RLS302|Religador_Capacidade Interrupção < 31,5 kA
+TRA301|Transformador de Aterramento
+TSA301|Transformador de Serviços Auxiliares_S ≥ 150 kVA
+TSA302|Transformador de Serviços Auxiliares_S < 150 kVA
+LUM311|Luminária
+PRS303|Pára-raios_Tensão ≥ 69 kV
+PRS304|Pára-raios_Tensão < 69 kV
+PRR302|Protetor de Rede
+REA305|Reator (ou Resistor)_Tensão ≥ 69 kV_Polifásico
+REA306|Reator (ou Resistor)_Tensão ≥ 69 kV_Monofásico
+REA307|Reator (ou Resistor)_Tensão < 69 kV_Polifásico
+REA308|Reator (ou Resistor)_Tensão < 69 kV_Monofásico
+RGS305|Regulador de Tensão_S  ≥  1 MVA_Polifásico
+RGS306|Regulador de Tensão_S  <  1 MVA_Polifásico
+RGS307|Regulador de Tensão_S  ≥  500 kVA_Monofásico
+RGS308|Regulador de Tensão_S  <  500 kVA_Monofásico
+RLS303|Religador_Capacidade Interrupção ≥ 31,5 kA
+RLS304|Religador_Capacidade Interrupção < 31,5 kA
+TRA302|Transformador de Aterramento
+TSA303|Transformador de Serviços Auxiliares_S ≥ 150 kVA
+TSA304|Transformador de Serviços Auxiliares_S < 150 kVA
+CDL301|Condutor de Subestação Urbana_Nu_Monofásico_Cobre
+CDL302|Condutor de Subestação Urbana_Nu_Monofásico_(Alumínio)
+CDL303|Condutor de Subestação Urbana_Nu_Monofásico_(Aço)
+CDL304|Condutor de Subestação Urbana_Isolado ou Protegido_Monofásico_Cobre
+CDL305|Condutor de Subestação Urbana_Isolado ou Protegido_Monofásico_(Alumínio)
+CDL306|Condutor de Subestação Urbana_Isolado ou Protegido_Monofásico_(Aço)
+CDL307|Condutor de Subestação Urbana_Nu_Polifásico_Cobre
+CDL308|Condutor de Subestação Urbana_Nu_Polifásico_(Alumínio) ou (Aço)
+CDL309|Condutor de Subestação Urbana_Isolado ou Protegido_Polifásico_Cobre
+CDL310|Condutor de Subestação Urbana_Isolado ou Protegido_Polifásico(Alumínio) ou (Aço)
+CDL311|Condutor de Subestação Rural_Nu_Monofásico_Cobre
+CDL312|Condutor de Subestação Rural_Nu_Monofásico_(Alumínio)
+CDL313|Condutor de Subestação Rural_Nu_Monofásico_(Aço)
+CDL314|Condutor de Subestação Rural_Isolado ou Protegido_Monofásico_Cobre
+CDL315|Condutor de Subestação Rural_Isolado ou Protegido_Monofásico_(Alumínio)
+CDL316|Condutor de Subestação Rural_Isolado ou Protegido_Monofásico_(Aço)
+CDL317|Condutor de Subestação Rural_Nu_Polifásico_Cobre
+CDL318|Condutor de Subestação Rural_Nu_Polifásico_(Alumínio) ou (Aço)
+CDL319|Condutor de Subestação Rural_Isolado ou Protegido_Polifásico_Cobre
+CDL320|Condutor de Subestação Rural_Isolado ou Protegido_Polifásico(Alumínio) ou (Aço)
+PST301|Poste de Subestação Urbana_Concreto_até 200 daN
+PST302|Poste de Subestação Urbana_Concreto_superior a 200 daN até 400 daN
+PST303|Poste de Subestação Urbana_Concreto_superior a 400 daN até 850 daN
+PST304|Poste de Subestação Urbana_Concreto_superior a 850 daN_altura ≤ 13m
+PST305|Poste de Subestação Urbana_Concreto_superior a 850 daN_altura > 13m
+PST306|Poste de Subestação Urbana_Madeira_Leve a Médio
+PST307|Poste de Subestação Urbana_Madeira_Pesado a Extra Pesado
+PST308|Poste de Subestação Urbana_Ferro ou Aço
+PST309|Poste de Subestação Urbana_em Compósito
+PST310|Poste de Subestação Rural_Concreto_até 200 daN
+PST311|Poste de Subestação Rural_Concreto_superior a 200 daN até 400 daN
+PST312|Poste de Subestação Rural_Concreto_superior a 400 daN até 850 daN
+PST313|Poste de Subestação Rural_Concreto_superior a 850 daN_altura ≤ 13m
+PST312|Poste de Subestação Rural_Concreto_superior a 850 daN_altura > 13m
+PST313|Poste de Subestação Rural_Madeira_Leve a Médio
+PST314|Poste de Subestação Rural_Madeira_Pesado a Extra Pesado
+PST315|Poste de Subestação Rural_Ferro ou Aço
+PST316|Poste de Subestação Rural_em Compósito
+TRF301|Transformador/Auto-transformador de Força_S ≤ 5 MVA
+TRF302|Transformador/Auto-transformador de Força_5 < S ≤ 10 MVA
+TRF303|Transformador/Auto-transformador de Força_10 < S ≤ 18,75 MVA
+TRF304|Transformador/Auto-transformador de Força_18,75 < S ≤ 33 MVA
+TRF305|Transformador/Auto-transformador de Força_S > 33 MVA
+TRF306|Transformador/Auto-transformador de Força_S ≤ 5 MVA
+TRF307|Transformador/Auto-transformador de Força_5 < S ≤ 10 MVA
+TRF308|Transformador/Auto-transformador de Força_10 < S ≤ 18,75 MVA
+TRF309|Transformador/Auto-transformador de Força_18,75 < S ≤ 33 MVA
+TRF310|Transformador/Auto-transformador de Força_S > 33 MVA
+TMS301|Transformador de Corrente_Tensão ≥ 69 kV_Instalação Interna
+TMS302|Transformador de Corrente_Tensão < 69 kV_Instalação Interna
+TMS303|Transformador de Potencial_Tensão ≥ 69 kV_Instalação Interna
+TMS304|Transformador de Potencial_Tensão < 69 kV_Instalação Interna
+TMS305|Transformador de Potencial Capacitivo_Tensão ≥ 69 kV_Instalação Interna
+TMS306|Transformador de Potencial Capacitivo_Tensão < 69 kV_Instalação Interna
+TMS307|Transformador de Potencial Indutivo_Tensão ≥ 69 kV_Instalação Interna
+TMS308|Transformador de Potencial Indutivo_Tensão < 69 kV_Instalação Interna
+TMS309|Transformador de Defasamento_Tensão ≥ 69 kV_Instalação Interna
+TMS310|Transformador de Defasamento_Tensão < 69 kV_Instalação Interna
+TMS311|Conjunto de Medição (TP e TC)_Tensão ≥ 69 kV_Instalação Interna
+TMS312|Conjunto de Medição (TP e TC)_Tensão < 69 kV_Instalação Interna
+TMS313|Transformador de Corrente_Tensão ≥ 69 kV_Instalação Externa
+TMS314|Transformador de Corrente_Tensão < 69 kV_Instalação Externa
+TMS315|Transformador de Potencial_Tensão ≥ 69 kV_Instalação Externa
+TMS316|Transformador de Potencial_Tensão < 69 kV_Instalação Externa
+TMS317|Transformador de Potencial Capacitivo_Tensão ≥ 69 kV_Instalação Externa
+TMS318|Transformador de Potencial Capacitivo_Tensão < 69 kV_Instalação Externa
+TMS319|Transformador de Potencial Indutivo_Tensão ≥ 69 kV_Instalação Externa
+TMS320|Transformador de Potencial Indutivo_Tensão < 69 kV_Instalação Externa
+TMS321|Transformador de Defasamento_Tensão ≥ 69 kV_Instalação Externa
+TMS322|Transformador de Defasamento_Tensão < 69 kV_Instalação Externa
+TMS323|Conjunto de Medição (TP e TC)_Tensão ≥ 69 kV_Instalação Externa
+TMS324|Conjunto de Medição (TP e TC)_Tensão < 69 kV_Instalação Externa
+TMS325|Transformador de Corrente_Tensão ≥ 69 kV_Instalação Interna
+TMS326|Transformador de Corrente_Tensão < 69 kV_Instalação Interna
+TMS327|Transformador de Potencial_Tensão ≥ 69 kV_Instalação Interna
+TMS328|Transformador de Potencial_Tensão < 69 kV_Instalação Interna
+TMS329|Transformador de Potencial Capacitivo_Tensão ≥ 69 kV_Instalação Interna
+TMS330|Transformador de Potencial Capacitivo_Tensão < 69 kV_Instalação Interna
+TMS331|Transformador de Potencial Indutivo_Tensão ≥ 69 kV_Instalação Interna
+TMS332|Transformador de Potencial Indutivo_Tensão < 69 kV_Instalação Interna
+TMS333|Transformador de Defasamento_Tensão ≥ 69 kV_Instalação Interna
+TMS334|Transformador de Defasamento_Tensão < 69 kV_Instalação Interna
+TMS335|Conjunto de Medição (TP e TC)_Tensão ≥ 69 kV_Instalação Interna
+TMS336|Conjunto de Medição (TP e TC)_Tensão < 69 kV_Instalação Interna
+TMS337|Transformador de Corrente_Tensão ≥ 69 kV_Instalação Externa
+TMS338|Transformador de Corrente_Tensão < 69 kV_Instalação Externa
+TMS339|Transformador de Potencial_Tensão ≥ 69 kV_Instalação Externa
+TMS340|Transformador de Potencial_Tensão < 69 kV_Instalação Externa
+TMS341|Transformador de Potencial Capacitivo_Tensão ≥ 69 kV_Instalação Externa
+TMS342|Transformador de Potencial Capacitivo_Tensão < 69 kV_Instalação Externa
+TMS343|Transformador de Potencial Indutivo_Tensão ≥ 69 kV_Instalação Externa
+TMS344|Transformador de Potencial Indutivo_Tensão < 69 kV_Instalação Externa
+TMS345|Transformador de Defasamento_Tensão ≥ 69 kV_Instalação Externa
+TMS346|Transformador de Defasamento_Tensão < 69 kV_Instalação Externa
+TMS347|Conjunto de Medição (TP e TC)_Tensão ≥ 69 kV_Instalação Externa
+TMS348|Conjunto de Medição (TP e TC)_Tensão < 69 kV_Instalação Externa
+MRD401|Medidor Eletromecânico ou Eletrônico_Energia / Energia e Demanda / Energia Ativa e Reativa / Registrador de Tensão_Monofásico
+MRD402|Medidor Eletromecânico ou Eletrônico_Energia / Energia e Demanda / Energia Ativa e Reativa / Registrador de Tensão_Polifásico
+MRD403|Medidor Eletromecânico ou Eletrônico_Multifunção Programável_Monofásico
+MRD404|Medidor Eletromecânico ou Eletrônico_Multifunção Programável_Polifásico
+MRD405|Medidor Inteligente_Multifunção Programável_Monofásico
+MRD406|Medidor Inteligente_Multifunção Programável_Polifásico
+MRD407|Medidor Concentrador Primário ou Secundário_Grandeza Medida: qualquer_Monofásico
+MRD408|Medidor Concentrador Primário ou Secundário_Grandeza Medida: qualquer_Polifásico
+MRD409|Medidor Comparador/Fiscal_Grandeza Medida: qualquer
+MRD410|Medidor Eletromecânico ou Eletrônico_Energia / Energia e Demanda / Energia Ativa e Reativa / Registrador de Tensão_Monofásico
+MRD411|Medidor Eletromecânico ou Eletrônico_Energia / Energia e Demanda / Energia Ativa e Reativa / Registrador de Tensão_Polifásico
+MRD412|Medidor Eletromecânico ou Eletrônico_Multifunção Programável_Monofásico
+MRD413|Medidor Eletromecânico ou Eletrônico_Multifunção Programável_Polifásico
+MRD414|Medidor Inteligente_Multifunção Programável_Monofásico
+MRD415|Medidor Inteligente_Multifunção Programável_Polifásico
+MRD416|Medidor Concentrador Primário ou Secundário_Grandeza Medida: qualquer_Monofásico
+MRD417|Medidor Concentrador Primário ou Secundário_Grandeza Medida: qualquer_Polifásico
+MRD418|Medidor Comparador/Fiscal_Grandeza Medida: qualquer
+CDR401|Condutor de Ramal de Ligação Urbano_Nu_Monofásico_Cobre
+CDR402|Condutor de Ramal de Ligação Urbano_Nu_Monofásico_(Alumínio)
+CDR403|Condutor de Ramal de Ligação Urbano_Nu_Monofásico_(Aço)
+CDR404|Condutor de Ramal de Ligação Urbano_Isolado ou Protegido_Monofásico_Cobre
+CDR405|Condutor de Ramal de Ligação Urbano_Isolado_Monofásico_(Alumínio)
+CDR406|Condutor de Ramal de Ligação Urbano_Protegido_Monofásico_(Alumínio)
+CDR407|Condutor de Ramal de Ligação Urbano_Isolado ou Protegido_Monofásico_(Aço)
+CDR408|Condutor de Ramal de Ligação Urbano_Nu_Polifásico_Cobre
+CDR409|Condutor de Ramal de Ligação Urbano_Nu_Polifásico_(Alumínio) ou (Aço)
+CDR410|Condutor de Ramal de Ligação Urbano_Isolado ou Protegido_Polifásico_Cobre
+CDR411|Condutor de Ramal de Ligação Urbano_Isolado ou Protegido_Polifásico_(Alumínio) ou (Aço)
+CDR412|Condutor de Ramal de Ligação Rural_Nu_Monofásico_Cobre
+CDR413|Condutor de Ramal de Ligação Rural_Nu_Monofásico_(Alumínio)
+CDR414|Condutor de Ramal de Ligação Rural_Nu_Monofásico_(Aço)
+CDR415|Condutor de Ramal de Ligação Rural_Isolado ou Protegido_Monofásico_Cobre
+CDR416|Condutor de Ramal de Ligação Rural_Isolado_Monofásico_(Alumínio)
+CDR417|Condutor de Ramal de Ligação Rural_Protegido_Monofásico_(Alumínio)
+CDR418|Condutor de Ramal de Ligação Rural_Isolado ou Protegido_Monofásico_(Aço)
+CDR419|Condutor de Ramal de Ligação Rural_Nu_Polifásico_Cobre
+CDR420|Condutor de Ramal de Ligação Rural_Nu_Polifásico_(Alumínio) ou (Aço)
+CDR421|Condutor de Ramal de Ligação Rural_Isolado ou Protegido_Polifásico_Cobre
+CDR422|Condutor de Ramal de Ligação Rural_Isolado ou Protegido_Polifásico_(Alumínio) ou (Aço)
+TMS401|Transformador de Corrente
+TMS402|Transformador de Potencial
+TMS403|Conjunto de Medição (TP e TC)
+TMS411|Transformador de Corrente
+TMS412|Transformador de Potencial
+TMS413|Conjunto de Medição (TP e TC)
+CDR101|Condutor de Rede Aérea Urbana_Nu_Monofásico_Cobre
+CDR102|Condutor de Rede Aérea Urbana_Nu_Monofásico_(Alumínio)
+CDR103|Condutor de Rede Aérea Urbana_Nu_Monofásico_(Aço)
+CDR104|Condutor de Rede Aérea Urbana_Isolado ou Protegido_Monofásico_Cobre
+CDR105|Condutor de Rede Aérea Urbana_Isolado_Monofásico_(Alumínio)
+CDR106|Condutor de Rede Aérea Urbana_Protegido_Monofásico_(Alumínio)
+CDR107|Condutor de Rede Aérea Urbana_Isolado ou Protegido_Monofásico_(Aço)
+CDR108|Condutor de Rede Aérea Urbana_Nu_Polifásico_Cobre
+CDR109|Condutor de Rede Aérea Urbana_Nu_Polifásico_(Alumínio) ou (Aço)
+CDR110|Condutor de Rede Aérea Urbana_Isolado ou Protegido_Polifásico_Cobre
+CDR111|Condutor de Rede Aérea Urbana_Isolado ou Protegido_Polifásico_(Alumínio) ou (Aço)
+CDR112|Condutor de Rede Aérea Rural_Nu_Monofásico_Cobre
+CDR113|Condutor de Rede Aérea Rural_Nu_Monofásico_(Alumínio)
+CDR114|Condutor de Rede Aérea Rural_Nu_Monofásico_(Aço)
+CDR115|Condutor de Rede Aérea Rural_Isolado ou Protegido_Monofásico_Cobre
+CDR116|Condutor de Rede Aérea Rural_Isolado_Monofásico_(Alumínio)
+CDR117|Condutor de Rede Aérea Rural_Protegido_Monofásico_(Alumínio)
+CDR118|Condutor de Rede Aérea Rural_Isolado ou Protegido_Monofásico_(Aço)
+CDR119|Condutor de Rede Aérea Rural_Nu_Polifásico_Cobre
+CDR120|Condutor de Rede Aérea Rural_Nu_Polifásico_(Alumínio) ou (Aço)
+CDR121|Condutor de Rede Aérea Rural_Isolado ou Protegido_Polifásico_Cobre
+CDR122|Condutor de Rede Aérea Rural_Isolado ou Protegido_Polifásico_(Alumínio) ou (Aço)
+PST101|Poste de Rede Distribuição Aérea Urbana_Concreto_até 200 daN
+PST102|Poste de Rede Distribuição Aérea Urbana_Concreto_superior a 200 daN até 400 daN
+PST103|Poste de Rede Distribuição Aérea Urbana_Concreto_superior a 400 daN até 850 daN
+PST104|Poste de Rede Distribuição Aérea Urbana_Concreto_superior a 850 daN_altura ≤ 13m
+PST105|Poste de Rede Distribuição Aérea Urbana_Concreto_superior a 850 daN_altura > 13m
+PST106|Poste de Rede Distribuição Aérea Urbana_Madeira_Leve a Médio
+PST107|Poste de Rede Distribuição Aérea Urbana_Madeira_Pesado a Extra Pesado
+PST108|Poste de Rede Distribuição Aérea Urbana_Ferro ou Aço
+PST109|Poste de Rede Distribuição Aérea Urbana_em Compósito
+PST110|Poste de Rede Distribuição Aérea Rural_Concreto_até 200 daN
+PST111|Poste de Rede Distribuição Aérea Rural_Concreto_superior a 200 daN até 400 daN
+PST112|Poste de Rede Distribuição Aérea Rural_Concreto_superior a 400 daN até 850 daN
+PST113|Poste de Rede Distribuição Aérea Rural_Concreto_superior a 850 daN_altura ≤ 13m
+PST114|Poste de Rede Distribuição Aérea Rural_Concreto_superior a 850 daN_altura > 13m
+PST115|Poste de Rede Distribuição Aérea Rural_Madeira_Leve a Médio
+PST116|Poste de Rede Distribuição Aérea Rural_Madeira_Pesado a Extra Pesado
+PST117|Poste de Rede Distribuição Aérea Rural_Ferro ou Aço
+PST118|Poste de Rede Distribuição Aérea Rural_em Compósito
+TRD101|Transformador de Distribuição de Rede Aérea Urbana_Monofásico_S ≤ 5 kVA
+TRD102|Transformador de Distribuição de Rede Aérea Urbana_Monofásico_S = 10 kVA
+TRD103|Transformador de Distribuição de Rede Aérea Urbana_Monofásico_10 kVA < S ≤ 20 kVA
+TRD104|Transformador de Distribuição de Rede Aérea Urbana_Monofásico_S > 20 kVA
+TRD105|Transformador de Distribuição de Rede Aérea Urbana_Polifásico_S ≤ 20 kVA
+TRD106|Transformador de Distribuição de Rede Aérea Urbana_Polifásico_20 kVA < S ≤ 40 kVA
+TRD107|Transformador de Distribuição de Rede Aérea Urbana_Polifásico_40 kVA < S ≤ 60 kVA
+TRD108|Transformador de Distribuição de Rede Aérea Urbana_Polifásico_S = 75 kVA
+TRD109|Transformador de Distribuição de Rede Aérea Urbana_Polifásico_S > 75 kVA
+TRD110|Transformador de Distribuição de Rede Aérea Rural_Monofásico_S ≤ 5 kVA
+TRD111|Transformador de Distribuição de Rede Aérea Rural_Monofásico_S = 10 kVA
+TRD112|Transformador de Distribuição de Rede Aérea Rural_Monofásico_10 kVA < S ≤ 20 kVA
+TRD113|Transformador de Distribuição de Rede Aérea Rural_Monofásico_S > 20 kVA
+TRD114|Transformador de Distribuição de Rede Aérea Rural_Polifásico_S ≤ 20 kVA
+TRD115|Transformador de Distribuição de Rede Aérea Rural_Polifásico_20 kVA < S ≤ 40 kVA
+TRD116|Transformador de Distribuição de Rede Aérea Rural_Polifásico_40 kVA < S ≤ 60 kVA
+TRD117|Transformador de Distribuição de Rede Aérea Rural_Polifásico_S = 75 kVA
+TRD118|Transformador de Distribuição de Rede Aérea Rural_Polifásico_S > 75 kVA
+BNC101|Banco de Capacitores Paralelos
+CHV101|Chave_Polifásica
+CHV102|Chave_Monofásica
+CHV103|Chave Seccionalizadora_Polifásica
+LUM101|Luminária
+PRS101|Pára-raios
+PRR101|Protetor de Rede
+REG101|Regulador de Tensão
+REL101|Religador_Polifásico
+REL102|Religador_Monofásico
+BNC111|Banco de Capacitores Paralelos
+CHV111|Chave_Polifásica
+CHV112|Chave_Monofásica
+CHV113|Chave Seccionalizadora_Polifásica
+LUM111|Luminária
+PRS111|Pára-raios
+PRR111|Protetor de Rede
+REG111|Regulador de Tensão
+REL111|Religador_Polifásico
+REL112|Religador_Monofásico
+CDL201|Condutor de Linha Aérea Urbana_Nu_Monofásico_Cobre
+CDL202|Condutor de Linha Aérea Urbana_Nu_Monofásico_(Alumínio)
+CDL203|Condutor de Linha Aérea Urbana_Nu_Monofásico_(Aço)
+CDL204|Condutor de Linha Aérea Urbana_Isolado ou Protegido_Monofásico_Cobre
+CDL205|Condutor de Linha Aérea Urbana_Isolado ou Protegido_Monofásico_(Alumínio)
+CDL206|Condutor de Linha Aérea Urbana_Isolado ou Protegido_Monofásico_(Aço)
+CDL207|Condutor de Linha Aérea Urbana_Nu_Polifásico_Cobre
+CDL208|Condutor de Linha Aérea Urbana_Nu_Polifásico_(Alumínio) ou (Aço)
+CDL209|Condutor de Linha Aérea Urbana_Isolado ou Protegido_Polifásico_Cobre
+CDL210|Condutor de Linha Aérea Urbana_Isolado ou Protegido_Polifásico(Alumínio) ou (Aço)
+CDL211|Condutor de Linha Aérea Rural_Nu_Monofásico_Cobre
+CDL212|Condutor de Linha Aérea Rural_Nu_Monofásico_(Alumínio)
+CDL213|Condutor de Linha Aérea Rural_Nu_Monofásico_(Aço)
+CDL214|Condutor de Linha Aérea Rural_Isolado ou Protegido_Monofásico_Cobre
+CDL215|Condutor de Linha Aérea Rural_Isolado ou Protegido_Monofásico_(Alumínio)
+CDL216|Condutor de Linha Aérea Rural_Isolado ou Protegido_Monofásico_(Aço)
+CDL217|Condutor de Linha Aérea Rural_Nu_Polifásico_Cobre
+CDL218|Condutor de Linha Aérea Rural_Nu_Polifásico_(Alumínio) ou (Aço)
+CDL219|Condutor de Linha Aérea Rural_Isolado ou Protegido_Polifásico_Cobre
+CDL220|Condutor de Linha Aérea Rural_Isolado ou Protegido_Polifásico(Alumínio) ou (Aço)
+BNC201|Banco de Capacitores Paralelos
+CHV201|Chave_Polifásica_ I nom ≥ 800A
+CHV202|Chave_Polifásica_ I nom < 800A
+CHV203|Chave_Monofásica_ I nom > 400A
+CHV204|Chave_Monofásica_ I nom ≤ 400A
+PRS201|Pára-raios_Tensão ≥ 69 kV
+PRS202|Pára-raios_Tensão < 69 kV
+REG201|Regulador de Tensão_S  ≥  1 MVA_Polifásico
+REG202|Regulador de Tensão_S  <  1 MVA_Polifásico
+REG203|Regulador de Tensão_S  ≥  500 kVA_Monofásico
+REG204|Regulador de Tensão_S  <  500 kVA_Monofásico
+REL201|Religador_Capacidade Interrupção ≥ 31,5 kA
+REL202|Religador_Capacidade Interrupção < 31,5 kA
+TMS201|Transformador de Corrente_Tensão ≥ 69 kV
+TMS202|Transformador de Corrente_Tensão < 69 kV
+TMS203|Transformador de Potencial_Tensão ≥ 69 kV
+TMS204|Transformador de Potencial_Tensão < 69 kV
+BNC202|Banco de Capacitores Paralelos
+CHV205|Chave_Polifásica_ I nom ≥ 800A
+CHV206|Chave_Polifásica_ I nom < 800A
+CHV207|Chave_Monofásica_ I nom > 400A
+CHV208|Chave_Monofásica_ I nom ≤ 400A
+PRS203|Pára-raios_Tensão ≥ 69 kV
+PRS204|Pára-raios_Tensão < 69 kV
+REG205|Regulador de Tensão_S  ≥  1 MVA_Polifásico
+REG206|Regulador de Tensão_S  <  1 MVA_Polifásico
+REG207|Regulador de Tensão_S  ≥  500 kVA_Monofásico
+REG208|Regulador de Tensão_S  <  500 kVA_Monofásico
+REL203|Religador_Capacidade Interrupção ≥ 31,5 kA
+REL204|Religador_Capacidade Interrupção < 31,5 kA
+TMS205|Transformador de Corrente_Tensão ≥ 69 kV
+TMS206|Transformador de Corrente_Tensão < 69 kV
+TMS207|Transformador de Potencial_Tensão ≥ 69 kV
+TMS208|Transformador de Potencial_Tensão < 69 kV

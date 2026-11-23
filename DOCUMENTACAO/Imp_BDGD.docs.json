@@ -1,0 +1,429 @@
+[
+  {
+    "funcao": {
+      "nome": "dataframe_to_dbf",
+      "tipo": "function",
+      "linha_inicio": 29,
+      "linha_fim": 84,
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": "pd.DataFrame",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "arquivo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "dbf",
+          "pandas"
+        ],
+        "chamadas": [
+          "astype",
+          "campos.append",
+          "dbf.Table",
+          "df.copy",
+          "df.iterrows",
+          "df.select_dtypes",
+          "dt.tz_localize",
+          "int",
+          "isinstance",
+          "join",
+          "max",
+          "min",
+          "pd.api.types.is_bool_dtype",
+          "pd.api.types.is_datetime64_any_dtype",
+          "pd.api.types.is_float_dtype",
+          "pd.api.types.is_integer_dtype",
+          "pd.isna",
+          "registro.append",
+          "serie.fillna",
+          "str",
+          "str.decode",
+          "str.encode",
+          "tabela.append",
+          "tabela.close",
+          "tabela.open",
+          "texto.str.len",
+          "tuple",
+          "valor.item"
+        ]
+      },
+      "codigo": "def dataframe_to_dbf(df: pd.DataFrame, arquivo):\n    df = df.copy()\n    for c in df.select_dtypes(include=[\"datetimetz\"]).columns:\n        df[c] = df[c].dt.tz_localize(None)\n\n    campos = []\n\n    for col in df.columns:\n        serie = df[col]\n        if pd.api.types.is_integer_dtype(serie):\n            campos.append(f\"{col} N(18,0)\")\n        elif pd.api.types.is_float_dtype(serie):\n            campos.append(f\"{col} N(18,6)\")\n        elif pd.api.types.is_datetime64_any_dtype(serie):\n            campos.append(f\"{col} D\")\n            df[col] = serie.dt.date\n        elif pd.api.types.is_bool_dtype(serie):\n            campos.append(f\"{col} L\")\n        else:\n            texto = serie.fillna(\"\").astype(str)\n            tamanho = texto.str.len().max()\n            if pd.isna(tamanho):\n                tamanho = 1\n            tamanho = int(max(1, min(254, tamanho)))\n            campos.append(f\"{col} C({tamanho})\")\n            df[col] = (\n                            texto\n                            .str[:254]\n                            .str.encode(\"cp1252\", errors=\"replace\")\n                            .str.decode(\"cp1252\")\n                        )\n\n    tabela = dbf.Table(\n                            str(arquivo),\n                            \"; \".join(campos),\n                            codepage=\"cp1252\"\n                        )\n\n    tabela.open(mode=dbf.READ_WRITE)\n\n    for _, linha in df.iterrows():\n\n        registro = []\n\n        for valor in linha:\n\n            if pd.isna(valor):\n                registro.append(None)\n            elif isinstance(valor, np.generic):\n                registro.append(valor.item())\n            else:\n                registro.append(valor)\n\n        tabela.append(tuple(registro))\n\n    tabela.close()"
+    },
+    "documentacao": {
+      "resumo": "Converte um DataFrame do pandas em um arquivo DBF.",
+      "descricao": "Esta função converte um DataFrame do pandas em um arquivo DBF, ajustando os tipos de dados conforme necessário e lidando com diferentes formatos de dados como inteiros, floats, datas, booleanos e strings. O arquivo DBF resultante é salvo no caminho especificado.",
+      "parametros": [
+        {
+          "nome": "df",
+          "tipo": "pd.DataFrame",
+          "categoria": "posicional",
+          "descricao": "O DataFrame do pandas que será convertido em um arquivo DBF."
+        },
+        {
+          "nome": "arquivo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "O caminho onde o arquivo DBF será salvo."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "dbf",
+          "tipo": "pacote",
+          "categoria": "externa",
+          "descricao": "Pacote Python para manipulação de arquivos DBF."
+        },
+        {
+          "nome": "pandas",
+          "tipo": "pacote",
+          "categoria": "externa",
+          "descricao": "Biblioteca Python para análise e manipulação de dados em formato tabular."
+        }
+      ],
+      "docstring": "Converte um DataFrame do pandas em um arquivo DBF.\n\nArgs:\n    df (pd.DataFrame): O DataFrame do pandas que será convertido em um arquivo DBF.\n    arquivo: O caminho onde o arquivo DBF será salvo.\n\nReturns:\n    None\n\nNotes:\n    - As datas são convertidas para o formato D (AAAA-MM-DD).\n    - Os valores nulos são tratados como None no arquivo DBF.\n    - Tipos de dados não suportados são convertidos para strings com até 254 caracteres."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "bsc_BDGD",
+      "tipo": "function",
+      "linha_inicio": 86,
+      "linha_fim": 100,
+      "parametros": [
+        {
+          "nome": "dir_ARQ1",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "dir_ARQ2",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "CNT",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "FLG_CNT",
+          "tipo": null,
+          "default": "True",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "ano",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "database",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.registrar_artefato",
+          "MANIFESTO.registrar_evento",
+          "UTILS.cria_DBdbf"
+        ],
+        "chamadas": [
+          "cria_DBdbf",
+          "execucao_trilha",
+          "registrar_artefato",
+          "registrar_evento",
+          "str"
+        ]
+      },
+      "codigo": "def bsc_BDGD(dir_ARQ1 = None, dir_ARQ2 = None, CNT = None, FLG_CNT = True, empresa = None, ano = None, database = None):\n    with execucao_trilha(\n                        db_path=database, script_nome=\"Importação BDGD\",\n                        parametros={\"empresa\": empresa, \"ano\": ano, \"BDGD\": CNT},\n                        ) as execucao_id:\n    \n        registrar_evento(database, execucao_id, \"IMPORTACAO_INICIADA\",\n                             mensagem=f\"Iniciando importação BDGD {CNT}\")\n        dbf_arq = cria_DBdbf(dir_ARQ1, dir_ARQ2, CNT, FLG_CNT, empresa, ano)\n\n        registrar_artefato(database, execucao_id, str(dir_ARQ1), \"ENTRADA\")\n        registrar_evento(database, execucao_id, \"IMPORTACAO_FINALIZADA\",\n                        mensagem=f\"Finalizado importação BDGD {CNT}\")\n\n    return dbf_arq"
+    },
+    "documentacao": {
+      "resumo": "Realiza a importação de dados do BDGD e retorna um arquivo DBF.",
+      "descricao": "Esta função realiza a importação dos dados do BDGD (Base de Dados de Gestão de Despesas) utilizando parâmetros específicos. Ela registra eventos de início e fim da importação, cria um arquivo DBF com os dados fornecidos e retorna o caminho para este arquivo.",
+      "parametros": [
+        {
+          "nome": "dir_ARQ1",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Diretório do primeiro arquivo de entrada."
+        },
+        {
+          "nome": "dir_ARQ2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Diretório do segundo arquivo de entrada."
+        },
+        {
+          "nome": "CNT",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Contador ou identificador utilizado na importação."
+        },
+        {
+          "nome": "FLG_CNT",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "True",
+          "descricao": "Flag que indica se o contador deve ser considerado na criação do arquivo DBF."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa associada aos dados."
+        },
+        {
+          "nome": "ano",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ano dos dados a serem importados."
+        },
+        {
+          "nome": "database",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o banco de dados onde os eventos serão registrados."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Caminho para o arquivo DBF criado durante a importação."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.execucao_trilha",
+          "categoria": "import",
+          "descricao": "Módulo responsável pela execução de trilhas de eventos no banco de dados."
+        },
+        {
+          "nome": "MANIFESTO.registrar_artefato",
+          "categoria": "import",
+          "descricao": "Função para registrar artefatos (arquivos) no banco de dados."
+        },
+        {
+          "nome": "MANIFESTO.registrar_evento",
+          "categoria": "import",
+          "descricao": "Função para registrar eventos no banco de dados."
+        },
+        {
+          "nome": "UTILS.cria_DBdbf",
+          "categoria": "import",
+          "descricao": "Função auxiliar para criar um arquivo DBF com os dados fornecidos."
+        }
+      ],
+      "docstring": "Realiza a importação de dados do BDGD e retorna um arquivo DBF.\n\nArgs:\n    dir_ARQ1: Diretório do primeiro arquivo de entrada.\n    dir_ARQ2: Diretório do segundo arquivo de entrada.\n    CNT: Contador ou identificador utilizado na importação.\n    FLG_CNT (bool): Flag que indica se o contador deve ser considerado na criação do arquivo DBF. Valor padrão é True.\n    empresa: Nome da empresa associada aos dados.\n    ano: Ano dos dados a serem importados.\n    database: Caminho para o banco de dados onde os eventos serão registrados.\n\nReturns:\n    Caminho para o arquivo DBF criado durante a importação."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "imp_BDGD",
+      "tipo": "function",
+      "linha_inicio": 102,
+      "linha_fim": 178,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "UTILS.bsc_dados_reg",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "bsc_BDGD",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "fnc_gdb",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "st.button",
+          "st.checkbox",
+          "st.columns",
+          "st.container",
+          "st.html",
+          "st.text",
+          "str"
+        ]
+      },
+      "codigo": "def imp_BDGD():\n    if not 'tra_dir' in st.session_state:\n        st.html(\"\"\"\n                    <p>Você deve configurar o diretório de trabalho na aba <i>Criar Pasta de Trabalho</i>, barra lateral.</p>\n                \"\"\")\n        return\n    col1 = st.columns([1,5,1], gap='small')\n    with col1[1]:\n\n        local = st.session_state.tra_dir\n        empresa = st.session_state.nm_empr\n        ano = st.session_state.dt_fim.year\n        css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n        st.html(f\"<style>{css}</style>\")\n\n        caminho_manifesto = Path(local) / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n        caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n        inicializa_database(str(caminho_manifesto))\n        inicializa_detalhes(str(caminho_manifesto))\n        inicializar_rastreamento(str(caminho_manifesto))\n        database = str(caminho_manifesto)\n\n        st.html(\"\"\"<h1>Importação dos arquivos da BDGD</h1><br><br>\n            <p   style=\"text-align: justify;text-indent: 40px\">Nesta etapa do processo, realiza-se o carregamento dos arquivos correspondentes à \n            BDGD atual e à versão anterior na base local. Essa etapa é necessária, pois os arquivos\n            da BDGD constituem base de comparação necessária para a análise do AIS.</p>\n\n            <p  style=\"text-align: justify;text-indent: 40px\">A BDGD é uma fonte primária de dados geoespaciais que permite realizar comparações \n            temporais e espaciais, usando bases com referências distintas, identificando mudanças e validando informações declaradas. \n            O carregamento na base local possibilita um acesso mais eficiente e rápido aos dados,\n            viabilizando a aplicação de algoritmos e ferramentas analíticas diretamente sobre o \n            conjunto de informações.</p>\n\n            <p  style=\"text-align: justify;text-indent: 40px\">Ademais, a utilização simultânea das versões atual e anterior permite uma abordagem \n            comparativa, mutação, que auxilia na detecção de inconsistências, avaliação de padrões de \n            evolução e suporte à tomada de decisão baseada em evidências. Este processo é \n            realizado para garantir a integridade e confiabilidade dos dados, \n            elementos balizadores da análise subsequente no AIS.</p>\n        \"\"\")\n\n        dir_arq_dbf = f\"{local}/BDGD_ANT\"\n        dir_arq_dbf1 = f\"{local}/BDGD_AT\"\n        dir_arq_base = f\"{local}/BD_LOCAL\"\n\n        with st.container(border=True):\n\n            st.html(\"\"\"<h3>Exportação de GDB para Shapefile</h3>\n                    <p   style=\"text-align: justify;text-indent: 40px\">\n                    Caso habilitada, esta etapa realizará a conversão das camadas contidas na geodatabase (<b>.gdb</b>) para \n                    o formato <b>ESRI Shapefile</b>, gerando os arquivos <b>.shp</b>, <b>.dbf</b>, <b>.shx</b> e demais \n                    arquivos auxiliares correspondentes. A conversão será aplicada a todas as camadas disponíveis na \n                    geodatabase informada, gravando os arquivos resultantes no diretório de destino selecionado, preservando a \n                    estrutura de atributos e a referência espacial dos dados originais.\n                    </p>\n                    \"\"\")\n            exportar_gdb = st.checkbox(\n                                        \"Exportar arquivos GDB para Shapefile\",\n                                        value=False\n                                    )\n            if exportar_gdb:\n                x = fnc_gdb(database, empresa, ano)\n\n        col2 = st.columns([1,1,2,1,2,1,1], gap='small')\n        with col2[2]:\n            BDGD_AT = st.button(\"BDGD ATUAL\", key=\"BDGD_AT\")\n        with col2[4]:\n            BDGD_ANT = st.button(\"BDGD ANTERIOR\", key=\"BDGD_ANT\")\n        if BDGD_AT:\n            x = bsc_BDGD(dir_arq_dbf1, dir_arq_base, \"AT\", True, empresa, ano, database)\n            st.text(f\"Arquivo da BDGD atual, {empresa}, importado.\")\n        if BDGD_ANT:\n            x = bsc_BDGD(dir_arq_dbf, dir_arq_base, \"ANT\", True, empresa, ano, database)\n            st.text(f\"Arquivo da BDGD anterior, {empresa}, importado.\")\n            if st.session_state.RTE:\n                dir_arq_dbf2 = f\"{local}/BDGD_RTE_ANT\"\n                x = bsc_BDGD(dir_arq_dbf2, dir_arq_base, \"RTE\", True, empresa, ano, database)\n                st.text(f\"Arquivo da BDGD da RTE Anterior, {empresa}, importado.\")"
+    },
+    "documentacao": {
+      "resumo": "Realiza a importação dos arquivos da BDGD (Base de Dados Geoespacial) e realiza algumas operações relacionadas.",
+      "descricao": "A função `imp_BDGD` é responsável por configurar o diretório de trabalho, inicializar um banco de dados SQLite, exportar camadas de uma geodatabase para shapefile e importar arquivos da BDGD atual e anterior. A função também permite a exportação opcional dos arquivos GDB para Shapefile.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.inicializa_database",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializa_detalhes",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializar_rastreamento",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.bsc_dados_reg",
+          "tipo": "função"
+        },
+        {
+          "nome": "pathlib.Path",
+          "tipo": "classe"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca"
+        }
+      ],
+      "docstring": "Realiza a importação dos arquivos da BDGD (Base de Dados Geoespacial) e realiza algumas operações relacionadas.\n\nArgs:\n    Nenhum parâmetro explicitamente definido.\n\nReturns:\n    None\n\nNotes:\n    A função depende do estado da sessão `st.session_state` para obter informações como o diretório de trabalho, nome da empresa e ano. Caso o diretório de trabalho não esteja configurado, a função exibe uma mensagem de erro.\n\nDependencies:\n    MANIFESTO.inicializa_database: Função utilizada para inicializar um banco de dados SQLite.\n    MANIFESTO.inicializa_detalhes: Função utilizada para inicializar detalhes do processo.\n    MANIFESTO.inicializar_rastreamento: Função utilizada para inicializar rastreamento do processo.\n    UTILS.bsc_dados_reg: Função utilizada para obter estilos CSS.\n    pathlib.Path: Classe utilizada para manipulação de caminhos de arquivo.\n    streamlit: Biblioteca utilizada para interface gráfica."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "fnc_gdb",
+      "tipo": "function",
+      "linha_inicio": 180,
+      "linha_fim": 268,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "ano",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.registrar_artefato",
+          "MANIFESTO.registrar_evento",
+          "fiona",
+          "geopandas",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "a.empty",
+          "a.progress",
+          "dataframe_to_dbf",
+          "destino.exists",
+          "enumerate",
+          "execucao_trilha",
+          "fiona.listlayers",
+          "gdf.to_file",
+          "gpd.read_file",
+          "isinstance",
+          "len",
+          "nm_arq.exists",
+          "origem.exists",
+          "origem.suffix.lower",
+          "registrar_artefato",
+          "registrar_evento",
+          "saida.mkdir",
+          "st.button",
+          "st.container",
+          "st.empty",
+          "st.error",
+          "st.html",
+          "st.success",
+          "st.text_input",
+          "st.warning",
+          "str"
+        ]
+      },
+      "codigo": "def fnc_gdb(database = None, empresa= None, ano = None):\n    with execucao_trilha(\n                        db_path=database, script_nome=\"CONVERSÃO BDGD: GDB para DBF\",\n                        parametros={\"empresa\": empresa, \"ano\": ano},\n                        ) as execucao_id:\n        registrar_evento(\n                            database,\n                            execucao_id,\n                            \"ARQUIVO_GDB_CONVERSAO\",\n                            mensagem=(\n                                f\"Iniciado a configuração para processamento\"\n                            ),\n                        )\n        with st.container(border=True):\n            st.html(\"<h4>Configuração da exportação</h4>\")\n            origem_gdb = st.text_input(\n                                            \"Pasta de origem da geodatabase (.gdb)\",\n                                            placeholder=r\"Ex.: D:\\Dados\\CONSOL.gdb\"\n                                        )\n            destino_shp = st.text_input(\n                                            \"Pasta de destino dos arquivos Shapefile\",\n                                            placeholder=r\"Ex.: D:\\Dados\\EXPORTADOS\"\n                                        )\n            if origem_gdb:\n                origem = Path(origem_gdb)\n                if not origem.exists():\n                    st.error(\"A pasta de origem informada não existe.\")\n                elif origem.suffix.lower() != \".gdb\":\n                    st.warning(\"A origem informada não parece ser uma File Geodatabase (.gdb).\")\n                else:\n                    st.success(\"Origem GDB válida.\")\n\n            if destino_shp:\n                destino = Path(destino_shp)\n                if not destino.exists():\n                    st.warning(\"A pasta de destino ainda não existe. Ela poderá ser criada na exportação.\")\n                else:\n                    st.success(\"Pasta de destino válida.\")\n\n            converter = st.button(\"Converter\")\n            a = st.empty()\n\n            if destino_shp and origem_gdb and converter:\n                registrar_evento(database, execucao_id, \"CONVERSAO_GDB_DBF_INICIADA\",\n                                 mensagem=f\"Iniciando conversão BDGD. De {origem} para {destino}.\")\n                gdb = origem\n                saida = destino\n                saida.mkdir(exist_ok=True)\n                lst_arq = fiona.listlayers(gdb)\n\n                a.progress(0, \"Iniciando importação\")\n                for i, layer in enumerate(lst_arq):\n                    a.progress(i/len(lst_arq), f\"Exportando {layer}...\")\n                    nm_arq = Path(rf'{destino_shp}/{layer}.dbf')\n                    if nm_arq.exists():\n                        continue\n\n                    gdf = gpd.read_file(\n                                            gdb,\n                                            layer=layer,\n                                            engine=\"pyogrio\"\n                                        )\n                    if isinstance(gdf, gpd.GeoDataFrame) and gdf.geometry is not None:\n                        nm_arq = Path(destino_shp) / f\"{layer}.shp\"\n\n                        if nm_arq.exists():\n                            continue\n\n                        gdf.to_file(\n                                        nm_arq,\n                                        driver=\"ESRI Shapefile\",\n                                        encoding=\"utf-8\"\n                                    )\n                        registrar_artefato(database, execucao_id, str(nm_arq), \"ENTRADA\")\n                    else:\n                        nm_arq = Path(destino_shp) / f\"{layer}.dbf\"\n\n                        if nm_arq.exists():\n                            continue\n                        dataframe_to_dbf(\n                                            gdf,\n                                            saida / f\"{layer}.dbf\"\n                                        )\n\n                        st.warning(f\"{layer}: tabela sem geometria exportada como dbf.\")\n\n                registrar_evento(database, execucao_id, \"CONVERSAO_GDB_DBF_FINALIZADA\",\n                                mensagem=f\"Finalizada conversão BDGD. De {origem} para {destino}.\")\n                a.empty()"
+    },
+    "documentacao": {
+      "resumo": "Converte arquivos de geodatabase (.gdb) para Shapefile (.shp).",
+      "descricao": "A função realiza a conversão dos dados armazenados em um arquivo geodatabase (.gdb) para formatos Shapefile (.shp), permitindo especificar o caminho da origem e destino. A conversão é iniciada ao clicar no botão 'Converter'. Durante o processo, eventos são registrados e progresso é exibido na interface do usuário.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o arquivo geodatabase (.gdb) que será convertido."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa associada ao processo de conversão."
+        },
+        {
+          "nome": "ano",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ano associado ao processo de conversão."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "MANIFESTO.execucao_trilha",
+        "MANIFESTO.registrar_artefato",
+        "MANIFESTO.registrar_evento",
+        "fiona",
+        "geopandas",
+        "pathlib.Path",
+        "streamlit"
+      ],
+      "docstring": "Converte arquivos de geodatabase (.gdb) para Shapefile (.shp).\n\nArgs:\n    database: Caminho para o arquivo geodatabase (.gdb) que será convertido.\n    empresa: Nome da empresa associada ao processo de conversão.\n    ano: Ano associado ao processo de conversão.\n\nReturns:\n    None\n\nNotes:\n    A função realiza a conversão dos dados armazenados em um arquivo geodatabase (.gdb) para formatos Shapefile (.shp), permitindo especificar o caminho da origem e destino. A conversão é iniciada ao clicar no botão 'Converter'. Durante o processo, eventos são registrados e progresso é exibido na interface do usuário.\n\nDependencies:\n    MANIFESTO.execucao_trilha: Para gerenciamento de execução.\n    MANIFESTO.registrar_artefato: Para registro de artefatos.\n    MANIFESTO.registrar_evento: Para registro de eventos.\n    fiona: Para manipulação de arquivos geodatabase (.gdb).\n    geopandas: Para manipulação de dados espaciais.\n    pathlib.Path: Para manipulação de caminhos de arquivo.\n    streamlit: Para interface do usuário."
+    },
+    "status": "sucesso"
+  }
+]

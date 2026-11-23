@@ -1,0 +1,17 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,1,Aço
+3,2,Aço aluminizado
+4,3,Aço cobreado
+5,4,Aço zincado
+6,5,Alumínio
+7,6,Alumínio com alma de aço
+8,7,Alumínio com alma em compósito
+9,8,Alumínio termo resistente
+10,9,Alumínio-Liga
+11,10,Cobre
+12,11,Alumínio-liga termorresistente com alma de aço
+13,12,Alumínio-liga termorresistente com alma de fibra de carbono
+14,13,Tubo de Alumínio
+15,14,Barra de Alumínio
+16,15,Barra de Cobre

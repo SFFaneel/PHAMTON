@@ -1,0 +1,10 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,I,Energia Injetada
+3,IG,Energia Injetada de Geração
+4,FML,Energia Fornecida ao Mercado Livre
+5,FMC,Energia Fornecida ao Mercado Cativo
+6,FOD,Energia Fornecida à Outras Distribuidoras
+7,FRA,Energia Fornecida sem Rede Associada
+8,IGD,Energia Injetada de Geração Distribuída REN 482/2012
+9,IT,Energia Injetada Total

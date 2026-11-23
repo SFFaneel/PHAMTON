@@ -1,0 +1,365 @@
+[
+  {
+    "funcao": {
+      "nome": "relatorio",
+      "tipo": "function",
+      "linha_inicio": 37,
+      "linha_fim": 39,
+      "parametros": [
+        {
+          "nome": "dir_nome",
+          "tipo": "str",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "con",
+          "tipo": "sl.Connection",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "num_A",
+          "tipo": null,
+          "default": "0",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "num_B",
+          "tipo": null,
+          "default": "0",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment"
+      ],
+      "dependencias": {
+        "imports": [
+          "RELATORIOS.imprimi_F0_AMS"
+        ],
+        "chamadas": [
+          "imprimi_F0_AMS"
+        ]
+      },
+      "codigo": "def relatorio(dir_nome: str = None, con: sl.Connection = None, empresa: str = None, st = None, num_A = 0, num_B = 0):\n    n = imprimi_F0_AMS(dir_nome, con, empresa, st, num_A, num_B)\n    return n"
+    },
+    "documentacao": {
+      "resumo": "Gera um relatório utilizando uma função auxiliar.",
+      "descricao": "Esta função invoca outra função chamada `imprimi_F0_AMS` para gerar um relatório, passando os parâmetros fornecidos. Não há tratamento explícito de exceções ou retornos específicos da função chamada.",
+      "parametros": [
+        {
+          "nome": "dir_nome",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome do diretório onde o relatório será salvo."
+        },
+        {
+          "nome": "con",
+          "tipo": "sl.Connection",
+          "categoria": "posicional",
+          "descricao": "Conexão com a base de dados utilizada para obter os dados do relatório."
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome da empresa associada ao relatório."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Parâmetro adicional que pode ser necessário para a função `imprimi_F0_AMS`."
+        },
+        {
+          "nome": "num_A",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Número A utilizado no cálculo do relatório."
+        },
+        {
+          "nome": "num_B",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Número B utilizado no cálculo do relatório."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "O valor retornado pela função `imprimi_F0_AMS`, que não é explicitamente documentado."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "RELATORIOS.imprimi_F0_AMS",
+          "tipo": "função",
+          "categoria": "importada"
+        }
+      ],
+      "docstring": "Gera um relatório utilizando uma função auxiliar.\n\nArgs:\n    dir_nome (str): Nome do diretório onde o relatório será salvo.\n    con (sl.Connection): Conexão com a base de dados utilizada para obter os dados do relatório.\n    empresa (str): Nome da empresa associada ao relatório.\n    st: Parâmetro adicional que pode ser necessário para a função `imprimi_F0_AMS`.\n    num_A: Número A utilizado no cálculo do relatório.\n    num_B: Número B utilizado no cálculo do relatório.\n\nReturns:\n    O valor retornado pela função `imprimi_F0_AMS`, que não é explicitamente documentado."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "analises_ti",
+      "tipo": "function",
+      "linha_inicio": 42,
+      "linha_fim": 99,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "LST_TI",
+          "tipo": null,
+          "default": "[]",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "dd_SORT",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.enc_outliers",
+          "plotly.graph_objects",
+          "plotly.subplots.make_subplots",
+          "streamlit"
+        ],
+        "chamadas": [
+          "enc_outliers",
+          "fig1.add_trace",
+          "fig1.update_layout",
+          "go.Violin",
+          "make_subplots",
+          "quantile",
+          "st.columns",
+          "st.plotly_chart",
+          "st.selectbox",
+          "tuple"
+        ]
+      },
+      "codigo": "def analises_ti(st = None, LST_TI = [], dd_SORT = None):\n    cols = st.columns([1,2,1], gap='small')\n    with cols[1]:\n        at = st.selectbox(\n                            \"Selecione a TI para avaliar\",\n                            tuple(LST_TI),\n                            1\n                        )\n    \n    if at:\n        Q1 = dd_SORT[dd_SORT['Nr_TI']==at][\"VL_VOC\"].quantile(0.25)\n        Q3 = dd_SORT[dd_SORT['Nr_TI']==at][\"VL_VOC\"].quantile(0.75)\n        IQR = Q3 - Q1\n\n        df_FILT = enc_outliers(dd_SORT[dd_SORT['Nr_TI']==at], 'Nr_TI', 'VL_VOC')\n        fig1 = make_subplots(\n                                rows=2, cols=2,\n                                subplot_titles=(\"COMPLETO\", \n                                                \"SEM OUTLIERS\", \n                                                \"SOMENTE OUTLIERS\", \n                                                \"\"),\n                            )\n        \n        fig1.add_trace(go.Violin(\n                                y=dd_SORT[dd_SORT['Nr_TI'] == at]['VL_VOC'],\n                                box_visible=True,\n                                points=\"all\",\n                                name=\"Completo\",\n                                hoverinfo=\"y+name\",\n                            ), row=1, col=1)\n\n        fig1.add_trace(go.Violin(\n                                    y=df_FILT[df_FILT['FLG_OUTLIER'] == 0]['VL_VOC'],\n                                    box_visible=True,\n                                    points=\"all\",\n                                    name=\"Sem OUTLIERS\",\n                                    hoverinfo=\"y+name\",\n                                ), row=1, col=2)\n\n        fig1.add_trace(go.Violin(\n                            y=df_FILT[df_FILT['FLG_OUTLIER'] == 1]['VL_VOC'],\n                            box_visible=True,\n                            points=\"all\",\n                            name=\"Somente OUTLIERS\",\n                            hoverinfo=\"y+name\",\n                        ), row=2, col=1)\n\n        fig1.update_layout(\n                            yaxis_title=\"VL_VOC\",\n                            xaxis_title=\"Nr TI\",\n                            template=\"plotly_white\",\n                            width=800,\n                            height=800,\n                            showlegend=False,\n                        )\n        _, col2, _ = st.columns([1,2,1], gap =\"large\")\n        with col2:\n            st.plotly_chart(fig1)"
+    },
+    "documentacao": {
+      "resumo": "Realiza análises de TI utilizando gráficos e estatísticas.",
+      "descricao": "A função cria uma interface interativa para selecionar uma TI e exibe gráficos comparando dados completos, sem outliers e somente com outliers. Utiliza quantis (Q1 e Q3) e a regra do IQR para identificar outliers.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para criar a interface interativa."
+        },
+        {
+          "nome": "LST_TI",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Lista de TI disponíveis para seleção."
+        },
+        {
+          "nome": "dd_SORT",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo os dados a serem analisados, com colunas 'Nr_TI' e 'VL_VOC'."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "UTILS.enc_outliers",
+          "tipo": "função",
+          "categoria": "importado",
+          "descricao": "Função para identificar e remover outliers."
+        },
+        {
+          "nome": "plotly.graph_objects",
+          "tipo": "módulo",
+          "categoria": "importado",
+          "descricao": "Módulo do Plotly para criar gráficos interativos."
+        },
+        {
+          "nome": "plotly.subplots.make_subplots",
+          "tipo": "função",
+          "categoria": "importado",
+          "descricao": "Função para criar subplots em um único gráfico."
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "módulo",
+          "categoria": "importado",
+          "descricao": "Módulo do Streamlit para criação de interfaces web interativas."
+        }
+      ],
+      "docstring": "Realiza análises de TI utilizando gráficos e estatísticas.\n\nArgs:\n    st (objeto): Objeto Streamlit para criar a interface interativa.\n    LST_TI (list): Lista de TI disponíveis para seleção.\n    dd_SORT (DataFrame): DataFrame contendo os dados a serem analisados, com colunas 'Nr_TI' e 'VL_VOC'.\n\nReturns:\n    None\n\nNotes:\n    A função utiliza quantis (Q1 e Q3) e a regra do IQR para identificar outliers.\n\nDependencies:\n    UTILS.enc_outliers: Função para identificar e remover outliers.\n    plotly.graph_objects: Módulo do Plotly para criar gráficos interativos.\n    plotly.subplots.make_subplots: Função para criar subplots em um único gráfico.\n    streamlit: Módulo do Streamlit para criação de interfaces web interativas."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "AMOSTRAS_D",
+      "tipo": "function",
+      "linha_inicio": 102,
+      "linha_fim": 620,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "MANIFESTO.registrar_evento",
+          "SRC.calculos.sorteio",
+          "SRC.calculos.tst_cod_sisbase",
+          "UTILS.bsc_dados_reg",
+          "UTILS.enc_outliers",
+          "UTILS.existe_tabela",
+          "UTILS.exportar_texto",
+          "UTILS.importar_dados_duckdb",
+          "UTILS.max_arq",
+          "datetime.date",
+          "numpy",
+          "os",
+          "pandas",
+          "pathlib.Path",
+          "plotly.express",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "UserWarning",
+          "analises_ti",
+          "apply",
+          "astype",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "copy",
+          "count",
+          "date.today",
+          "dd_SORT.groupby",
+          "df_AIS.copy",
+          "df_AIS.merge",
+          "df_AIS.to_sql",
+          "df_AIS_SORT.groupby",
+          "df_AIS_SORT.rename",
+          "df_INC.groupby",
+          "df_INC.merge",
+          "df_LIM.rename",
+          "df_PROP.drop",
+          "df_PROP.iterrows",
+          "df_PROP.merge",
+          "df_PROP.to_sql",
+          "df_TI_SORTEIO.drop_duplicates",
+          "df_TI_SORTEIO.to_csv",
+          "df_TI_SORTEIO.to_sql",
+          "dict",
+          "drop_duplicates",
+          "enc_outliers",
+          "encode",
+          "execucao_trilha",
+          "existe_tabela",
+          "exportar_texto",
+          "fig.update_layout",
+          "fig.update_traces",
+          "fillna",
+          "importar_dados_duckdb",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "int",
+          "isin",
+          "isnull",
+          "join",
+          "len",
+          "list",
+          "max",
+          "max_arq",
+          "notnull",
+          "np.ceil",
+          "np.maximum",
+          "np.minimum",
+          "os.path.isfile",
+          "pd.DataFrame",
+          "pd.concat",
+          "pd.read_csv",
+          "pd.read_sql",
+          "pd.to_numeric",
+          "px.pie",
+          "registrar_evento",
+          "relatorio",
+          "replace",
+          "reset_index",
+          "set",
+          "sl.connect",
+          "sorted",
+          "sorteio",
+          "st.button",
+          "st.columns",
+          "st.dataframe",
+          "st.divider",
+          "st.download_button",
+          "st.html",
+          "st.markdown",
+          "st.plotly_chart",
+          "st.text",
+          "st.warning",
+          "st.write",
+          "str",
+          "str.lstrip",
+          "str.replace",
+          "sum",
+          "to_list",
+          "tolist",
+          "tst_cod_sisbase",
+          "unique",
+          "upper"
+        ]
+      },
+      "codigo": "def AMOSTRAS_D():\n    if not 'tra_dir' in st.session_state:\n        st.html(\"\"\"\n                    <div class=\"mensagem_tipo_1\">\n                        <p class=\"mensagem-fade-in\">\n                            Você deve configurar o diretório de trabalho na aba \n                            <i>Criar Pasta de Trabalho</i>, barra lateral.\n                        </p>\n                    </div>\n                \"\"\")\n        return\n    \n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    st.html(f\"<style>{css}</style>\")\n    FLG_INTERCALAR = False\n    raiz = Path(local)\n    caminho_manifesto = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n    caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n    inicializa_database(str(caminho_manifesto))\n    inicializa_detalhes(str(caminho_manifesto))\n    inicializar_rastreamento(str(caminho_manifesto))\n    database = str(caminho_manifesto)\n\n    if st.session_state.dt_fim >= date.today():\n        FLG_INTERCALAR = True\n\n    st.html(f\"\"\"<h1>Amostragem de projetos</h1><br><br>\"\"\")\n    if FLG_INTERCALAR:\n        st.warning(\"\"\"Trata-se de período intercalar.\"\"\")\n    st.divider()\n    cols = st.columns(5, gap='small')\n    with cols[2]:\n        refazer = st.button(\"Refazer Amostragem\", key=\"amostragem\")\n    st.divider()\n    \n    bd_str = f'{local}\\BD_LOCAL\\{empresa}_{ano}.db'\n\n    with sl.connect(bd_str) as bd:\n        df_AIS, erros_AIS = importar_dados_duckdb(\"AIS\", bd, empresa, ['VL', 'QT'], st=st)\n\n    if len(erros_AIS)>0:\n        st.html('<p  style=\"text-align: justify;text-indent: 40px\">Avalie os erros a seguir:</p>')\n        st.dataframe(erros_AIS, width='stretch', hide_index=True)\n\n\n    if not FLG_INTERCALAR:\n        with sl.connect(bd_str) as bd:\n            df_INC, erros_INC = importar_dados_duckdb(\"INCR\", bd, empresa, ['VL', 'QT'], st=st)\n            if len(df_INC) == 0:\n                dt_ARQ = max_arq(\"INCR\", bd, empresa)\n                if dt_ARQ:\n                    df_INC = pd.read_sql(f\"SELECT * FROM INCR WHERE dt_ARQ = '{dt_ARQ}'\", bd)\n                    for nm in df_INC.columns:\n                        if nm[:2].upper() in ['VL', 'QT']:\n                            df_INC[nm] = pd.to_numeric(df_INC[nm].str.replace(\"-\",\"0\"))\n                else:\n                    raise UserWarning(\"Problema na leitura do INCR\")\n    else:\n        df_INC = df_AIS[df_AIS['FLG_PER'] == '1'][['Cd_SubODI', 'Nr_TI', 'VL_VOC']]\n        df_INC['Cd_TP_AVAL'] = '1'\n        df_INC['VL_VNR_UC'] = df_INC['VL_VOC']\n\n    with sl.connect(bd_str) as bd:\n        df_ROS, erros_ROS = importar_dados_duckdb(\"ROS\", bd, empresa, ['VL', 'QT'], st=st)\n        if len(df_ROS) == 0:\n            dt_ARQ = max_arq(\"ROS\", bd, empresa)\n            if dt_ARQ:\n                df_ROS = pd.read_sql(f\"SELECT * FROM ROS WHERE dt_ARQ = '{dt_ARQ}'\", bd)\n            else:\n                raise UserWarning(\"Problema na leitura do ROS\")\n    \n\n    if len(df_AIS)==0:\n        st.text(\"AIS\")\n        st.write(df_AIS)\n        st.text(\"ROS\")\n        st.write(df_ROS)\n        raise UserWarning(\"PROBLEMAS DE LEITURA\")\n\n    if 'Cd_Tipo_OE' not in df_ROS.columns:\n        df_ROS['Cd_Tipo_OE']='0'\n    \n    df_ROS = df_ROS[df_ROS['Cd_Tipo_OE']=='3'].copy()\n    if len(df_ROS):\n        LST_SUBROGACAO = df_ROS['Cd_SubODI'].drop_duplicates().to_list()\n    else:\n        LST_SUBROGACAO = None\n\n    df_AIS['Cd_CC'] = df_AIS['Cd_CC'].astype(str)\n    df_BRR_BAR = bsc_dados_reg(\"tbl_CNTB\")\n    df_AIS = df_AIS[df_AIS['FLG_PER'].isin([1,'1'])]\n    \n    try:                                         \n        df_INC = df_INC[(df_INC['FLG_ELIG'].fillna(0).astype(str)=='1') & (df_INC['Cd_CONC'].astype(str).isin(['1','3']) )].copy()\n    except:\n        df_INC = df_AIS[df_AIS['FLG_PER'] == '1'][['Cd_CC', 'Cd_SubODI', 'Nr_TI', 'Cd_UAR',\n                                                'Nr_TUC', 'Nr_A1', 'Nr_A2', 'Nr_A3', 'Nr_A4', \n                                                'Nr_A5', 'Nr_A6', 'VL_VOC']]\n        \n        df_INC['Cd_SISBASE'] = \"ND\"\n        LST_TUC = df_INC[(df_INC['Cd_UAR'] != 'UAR')][['Nr_TI','Nr_TUC','Nr_A1','Nr_A2',\n                                                'Nr_A3','Nr_A4','Nr_A5','Nr_A6','Cd_SISBASE']].drop_duplicates()\n        LST_TUC = tst_cod_sisbase(LST_TUC, st.session_state.dt_fim)\n        df_INC = df_INC.merge(LST_TUC, how='left', on = ['Nr_TI','Nr_TUC','Nr_A1','Nr_A2',\n                                                        'Nr_A3','Nr_A4','Nr_A5','Nr_A6',\n                                                        'Cd_SISBASE'])\n        df_INC['Cd_TP_AVAL'] = '1'\n\n        INFRA = bsc_dados_reg(\"TBL_TUC_INFRA\")\n        ORCAM = bsc_dados_reg(\"TBL_TUC_ORC\")\n        tbl_CNTB = bsc_dados_reg(\"tbl_CNTB\")\n\n        lst_OE = ORCAM[ORCAM['Nr_A1'] == 0]['Nr_TUC'].drop_duplicates().tolist()\n        lst_CNT_OE = tbl_CNTB[tbl_CNTB['Nm_RZ_ANAL'] == \n                    'Edificações, obras civis e benfeitorias']['Cd_CC'].drop_duplicates().tolist()\n        df_INC.loc[df_INC['Nr_TUC'].isin(lst_OE) & \n                df_INC['Cd_CC'].isin(lst_CNT_OE), 'Cd_TP_AVAL'] = '4'\n        df_INC.loc[df_INC['Cd_SISBASE_SFF'].notnull() & df_INC['Cd_SISBASE_SFF'] != \"ND\", 'Cd_TP_AVAL'] = '2'\n        df_INC.groupby(by=['Cd_SubODI','Nr_TI','Cd_TP_AVAL'], dropna=False)['VL_VOC'].sum().reset_index()\n        df_INC['VL_VNR_UC'] = df_INC['VL_VOC']\n\n    df_AIS = df_AIS.merge(df_BRR_BAR, how='left', on = 'Cd_CC')\n    lista_CC_EST = df_AIS[df_AIS['Nm_CLASS'].isnull()]['Cd_CC'].drop_duplicates().to_list()\n\n    dd_SORT = df_INC[['Cd_SubODI','Nr_TI','Cd_TP_AVAL','VL_VNR_UC', 'VL_VOC']].copy()\n    dd_SORT['Cd_SubODI'] = dd_SORT['Cd_SubODI'].str.lstrip('0')\n\n    df_RES = dd_SORT.groupby('Cd_TP_AVAL', dropna=False)[['VL_VNR_UC','VL_VOC']].sum().reset_index()\n\n    TP_AVAL_significado = {\n                                '1': 'Atualizado',\n                                '2': 'BPR',\n                                '3': 'BPC',\n                                '4': 'Orçamento',\n                                '5': 'BPC-PLPT'\n                            }\n    \n    df_RES['Cd_TP_AVAL'] = df_RES['Cd_TP_AVAL'].replace(TP_AVAL_significado)\n    LST_TI = sorted(dd_SORT['Nr_TI'].drop_duplicates().to_list())\n\n    st.html(f\"\"\"\n                    <p  style=\"text-align: justify;text-indent: 40px\">Antes de discutirmos\n                    a amostragem é interessante observamos as distribuições dos investimentos\n                    por TI. Nessa análise vamos observar a base completa, a base sem\n                    outliers e a base somente com os outliers. Iremos usar a representação\n                    do tipo violino que permite para análise de distribuição de dados. Combina \n                    as funcionalidades de um histograma (distribuição) com um box-plot \n                    (estatísticas descritivas), oferecendo uma visão interessante para observar\n                    outliers, a concentração dos projetos por valor, comportamento de extremos,\n                    variabilidade dos dados, concentração, etc. Use os gráficos para entender\n                    como as obras se distribuem.</p>\n                    \"\"\")\n\n    analises_ti(st, LST_TI, dd_SORT)\n\n    with sl.connect(bd_str) as bd:\n        if (not existe_tabela('tbl_anl_outliers', bd)) or refazer:\n            with execucao_trilha(\n                            db_path=database, script_nome=\"Seleção de amostras para a pasta de obras\",\n                            parametros={\"empresa\": empresa, \"ano\": ano, \"populacao\" : len(df_AIS)},\n                         ) as execucao_id:\n                vx_ID = execucao_id\n                registrar_evento(database, execucao_id, \"Avaliando OUTLIERS AIS, TI vs VOC\",\n                                mensagem=f\"Iniciando importação de {len(df_AIS)} arquivo(s)\")\n                df_AIS = enc_outliers(df_AIS, 'Nr_TI', 'VL_VOC')\n                df_AIS.to_sql(\"tbl_anl_outliers\", bd, if_exists='replace', index=False)\n        else:\n            df_AIS = pd.read_sql(\"SELECT * FROM tbl_anl_outliers\", bd)\n\n    a = len(df_AIS[df_AIS['FLG_OUTLIER'] == 1])\n    st.html(f\"\"\"<p  style=\"text-align: justify;text-indent: 40px\">A seguir apresentamos as obras,\n                por TI, das consideradas como outliers ({a} obras):</p><br>\n                    \"\"\")\n    df_FILT = df_AIS.copy()\n    for n in ['VL_VOC','VL_VNR_UC']:\n        if n in df_AIS.columns:\n            df_FILT[n] = df_FILT[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n\n    st.dataframe(df_FILT[df_FILT['FLG_OUTLIER'] == 1], width='stretch', hide_index=True)\n\n    if (a/len(df_AIS)>0.01):\n        lst_INC = [0,1]\n        st.html(\"\"\"\n                    <p  style=\"text-align: justify;text-indent: 40px\">A proporção de outliers é alta e\n                    indica que os dados possuem uma grande dispersão ou distribuição incomum, \n                    como caudas longas (distribuição não normal). Como estamos tratando de operações de\n                    investimento, as obras podem ser muito maiores ou menores do que a média, tanto em valor \n                    quanto em unidades físicas. Nesse sentido avalie a lista e caso entenda que esteja dentro do \n                    esperado, isto é, nenhuma obra parece ser diferente do usual, não altere a amostra gerada. Caso \n                    contrário, agregue a obra à lista de amostras para análise. Por enquanto, não iremos excluir as\n                    obras por entendermos não ser outliers.\n                    </p>\n                    \"\"\")\n    else:\n        lst_INC = [0]\n        st.html(\"\"\"\n                    <p  style=\"text-align: justify;text-indent: 40px\">Avalie os outliers, além das\n                    obras selecionadas a seguir.\n                    </p>\n                    \n                    <p  style=\"text-align: justify;text-indent: 40px\">Outro fator de atenção é o critério\n                de valoração. O VOC ou é critério de valoração ou é usado como referencial para limitar\n                os outros critérios. Considerando que alguns dados são regulatórios é possível que a empresa\n                faça um deslocamento de valores de investimento para operacional. Nesse sentido, chamamos a atenção\n                para que se avalie nas amostras que estejam empregando um método de valoração que não\n                o VOC atualizado, se ocorreu deslocamento de investimento para operacional. Ademais, a base incremental possui\n                a seguinte distribuição, em valor novo de reposição, VNR, por tipo de avaliação:</p>\n                    \"\"\")\n    fig = px.pie(\n                    df_RES,\n                    names='Cd_TP_AVAL',\n                    values='VL_VNR_UC',\n                    title=f\"Distribuição do VNR - Empresa {empresa}\",\n                    color_discrete_sequence=px.colors.sequential.Teal \n                )\n    fig.update_traces(\n                        textinfo='percent+label', \n                        hoverinfo='label+value+percent',  \n                        pull=[0.1 if v == max(df_RES['VL_VNR_UC']) else 0 for v in df_RES['VL_VNR_UC']],  \n                        marker=dict(line=dict(color='white', width=2)) \n                    )\n\n    fig.update_layout(\n                        title=dict(\n                            text=f\"Distribuição do VNR - Empresa {empresa}\",\n                            font=dict(size=15, family=\"Arial, sans-serif\", color=\"black\"),\n                            x=0, \n                            y=0.95\n                        ),\n                        legend=dict(\n                            title=\"Categorias\",\n                            font=dict(size=12, family=\"Arial\"),\n                            orientation=\"h\", \n                            x=0.5,\n                            y=-0.1,\n                            xanchor=\"center\",\n                            yanchor=\"top\"\n                        ),\n                        margin=dict(t=50, b=50, l=50, r=50),\n                        showlegend=True,\n                        template=\"plotly_white\"\n                    )\n    _, col2a, _ = st.columns([1,2,1], gap = \"large\")\n    with col2a:\n        st.plotly_chart(fig)\n\n    if len(lst_INC)<=1:\n        df_AIS = df_AIS[df_AIS['FLG_OUTLIER'].isin(lst_INC)].copy()\n\n    M = df_AIS['VL_VOC'].sum() \n    p = 0.05   \n    MR = p * M \n\n    M_esc = f\"{M:,.2f}\".replace(\".\",\"x\").replace(\",\", \".\").replace(\"x\",\",\")\n    MR_esc = f\"{MR:,.2f}\".replace(\".\",\"x\").replace(\",\", \".\").replace(\"x\",\",\")\n    p_esc = f\"{p:,.2%}\".replace(\".\",\"x\").replace(\",\", \".\").replace(\"x\",\",\")\n    \n    st.html(f\"\"\"\n                    <p  style=\"text-align: justify;text-indent: 40px\">Para isso empregaremos a \n                    <b>Amostragem por Unidade Monetária</b>,\n                    metodologia utilizada em auditorias financeiras para assegurar a \n                    confiabilidade dos registros contábeis, utilizando princípios estatísticos \n                    baseados na distribuição hipergeométrica ou binomial. Essa técnica é \n                    eficaz para identificar erros ou distorções em registros de \n                    maior valor monetário, conferindo maior peso às transações de maior \n                    relevância. Assim, aplicaremos essa abordagem para avaliar a conformidade \n                    dos registros do AIS, considerando um nível de confiança de 95% e \n                    estabelecendo a proporção máxima de erros aceitáveis para determinar a \n                    aprovação do AIS apresentado. O conjunto de lançamentos contábeis, {empresa},\n                    totalizou R$ {M_esc}. A diferença máxima estimada é de R$ {MR_esc}, que \n                    representa {p_esc} de erro. Assim, o número de amostras, considerando que\n                    a quantidade de erros previstas é zero, possuindo um índice de confiabilidade\n                    de 3, é dada por:</p>\n                    \"\"\")\n    \n    texto = f\"\"\"\n                <p style=\"text-align: justify;text-indent: 40px\"> Para a primeira fase de \n                    amostragem, empregamos AUM e utilizamos princípios estatísticos baseados na distribuição \n                    hipergeométrica ou binomial para definição das amostras. Essa técnica é \n                    eficaz para identificar erros ou distorções em registros de \n                    maior valor monetário, conferindo maior peso às transações de maior \n                    relevância. Assim, aplicaremos essa abordagem para avaliar a conformidade \n                    dos registros do AIS, considerando um nível de confiança de 95% e \n                    estabelecendo a proporção máxima de erros aceitáveis para determinar a \n                    aprovação do AIS apresentado. O conjunto de lançamentos contábeis, {empresa},\n                    totalizou R$ {M_esc}. A diferença máxima estimada é de R$ {MR_esc}, que \n                    representa {p_esc} de erro. Assim, o número de amostras, considerando que\n                    a quantidade de erros previstas é zero, possuindo um índice de confiabilidade\n                    de 3, é dada por:</p>\n                    <INSERIR>equacao2.png</INSERIR>\n            \"\"\"\n    \n    st.markdown(\n                    \"\"\"\n                        $$\n                        \\large\n                        n = \\\\frac{C_{i,\\\\alpha}}{p} = \\\\frac{3}{0,05} = 60 \n                        $$\n                    \"\"\",\n                    unsafe_allow_html=True\n                )\n\n    df_AIS_SORT = df_AIS[(df_AIS['Nm_CLASS'] == 'BRR')].reset_index(drop=True).copy()\n    with sl.connect(bd_str) as bd:\n        df_ROA, erros_ROA = importar_dados_duckdb(\"ROA\", bd, empresa, ['VL', 'QT'], itens = \"Cd_SubODI, Nr_TI, VL_tot\", st=st)\n\n    df_AIS_SORT = df_ROA[df_ROA['Cd_SubODI'].isin(df_AIS_SORT['Cd_SubODI'].drop_duplicates().to_list())].copy()\n\n    A = df_ROA['Cd_SubODI'].drop_duplicates().to_list()\n    B = df_AIS['Cd_SubODI'].drop_duplicates().to_list()\n    faltando_em_B = list(set(A) - set(B))\n    faltando_em_A = list(set(B) - set(A))\n    itens_htmlB = \", \".join([f\"{item}\" for item in faltando_em_B])\n    itens_htmlA = \", \".join([f\"{item}\" for item in faltando_em_A])\n    if (len(itens_htmlB) + len(itens_htmlA)) > 0:\n        st.html(f\"\"\"\n                    <p  style=\"text-align: justify;text-indent: 40px\">Importante avaliarmos se houve ausências no AIS ou no ROA. A\n                seguir sumarizamos os dados.</p>\n                    \"\"\")\n\n    if len(itens_htmlB) > 0:\n        texto_html = f\"\"\"\n                        <div style=\"background-color: #ffdde1; padding: 15px; border-left: 5px solid #ff4b4b; border-radius: 4px;\">\n                            <strong style=\"color: #ff4b4b; font-size: 16px;\">Atenção: Os seguintes itens estão em falta no AIS (presentes no ROA):</strong>\n                            <ul style=\"margin-top: 10px; color: #333333; font-weight: 500;\">\n                                {itens_htmlB}\n                            </ul>\n                        </div>\n                        \"\"\"\n        st.html(texto_html)\n    if len(itens_htmlA) > 0:\n        texto_html = f\"\"\"\n                        <div style=\"background-color: #ffdde1; padding: 15px; border-left: 5px solid #ff4b4b; border-radius: 4px;\">\n                            <strong style=\"color: #ff4b4b; font-size: 16px;\">Atenção: Os seguintes itens estão em falta no ROA (presentes no AIS):</strong>\n                            <ul style=\"margin-top: 10px; color: #333333; font-weight: 500;\">\n                                {itens_htmlA}\n                            </ul>\n                        </div>\n                        \"\"\"\n        st.html(texto_html)\n\n    df_AIS_SORT = df_AIS_SORT.rename(columns={'VL_tot':'VL_VOC'})\n    df_AIS_SORT[\"Nr_TI\"] = df_AIS_SORT[\"Nr_TI\"].fillna(0)\n\n    with sl.connect(bd_str) as bd:\n        if (not existe_tabela('tbl_PROP_amostras', bd)) or refazer:\n            registrar_evento(database, vx_ID, \"Avaliando quantidade de amostras por TI\",\n                            mensagem=f\"Definindo o número de amostras por TI\")\n            df_LIM = df_AIS_SORT.groupby([\"Nr_TI\"], dropna=False)['VL_VOC'].count().reset_index()\n            df_LIM =  df_LIM.rename(columns={'VL_VOC': 'LIMITE'})\n            df_PROP = df_AIS_SORT.groupby([\"Nr_TI\"], dropna=False)['VL_VOC'].sum().reset_index()\n            df_PROP['n'] = np.ceil(df_PROP['VL_VOC'] / df_PROP['VL_VOC'].sum() * 60)\n            while True:\n                df_PROP = df_PROP.merge(df_LIM, on=\"Nr_TI\", how=\"left\")\n                df_PROP['EXCESSO'] = np.maximum(df_PROP['n'] - df_PROP['LIMITE'], 0)\n                df_PROP['n'] = np.minimum(df_PROP['n'], df_PROP['LIMITE'])\n                excesso_total = df_PROP['EXCESSO'].sum()\n                if excesso_total == 0:\n                    break\n                df_PROP['MARGEM'] = df_PROP['LIMITE'] - df_PROP['n']\n                total_margem = df_PROP['MARGEM'].sum()\n                if total_margem > 0:\n                    df_PROP['REDISTRIBUIR'] = np.ceil((df_PROP['MARGEM'] / total_margem) * excesso_total)\n                    df_PROP['n'] += df_PROP['REDISTRIBUIR']\n                else:\n                    break\n                df_PROP = df_PROP.drop(columns=['MARGEM', 'REDISTRIBUIR'])\n\n            df_PROP = df_PROP.drop(columns=['EXCESSO','LIMITE', 'VL_VOC'])\n            df_PROP.to_sql(\"tbl_PROP_amostras\", bd, if_exists='replace', index=False)\n            registrar_evento(database, vx_ID, \"Avaliando quantidade de amostras por TI\",\n                             mensagem=f\"Definido o número de amostras por TI\")\n        else:\n            df_PROP = pd.read_sql(\"SELECT * FROM tbl_PROP_amostras\", bd)\n    \n    st.html(f\"\"\"\n                    <p  style=\"text-align: justify;text-indent: 40px\">Vamos agora distribuir a \n                    a amostra por extratos, TI, considerando a proporção em valor, assim, temos\n                    a seguinte amostra por TI:</p><br>\n                    \"\"\")\n    colcs = st.columns([1,2,1], gap='small')\n    \n    with colcs[1]:\n        st.dataframe(df_PROP, width='stretch', hide_index=True)\n    axTXT = \"<p>Vamos agora distribuir a a amostra por extratos, TI, considerando a proporção em valor, assim, temos a seguinte amostra: \"\n    \n    for _, row in df_PROP.iterrows():\n        zz1 = f\"{row['n']:,.0f}\".replace(\",\", \".\")\n        axTXT += (f\"para a TI '{row['Nr_TI']}' tem-se '{zz1}' amostras, \")\n        axTXT = axTXT[:-2]\n        axTXT += \".</p>\"\n        texto += axTXT\n    \n    df_PROV = df_AIS_SORT.groupby(['Cd_SubODI','Nr_TI'], dropna=False)['VL_VOC'].sum().reset_index()\n\n    with sl.connect(bd_str) as bd:\n        if (not existe_tabela('tbl_TI_sorteio_amostras', bd)) or refazer:\n            registrar_evento(database, vx_ID, \"Definindo quais projetos constituem as amostras por TI\",\n                            mensagem=f\"Definindo quais projetos serão avaliados por TI\")\n            df_TI_SORTEIO = pd.DataFrame()\n            lst_PRJ = []\n            nm_arq_ciclo = rf\"{local}/RELATORIOS/LST_OBRAS_FISC_CICLO.csv\"\n            if os.path.isfile(nm_arq_ciclo):\n                df_projetos_avaliados_ciclo = pd.read_csv(nm_arq_ciclo, sep=\"|\", encoding=\"Latin-1\")\n                lst_projetos_avaliados_ciclo = df_projetos_avaliados_ciclo['Cd_SubODI'].drop_duplicates().to_list()\n            else:\n                lst_projetos_avaliados_ciclo = []\n\n            for n in df_PROP['Nr_TI'].to_list():  \n                df_TI_SORTEIO = pd.concat([df_TI_SORTEIO,\n                                    sorteio(df_PROV[df_PROV['Nr_TI']==n][['Nr_TI', 'Cd_SubODI','VL_VOC']], \n                                    'VL_VOC', ['Cd_SubODI','Nr_TI'], \n                                    df_PROP[df_PROP['Nr_TI']==n].iloc[0,-1], 42, lista_extra=LST_SUBROGACAO, sorteados=None, st = st,\n                                    lista_bloqueio=lst_projetos_avaliados_ciclo)],\n                                    ignore_index=True)\n                if len(df_TI_SORTEIO) > df_PROP['n'].sum():\n                    st.text(n)\n                    st.write(df_TI_SORTEIO)\n                    raise\n\n            df_TI_SORTEIO = df_TI_SORTEIO.drop_duplicates(subset=['Cd_SubODI', 'Nr_TI'])\n            \n            df_TI_SORTEIO.to_sql(\"tbl_TI_sorteio_amostras\", bd, if_exists='replace', index=False)\n            registrar_evento(database, vx_ID, \"Definindo quais projetos constituem as amostras por TI\",\n                                        mensagem=f\"Amostras de projetos, que serão avaliados por TI, definidas\")\n        else:\n            df_TI_SORTEIO = pd.read_sql(\"SELECT * FROM tbl_TI_sorteio_amostras\", bd)    \n\n    M_esc1 = f\"{df_AIS_SORT['VL_VOC'].sum():,.2f}\".replace(\".\",\"x\").replace(\",\", \".\").replace(\"x\",\",\")\n    p_esc1 = f\"{3/len(df_TI_SORTEIO):,.2%}\".replace(\".\",\"x\").replace(\",\", \".\").replace(\"x\",\",\")\n    MR_esc1 = f\"{df_AIS_SORT['VL_VOC'].sum()*3/len(df_TI_SORTEIO):,.2f}\".replace(\".\",\"x\").replace(\",\", \".\").replace(\"x\",\",\")\n    \n    st.html(f\"\"\"\n                    <p  style=\"text-align: justify;text-indent: 40px\">Assim, o conjunto de \n                    lançamentos contábeis, associados a BRR, da {empresa}, totalizou R$ \n                    {M_esc1}. Escolhemos {int(len(df_TI_SORTEIO))} amostras, sendo que a \n                    diferença máxima estimada é de R$ {MR_esc1}, que representa {p_esc1} \n                    de erro.</p>\n            \"\"\")\n    \n    texto += f\"\"\"\n                <p style=\"text-align: justify;text-indent: 40px\">Assim, o conjunto de \n                    lançamentos contábeis, associados a BRR, da {empresa}, totalizou R$ \n                    {M_esc1}. Escolhemos {int(len(df_TI_SORTEIO))} amostras, sendo que a \n                    diferença máxima estimada é de R$ {MR_esc1}, que representa {p_esc1} \n                    de erro.</p>\n            \"\"\"\n    st.html(f\"\"\"\n                    <p  style=\"text-align: justify;text-indent: 40px\">Abaixo temos as \n                    obras sorteadas para fins de análise em campo:</p><br>\n                    \"\"\")\n    df_TI_SORTEIO.columns = ['Cd_SubODI','Nr_TI','VL_VOC_TOT', \"Limite_Inferior\", \"Limite_Superior\"]\n\n    axTXT = df_TI_SORTEIO['Cd_SubODI'].drop_duplicates().to_list()\n    texto += \"<p style='text-align: justify;text-indent: 40px'>As obras sorteadas são: \"\n    texto += \", \".join(axTXT)\n    texto += \"</p>\"\n\n    with sl.connect(bd_str) as bd:\n        df_TI_SORTEIO.to_sql(\"tbl_AMOSTRAS\", bd, if_exists='replace', index=False)\n        df_AIS.to_sql(\"tbl_CLS_AIS\", bd, if_exists='replace', index=False)\n    \n    for n in [\"Limite_Inferior\", \"Limite_Superior\", \"VL_VOC_TOT\"]:\n        df_TI_SORTEIO[n] = df_TI_SORTEIO[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n    colbs = st.columns([1,4,1], gap='small')\n    with colbs[1]:\n        st.dataframe(df_TI_SORTEIO, hide_index=True)\n        st.download_button(\n                                \"Exportar CSV\",\n                                data=df_TI_SORTEIO.to_csv(index=False, sep=\"|\").encode(\"latin-1\"),\n                                file_name=f\"Dados_projetos_sorteados.csv\",\n                                mime=\"text/csv\",\n                                key=f\"Dados_projetos_sorteados\",\n                                disabled=df_TI_SORTEIO.empty,\n                            )\n\n    total = f\"{df_ROA['VL_tot'].sum():,.2f}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    txt_odi = \", \".join(df_TI_SORTEIO['Cd_SubODI'].unique())\n    st.html(f\"\"\"\n                    <p  style=\"text-align: justify;text-indent: 40px\">O investimento total é de R$ {total}. Segue obras: <b>{txt_odi}</b></p>\n                    \"\"\")\n    st.divider()\n\n    st.html(\"\"\"\n                <h2>Exportação para o Excel</h2>\n\n                <hr></hr>\n                                \n                <div style=\"text-align: justify;text-indent: 40px; padding-top: 10px\"><p>Exportar resultados \n                            para o Excel é feito devido à sua difusão como ferramenta de análise \n                            neste tipo de trabalho. Entendemos, nesse momento, que facilita a adoção, \n                            reduzindo a necessidade de treinamento adicional. Além disso, sua \n                            compatibilidade com diversos formatos e integração com outras aplicações \n                            garantem que os dados possam ser compartilhados e analisados. A seguir,\n                            resumimos os tipos de exportação.</p></div>\n                <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                            <p><b>F0</b>: O arquivo de saída SAIDA_F0_AMOSTRA, \n                            apresenta as obras a serem amostradas. O fiscal deverá preencher os campos\n                            e discutir com a coordenação os resultados.</p>\n                            </div>\n\n                \"\"\")\n    st.divider()\n    colas = st.columns([5,2,5], gap='small')\n    with colas[1]:\n        F0 = st.button(\"Imprimir Amostras\")\n    st.divider()\n    if F0:\n        with sl.connect(bd_str) as bd:\n            n = relatorio(f'{local}\\RELATORIOS', bd, empresa, st,\n                                    df_AIS_SORT['VL_VOC'].sum()*3/len(df_TI_SORTEIO),\n                                    df_AIS_SORT['VL_VOC'].sum()*0.0025)\n\n    texto += \"<p style='text-align: justify;text-indent: 40px'>A segunda etapa deve ser executada pela credenciada. </p>\"\n    dir_esc = f\"{local}//RELATORIOS//textos\".replace(\"\\\\\",\"/\").replace(\"/\",\"/\")\n    xEsc = exportar_texto(dir_esc, f\"AMST_DESC.txt\", texto, True)"
+    },
+    "documentacao": {
+      "resumo": "O código Python apresentado é uma série de funções e chamadas que realizam várias tarefas relacionadas à análise de dados, sorteio de amostras e geração de relatórios. Ele utiliza bibliotecas como pandas, sqlite3, plotly.express e streamlit para manipular e visualizar dados, além de realizar operações específicas como importar dados de um banco de dados SQLite, calcular proporções, sortear projetos e exportar resultados em diferentes formatos.",
+      "keywords": [
+        "Python",
+        "Análise de Dados",
+        "Sorteio de Amostras",
+        "Relatórios",
+        "Pandas",
+        "SQLite3",
+        "Plotly Express",
+        "Streamlit"
+      ],
+      "categoria": "Código Python"
+    },
+    "status": "sucesso"
+  }
+]

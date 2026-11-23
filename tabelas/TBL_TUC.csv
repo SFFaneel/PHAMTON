@@ -1,0 +1,107 @@
+Ide_TUC|Txt_Desc|PLV_CHV|TP_CDSTR|TP_CDSTR_P2
+100|ARMAZENAGEM, MANIPULACAO E TRANSPORTE DE COMBUSTIVEL LIQUIDO OU GASOSO||1|ND
+105|ARMAZENAGEM, MANIPULACAO E TRANSPORTE DE COMBUSTIVEL NUCLEAR||1|ND
+110|ARMAZENAGEM, MANIPULACAO E TRANSPORTE DE COMBUSTIVEL SOLIDO||1|ND
+112|ARMAZENAGEM, MANIPULACAO E TRANSPORTE DE RESIDUO||1|ND
+115|ARMAZENAGEM, MANIPULACAO E TRANSPORTE DE RESIDUO NUCLEAR||1|ND
+120|BALANCA PARA VEICULOS DE CARGA||1|ND
+125|BANCO DE CAPACITORES PARALELOS|CAPACITOR,POT,MON,DER,UNIDADE,CAPACITIVA,BC,AUTOMATICO,BANC,CAPAC,AUTOMATICO,BANCO,CAPACITORES,MVAR|1|ND
+130|BANCO DE CAPACITORES SERIAIS|CAPACITOR,POT,MON,SER,UNIDADE,CAPACITIVA,BC,AUTOMATICO,BANC,CAPAC,AUTOMATICO,BANCO,CAPACITORES,MVAR|1|ND
+135|BARRAMENTO|CABO,AL,NU,CAL,CANTON,ISOLAD,LIN-POST,POL,BARRAMENTO,ALUMINIO,ALMA,ACO,NÚ,FLEXIVEL,CA,OXLIP,CU,MDURO,NU,MDURA,EPR,PT,ISOLADOR,PED,IV,POLIM,RÍGIDO,TUBO,ALUMÍNIO,CAA,PEDESTAL,CONJUNTO,ISOLADORES,RIGIDO,AÇO,MOL,EPR/PVC,POLIMERICO,SUP,BAR,MUFLA,COBRE,ISOLADO|1|ND
+140|CALDEIRA||1|ND
+145|CAMARA E GALERIA||1|ND
+150|CANAL DE DESCARGA||1|ND
+155|CHAMINE||1|ND
+160|CHAVE|CHAVE,FUS,SEC,REL,MAN,FPD,MV,S/L,FC,BYPAS,CARG,OL,SECO,#CHAVE,SL,MONT-VT,TFF,EXT,DL,SC,AUT,MANOB,BANC,CAPACIT,SECCIONADORA,MONOFASICO,MANUAL,SECCIONADORA,TANDEM,TRIFASICO,LAMINA,TRIFÁSICO,MONOFÁSICO,FUSIVEL,TERRA,TAND,FC-FC,PORC,ALTAS/L,ALT,FF,MNSL,AUTOMATICO,PVO,VR,MOT,VACUO,CS|0|""">=34,5kV"""
+165|COMPENSADOR DE REATIVOS|compensador,reativos|1|ND
+170|COMPORTA||1|ND
+175|CONDENSADOR DE VAPOR||1|ND
+180|CONDUTO E CANALETA|CANALETAS,LARGURA,PROFUNDIDADE,CANALETA,CONJUNTO,CONDUTO,CONC,ARM,ALVENARIA,PLASTICO,ELETRODUTO,PVC,RIG,BSP,PT,CAIXA,PASSAGEM,TAMPA,BANCO,DUTO|0|ND
+185|CONDUTO FORCADO||1|ND
+190|CONDUTOR|CABO,AL,NU,CAL,ISOLADOR,LIN,POST,POL,CL,IV,ISOLAD,BAST,ANC,BQ,CB,NP,V,LIN-POST,III,BAS,CIR,EB,AACSR,CALA,CAA,LINNET,CA,AWG,PROT,XLPE,DISCO,VIDR,BLQ,CU,MDURO,NBI,PL,CONC,PT,AER,COB,CO,NN,PR,NI,NN,XLPE,BLOQ,MOLE,CONTR,PVC,MOL,IS,EPR,PT,CL2|0|ND
+195|CONVERSOR DE CORRENTE|conversor,corrente|1|ND
+200|CONVERSOR DE FREQUENCIA|conversor,frequência|1|ND
+205|DIREITO, MARCA E PATENTE|SERVIDÃO,LD,TERRA,SERV,SERV.,PASSAGEM,LINHA,REDE|1|ND
+210|DISJUNTOR|DISJ,AT,3P,SF6,KA,kA,MOT,SE,MT,VAC,3F,KV,kV,AL,DISJUNTOR,EXTERNO,VACUO,GAS,CAMARA,EXTINC|1|ND
+215|EDIFICACAO|CONTROLE,ACES,DIG,RS232,LEITOR,REFORMA,AMPL,ESCRITÓRIO,OBRAS,CIVIS,NOVO,PRÉDIO,REF/AMPL,TELHADO,AMBULATÓRIO,SEDE,OBRA,CIVIL,AGÊNCIA,AGENCIA,RESTAURANTE,BLOCO,CONSTRUÇÃO,ESC.,ALMOXARIFADO,CONST.,EDIF,ALVENARIA,NA,REGIONAL,AMPLIAÇÃO,PÁTIO,EST.,GALPÃO,ESTACIONAMENTO,COBERTURA,AUDITORIO,ABRIGO,CALIB.,SALA,ESTAÇÃO,ESCRITORIO,LAB.,QUIMICO,CENTRO,DISTRIBUIÇÃO,AUDITÓRIO,AMPL.,ANEXO,REPARTIMENTO,ELET.,PREDIO,SEMEIA,CASA,COMANDO,EDIFICAÇÃO,SUBESTAÇÃO,ISOLADA,SF6,COMANDO,ADMINISTRAÇÃO,EDIFICACAO,TELHA,CERAMICA,PASSEIO,CALÇADA,PISTA,PORTICO|1|ND
+220|ELEVADOR E TELEFERICO||1|ND
+225|ENVOLTORIO OU ESFERA DE CONTENCAO DO EDIFICIO DO REATOR NUCLEAR||1|ND
+230|EQUIPAMENTO GERAL|conj,esc,viii,rod,estac,atend,fx,arm,megohmetro,dig,med,resist,insp,camp,port,frat,televisor,lcd,led,full,hd,audioconf,ident,chm,dtmf/fsk,equipamento,eletn,qualid,decapador,fib,opt,3pos,maquina,fusao,smf,meg-homimetro,terrometro,multimetro,registro,dados,true-rms,rel,espir,ttr,mono,monit,trafo,alicate,amperim,cc/ca,aterramento,temp,testador,integ,camara,vac,disj,rig,dielet,oleo,isol,smartphone,samsung,galaxy,projetor,multim,xvga,impressora,termic,cod,barra-zeb,dispositivo,resg,descid,cont,autom,unid,condens,ar,split,h/w,btu,condicionad,refrigerador,comum,br,p/t,svga,las,monoc,pdv,touchone,box,impres,acopl,axial,vert,evaporad,embut,mesa,refeit,cj,retang,mdf,cad,pp,az,telefone,mov/cel,smartp,verif,medid,tc/tp,s/acessor,aferic,test/calb,grupo,gerad,dies,ins,smart,conves,cim,cass,frost,free,biv,desumidificador,ambiente,analis,corr,fug,par-raio,se,divisoria,escrit,alt,mdp,vid,conjunto,iii,armario,longar,lug,vi,copa,tb,qd,churrasqueira,indl,gas,ac,inox,modulo,medir,gbic,sfp,alc,bebedouro,ind,inx,par,aco,torneiras,refrigerad,dupl,relogio,pont,imprs,term,biom,no-break,c/conv,enceradeira,hi/w,fix,mes,sip,cor,auric,s/fi,c/fi,sat,iridium,roteador,movel,sat/cel,via,est,trab,ret,bancada,acabam,amadeirado,acab,amad,trein,longarina,pranch,uni,polip,poltrona,reclin,courin,reun,cadeir,cadeira,pres/exec,ajust,girat,rodiz,pe,execut,bas,back,sist,regul,balcao,plast,desliz,kit,invers,elet,analisador,qual,dg,ts,loc,cobrim,bar,conc,termovisor,touch,lente,padrao,motopoda,interruptor,ab,sb,carg,loadb,camera,fotog,compressor,scroll,dc,fragmentadora,papel,automatic,evaporador,piso,teto,tv,calibrador,eletr,pneu,bifás,cortador,grama,dirigíve,diâm,corte,serra,circular,detector,vazam,s/fio,sond,flex,desbobinador,prato,oficina,termo-higrom,trip,int/ext,estof,estante,prat,purif,retratil,auditorio,prancheta,palet,estacao,bols,transpaleteira,hidr,arg,fat,extintor,incêndio,ilum,ar-condicionado,pneus,triturador,incendio|0|ND
+235|EQUIPAMENTO GERAL DE INFORMATICA|notebook,intel,core,i5,gb,unid,condens,ar,split,coletor,dados,pda,bt,computador,deskt,empl,gb,i7,ghz,mb,led,ssd,tablet,mem,vid,cp/prot,unidade,fita,int,backup,servidor,tb,rd,empres,power,sist,xeon,plat,armazen,storage,ext,sata,rack,roteador,firewall,mbps,4g,wi-fi,cam,mp,dad/config,rf,portatil,armaz,switch,pts,gbps,topo,ram,gaveta,expans,no-break,monitor,lfd,pared,mod,comun,hpe,sfp,poe,rede,metro-ethe,equipamento,videoconf,ponto,acesso,dual,band,seg,fortigate,cisco,portas,ultrasom,port,mhz,scanner,bandj,fl,dpi,ppm,badej,audioconf,ident,chm,dtmf/fsk,duo,fortiwifi,impressora,multif,crach,dupl,usb/ethe/rd,lan,hp,microcomputador,leitor,bateria,nobreak,fonte,placa,pci32b,autotrac,cel,gsm,celular,antena|0|ND
+240|EQUIPAMENTOS DA TOMADA DAGUA||1|ND
+245|EQUIPAMENTOS DO CICLO TERMICO||1|ND
+250|ESTRADA DE ACESSO||1|ND
+255|ESTRUTURA, POSTE ou TORRE|poste,ret,conc,m,dan,dt,circ,defensa,torre,met,autop,trus,aut,anc,metalico,seccionado,tp/quad,circ/qd,fbv,colun,cmb,col,tub,seccion,sec,flang|0|ND
+260|ESTRUTURA DA TOMADA DAGUA||1|ND
+265|ESTRUTURA SUPORTE DE EQUIPAMENTO E DE BARRAMENTO|base,estrutura,suporte,barramento,composta,vigas,forca,trilhos,portico,composto,postes,seção,duplo,comp,dt,viga,concreto,escada,poste,conc,mm,m,cm,colunas,metalicas,par,met,ac,gf,at,cadeia,aco,fix,prs,fx,is,ped,ip/pr,pedestal,perfil,lam,dan,coluna,perf,circ,top/quad,prfv,supt,se,vbr2,pefil,aba,trelic,rb,cx,lig,composto,post,metalica,muflas,treliça,cant,oleo,man|1|ND
+270|FIBRA OTICA|fibra,otica,optica,ótica,óptica,cabo,fib,opt,sm,aut-sust,drop,ft,sc,op,auto-sust,gel,ext,loo,ge,dp,tigh,int/ext|1|ND
+275|GERADOR||1|ND
+280|GERADOR DE VAPOR||1|ND
+285|INSTALACOES DE RECREACAO E LAZER||1|ND
+290|LUMINARIA||0|ND
+295|MEDIDOR|med,eletn,1f,2fi,1el,s/intf,wh,2f,3fi,2el,3f,4fi,3el,contat,mm,tbr,cont,rf915,ct,mult,3e,at/rt,irrig,rs232,concentrador,prim,rf,mhz,medidor,2e,ethern,ge,dtd,drp/drc,in,di,modulo,comunic,lorawan,terminal,leit,sgpm,blq,ind,cpu,cs,sgp+m,concent,sec,remot,gsm/gprs,bps,at,max,led,kwh,rs485,int,intlg,eletmc,3f4fi,eth,wh/varh|0|ND
+300|MOTOR DE COMBUSTAO INTERNA||1|ND
+305|PAINEL, MESA DE COMANDO E CUBICULO|rack,gabin,mod,quadro,el,paralel,paral,quad,int,sv,aux,abrig,ac,med,eletn,ethern,painel,met,med/sup,rele,prot,sobrecor,multif,unidade,term,rem,utr,mt,proteção,medidor,digital,itron,sl,landis,gyr,medicao,controle,terminal,remota,conversor,mid,fastmult,eth,protecao,rl1,ied,detet,gas,aut,traf/reat,buchholz,ucp,digital,qsa-ca,qsa-cc,medição,schneider,power,logic,elet,wh/varh,mecan,qmo,concent,comun,protoc,opc,mecanico,arteche,qpc1,distribuidor,geral,otico,concentrad,comunic, ent,sd,ca/cc,cubiculo,interno,otico,monitoramento,rs232,qsa-cacc,operacional,digital,qd-tc,aquisição,dados,disjuntor,retific,chav,dig,ca,alta,baixa,proteçao,beo/dio,analogico,painel,interligação|1|ND
+310|PARARAIOS|para-raios,dt,pol,estac,silic,zno,pararaios,polimerico,oxido,zinco,pr,para-raio|0|""">=34,5kV"""
+315|PONTE ROLANTE, GUINDASTE OU PORTICO||1|ND
+320|PRECIPITADOR DE RESIDUOS, DESSULFURIZADOR||1|ND
+325|PROTETOR DE REDE||0|ND
+330|REATOR OU RESISTOR|reator,ser,kvar|1|ND
+335|REATOR NUCLEAR||1|ND
+340|REGULADOR DE TENSAO|regulador,ts,1f,regulad,kva,kv,sincronizador,reg,regul,tensao,monofásico,3f,trifásico|0|""">=69kV"""
+345|RELIGADOR|relig,3f,kv,ka,blq,ctrl,controle,religador,1f,autoalim,rack,advc3,aco,inox,camara,coop,pow,rele,aux,mecan,prot,vcc,vca,religador,trifásico,automatico,vac,cooper,extincao,vacuo,trifasico|1|ND
+350|RESERVATORIO, BARRAGEM E ADUTORA||1|ND
+355|SISTEMA ANTIRUIDO|sistema,antiruido,anti-ruído,anti-ruido,antiruído|1|ND
+360|SISTEMA DE ABASTECIMENTO DE AGUA|poço,cisterna,abastecimento,água,agua,sistema|1|ND
+365|SISTEMA DE AGUA DE ALIMENTACAO|sistema,alimentação,alimentacao,agua,água|1|ND
+370|SISTEMA DE AGUA DE CIRCULACAO|sistema,agua,água,circulacao,circulação|1|ND
+375|SISTEMA DE ALIMENTACAO DE ENERGIA|conversor,tens,volt,dc-dc,vcc,bat,aut,ah,sel,no-break,3f,kva,el,ch-ac,selad,vrla,estac,alcalin,retg,banc,val,retific,carreg,banco,baterias,modulos,retificador,celulas,elementos,chav,dig,ca,eltek,alimentação,utm/sel,ni-mh,rec|1|ND
+380|SISTEMA DE AMOSTRAGEM PRIMARIO|sistema,amostragem,primário,primario|1|ND
+385|SISTEMA DE AR COMPRIMIDO|sistema,ar,comprimido|1|ND
+390|SISTEMA DE AR E GASES DE COMBUSTAO|sistema,ar,gases,combustão,combustao|1|ND
+395|SISTEMA DE ATERRAMENTO|"cordoalha,aco,5/16"",hs,clb,3/8"",ehs,rd,ac,gf,haste,at,spl,ac/cu,5/8"",cabo,cu,mol,mm²,epr,pt,nu,mduro,sistema,aterramento"|0|"""GE, SE e COMUNICACAO"""
+400|SISTEMA DE COLETA DE OLEO ISOLANTE|caixa,separadora,oleo,sistema,coleta,bacias,coletoras,composto,bacia,óleo,isolante,agua,água|1|ND
+405|SISTEMA DE COLETA E TRATAMENTO DE LIXO|sistema,coleta,tratamento,lixo|1|ND
+410|SISTEMA DE COMUNICACAO E PROTECAO CARRIER|sistema,comunicacao,protecao,proteção,carrier|1|ND
+415|SISTEMA DE COMUNICACAO LOCAL|conversor,ethernet,elet/opt,alim,vcc,comunicacao,comunicação,local|1|ND
+420|SISTEMA DE CONDENSADO PARA PRODUCAO NUCLEAR|sistema,condensado,producao,produção,nuclear|1|ND
+425|SISTEMA DE CONTROLE QUIMICO E VOLUMETRICO|sistema,controle,quimico,químico,volumétrico,volumetrico|1|ND
+430|SISTEMA DE DADOS METEOROLOGICOS, HIDROLOGICOS E SISMOLOGICOS|sistema,dados,metereológicos,metereologico,hidrológico,hidrologico,sismologico,sismológico|1|ND
+435|SISTEMA DE DESCONTAMINACAO PARA PRODUCAO NUCLEAR|sistema,descontaminação,descontaminacao,nuclear,producao,produção|1|ND
+440|SISTEMA DE DOSAGEM QUIMICA PARA PRODUCAO NUCLEAR|sistema,dosagem,química,quimica,nuclear,producao,produção|1|ND
+445|SISTEMA DE DRENAGEM|sistema,drenagem,caixas,passagem,drengem,tubulações,bocas,lobos,tubos,tubulacoes|1|ND
+450|SISTEMA DE ESGOTO SANITARIO|fossa,septica,séptica,sumidouro,esgoto,sanitário,sanitario|1|ND
+455|SISTEMA DE EXAUSTAO, VENTILACAO E AR CONDICIONADO|sistema,exaustão,exaustao,ventilacao,ventilação,ar,condicionado,btu|1|ND
+460|SISTEMA DE ILUMINACAO E FORCA|iluminação,refletores,led,luminarias,iluminacao,luminaria,arandel,al,inc,w,e27,refletor,holofote,luminárias,postes,temp/gas/vap/po,glob,vid,suporte,met,fix,ac,gf|1|ND
+465|SISTEMA DE LUBRIFICACAO, DE OLEO DE REGULACAO E DE OLEO ISOLANTE OU PARA ISOLAMENTO|sistema,lubrificao,óleo,oleo,regulação,isolante,isolamento,regulacao|1|ND
+470|SISTEMA DE MONITORACAO DA USINA|sistema,monitoração,monitoracao,usina|1|ND
+475|SISTEMA DE MONITORACAO DO CIRCUITO PRIMARIO PARA PRODUCAO NUCLEAR|sistema,monitoração,monitoracao,usina,nuclear,primário,primario,circuito|1|ND
+480|SISTEMA DE PROTECAO CONTRA INCENDIO|incêndio,incendio,corta-fogo,cortafogo,fogo,corta,parede|1|ND
+485|SISTEMA DE PROTECAO, MEDICAO E AUTOMACAO|monitor,abert,chave,lpwan,bgan,tp,kit,legacy,core,sensor,ind,falta,modulo,remota,falt,rs232,dnp3,servidor,term,sist,prot,med,aut,port,switch,sel,gps,prt,autom,sinc,tempo,mbps,autos,rj-45,sfp,terminal,server,sel,rele,protecao,painel,concent,comun,protoc,opc,conversor,ethernet,fibra,otica,mbps,eletn,eth,mid,fastmult,advantech,cabo,fib,opt,dp,transc,1port,qmf|1|ND
+490|SISTEMA DE PULVERIZACAO DO ENVOLTORIO DE CONTENCAO|sistema,pulverização,pulverizacao,envoltório,envoltorio,contencao,contenção|1|ND
+495|SISTEMA DE RADIOCOMUNICACAO|modulo,opt,sfp,eth,fib,switch,plac,intef,ser,radio,canopy,wirel,dig,vhf,gps,vhf/fm,port,mhz,repetidora,sist,ref,telec,triang,antena,colin,fix,vhf/uhf,rad,mag,ativa,db,vid,conversor,mid,transc,ethernet,portas,mpps,med/port,asg,fortiap,rs232,transceptor,uhf,bgan,rf,concent,rs232/422/485,transp,conv,vhf-tcp/ip,nastek,instal,ant,comunic,autos,rj-45/fo,modem,mds,sd4,radiocomunicação,estacao,otica,est,fx,transmissor,receptor,smd,microond,radom,vhf/uh,autoportante,omnid,satel,monit,veic,autrotac,wifi,rs232/485n|1|ND
+500|SISTEMA DE REFRIGERACAO DE EMERGENCIA DO NUCLEO DO REATOR|sistema,refrigeração,refrigeracao,emergencia,emergência,núcleo,nucleo,reator|1|ND
+505|SISTEMA DE REFRIGERACAO DO REATOR|sistema,refrigeracao,refrigeração,reator|1|ND
+510|SISTEMA DE REFRIGERACAO E PURIFICACAO DO POCO DE COMBUSTIVEL USADO|sistema,refrigeracao,refrigeração,purificacao,purificação,poço,poco,combustível,combustivel,usado|1|ND
+515|SISTEMA DE RESFRIAMENTO DE EQUIPAMENTOS|sistema,resfriamento,equipamento|1|ND
+520|SISTEMA DE VIGILANCIA ELETRONICA|cancela,automatic,estac,articula,catraca,bap,fancy,tcp/ip,leitor,duplo,servidor,sist,mon,cftv,cam,vigilância,eletronica,eletrônica,eletn,contr,aces,catrac/cancel,barreir,rod,aut|1|ND
+525|SISTEMA PARA GASEIFICACAO DE CARVAO|sistema,gaseificacao,gaseificação,carvao,carvão|1|ND
+530|SISTEMA DE VAPOR PARA PRODUCAO NUCLEAR|sistema,vapor,nuclear|1|ND
+535|SOFTWARE|dados,cs,roll-out,erp,soluç/telecom,modelagem,software,sistema,lic,softw,sw,maint,sap,ccs,data,center,bdgd,efd,reinf,sap,websupply,redes,automatização,dfs,centralização,nsf,cad,autom,fast,siteware,autocad,digital,licenças,softwares,accenture,photoshop,creativ,cloud,adaudit,licenciamento,oracle,microsoft,switch,elipse,power,ti,automação,softwere,licença,softwar,atualização,interface,enterprise,office,web,plataforma,azuredevops,upgrade,backup,cent,mesh,upg,elips,adms,workflow,ecc,sb,tangran,firewall,seg,red,fortigate|1|ND
+540|SUBESTACAO SF6|mod,gis,compac,int,kv,ka,compacta,sf6|1|ND
+545|SUBESTACAO UNITARIA|tr-movel,mva,3f,unitária,unitaria|1|ND
+550|SUPRIMENTO E TRATAMENTO DAGUA|suprimento,tratamento,agua,água|1|ND
+555|TERRENO|terreno,terr|1|ND
+560|TRANSFORMADOR DE ATERRAMENTO|tranformador,aterramento,aterr,trafo,trnf|1|ND
+565|TRANSFORMADOR DE DISTRIBUICAO|trafo,dt,1f,kv,fn,kva,transformador,aéreo,aereo,verde,vd|0|ND
+570|TRANSFORMADOR DE FORCA|rele,monit,paralelism,tf,forc,transformador,força,kv,mva,trifasico,comutador,tf-p,ltc,trafo,trifásico,monitoramento,monitor,temperat,oleo,3f,relé,proteção,oleo/enrol,protecao|1|ND
+575|TRANSFORMADOR DE MEDIDA|trafo,pot,kv,va,mp,ind,conj,med,post,encap,in,ext,tp,tc,ex,poste,bar,blq,int,md,ped,externo,transformador,corrente,tpi,cor,tor,md/prt,buc,m/p,tpc,potencial,indutivo|0|""">=69kV"""
+580|TRANSFORMADOR DE SERVICOS AUXILIARES|trafo,dt,3f,kv,kva,tsa,trifasico,seco3f,ip20,trifásico,1f,fn,ff,transformador|1|ND
+585|TURBINA A GAS AERODERIVADO|turbina,gás,gas,aero,aeroderivado|1|ND
+590|TURBINA EOLICA, AEROGERADOR|turbina,eolica,eólica,aero,aerogerador|1|ND
+595|TURBINA HIDRAULICA|turbina,hidráulica,hidraulica|1|ND
+600|TURBINA A VAPOR, TURBO GERADOR|turbina,vapor,turbo-gerador,turbogerador,turbo,gerador|1|ND
+605|UNIDADE DE GERACAO SOLAR FOTOVOLTAICA|sol,fotov,mod,painel,monocrist,inversor,controlad,carg,pain,solar,sistema,bat,el,estac,ch-ac,ah,ventil,bateria,litio,lfp,lítio|0|ND
+610|URBANIZACAO E BENFEITORIAS|PASSEIOS,CALCADAS,ÁREA,BRITADA,PASSEIO,AREA,CALCADA,CERCAS,PAVIMENTADA,CONCERTINA,PORTÃO,TALUDE,EXTERNA,BRITA,RUAS,PEDRA,INTERTRAVADA,MEIO-FIO,CONJUNTO,PATIO,RUA,GRAMADO,CALÇADA,PÁTIO,BRITAS,M2,MUROS,PAVIMENTAÇÃO,SEDE,MURO,ESTACIONAMENTO,ALMOXARIFADO,CERCA,PEDREIRA,ALVENARIA,CONCRETO,JARDINS,ALAMBRADO,PAVIMETADA|1|ND
+615|VEICULOS|empilhadeira,combust,gas,veic,frot,caminh,toco,4x2,rod,dup,eix,pickup,cabine,simples,caminhao,cesto,duplo,guindauto,basculante,trave,caniv,util,pick-up,dupl,camion,simp,tracion|1|ND
+0|NA|na|1|ND

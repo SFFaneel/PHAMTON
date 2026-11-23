@@ -1,0 +1,13 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,AR,Ar comprimido
+3,EP,EPOXI
+4,GA,Gas SF6
+5,GV,GVO (grande volume de óleo)
+6,ON,Óleo naftenico
+7,OP,Óleo parafinico
+8,PV,PVO (pequeno volume de óleo)
+9,SE,Seco
+10,SO,Sopro
+11,VC,Vácuo
+12,VP,Vapor

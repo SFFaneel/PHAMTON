@@ -1,0 +1,16 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,A1,Subgrupo A1 - tensão de fornecimento igual ou superior a 230 kV
+3,A2,Subgrupo A2 - tensão de fornecimento de 88 kV a 138 kV
+4,A3,Subgrupo A3 - tensão de fornecimento de 69 kV
+5,A3A,Subgrupo A3a - tensão de fornecimento de 30 kV a 44 kV
+6,A4,"Subgrupo A4 - tensão de fornecimento de 2,3 kV a 25 kV"
+7,AS,Subgrupo AS
+8,B1,Subgrupo B1 - residencial
+9,B1BR,Subgrupo B1 - residencial baixa renda
+10,B2RU,Subgrupo B2 - rural
+11,B2CO,Subgrupo B2 - cooperativa de eletrificação rural
+12,B2SP,Subgrupo B2 - serviço público de irrigação
+13,B3,Subgrupo B3 - demais classes
+14,B4A,Subgrupo B4 - iluminação pública - propriedade do poder público
+15,B4B,Subgrupo B4 - iluminação pública - propriedade da distribuidora

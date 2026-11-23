@@ -1,0 +1,79 @@
+[
+  {
+    "funcao": {
+      "nome": "visualizar_docs",
+      "tipo": "function",
+      "linha_inicio": 5,
+      "linha_fim": 55,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pathlib.Path",
+          "streamlit",
+          "streamlit.components.v1.html"
+        ],
+        "chamadas": [
+          "Path",
+          "caminho.is_file",
+          "caminho.read_bytes",
+          "css_file.read",
+          "html",
+          "html_file.read",
+          "open",
+          "st.container",
+          "st.error",
+          "st.info",
+          "st.pdf",
+          "st.tabs"
+        ]
+      },
+      "codigo": "def visualizar_docs(st=None):\n    st.info(\"Visite regularmente o sitio da Aneel para versão mais atualizada.\", icon=\"🚨\")\n    tab1, tab4, tab2, tab3, tab5 = st.tabs([\"MCPSE\", \"PRORET 2.3\", \"MCSE\", \"ROCT\", \"MDFEF\"])\n\n    with tab1:\n        with open(\"html//MCPSE.css\", encoding=\"utf-8\", mode=\"r\") as css_file:\n            css_arq = css_file.read()\n        with open(\"html//MCPSE.html\", encoding=\"utf-8\", mode=\"r\") as html_file:\n            html_arq = html_file.read()\n\n        full_html = f\"<style>{css_arq}</style>{html_arq}\"\n\n        with st.container(border=True):\n            html(full_html, height=800, scrolling=True)\n\n    with tab4:\n        with open(\"html//MCPSE.css\", encoding=\"utf-8\", mode=\"r\") as css_file:\n            css_arq2 = css_file.read()\n        with open(\"html//PRORET_2_3.html\", encoding=\"utf-8\", mode=\"r\") as html_file:\n            html_arq2 = html_file.read()\n\n        full_html2 = f\"<style>{css_arq2}</style>{html_arq2}\"\n\n        with st.container(border=True):\n            html(full_html2, height=800, scrolling=True)\n    with tab2:\n        with open(\"html//MCPSE.css\", encoding=\"utf-8\", mode=\"r\") as css_file:\n            css_arq1 = css_file.read()\n        with open(\"html//MCSE.html\", encoding=\"utf-8\", mode=\"r\") as html_file:\n            html_arq1 = html_file.read()\n\n        full_html1 = f\"<style>{css_arq1}</style>{html_arq1}\"\n\n        with st.container(border=True):\n            html(full_html1, height=800, scrolling=True)\n    with tab3:\n        with open(\"html//MCPSE.css\", encoding=\"utf-8\", mode=\"r\") as css_file:\n                    css_arq1 = css_file.read()\n        with open(\"html//ROCTax.html\", encoding=\"utf-8\", mode=\"r\") as html_file:\n            html_arq1 = html_file.read()\n\n        full_html1 = f\"<style>{css_arq1}</style>{html_arq1}\"\n\n        with st.container(border=True):\n            html(full_html1, height=800, scrolling=True)\n    with tab5:\n        caminho = Path(r\"html\\Manual_Dados_SFF_Rev1.3.pdf\")\n        if caminho.is_file():\n            st.pdf(caminho.read_bytes(), height=600)\n        else:\n            st.error(f\"Arquivo não encontrado: {caminho}\")"
+    },
+    "documentacao": {
+      "resumo": "Visualiza documentos e arquivos em diferentes abas de uma interface Streamlit.",
+      "descricao": "A função `visualizar_docs` exibe conteúdo HTML e PDF em diferentes abas de uma interface Streamlit. Ela lê arquivos CSS e HTML para renderizar o conteúdo, além de lidar com a visualização de um arquivo PDF específico.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": "streamlit",
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit usado para criar e gerenciar a interface da aplicação."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": {
+        "imports": [
+          "pathlib.Path",
+          "streamlit",
+          "streamlit.components.v1.html"
+        ],
+        "chamadas": [
+          "Path",
+          "caminho.is_file",
+          "caminho.read_bytes",
+          "css_file.read",
+          "html",
+          "html_file.read",
+          "open",
+          "st.container",
+          "st.error",
+          "st.info",
+          "st.pdf",
+          "st.tabs"
+        ]
+      },
+      "docstring": "Visualiza documentos e arquivos em diferentes abas de uma interface Streamlit.\n\nArgs:\n    st (streamlit): Objeto Streamlit usado para criar e gerenciar a interface da aplicação.\n\nReturns:\n    None\n\nNotes:\n    - A função lê arquivos CSS e HTML para renderizar o conteúdo em diferentes abas.\n    - Também lida com a visualização de um arquivo PDF específico.\n    - Caso o arquivo PDF não seja encontrado, exibe uma mensagem de erro."
+    },
+    "status": "sucesso"
+  }
+]

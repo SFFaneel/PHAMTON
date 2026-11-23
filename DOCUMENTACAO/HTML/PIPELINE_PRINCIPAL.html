@@ -1,0 +1,3518 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documentação de Páginas | Pipeline Explorer</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .page-app { display:grid; grid-template-columns:288px minmax(0,1fr) 210px; min-height:100vh; }
+    .page-app .main { max-width:1100px; }
+    .group-name { margin:20px 12px 6px; font-size:10px; color:var(--muted); letter-spacing:1.3px; font-weight:700; }
+    .page-nav { display:block; width:100%; border:0; border-radius:9px; background:transparent; color:var(--text); padding:10px 12px; text-align:left; cursor:pointer; font-size:12px; }
+    .page-nav:hover, .page-nav.active { background:#1b3141; color:var(--accent); }
+    .page-card { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:22px; margin:18px 0; }
+    .page-card h2 { margin:0 0 16px; font-size:21px; }
+    .field { margin:15px 0; }
+    .field strong { display:block; color:var(--accent); font-size:12px; letter-spacing:.5px; margin-bottom:5px; }
+    .field .texto-documentacao { color:#c8d5e4; line-height:1.7; overflow-wrap:break-word; }
+    .field .texto-documentacao p { margin:0 0 1em; white-space:normal; text-align:justify; }
+    .field .texto-documentacao p:last-child { margin-bottom:0; }
+    .placeholder { color:var(--muted)!important; font-style:italic; }
+    .pipeline-card { border:1px solid var(--border); border-radius:12px; background:var(--panel); margin:13px 0; overflow:hidden; }
+    .pipeline-card > summary { padding:15px 17px; cursor:pointer; font-weight:600; color:var(--accent); }
+    .pipeline-card[open] > summary { border-bottom:1px solid var(--border); }
+    .pipeline-content { padding:6px 18px 20px; }
+    .pipeline-content ol { padding-left:24px; }
+    .pipeline-content li { padding:4px 0; color:#c8d5e4; }
+    .toc a { cursor:pointer; }
+    .section-label { font-size:11px; color:var(--muted); letter-spacing:1.4px; margin:28px 0 10px; }
+    .source-label { color:var(--muted); font-size:12px; }
+    .notice { font-size:12px; color:var(--muted); margin:10px 0 22px; }
+    @media(max-width:1150px) { .page-app { grid-template-columns:260px minmax(0,1fr); } }
+    @media(max-width:760px) { .page-app { display:block; } .page-app .sidebar { position:static; left:auto; height:auto; width:auto; box-shadow:none; } .page-app .main { padding:20px 17px 60px; } .page-card { padding:16px; } }
+
+    /* Documentação funcional: hierarquia, recuo de bloco e leitura fluida */
+    .page-app .main { padding:28px clamp(20px,3vw,42px) 72px; }
+    .page-card { padding:clamp(22px,3vw,34px); }
+    .page-card h2 { font-size:23px; margin-bottom:22px; }
+    .field { margin:0; padding:22px 0; }
+    .field + .field { border-top:1px solid var(--border); }
+    .field > strong { display:flex; align-items:center; gap:10px; color:var(--text); font-size:16px; font-weight:700; margin-bottom:14px; letter-spacing:0; }
+    .field-icon { color:var(--accent); font-size:18px; width:24px; text-align:center; flex:none; }
+    .field .texto-documentacao { margin-left:clamp(24px,4vw,52px); margin-right:clamp(4px,2vw,20px); color:#c8d5e4; font-size:15px; line-height:1.72; overflow-wrap:break-word; }
+    .field .texto-documentacao p { margin:0 0 14px; text-align:justify; text-align-last:left; text-indent:0; white-space:normal; hyphens:auto; }
+    .field .texto-documentacao p:last-child { margin-bottom:0; }
+    .field .texto-documentacao .subtitulo-documentacao { color:var(--accent); font-size:13px; font-weight:700; line-height:1.45; margin:20px 0 10px; letter-spacing:.3px; }
+    .field .texto-documentacao .subtitulo-documentacao:first-child { margin-top:0; }
+    .doc-data-table { width:100%; border-collapse:collapse; margin:10px 0 17px; font-size:14px; line-height:1.55; }
+    .doc-data-table th, .doc-data-table td { text-align:left; vertical-align:top; padding:11px 13px; border-bottom:1px solid var(--border); }
+    .doc-data-table th { width:34%; color:var(--text); font-weight:650; }
+    .doc-data-table td { color:#c8d5e4; overflow-wrap:anywhere; }
+    .doc-data-table tr:last-child th, .doc-data-table tr:last-child td { border-bottom:0; }
+    .doc-data-table tr:nth-child(odd) { background:rgba(125,170,190,.055); }
+    .doc-outcomes { margin:0; padding-left:21px; }
+    .doc-outcomes li { padding:4px 0 7px; line-height:1.65; }
+    .pipeline-content ol { padding-left:26px; }
+    .pipeline-content li { font-size:15px; line-height:1.7; }
+    @media (max-width:760px) {
+      .page-app .main { padding:20px 15px 60px; }
+      .page-card { padding:18px 15px; }
+      .field .texto-documentacao { margin-left:18px; margin-right:0; font-size:14.5px; }
+      .field .texto-documentacao p { text-align:left; }
+      .doc-data-table th, .doc-data-table td { padding:9px 7px; font-size:12.5px; }
+    }
+
+    /* Manual operacional ilustrado */
+    .interface-card { border-top:1px solid var(--border); padding:24px 0 4px; margin:12px 0 0; }
+    .interface-card h2 { margin:0 0 12px; font-size:17px; color:var(--text); }
+    .interface-intro { color:#c8d5e4; font-size:14px; margin:0 0 18px; }
+    .interface-figure { margin:0; }
+    .interface-image-wrap { position:relative; overflow:hidden; border:1px solid var(--border); border-radius:12px; background:#fff; }
+    .interface-image { width:100%; height:auto; display:block; cursor:zoom-in; }
+    .interface-marker { position:absolute; transform:translate(-50%,-50%); width:clamp(20px,2.3vw,29px); height:clamp(20px,2.3vw,29px); border:2px solid #fff; border-radius:50%; background:#087d87; color:white; font-size:12px; font-weight:800; display:grid; place-items:center; box-shadow:0 2px 7px #0008; cursor:pointer; }
+    .interface-marker:hover,.interface-marker:focus-visible { background:#cc6b18; outline:2px solid #fff; outline-offset:2px; }
+    .interface-caption { color:var(--muted); font-size:12px; margin-top:10px; }
+    .interface-elements { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; margin-top:20px; }
+    .interface-step { border:1px solid var(--border); border-radius:10px; padding:14px; background:rgba(125,170,190,.04); scroll-margin-top:20px; }
+    .interface-step:target { outline:2px solid var(--accent); }
+    .interface-step-title { display:flex; align-items:center; gap:9px; margin-bottom:8px; color:var(--text); font-size:14px; font-weight:700; }
+    .interface-number { background:#087d87; color:#fff; border-radius:50%; width:25px; height:25px; flex:none; display:grid; place-items:center; font-size:12px; }
+    .interface-step p { margin:0 0 0 34px; color:#c8d5e4; font-size:14px; line-height:1.65; text-align:justify; }
+    .interface-note { margin:18px 0 0; padding:12px 15px; border-left:3px solid var(--accent); background:rgba(125,170,190,.055); font-size:13px; line-height:1.6; color:#c8d5e4; }
+    .image-dialog { max-width:min(96vw,1700px); max-height:94vh; border:0; border-radius:12px; padding:12px; background:#f9fafb; }
+    .image-dialog::backdrop { background:rgba(0,0,0,.84); }
+    .image-dialog img { display:block; max-width:100%; max-height:84vh; object-fit:contain; }
+    .image-dialog button { display:block; margin:0 0 10px auto; cursor:pointer; padding:7px 12px; }
+    @media(max-width:760px) { .interface-elements { grid-template-columns:1fr; } .interface-step p { text-align:left; } }
+  </style>
+</head>
+<body>
+  <div class="page-app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">⑂</div>
+        <div><strong>PIPELINE</strong><small>DOCUMENTAÇÃO</small></div>
+      </div>
+      <div class="nav-caption">NAVEGAÇÃO</div>
+      <nav id="nav" aria-label="Páginas Streamlit"></nav>
+    </aside>
+    <main class="main">
+      <div class="topbar"><span class="top-label">DOCUMENTAÇÃO FUNCIONAL / PÁGINAS</span></div>
+      <section class="hero">
+        <span class="eyebrow" id="grupo-atual">PÁGINA</span>
+        <h1 id="titulo">Selecione uma página</h1>
+        <p id="subtitulo">Objetivo, entradas, resultados e pipelines documentados manualmente.</p>
+      </section>
+      <p class="notice">Documentação em constante revisão.</p>
+      <section id="conteudo" aria-live="polite"></section>
+    </main>
+    <aside class="toc">
+      <div class="toc-title">NESTA PÁGINA</div>
+      <div id="sumario"></div>
+    </aside>
+  </div>
+
+  <script>
+    const DOCUMENTACAO_PAGINAS = [
+	
+{
+    "grupo": "CONFIGURAR:",
+    "titulo": "DEFINIÇÃO DO TRABALHO",
+
+    "source": [
+        "function",
+        "iniciar"
+    ],
+
+    "interface": {
+        "imagem": "imagens/definicao_trabalho.png",
+        "legenda": "Tela de configuração do ambiente de trabalho — Fase III.",
+        "elementos": [
+            {"numero": 1, "titulo": "Excluir diretório, se existir", "descricao": "Opcional. Se marcada, permite excluir o diretório existente; confirme a operação somente após avaliar os dados armazenados.", "x": 13.5, "y": 58.4},
+            {"numero": 2, "titulo": "Diretório de trabalho", "descricao": "Informe o caminho da pasta principal onde serão organizados os dados e resultados.", "x": 45, "y": 67.5},
+            {"numero": 3, "titulo": "Empresa", "descricao": "Selecione a empresa objeto da análise.", "x": 26, "y": 78.2},
+            {"numero": 4, "titulo": "Data inicial", "descricao": "Informe a data inicial do período incremental.", "x": 54, "y": 78.2},
+            {"numero": 5, "titulo": "Data final", "descricao": "Informe a data final do período incremental.", "x": 83, "y": 78.2},
+            {"numero": 6, "titulo": "(RE)Configurar", "descricao": "Execute a configuração ou reconfiguração com os parâmetros informados.", "x": 56, "y": 94}
+        ],
+        "nota": "O indicador AGUARDANDO aparece enquanto não houver sido configurado. Ao se configurar, ele se torna ativo."
+    },
+
+
+    "objetivo": `
+Estabelece o ambiente de trabalho necessário à execução dos processos de análise.
+O usuário define um diretório principal no computador, a empresa objeto da análise e o período incremental de referência.
+A partir dessas informações, o sistema organiza os subdiretórios utilizados para armazenar os dados de entrada, os arquivos intermediários e os resultados dos processamentos.
+A página também permite reconfigurar o ambiente e, quando necessário, excluir dados existentes nos subdiretórios, mediante confirmação do usuário.
+Após a configuração, é necessário verificar se os arquivos de entrada foram alocados corretamente nas pastas correspondentes.
+A navegação entre os processos pode ocorrer de duas formas: sequencial, indicada para a primeira execução ou quando ainda existem pipelines não concluídos; e aleatória, permitindo acessar diretamente processos já percorridos, conforme as condições de navegação estabelecidas pela aplicação.
+    `,
+
+    "entradas": `
+DADOS DE CONFIGURAÇÃO
+
+Diretório principal de trabalho, empresa objeto da análise e período incremental de referência.
+
+ARQUIVOS E DIRETÓRIOS DE ENTRADA
+
+Manual de dados: pasta DADOS_BRUTOS_MANUAL.
+
+Escrituração digital — SPED: pastas ECD, ECF, EFD_CONT e EFD_ICMS.
+
+Dados da COGE: pasta FCOGE.
+
+Base de Dados Geográfica da Distribuidora — BDGD: pastas BDGD_AT (base atual) e BDGD_ANT (base anterior).
+
+Fotografias do inventário: pasta IMAGENS_SUMARIO.
+
+Os arquivos devem ser colocados nos respectivos diretórios antes da execução dos pipelines que dependem dessas informações.
+    `,
+
+    "resultados": `
+Ambiente de trabalho configurado, com a estrutura de subdiretórios preparada e os parâmetros de empresa e período incremental definidos. Organização dos dados de entrada estabelecida, permitindo iniciar os demais pipelines da aplicação.
+    `,
+
+    "observacoes": `
+ATENÇÃO À RECONFIGURAÇÃO
+
+A reconfiguração poderá envolver a exclusão de dados existentes nos subdiretórios. Quando houver possibilidade de exclusão, o sistema solicitará confirmação ao usuário antes de executar a operação.
+
+CONFERÊNCIA DOS DADOS
+
+A criação dos diretórios não significa que todos os arquivos necessários já estejam disponíveis. O usuário deve conferir manualmente a presença dos dados principais nas pastas correspondentes.
+
+NAVEGAÇÃO
+
+Na primeira utilização, ou quando houver pipelines incompletos, recomenda-se seguir a sequência prevista para os processos.
+O acesso direto ou aleatório a processos já percorridos poderá ser utilizado quando for percorrido o pipeline completo.
+    `,
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Configuração do ambiente (automatizado)",
+
+            "finalidade": `
+Definir o diretório principal, a empresa e o período incremental da análise, preparando o ambiente para os demais processos.
+            `,
+
+            "acionamento": `
+Execução da configuração inicial ou acionamento da opção de reconfiguração disponível na página.
+            `,
+
+            "etapas": [
+                "Informar o diretório principal de trabalho.",
+                "Definir a empresa objeto da análise.",
+                "Informar o período incremental.",
+                "Validar os parâmetros de configuração.",
+                "Verificar a existência de dados anteriores.",
+                "Solicitar confirmação quando houver exclusão.",
+                "Preparar a estrutura de subdiretórios.",
+                "Registrar as configurações do ambiente."
+            ],
+
+            "funcoes": `
+Emprega os módulos main.py e inicio.py (pasta utils).
+            `,
+
+            "resultado": `
+Ambiente de trabalho preparado para receber os dados e executar os pipelines posteriores.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 2 — Conferência dos dados de entrada (Manual)",
+
+            "finalidade": `
+Fase de verificação dos arquivos necessários à execução dos processos de importação e análise.
+            `,
+
+            "acionamento": `
+Após a configuração do ambiente de trabalho.
+            `,
+
+            "etapas": [
+                "Conferir se os dados do Manual estão em DADOS_BRUTOS_MANUAL.",
+                "Conferir se os arquivos SPED estão nas pastas correspondentes.",
+                "Conferir se os dados COGE estão em FCOGE.",
+                "Conferir se as bases BDGD atual e anterior estão nas pastas.",
+                "Conferir se as fotografias do inventário estão em IMAGENS_SUMARIO.",
+                "Identificar se há eventuais arquivos ausentes."
+            ],
+
+            "funcoes": `
+A conferência é exclusivamente manual.
+            `,
+
+            "resultado": `
+Tabelas de entrada conferidas e organizadas para os processos subsequentes.
+            `
+        }
+    ]
+}
+
+,
+{
+    "grupo": "VALIDAR:",
+    "titulo": "MANUAL DE DADOS",
+
+    "source": [
+        "function",
+        "VALIDADOR_D"
+    ],
+
+    "objetivo": `
+Realiza a validação dos arquivos CSV do Manual de Dados, com o objetivo de identificar inconsistências estruturais e verificar a conformidade dos dados com as regras previamente estabelecidas.
+O processo utiliza modelos e validadores baseados em Pydantic para executar testes de qualidade dos dados, identificando falhas de estrutura, tipos incompatíveis, valores inválidos e outras inconsistências contempladas pelas regras de validação implementadas.
+A validação pode continuar a partir de um checkpoint existente ou reiniciar o processamento de todos os arquivos, conforme a opção selecionada pelo usuário.
+Os resultados são registrados em arquivos CSV, permitindo examinar as inconsistências identificadas pelo data quality gate e pelos validadores. Opcionalmente, o usuário pode gerar um relatório consolidado em PDF, armazenado na pasta RELATORIOS.
+    `,
+
+    "entradas": `
+DADOS DE ENTRADA
+
+Arquivos CSV do Manual de Dados, previamente disponibilizados na pasta DADOS_BRUTOS_MANUAL.
+
+PRÉ-REQUISITOS
+
+Ambiente de trabalho configurado e arquivos de entrada disponíveis para validação.
+
+CONTROLE DE EXECUÇÃO
+
+A opção "Refazer análise de todos os arquivos" determina se o processamento será reiniciado ou continuará a partir do checkpoint disponível.
+
+GERAÇÃO DE RELATÓRIO
+
+A geração do relatório PDF é uma operação independente, acionada pelo botão "Gerar PDF".
+    `,
+
+    "resultados": `
+ARQUIVOS CSV
+
+Resultados do data quality gate e da aplicação dos validadores, incluindo os registros de inconsistências identificadas durante o processamento.
+
+RELATÓRIO PDF
+
+Relatório consolidado dos erros e resultados da validação, gerado mediante solicitação do usuário e armazenado na pasta RELATORIOS.
+A geração do PDF é opcional. Os arquivos CSV permanecem como saídas do processo de validação, na pasta RELATORIOS, mesmo quando o relatório PDF não é produzido.
+    `,
+
+    "observacoes": `
+CONTINUIDADE DO PROCESSAMENTO
+
+Quando a opção "Refazer análise de todos os arquivos" estiver desmarcada, o processo poderá continuar a partir do checkpoint disponível.
+Quando estiver marcada, a validação será reiniciada para todos os arquivos, independentemente do processamento anterior.
+
+VALIDAÇÃO E RELATÓRIO
+
+O botão "Validar" executa as verificações de qualidade dos dados e produz os resultados em CSV.
+O botão "Gerar PDF" é responsável pela produção do relatório consolidado, utilizando os resultados disponíveis da validação.
+
+ANÁLISE POR INTELIGÊNCIA ARTIFICIAL
+
+A opção "Ativar análise por IA" encontra-se desabilitada em razão de políticas que podem ser aplicadas aos agentes de inteligência artificial.
+Foram avaliadas alternativas de modelos abertos, incluindo Falcon, Llama, Qwen e Mistral, entre outras. Entretanto, a funcionalidade de análise por IA não está disponível para utilização nesta versão.
+
+ORIENTAÇÃO
+
+Recomenda-se concluir a validação antes de solicitar a geração do relatório PDF, para que o documento reflita os resultados disponíveis do processamento.
+    `,
+
+    "interface": {
+        "imagem": "imagens/validador_manual.png",
+        "legenda": "Tela de validação dos arquivos CSV do Manual de Dados.",
+        "elementos": [
+            {
+                "numero": 1,
+                "titulo": "Validar",
+                "descricao": "Inicia a validação dos arquivos CSV. O processamento poderá continuar a partir de um checkpoint ou reiniciar, conforme a opção selecionada.",
+                "x": 40.7,
+                "y": 81.0
+            },
+            {
+                "numero": 2,
+                "titulo": "Gerar PDF",
+                "descricao": "Gera o relatório consolidado dos resultados de validação e o disponibiliza na pasta RELATORIOS.",
+                "x": 72.3,
+                "y": 81.0
+            },
+            {
+                "numero": 3,
+                "titulo": "Ativar análise por IA",
+                "descricao": "Opção atualmente desabilitada em razão das políticas aplicáveis aos agentes de inteligência artificial.",
+                "x": 26.4,
+                "y": 94.5
+            },
+            {
+                "numero": 4,
+                "titulo": "Refazer análise de todos os arquivos",
+                "descricao": "Quando marcada, reinicia a validação de todos os arquivos. Quando desmarcada, permite continuar a partir do checkpoint disponível.",
+                "x": 57.8,
+                "y": 94.5
+            }
+        ]
+    },
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Validação dos arquivos CSV",
+
+            "finalidade": `
+Executar o controle de qualidade dos arquivos CSV do Manual de Dados, aplicando verificações estruturais e regras de validação implementadas com Pydantic.
+O pipeline identifica inconsistências e registra os resultados em arquivos CSV, permitindo a análise e a correção dos problemas encontrados.
+O processo de validação gera três arquivos CSV, identificados pela empresa e pelo ano de referência: empresa_ano.csv, que 
+apresenta os resultados do Data Quality Gate, registrando as verificações de qualidade e as inconsistências identificadas 
+nos dados; empresa_controle_arquivos_ano.csv, que contém o controle dos arquivos entregues, permitindo acompanhar os 
+dados disponibilizados para análise; e empresa_formatos_ano.csv, que registra as informações sobre a codificação de 
+caracteres (encoding) dos arquivos, auxiliando na identificação de possíveis incompatibilidades de leitura e 
+interpretação.
+            `,
+
+            "acionamento": `
+Botão "Validar".
+
+O comportamento depende da opção "Refazer análise de todos os arquivos": desmarcada, permite continuar a partir do checkpoint; marcada, reinicia a validação de todos os arquivos.
+            `,
+
+            "etapas": [
+                "Identificar os arquivos CSV disponíveis para validação.",
+                "Verificar a configuração de execução e a existência de checkpoint.",
+                "Definir se o processamento será retomado ou reiniciado.",
+                "Organizar a execução das validações.",
+                "Aplicar o data quality gate e os testes implementados com Pydantic.",
+                "Identificar e registrar inconsistências nos dados.",
+                "Gerar os arquivos CSV com os resultados das verificações.",
+                "Atualizar as informações necessárias à continuidade do processamento."
+            ],
+
+            "funcoes": `
+MÓDULO: validador_D.py
+
+Responsável pela organização e coordenação do processo de validação, incluindo a geração dos arquivos CSV com os resultados.
+
+MÓDULO: validador_funcoes.py
+
+Responsável pela aplicação dos testes e das regras de validação sobre os dados, utilizando classes e modelos Pydantic.
+            `,
+
+            "resultado": `
+Arquivos CSV contendo os resultados do data quality gate e da aplicação dos validadores, incluindo as inconsistências identificadas.
+
+O processamento poderá ser retomado a partir do checkpoint disponível, conforme o estado da execução e a opção selecionada.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 2 — Geração do relatório PDF",
+
+            "finalidade": `
+Consolidar os resultados da validação em um relatório PDF, facilitando a consulta, a documentação e a comunicação das inconsistências identificadas.
+Este pipeline complementa a validação, mas não é obrigatório para a produção dos resultados em CSV.
+            `,
+
+            "acionamento": `
+Botão "Gerar PDF", disponível na seção "Ações" da página.
+            `,
+
+            "etapas": [
+                "Acionar a geração do relatório PDF.",
+                "Obter os resultados disponíveis da validação.",
+                "Organizar as informações sobre erros e inconsistências.",
+                "Preparar o conteúdo do relatório consolidado.",
+                "Gerar o documento em formato PDF.",
+                "Armazenar o arquivo na pasta RELATORIOS."
+            ],
+
+            "funcoes": `
+MÓDULO: imprimir_erros_MANUAL.py
+
+Responsável pela elaboração e geração do relatório PDF com os resultados e as inconsistências identificadas na validação.
+            `,
+
+            "resultado": `
+Relatório consolidado em formato PDF, disponibilizado na pasta RELATORIOS.
+A não execução deste pipeline não impede a utilização dos arquivos CSV produzidos pelo processo de validação.
+            `
+        }
+    ]
+},
+  
+{
+    "grupo": "IMPORTAR:",
+    "titulo": "MANUAL DADOS",
+
+    "source": [
+        "function",
+        "Imp_MANUAL_DADOS.py"
+    ],
+
+    "objetivo": `
+Realiza a importação dos arquivos CSV do Manual de Dados da SFF para uma base de dados local, que será utilizada pelos procedimentos de análise e fiscalização.
+A importação organiza os dados recebidos em estruturas adequadas à consulta e ao processamento, permitindo que os módulos posteriores trabalhem com informações armazenadas localmente.
+O processo também contempla a implantação de um manifesto de dados destinado a apoiar a trilha de auditoria. Esse manifesto registra informações sobre os arquivos importados, incluindo sua identificação e o hash SHA-256, permitindo verificar a integridade dos arquivos e acompanhar sua proveniência.
+As alterações realizadas sobre os dados ao longo do processamento serão persistidas em arquivos Parquet, contribuindo para a rastreabilidade das transformações e a documentação das mutações de dados.
+    `,
+
+    "entradas": `
+ARQUIVOS DE ORIGEM
+
+Arquivos CSV do Manual de Dados da SFF, previamente disponibilizados na pasta DADOS_BRUTOS_MANUAL.
+
+PRÉ-REQUISITOS
+
+Ambiente de trabalho configurado, empresa e período de análise definidos e arquivos CSV disponíveis para importação.
+Recomenda-se executar previamente a etapa de validação dos arquivos, pois inconsistências estruturais ou de conteúdo podem comprometer a importação.
+
+METADADOS DE RASTREABILIDADE
+
+Informações de identificação dos arquivos de origem e seus respectivos hashes SHA-256, destinadas à composição do manifesto de dados.
+    `,
+
+    "resultados": `
+BASE DE DADOS LOCAL
+
+Dados dos arquivos CSV importados para uma base local, disponibilizados para consulta e utilização pelos demais procedimentos de análise.
+
+MANIFESTO DE DADOS
+
+Registro estruturado em JSON contendo informações dos arquivos importados, incluindo o hash SHA-256, para apoiar a verificação de integridade e a trilha de auditoria.
+
+ARQUIVOS PARQUET
+
+Persistência das alterações e transformações realizadas sobre os dados, permitindo conservar registros associados às etapas de processamento.
+    `,
+
+    "observacoes": `
+VALIDAÇÃO PRÉVIA
+
+A importação pressupõe que os arquivos de origem estejam disponíveis e possuam estrutura compatível com o processamento. Recomenda-se consultar os resultados da etapa de validação antes de executar a carga.
+
+INTEGRIDADE DOS ARQUIVOS
+
+O hash SHA-256 permite identificar alterações no conteúdo de um arquivo por comparação entre valores calculados em momentos diferentes. O hash, isoladamente, não demonstra a autoria da alteração nem substitui os demais registros de auditoria.
+
+MANIFESTO DE DADOS
+
+O manifesto deverá associar cada arquivo de origem aos seus metadados e às informações necessárias para acompanhar sua utilização durante o processamento.
+
+RASTREABILIDADE DAS MUTAÇÕES
+
+Os arquivos Parquet serão utilizados para persistir os dados resultantes das transformações. Para permitir uma trilha de auditoria completa, cada mutação deverá estar associada à sua origem, à operação realizada e ao respectivo registro de processamento.
+
+CONTROLE OPERACIONAL
+
+A página apresenta o botão "Importar", responsável pelo acionamento do processo de carga dos dados.
+    `,
+
+    "interface": {
+        "imagem": "imagens/importar_manual.png",
+        "legenda": "Tela de importação dos arquivos CSV do Manual de Dados da SFF.",
+        "elementos": [
+            {
+                "numero": 1,
+                "titulo": "Importar",
+                "descricao": "Inicia a importação dos arquivos CSV do Manual de Dados para a base local, conforme as rotinas implementadas.",
+                "x": 54.9,
+                "y": 93.0
+            }
+        ]
+    },
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Importação dos arquivos CSV",
+
+            "finalidade": `
+Carregar os arquivos CSV do Manual de Dados da SFF em uma base de dados local, preparando as informações para consulta e execução dos procedimentos posteriores de análise.
+            `,
+
+            "acionamento": `
+Botão "Importar", disponível na página.
+            `,
+
+            "etapas": [
+                "Identificar os arquivos CSV disponíveis para importação.",
+                "Verificar a disponibilidade e a estrutura dos arquivos de origem.",
+                "Ler os dados dos arquivos CSV.",
+                "Preparar os dados para armazenamento.",
+                "Criar ou atualizar as estruturas necessárias na base local.",
+                "Importar os registros para a base de dados.",
+                "Registrar os resultados do processamento."
+            ],
+
+            "funcoes": `
+MÓDULO PRINCIPAL
+
+Funções responsáveis pela leitura dos CSV, preparação dos dados e carga na base local estão no módulo Imp_MANUAL_DADOS.
+            `,
+
+            "resultado": `
+Base de dados local contendo as informações importadas do Manual de Dados, disponíveis para utilização pelos demais módulos da aplicação.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 2 — Manifesto e rastreabilidade dos dados",
+
+            "finalidade": `
+Estabelecer mecanismos de rastreabilidade dos arquivos importados e das alterações realizadas durante o processamento, utilizando metadados estruturados, hashes SHA-256 e persistência em Parquet.
+            `,
+
+            "acionamento": `
+Processamento associado à importação dos arquivos e ao registro das transformações de dados, conforme a implementação das rotinas de auditoria.
+            `,
+
+            "etapas": [
+                "Identificar os arquivos de origem utilizados na importação.",
+                "Coletar os metadados necessários à rastreabilidade.",
+                "Calcular o hash SHA-256 dos arquivos de origem.",
+                "Registrar as informações dos arquivos em um manifesto JSON.",
+                "Associar os dados processados aos respectivos arquivos de origem.",
+                "Registrar as transformações e mutações realizadas.",
+                "Persistir os dados transformados em arquivos Parquet.",
+                "Manter as referências necessárias à reconstrução da trilha de auditoria."
+            ],
+
+            "funcoes": `
+MÓDULOS DE MANIFESTO
+
+Fazem parte: gestao_manifesto, manifesto_dados, manifesto_exec_detalhes, manifesto_execucao, visualizaçao_exec e visualizacao.
+            `,
+
+            "resultado": `
+Manifesto JSON com os metadados e hashes SHA-256 dos arquivos de origem, acompanhado dos registros de dados persistidos em Parquet para apoiar a rastreabilidade das transformações.
+            `
+        }
+    ]
+}
+,
+
+{
+    "grupo": "IMPORTAR:",
+    "titulo": "BDGD",
+
+    "source": [
+        "function",
+        "imp_BDGD"
+    ],
+
+    "objetivo": `
+Realiza a importação das Bases de Dados Geográficas da Distribuidora (BDGD), contemplando a versão atual e a versão anterior, para uma base de dados local utilizada nos procedimentos de análise e fiscalização.
+A BDGD constitui uma fonte primária de informações geoespaciais, permitindo realizar comparações temporais e espaciais entre bases de diferentes períodos de referência. A utilização conjunta das versões atual e anterior contribui para identificar alterações cadastrais, mudanças na infraestrutura, inconsistências e padrões de evolução dos ativos.
+O armazenamento local das informações proporciona maior eficiência no acesso e no processamento dos dados, viabilizando a execução de algoritmos e ferramentas analíticas utilizados nas etapas posteriores do AIS.
+Adicionalmente, a página disponibiliza uma opção experimental de exportação das camadas de geodatabases para o formato ESRI Shapefile, permitindo sua utilização em ferramentas de geoprocessamento compatíveis.
+    `,
+
+    "entradas": `
+BASE DE DADOS ATUAL
+
+Arquivos da BDGD referentes ao período atual, previamente disponibilizados na pasta BDGD_AT.
+
+BASE DE DADOS ANTERIOR
+
+Arquivos da BDGD referentes ao período anterior, previamente disponibilizados na pasta BDGD_ANT.
+
+PRÉ-REQUISITOS
+
+Ambiente de trabalho configurado e arquivos das bases geográficas disponíveis nos diretórios correspondentes.
+
+EXPORTAÇÃO OPCIONAL
+
+Quando selecionada a opção "Exportar arquivos GDB para Shapefile", o processo também realizará a conversão das camadas disponíveis na geodatabase de origem.
+    `,
+
+    "resultados": `
+BASE DE DADOS LOCAL
+
+Informações geoespaciais das versões atual e anterior da BDGD importadas para a base local, conforme o processamento executado pelo usuário.
+
+COMPARAÇÃO TEMPORAL
+
+Disponibilização das duas versões para utilização nos procedimentos posteriores de comparação espacial, avaliação de mudanças e identificação de inconsistências.
+
+ARQUIVOS SHAPEFILE — FUNCIONALIDADE EXPERIMENTAL
+
+Quando a opção de exportação estiver habilitada, poderão ser gerados arquivos Shapefile e seus componentes auxiliares, conforme as camadas disponíveis na geodatabase e o resultado da conversão.
+    `,
+
+    "observacoes": `
+IMPORTAÇÃO INDEPENDENTE DAS VERSÕES
+
+Os botões "BDGD ATUAL" e "BDGD ANTERIOR" permitem executar separadamente a importação das duas bases.
+Para análises comparativas, recomenda-se que ambas as versões estejam disponíveis e tenham sido importadas corretamente.
+
+EXPORTAÇÃO DE GDB PARA SHAPEFILE
+
+A funcionalidade encontra-se em fase de testes e deve ser utilizada com cautela.
+A conversão procura preservar os atributos e a referência espacial das camadas originais. Entretanto, eventuais limitações do formato Shapefile, como restrições de nomes de campos e tipos de dados, devem ser consideradas na conferência dos arquivos exportados.
+
+INTEGRIDADE E CONSISTÊNCIA
+
+Antes da importação, recomenda-se verificar a disponibilidade dos arquivos de origem e a correspondência entre os períodos de referência das duas bases.
+
+MÓDULO RESPONSÁVEL
+
+O processamento é implementado pelo módulo Imp_BDGD.py, responsável pelo pipeline de importação e pelas operações associadas à exportação opcional.
+    `,
+
+    "interface": {
+        "imagem": "imagens/importar_bdgd.png",
+        "legenda": "Tela de importação das bases BDGD atual e anterior, com opção experimental de exportação para Shapefile.",
+        "elementos": [
+            {
+                "numero": 1,
+                "titulo": "Exportar arquivos GDB para Shapefile",
+                "descricao": "Habilita a conversão opcional das camadas da geodatabase para arquivos ESRI Shapefile. Funcionalidade em fase de testes.",
+                "x": 26.6,
+                "y": 87.2
+            },
+            {
+                "numero": 2,
+                "titulo": "BDGD ATUAL",
+                "descricao": "Inicia a importação dos arquivos da BDGD atual, disponíveis na pasta BDGD_AT.",
+                "x": 42.7,
+                "y": 93.9
+            },
+            {
+                "numero": 3,
+                "titulo": "BDGD ANTERIOR",
+                "descricao": "Inicia a importação dos arquivos da BDGD anterior, disponíveis na pasta BDGD_ANT.",
+                "x": 62.7,
+                "y": 93.9
+            }
+        ]
+    },
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Importação da BDGD atual",
+
+            "finalidade": `
+Importar as informações geoespaciais da BDGD atual para a base de dados local, disponibilizando os registros e atributos necessários às análises da infraestrutura e dos ativos da distribuidora.
+            `,
+
+            "acionamento": `
+Botão "BDGD ATUAL".
+A opção "Exportar arquivos GDB para Shapefile", quando marcada, habilita também a conversão experimental das camadas geográficas.
+            `,
+
+            "etapas": [
+                "Identificar os arquivos da BDGD atual na pasta BDGD_AT.",
+                "Verificar a disponibilidade da geodatabase de origem.",
+                "Identificar as camadas geográficas disponíveis.",
+                "Ler os dados espaciais e seus atributos.",
+                "Preparar as informações para armazenamento local.",
+                "Importar os dados da BDGD atual para a base local.",
+                "Executar a exportação opcional para Shapefile, quando habilitada.",
+                "Registrar o resultado do processamento."
+            ],
+
+            "funcoes": `
+MÓDULO: Imp_BDGD.py
+
+Responsável pelo pipeline de importação das informações geoespaciais da BDGD atual e pelas operações associadas à conversão opcional para Shapefile.
+            `,
+
+            "resultado": `
+Dados da BDGD atual disponíveis na base local para utilização nos procedimentos de análise.
+Quando solicitada, a exportação experimental poderá produzir arquivos Shapefile correspondentes às camadas processadas.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 2 — Importação da BDGD anterior",
+
+            "finalidade": `
+Importar as informações geoespaciais da BDGD anterior para a base local, estabelecendo a referência histórica necessária às análises comparativas com a versão atual.
+            `,
+
+            "acionamento": `
+Botão "BDGD ANTERIOR".
+A opção de exportação para Shapefile poderá ser utilizada em conjunto com a importação, quando habilitada.
+            `,
+
+            "etapas": [
+                "Identificar os arquivos da BDGD anterior na pasta BDGD_ANT.",
+                "Verificar a disponibilidade da geodatabase de origem.",
+                "Identificar as camadas geográficas disponíveis.",
+                "Ler os dados espaciais e seus atributos.",
+                "Preparar as informações para armazenamento local.",
+                "Importar os dados da BDGD anterior para a base local.",
+                "Executar a exportação opcional para Shapefile, quando habilitada.",
+                "Registrar o resultado do processamento."
+            ],
+
+            "funcoes": `
+MÓDULO: Imp_BDGD.py
+
+Responsável pelo pipeline de importação das informações geoespaciais da BDGD anterior e pelas operações associadas à conversão opcional para Shapefile.
+            `,
+
+            "resultado": `
+Dados da BDGD anterior disponíveis na base local, permitindo sua utilização como referência histórica para comparação com a BDGD atual.
+Quando solicitada, a exportação experimental poderá produzir arquivos Shapefile correspondentes às camadas processadas.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 3 — Exportação experimental de GDB para Shapefile",
+
+            "finalidade": `
+Converter as camadas disponíveis nas geodatabases de origem para o formato ESRI Shapefile, facilitando a utilização dos dados em ferramentas externas de geoprocessamento.
+Esta funcionalidade é opcional e encontra-se em fase de testes.
+            `,
+
+            "acionamento": `
+Marcar a opção "Exportar arquivos GDB para Shapefile" antes de acionar o botão de importação da BDGD atual ou anterior.
+            `,
+
+            "etapas": [
+                "Verificar se a opção de exportação está habilitada.",
+                "Identificar a geodatabase correspondente à versão selecionada.",
+                "Enumerar as camadas disponíveis na geodatabase.",
+                "Converter as camadas para o formato ESRI Shapefile.",
+                "Gerar os arquivos auxiliares correspondentes.",
+                "Gravar os arquivos no diretório de destino configurado.",
+                "Conferir os resultados da conversão."
+            ],
+
+            "funcoes": `
+MÓDULO: Imp_BDGD.py
+
+Responsável pelas operações de exportação associadas ao pipeline de importação.
+A identificação das funções específicas de conversão deverá ser complementada após a conferência do código-fonte.
+            `,
+
+            "resultado": `
+Arquivos ESRI Shapefile e respectivos componentes auxiliares, quando a conversão for concluída com sucesso.
+Por se tratar de uma funcionalidade experimental, os resultados devem ser conferidos antes de sua utilização nas análises.
+            `
+        }
+    ]
+},
+
+{
+    "grupo": "IMPORTAR:",
+    "titulo": "COGE",
+
+    "source": [
+        "function",
+        "imp_COGE"
+    ],
+
+    "objetivo": `
+Realiza a importação dos fatores de atualização da COGE para a base de dados local, disponibilizando os indicadores necessários aos procedimentos de cálculo e às análises posteriores.
+Os indicadores COGE apresentam uma defasagem temporal de aproximadamente um mês em relação aos dados de referência utilizados no cálculo. Para tratar essa diferença, a página disponibiliza uma opção de sincronização, permitindo aplicar ou não a correção temporal durante a importação, conforme a seleção do usuário.
+Adicionalmente, é realizada uma comparação entre o indicador COGE equivalente ao IPCA e o índice oficial divulgado pelo IBGE, com o objetivo de avaliar a consistência entre as duas métricas.
+Eventuais divergências devem ser examinadas considerando possíveis diferenças metodológicas, de processamento, de atualização das bases e de correspondência entre os períodos de referência.
+    `,
+
+    "entradas": `
+ARQUIVOS DE ORIGEM
+
+Arquivos contendo os fatores de atualização da COGE, previamente disponibilizados na pasta FCOGE.
+
+PRÉ-REQUISITOS
+
+Ambiente de trabalho configurado e arquivos da COGE disponíveis para importação.
+
+CONTROLE DE SINCRONIZAÇÃO
+
+A opção "Delay ajustado nos indicadores importados?" permite selecionar a aplicação da correção temporal de um mês, considerando a defasagem entre os indicadores COGE e os dados de referência do cálculo paramétrico.
+
+REFERÊNCIA DE COMPARAÇÃO
+
+Indicador COGE equivalente ao IPCA e dados oficiais do IPCA divulgados pelo IBGE, utilizados na avaliação de consistência dos fatores.
+    `,
+
+    "resultados": `
+INDICADORES IMPORTADOS
+
+Fatores de atualização da COGE armazenados na base local e disponibilizados para utilização nos procedimentos posteriores de análise.
+
+SINCRONIZAÇÃO TEMPORAL
+
+Indicadores importados com ou sem ajuste temporal, conforme a opção selecionada pelo usuário.
+
+VERIFICAÇÃO DE CONSISTÊNCIA
+
+Resultados da comparação entre o indicador COGE equivalente ao IPCA e os valores oficiais do IBGE, permitindo identificar correspondências e divergências entre as métricas.
+    `,
+
+    "observacoes": `
+DEFASAGEM TEMPORAL
+
+A metodologia de apuração dos indicadores COGE introduz uma defasagem aproximada de um mês em relação aos dados de referência utilizados no cálculo.
+A opção de sincronização deve ser selecionada considerando o período de referência efetivamente utilizado na análise.
+
+COMPARAÇÃO COM O IPCA OFICIAL
+
+A comparação entre o indicador COGE equivalente ao IPCA e o índice divulgado pelo IBGE tem como finalidade verificar a consistência das informações.
+A existência de divergências não significa, isoladamente, que os dados estejam incorretos. É necessário investigar diferenças metodológicas, períodos de referência, critérios de processamento e atualização das bases.
+
+INTERPRETAÇÃO DOS RESULTADOS
+
+A correção temporal busca alinhar os períodos considerados nas duas séries. Sua aplicação deve ser documentada para que os resultados dos cálculos posteriores possam ser interpretados corretamente.
+
+CONTROLE
+
+Recomenda-se registrar se a sincronização temporal foi aplicada, preservando a identificação dos arquivos de origem e os parâmetros utilizados na importação.
+    `,
+
+    "interface": {
+        "imagem": "imagens/importar_coge.png",
+        "legenda": "Tela de importação dos fatores COGE, com opção de ajuste temporal e comparação com o IPCA oficial.",
+        "elementos": [
+            {
+                "numero": 1,
+                "titulo": "Importar",
+                "descricao": "Inicia a importação dos fatores de atualização da COGE para a base de dados local.",
+                "x": 35.0,
+                "y": 48.5
+            },
+            {
+                "numero": 2,
+                "titulo": "Delay ajustado nos indicadores importados?",
+                "descricao": "Permite aplicar a sincronização temporal de um mês aos indicadores COGE durante a importação. Quando desmarcada, os indicadores são importados sem essa correção.",
+                "x": 59.3,
+                "y": 48.2
+            },
+            {
+                "numero": 3,
+                "titulo": "Comparação COGE × IPCA",
+                "descricao": "Apresenta a análise de consistência entre o indicador COGE equivalente ao IPCA e o índice oficial do IBGE, considerando possíveis diferenças temporais e metodológicas.",
+                "x": 55.0,
+                "y": 65.0
+            },
+            {
+                "numero": 4,
+                "titulo": "Tabela de indicadores",
+                "descricao": "Exibe os registros utilizados na comparação, incluindo períodos de referência, fatores de atualização e informações de convergência.",
+                "x": 55.0,
+                "y": 84.0
+            }
+        ]
+    },
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Importação dos fatores COGE",
+
+            "finalidade": `
+Importar os fatores de atualização da COGE para a base local, preparando os indicadores para utilização nos procedimentos de cálculo.
+O processamento considera a opção de sincronização temporal selecionada pelo usuário.
+            `,
+
+            "acionamento": `
+Botão "Importar".
+
+Antes da execução, o usuário pode marcar ou desmarcar a opção "Delay ajustado nos indicadores importados?", determinando se será aplicada a correção temporal.
+            `,
+
+            "etapas": [
+                "Identificar os arquivos da COGE disponíveis na pasta FCOGE.",
+                "Verificar a disponibilidade e a estrutura dos dados de origem.",
+                "Ler os indicadores e seus períodos de referência.",
+                "Identificar a opção de sincronização temporal selecionada.",
+                "Aplicar a correção de um mês quando a opção estiver habilitada.",
+                "Preparar os fatores para armazenamento.",
+                "Importar os indicadores para a base local.",
+                "Disponibilizar os dados para os procedimentos posteriores de cálculo paramétrico."
+            ],
+
+            "funcoes": `
+MÓDULO DE IMPORTAÇÃO COGE
+
+Módulo Imp_COGE.
+            `,
+
+            "resultado": `
+Fatores de atualização da COGE disponíveis na base de dados local, com os períodos de referência ajustados ou preservados conforme a seleção do usuário.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 2 — Verificação de consistência COGE × IPCA",
+
+            "finalidade": `
+Avaliar a consistência entre o indicador COGE equivalente ao IPCA e o índice oficial divulgado pelo IBGE, identificando divergências que possam exigir investigação.
+A comparação considera a possível defasagem temporal introduzida pela metodologia de apuração dos indicadores COGE.
+            `,
+
+            "acionamento": `
+Processamento de comparação associado à análise dos indicadores COGE e dos dados oficiais do IPCA.
+A interface apresenta os resultados em texto explicativo e tabela de indicadores.
+            `,
+
+            "etapas": [
+                "Obter os valores do indicador COGE equivalente ao IPCA.",
+                "Obter os valores oficiais de referência do IPCA divulgados pelo IBGE.",
+                "Identificar os períodos correspondentes às duas séries.",
+                "Considerar a defasagem temporal aplicável aos indicadores COGE.",
+                "Comparar os fatores e valores correspondentes.",
+                "Identificar convergências e divergências.",
+                "Apresentar os resultados para avaliação.",
+                "Orientar a investigação de divergências relevantes."
+            ],
+
+            "funcoes": `
+ROTINAS DE COMPARAÇÃO COGE × IPCA
+
+Módulo Imp_COGE.
+            `,
+
+            "resultado": `
+Informações comparativas entre os indicadores COGE e o IPCA oficial, permitindo avaliar a consistência dos fatores e identificar situações que exigem investigação adicional.
+            `
+        }
+    ]
+}
+,
+
+{
+    "grupo": "IMPORTAR:",
+    "titulo": "EFD ICMS/IPI",
+
+    "source": [
+        "function",
+        "imp_SPED_EFD_ICMS"
+    ],
+
+    "objetivo": `
+Realiza a importação dos arquivos da Escrituração Fiscal Digital do ICMS e do IPI (EFD ICMS/IPI), integrantes do Sistema Público de Escrituração Digital (SPED), para uma base de dados local destinada aos procedimentos de análise e fiscalização.
+O módulo Imp_SPED.py identifica o tipo de escrituração contido nos arquivos e organiza os registros na estrutura de banco de dados correspondente, respeitando as características dos diferentes leiautes fiscais.
+Durante o processamento, são realizados procedimentos de limpeza e tratamento de caracteres não reconhecidos ou incompatíveis, com o objetivo de reduzir falhas de leitura e permitir a importação dos registros.
+A página também disponibiliza uma tabela de controle dos arquivos, apresentando informações sobre os períodos de referência, o CNPJ e os nomes dos arquivos utilizados.
+Para assegurar a correspondência entre os dados analisados e as escriturações efetivamente transmitidas, deve-se conferir o recibo de entrega da EFD ICMS/IPI, verificando se o arquivo utilizado corresponde à versão entregue à administração tributária.
+    `,
+
+    "entradas": `
+ARQUIVOS DE ORIGEM
+
+Arquivos digitais da EFD ICMS/IPI, previamente disponibilizados na pasta EFD_ICMS, conforme a organização do ambiente de trabalho.
+
+PRÉ-REQUISITOS
+
+Ambiente de trabalho configurado, arquivos fiscais disponíveis e períodos de referência identificados.
+
+IDENTIFICAÇÃO DA ESCRITURAÇÃO
+
+O módulo Imp_SPED.py identifica o tipo de escrituração e direciona o processamento para a estrutura de dados correspondente.
+
+CONTROLE DE REIMPORTAÇÃO
+
+A opção "Apagar banco de dados?" permite solicitar a exclusão da base existente, conforme o comportamento implementado na rotina de importação.
+Caso esteja inabilitado faz a importação apenas de arquivos não presentes na base.
+
+COMPROVAÇÃO DA ENTREGA
+
+Recibos de entrega das escriturações transmitidas, utilizados para conferir a correspondência entre os arquivos importados e aqueles efetivamente entregues à Receita Federal.
+Se necessário cálcule o HASH do arquivo, conforme padrão da receita, e valide o arquivo empregado.    `,
+
+    "resultados": `
+BASE DE DADOS LOCAL
+
+Registros da EFD ICMS/IPI importados e organizados em estruturas próprias, permitindo consultas e análises posteriores.
+
+TRATAMENTO DOS ARQUIVOS
+
+Dados processados com tratamento dos caracteres incompatíveis identificados durante a leitura, conforme as rotinas implementadas.
+
+CONTROLE DOS ARQUIVOS IMPORTADOS
+
+Tabela contendo os períodos inicial e final, o CNPJ e o nome do arquivo de origem, permitindo identificar as escriturações utilizadas.
+
+CONFERÊNCIA DOCUMENTAL
+
+Possibilidade de verificar a correspondência entre os arquivos de origem e os respectivos recibos de entrega, contribuindo para a confiabilidade da documentação utilizada nas análises.
+    `,
+
+    "observacoes": `
+CONFERÊNCIA DOS RECIBOS DE ENTREGA
+
+A existência de um arquivo EFD ICMS/IPI no diretório de trabalho não comprova, isoladamente, que ele corresponda à escrituração efetivamente entregue à Receita Federal.
+É necessário conferir o recibo de entrega e verificar a identificação do contribuinte, o período de referência e a correspondência com o arquivo utilizado.
+Quando houver escriturações originais e substitutas, deve-se identificar qual versão foi efetivamente transmitida e considerada válida para o período analisado.
+
+TRATAMENTO DE CARACTERES
+
+A limpeza de caracteres incompatíveis tem finalidade operacional, permitindo a leitura dos arquivos.
+Entretanto, alterações no conteúdo original devem ser controladas para evitar perda de informação e preservar a rastreabilidade entre o arquivo recebido e os dados efetivamente importados.
+
+REIMPORTAÇÃO DOS DADOS
+
+A opção "Apagar banco de dados?" deve ser utilizada com cautela, pois poderá provocar a exclusão de informações anteriormente armazenadas.
+Antes de executar uma nova importação, recomenda-se verificar a necessidade de preservar os dados existentes.
+
+RASTREABILIDADE
+
+Recomenda-se conservar os arquivos originais e seus recibos, mantendo a identificação dos períodos, do contribuinte e das versões utilizadas.
+
+MÓDULO RESPONSÁVEL
+
+O processamento é realizado pelo módulo Imp_SPED.py, responsável pela identificação das escriturações, pelo tratamento dos arquivos e pela organização dos dados nas estruturas correspondentes.
+    `,
+
+    "interface": {
+        "imagem": "imagens/importar_efd_icms.png",
+        "legenda": "Tela de importação dos arquivos EFD ICMS/IPI, com controle de exclusão da base e relação dos arquivos fiscais.",
+        "elementos": [
+            {
+                "numero": 1,
+                "titulo": "Importar EFD ICMS",
+                "descricao": "Inicia a leitura e a importação dos arquivos EFD ICMS/IPI, com identificação do tipo de escrituração, tratamento de caracteres incompatíveis e armazenamento dos registros na base local.",
+                "x": 35.2,
+                "y": 57.3
+            },
+            {
+                "numero": 2,
+                "titulo": "Apagar banco de dados?",
+                "descricao": "Permite solicitar a exclusão da base de dados existente antes da importação. Deve ser utilizada com cautela para evitar a perda de dados anteriormente armazenados.",
+                "x": 61.3,
+                "y": 56.8
+            },
+            {
+                "numero": 3,
+                "titulo": "Tabela de arquivos",
+                "descricao": "Apresenta a relação de arquivos fiscais, incluindo período inicial, período final, CNPJ e nome do arquivo de origem. Auxilia na conferência das escriturações utilizadas.",
+                "x": 54.5,
+                "y": 76.0
+            }
+        ]
+    },
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Importação das escriturações EFD ICMS/IPI",
+
+            "finalidade": `
+Importar os arquivos da EFD ICMS/IPI para uma base de dados local, identificando os tipos de registros e organizando as informações em estruturas adequadas aos procedimentos posteriores de análise.
+O processamento contempla o tratamento de caracteres incompatíveis e considera a opção de exclusão da base anteriormente existente.
+            `,
+
+            "acionamento": `
+Botão "Importar EFD ICMS".
+
+Antes de iniciar o processamento, o usuário poderá selecionar a opção "Apagar banco de dados?", conforme a necessidade de reimportação.
+            `,
+
+            "etapas": [
+                "Identificar os arquivos disponíveis na pasta EFD_ICMS.",
+                "Verificar a configuração de importação e a opção de exclusão da base existente.",
+                "Ler os arquivos fiscais de origem.",
+                "Identificar o tipo de escrituração e os registros correspondentes.",
+                "Aplicar o tratamento de caracteres não reconhecidos ou incompatíveis.",
+                "Organizar os registros conforme as estruturas previstas para a escrituração.",
+                "Criar ou preparar a base de dados local correspondente.",
+                "Importar os registros fiscais para a base local.",
+                "Disponibilizar os dados para os procedimentos posteriores de análise."
+            ],
+
+            "funcoes": `
+MÓDULO: Imp_SPED.py
+
+Responsável pela identificação do tipo de escrituração, pelo tratamento dos arquivos e pela organização e importação dos registros na base de dados correspondente.
+As funções específicas deverão ser identificadas após a conferência do código-fonte.
+            `,
+
+            "resultado": `
+Base de dados local contendo os registros da EFD ICMS/IPI importados, organizados e disponíveis para consulta e processamento.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 2 — Conferência dos arquivos e recibos de entrega (ação manual)",
+
+            "finalidade": `
+Verificar se os arquivos EFD ICMS/IPI utilizados nas análises correspondem às escriturações efetivamente entregues à Receita Federal, considerando o contribuinte, o período de referência e a versão da escrituração.
+Essa conferência contribui para a confiabilidade e a rastreabilidade das informações fiscais analisadas.
+            `,
+
+            "acionamento": `
+Conferência documental realizada a partir da relação de arquivos apresentada na página e dos respectivos recibos de entrega.
+
+            `,
+
+            "etapas": [
+                "Examinar a relação dos arquivos EFD ICMS/IPI disponíveis.",
+                "Identificar o CNPJ e o período de referência de cada arquivo.",
+                "Localizar o recibo de entrega correspondente.",
+                "Conferir a correspondência entre a escrituração e o recibo.",
+                "Identificar eventuais arquivos originais e substitutos.",
+                "Verificar qual versão deve ser considerada na análise.",
+                "Registrar eventuais divergências para investigação."
+            ],
+
+            "funcoes": `
+CONFERÊNCIA DOCUMENTAL
+
+Procedimento de controle operacional e auditoria.
+`,
+
+            "resultado": `
+Identificação das escriturações utilizadas e verificação de sua correspondência com os documentos de entrega disponíveis, permitindo detectar divergências que exijam esclarecimento.
+            `
+        }
+    ]
+},
+
+{
+    "grupo": "IMPORTAR:",
+    "titulo": "ECD",
+
+    "source": [
+        "function",
+        "imp_SPED_ECD"
+    ],
+
+    "objetivo": `
+Realiza a importação dos arquivos da Escrituração Contábil Digital (ECD), integrante do Sistema Público de Escrituração Digital (SPED), para uma base de dados local destinada aos procedimentos de análise contábil, patrimonial e fiscalização.
+O módulo Imp_SPED.py identifica o tipo de escrituração e organiza os registros em estruturas de banco de dados compatíveis com o leiaute da ECD, permitindo a utilização das informações nos procedimentos posteriores de análise.
+Durante o processamento, são executadas rotinas de limpeza e tratamento de caracteres não reconhecidos ou incompatíveis, com o objetivo de reduzir falhas de leitura e permitir a importação dos dados.
+A página também apresenta uma tabela de controle dos arquivos importados, contendo informações sobre a origem, o CNPJ, o período de referência, a data de importação e a quantidade de linhas dos arquivos.
+Para garantir a confiabilidade dos dados utilizados, recomenda-se conferir os recibos de entrega e verificar se os arquivos importados correspondem às escriturações efetivamente transmitidas ao SPED, considerando eventuais substituições.
+    `,
+
+    "entradas": `
+ARQUIVOS DE ORIGEM
+
+Arquivos da Escrituração Contábil Digital (ECD), previamente disponibilizados na pasta ECD do ambiente de trabalho.
+
+PRÉ-REQUISITOS
+
+Ambiente de trabalho configurado, arquivos contábeis disponíveis e períodos de referência identificados.
+
+IDENTIFICAÇÃO DA ESCRITURAÇÃO
+
+O módulo Imp_SPED.py identifica os registros da ECD e direciona seu processamento para as estruturas de dados correspondentes.
+
+COMPROVAÇÃO DA ENTREGA
+
+Recibos de entrega das escriturações contábeis, utilizados na conferência da correspondência entre os arquivos importados e aqueles efetivamente transmitidos ao SPED.
+    `,
+
+    "resultados": `
+BASE DE DADOS LOCAL
+
+Registros contábeis da ECD importados e organizados em estruturas próprias, disponibilizados para consulta e execução dos procedimentos posteriores de análise.
+
+TRATAMENTO DOS ARQUIVOS
+
+Dados processados com tratamento dos caracteres incompatíveis identificados durante a leitura, conforme as rotinas implementadas.
+
+CONTROLE DOS ARQUIVOS IMPORTADOS
+
+Tabela contendo informações como nome do arquivo, data de importação, CNPJ, período inicial, período final e quantidade de linhas do arquivo.
+
+DISPONIBILIZAÇÃO PARA ANÁLISE
+
+Informações contábeis estruturadas para utilização nos procedimentos de análise da ECD e nos demais processos que dependem desses registros.
+    `,
+
+    "observacoes": `
+CONFERÊNCIA DOS RECIBOS DE ENTREGA
+
+A existência de um arquivo ECD no diretório de trabalho não comprova, isoladamente, que ele corresponda à escrituração efetivamente entregue ao SPED.
+Recomenda-se conferir o recibo de entrega, verificando a identificação da pessoa jurídica, o período de referência e a correspondência com o arquivo utilizado.
+Quando houver escriturações originais e substitutas, deve-se identificar a versão efetivamente transmitida e aplicável ao período analisado.
+
+TRATAMENTO DE CARACTERES
+
+As rotinas de limpeza têm finalidade operacional, permitindo a leitura e a importação dos arquivos.
+Eventuais modificações no conteúdo original devem ser controladas para preservar a rastreabilidade entre os arquivos recebidos e os dados armazenados.
+
+CONTROLE DOS ARQUIVOS
+
+A tabela apresentada na página permite acompanhar os arquivos importados, seus períodos de referência e informações quantitativas do processamento.
+A quantidade de linhas pode auxiliar na conferência da integridade da importação, mas não substitui a validação do conteúdo contábil.
+
+RASTREABILIDADE
+
+Recomenda-se conservar os arquivos originais, os respectivos recibos de entrega e os registros de importação, permitindo identificar a origem das informações utilizadas nas análises.
+
+MÓDULO RESPONSÁVEL
+
+O processamento é realizado pelo módulo Imp_SPED.py, responsável pela identificação das escriturações, pelo tratamento dos arquivos e pela organização dos registros na base local.
+    `,
+
+    "interface": {
+        "imagem": "imagens/importar_ecd.png",
+        "legenda": "Tela de importação da Escrituração Contábil Digital (ECD), com botão de importação e tabela de controle dos arquivos.",
+        "elementos": [
+            {
+                "numero": 1,
+                "titulo": "Importar ECD",
+                "descricao": "Inicia a leitura e a importação dos arquivos da Escrituração Contábil Digital, com identificação dos registros, tratamento de caracteres incompatíveis e armazenamento dos dados na base local.",
+                "x": 54.9,
+                "y": 59.6
+            },
+            {
+                "numero": 2,
+                "titulo": "Tabela de arquivos",
+                "descricao": "Apresenta os arquivos importados, incluindo nome, data de importação, CNPJ, períodos inicial e final e quantidade de linhas, auxiliando no controle das escriturações utilizadas.",
+                "x": 55.0,
+                "y": 82.0
+            }
+        ]
+    },
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Importação da Escrituração Contábil Digital",
+
+            "finalidade": `
+Importar os arquivos da ECD para uma base de dados local, identificando os registros contábeis e organizando as informações em estruturas adequadas aos procedimentos posteriores de análise.
+O processamento contempla o tratamento de caracteres incompatíveis e o registro das informações necessárias ao controle dos arquivos importados.
+            `,
+
+            "acionamento": `
+Botão "Importar ECD", disponível na página.
+            `,
+
+            "etapas": [
+                "Identificar os arquivos da ECD disponíveis na pasta ECD.",
+                "Verificar a disponibilidade dos arquivos de origem.",
+                "Ler os arquivos contábeis digitais.",
+                "Identificar os registros e o leiaute da escrituração.",
+                "Aplicar o tratamento de caracteres não reconhecidos ou incompatíveis.",
+                "Organizar os registros conforme as estruturas previstas para a ECD.",
+                "Preparar as tabelas da base de dados local.",
+                "Importar os registros contábeis.",
+                "Registrar as informações de controle dos arquivos importados.",
+                "Disponibilizar os dados para os procedimentos posteriores de análise."
+            ],
+
+            "funcoes": `
+MÓDULO: Imp_SPED.py
+
+Responsável pela identificação do tipo de escrituração, pelo tratamento dos arquivos e pela organização e importação dos registros da ECD na base de dados correspondente.
+As funções específicas deverão ser identificadas após a conferência do código-fonte.
+            `,
+
+            "resultado": `
+Base de dados local contendo os registros da ECD importados e organizados para consulta e processamento.
+Tabela de controle com informações sobre os arquivos de origem, períodos de referência, CNPJ, data de importação e quantidade de linhas.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 2 — Conferência das escriturações e recibos de entrega (etapa manual)",
+
+            "finalidade": `
+Verificar a correspondência entre os arquivos ECD utilizados nas análises e as escriturações efetivamente entregues ao SPED, considerando a identificação da pessoa jurídica, o período de referência e eventuais substituições.
+A conferência contribui para a confiabilidade e a rastreabilidade das informações contábeis utilizadas.
+            `,
+
+            "acionamento": `
+Conferência documental realizada a partir da tabela de arquivos apresentada na página e dos respectivos recibos de entrega.
+A interface não apresenta um botão específico para executar essa conferência.
+            `,
+
+            "etapas": [
+                "Examinar a relação dos arquivos ECD importados.",
+                "Identificar o CNPJ e o período de referência de cada escrituração.",
+                "Localizar os respectivos recibos de entrega.",
+                "Conferir a correspondência entre os arquivos e os recibos.",
+                "Identificar eventuais escriturações originais e substitutas.",
+                "Verificar qual versão deve ser considerada na análise.",
+                "Examinar as informações de controle da importação.",
+                "Registrar eventuais divergências para investigação."
+            ],
+
+            "funcoes": `
+CONFERÊNCIA DOCUMENTAL
+
+Procedimento de controle operacional.`,
+
+            "resultado": `
+Identificação das escriturações utilizadas nas análises e verificação de sua correspondência com os documentos de entrega disponíveis.
+Eventuais divergências poderão ser encaminhadas para esclarecimento antes da utilização dos dados nos procedimentos posteriores.
+            `
+        }
+    ]
+},
+ 
+{
+    "grupo": "IMPORTAR:",
+    "titulo": "FOTOS DO INVENTÁRIO",
+
+    "source": [
+        "function",
+        "dados_fotos_inv"
+    ],
+
+    "objetivo": `
+Apoiar a análise das evidências fotográficas apresentadas nos laudos e inventário, mediante a leitura e a avaliação dos metadados incorporados aos arquivos de imagem.
+O módulo Imp_fotos_inv.py examina informações disponíveis nos metadados das fotografias, especialmente datas, horários e coordenadas geográficas, buscando identificar inconsistências que possam comprometer a confiabilidade das evidências apresentadas.
+A análise contempla a identificação de indícios de edição das imagens, incompatibilidades entre as datas registradas e os períodos esperados, além da avaliação da plausibilidade das coordenadas geográficas em relação aos locais de instalação dos ativos.
+Quando existem fotografias sequenciais com informações temporais e espaciais disponíveis, também é avaliada a razoabilidade do deslocamento entre os pontos, considerando a distância geográfica e o intervalo de tempo transcorrido entre as capturas.
+Adicionalmente, a página disponibiliza a geração de um checklist destinado a apoiar a análise do sumário executivo, complementando a avaliação documental e a verificação das evidências apresentadas.
+    `,
+
+    "entradas": `
+ARQUIVOS FOTOGRÁFICOS
+
+Fotografias do inventário disponibilizadas na pasta IMAGENS_SUMARIO, conforme a organização do ambiente de trabalho.
+
+METADADOS DAS IMAGENS
+
+Informações incorporadas aos arquivos fotográficos, especialmente data, horário, coordenadas geográficas e demais atributos disponíveis para análise.
+
+REFERÊNCIAS DE LOCALIZAÇÃO
+
+Informações sobre os locais de instalação dos ativos, utilizadas para avaliar a plausibilidade das coordenadas geográficas registradas nas fotografias.
+
+INFORMAÇÕES DO INVENTÁRIO
+
+Dados e documentos do sumário de inventário necessários à elaboração e utilização do checklist de análise.
+
+PRÉ-REQUISITOS
+
+Ambiente de trabalho configurado e arquivos fotográficos disponíveis para processamento.
+    `,
+
+    "resultados": `
+ANÁLISE DOS METADADOS
+
+Informações extraídas das fotografias e resultados das verificações de consistência temporal, espacial e de integridade dos metadados.
+
+IDENTIFICAÇÃO DE INCONSISTÊNCIAS
+
+Indícios de edição das imagens, datas incompatíveis, coordenadas geográficas não plausíveis e deslocamentos incompatíveis com os intervalos de tempo registrados.
+
+CHECKLIST DO SUMÁRIO
+
+Instrumento de apoio à avaliação do sumário de inventário, permitindo organizar os pontos que devem ser examinados durante a análise documental.
+
+CONTROLE DAS EVIDÊNCIAS
+
+Informações destinadas a apoiar a rastreabilidade e a avaliação da confiabilidade das fotografias utilizadas como evidências nos procedimentos de fiscalização.
+    `,
+
+    "observacoes": `
+DISPONIBILIDADE DOS METADADOS ESPACIAIS
+
+Nem todas as avaliadoras disponibilizam fotografias com coordenadas geográficas incorporadas aos metadados.
+Essa limitação restringe a execução das verificações de localização e deslocamento, mas não impede a análise dos demais metadados disponíveis.
+
+EXIGÊNCIA DE GEOLOCALIZAÇÃO
+
+Durante 2026, foi estabelecida a obrigatoriedade de disponibilização dos metadados espaciais das fotografias a partir da oficialização da exigência.
+A aplicação desse requisito deve considerar a data de entrada em vigor e as condições estabelecidas no respectivo instrumento formal.
+
+INDÍCIOS DE EDIÇÃO
+
+Alterações ou inconsistências nos metadados podem constituir indícios de edição ou processamento posterior das imagens.
+Entretanto, tais ocorrências não comprovam, isoladamente, adulteração do conteúdo fotográfico, sendo necessária avaliação complementar.
+
+CONSISTÊNCIA TEMPORAL
+
+As datas e os horários registrados nas imagens devem ser examinados quanto à compatibilidade com os períodos de execução do inventário e com a sequência esperada das atividades.
+
+CONSISTÊNCIA ESPACIAL
+
+As coordenadas geográficas devem ser avaliadas em relação aos locais de instalação dos ativos.
+Para fotografias sequenciais, a distância entre os pontos e o intervalo de tempo entre as capturas devem apresentar compatibilidade com deslocamentos fisicamente plausíveis.
+
+LIMITAÇÕES DA ANÁLISE
+
+A ausência de metadados, diferenças de configuração dos dispositivos, alterações de fuso horário e procedimentos legítimos de tratamento das imagens podem influenciar os resultados.
+As inconsistências identificadas devem ser interpretadas como elementos de investigação, e não como conclusões automáticas sobre a validade das evidências.
+    `,
+
+    "interface": {
+        "imagem": "imagens/fotos_inventario.png",
+        "legenda": "Tela de análise dos metadados das fotografias do inventário e geração do checklist do sumário.",
+        "elementos": [
+            {
+                "numero": 1,
+                "titulo": "(Re)Fazer",
+                "descricao": "Executa ou refaz o processamento dos metadados das fotografias, permitindo reavaliar as evidências disponíveis.",
+                "x": 38.2,
+                "y": 80.2
+            },
+            {
+                "numero": 2,
+                "titulo": "Check List",
+                "descricao": "Aciona a funcionalidade de geração do checklist destinado à análise do sumário de inventário.",
+                "x": 63.5,
+                "y": 80.2
+            },
+            {
+                "numero": 3,
+                "titulo": "Área de resultados",
+                "descricao": "Apresenta mensagens e informações do processamento. Na captura, o sistema informa que não existem fotografias disponíveis para análise.",
+                "x": 54.5,
+                "y": 94.8
+            }
+        ]
+    },
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Análise dos metadados das fotografias",
+
+            "finalidade": `
+Extrair e avaliar os metadados das fotografias do inventário, buscando identificar inconsistências temporais, espaciais e indícios de edição que possam comprometer a confiabilidade das evidências apresentadas.
+O processamento contribui para verificar a compatibilidade entre os registros fotográficos, os locais de instalação e as condições esperadas de execução do inventário.
+            `,
+
+            "acionamento": `
+Botão "(Re)Fazer".
+
+Permite executar ou repetir a análise das fotografias disponíveis no ambiente de trabalho.
+            `,
+
+            "etapas": [
+                "Identificar os arquivos fotográficos disponíveis na pasta IMAGENS_SUMARIO.",
+                "Ler os metadados incorporados às imagens.",
+                "Extrair as informações de data e horário das capturas.",
+                "Identificar a disponibilidade de coordenadas geográficas.",
+                "Examinar possíveis indícios de edição ou alteração dos metadados.",
+                "Verificar a compatibilidade temporal das fotografias.",
+                "Comparar as coordenadas disponíveis com os locais esperados de instalação.",
+                "Identificar fotografias que possam compor sequências temporais e espaciais.",
+                "Calcular ou avaliar as distâncias entre pontos consecutivos, quando existirem dados suficientes.",
+                "Examinar a razoabilidade dos deslocamentos em relação aos intervalos de tempo.",
+                "Registrar as inconsistências e limitações identificadas.",
+                "Disponibilizar os resultados para avaliação."
+            ],
+
+            "funcoes": `
+MÓDULO: Imp_fotos_inv.py
+
+Responsável pelo processamento dos arquivos fotográficos e pela análise dos metadados utilizados nas verificações de consistência.
+
+            `,
+
+            "resultado": `
+Resultados da análise dos metadados das fotografias, com identificação de inconsistências temporais, espaciais e possíveis indícios de edição.
+As verificações dependentes de geolocalização ficam condicionadas à disponibilidade de coordenadas nos arquivos.
+São disponibiliados os arquivos saida_metadados e saida_metadados_indicios, em csv, com o resultado das análises.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 2 — Geração do checklist do sumário executivo",
+
+            "finalidade": `
+Produzir um instrumento de apoio à avaliação do sumário executivo, organizando os aspectos que devem ser verificados durante a análise documental e das evidências apresentadas.
+O checklist complementa a análise automatizada dos metadados, permitindo estruturar a conferência dos elementos do inventário.
+            `,
+
+            "acionamento": `
+Botão "Check List", disponível na página.
+            `,
+
+            "etapas": [
+                "Acionar a funcionalidade de geração do checklist.",
+                "Obter as informações disponíveis para a análise do sumário de inventário.",
+                "Organizar os itens de verificação previstos no procedimento.",
+                "Preparar o checklist para utilização na análise.",
+                "Disponibilizar o instrumento de conferência ao usuário."
+            ],
+
+            "funcoes": `
+MÓDULO: Imp_fotos_inv.py
+
+Módulo associado à página de análise das fotografias.
+A rotina específica responsável pela geração do checklist deverá ser confirmada no código-fonte.
+            `,
+
+            "resultado": `
+Checklist destinado à análise do sumário de inventário, permitindo organizar e documentar as verificações realizadas durante o procedimento de avaliação.
+            `
+        }
+    ]
+},
+ 
+{
+    "grupo": "PLANEJAR:",
+    "titulo": "AMOSTRAGEM DE PROJETOS",
+
+    "source": [
+        "function",
+        "AMOSTRAS_D"
+    ],
+
+    "objetivo": `
+Efetuar análise exploratória dos investimentos e a seleção de projetos para fiscalização, utilizando procedimentos de amostragem por unidade monetária e estratificação por tipo de instalação (TI).
+Inicialmente, são examinadas as distribuições dos valores dos investimentos, permitindo identificar concentração, dispersão, assimetria e valores extremos. A análise apresenta separadamente a população completa, os registros sem outliers e os registros classificados como outliers.
+A visualização utiliza gráficos do tipo violino, combinados com informações de distribuição e estatísticas descritivas, para apoiar a interpretação do comportamento dos investimentos por TI.
+Os outliers são apresentados para avaliação do usuário. Sua identificação estatística não implica exclusão automática, pois obras de maior valor podem representar investimentos legítimos e relevantes para a fiscalização.
+Na etapa seguinte, o sistema apresenta a distribuição monetária dos investimentos e aplica a metodologia de Amostragem por Unidade Monetária, utilizada para selecionar registros com maior relevância financeira.
+A amostra é dimensionada considerando parâmetros estatísticos de confiança, erro tolerável e critérios definidos no procedimento. Posteriormente, é distribuída entre os estratos de TI, considerando sua representatividade monetária.
+Por fim, a página apresenta os projetos selecionados para análise em campo e permite exportar os resultados para utilização nas etapas posteriores da fiscalização.
+    `,
+
+    "entradas": `
+BASE DE INVESTIMENTOS
+
+Registros dos projetos e obras associados ao AIS, contendo informações de identificação, classificação por TI e valores monetários dos investimentos.
+
+DADOS DE ESTRATIFICAÇÃO
+
+Identificação dos tipos de instalação (TI), utilizada para organizar a população e distribuir a amostra entre os diferentes grupos.
+
+VALORES MONETÁRIOS
+
+Valores dos investimentos utilizados na análise de distribuição, identificação de outliers, dimensionamento e seleção da amostra.
+
+PARÂMETROS ESTATÍSTICOS
+
+Critérios de confiança, erro tolerável e demais parâmetros utilizados na metodologia de Amostragem por Unidade Monetária.
+
+PRÉ-REQUISITOS
+
+Bases de dados necessárias à análise previamente importadas e informações dos projetos disponíveis para processamento.
+    `,
+
+    "resultados": `
+ANÁLISE EXPLORATÓRIA
+
+Gráficos de distribuição dos investimentos por TI, contemplando a população completa, os registros sem outliers e os registros classificados como outliers.
+
+IDENTIFICAÇÃO DE OUTLIERS
+
+Relação dos projetos com valores extremos, permitindo sua avaliação e eventual inclusão na análise de fiscalização.
+
+DISTRIBUIÇÃO MONETÁRIA
+
+Representação da composição dos investimentos, incluindo as categorias apresentadas pela aplicação, como valores atualizados, BPR e orçamento.
+
+DIMENSIONAMENTO DA AMOSTRA
+
+Quantidade de projetos selecionados conforme a metodologia de Amostragem por Unidade Monetária e os parâmetros estatísticos considerados.
+
+ESTRATIFICAÇÃO POR TI
+
+Distribuição da quantidade de amostras entre os tipos de instalação, considerando sua participação monetária.
+
+PROJETOS SELECIONADOS
+
+Tabela contendo as obras sorteadas para análise em campo, com identificação dos projetos, valores e limites associados ao procedimento.
+
+ARQUIVOS DE EXPORTAÇÃO
+
+Resultados disponibilizados em CSV e em planilha Excel para utilização e complementação pelos responsáveis pela fiscalização.
+    `,
+
+    "observacoes": `
+INTERPRETAÇÃO DOS OUTLIERS
+
+Projetos de infraestrutura podem apresentar diferenças expressivas de valor em razão de características técnicas, porte, localização e complexidade.
+
+AMOSTRAGEM POR UNIDADE MONETÁRIA
+
+A metodologia atribui maior peso de seleção aos registros de maior valor monetário, buscando concentrar a fiscalização em investimentos financeiramente relevantes.
+O dimensionamento depende dos parâmetros estatísticos utilizados e das características da população examinada.
+
+PARÂMETROS APRESENTADOS
+
+Apresenta um exemplo com nível de confiança de 95%, erro tolerável de 5% e índice de confiança igual a 3, resultando em 60 amostras.
+
+ESTRATIFICAÇÃO
+
+A distribuição por TI busca preservar a representatividade monetária dos diferentes grupos de investimentos.
+A quantidade final de projetos selecionados poderá variar conforme os critérios de dimensionamento, distribuição e seleção implementados.
+
+RASTREABILIDADE DA SELEÇÃO
+
+Preserva-se os parâmetros estatísticos, a população utilizada, os critérios de tratamento dos outliers e a relação final dos projetos sorteados.
+
+EXPORTAÇÃO PARA FISCALIZAÇÃO
+
+A planilha de saída destina-se à análise e ao preenchimento pelos responsáveis pela fiscalização, permitindo registrar informações e discutir os resultados com a coordenação.
+
+MÓDULO RESPONSÁVEL
+
+O processamento e a apresentação dos resultados são controlados pelo módulo amostra_D.py.
+    `,
+
+    "interface": {
+    "imagem": "imagens/amostragem_projetos_01.png",
+    "legenda": "Tela principal de amostragem de projetos.",
+    "elementos": [
+        {
+            "numero": 1,
+            "titulo": "Refazer Amostragem",
+            "descricao": "Executa novamente a amostragem.",
+            "x": 51.5,
+            "y": 62.2
+        },
+        {
+            "numero": 2,
+            "titulo": "Selecione a TI para avaliar",
+            "descricao": "Seleciona a TI para análise da distribuição dos investimentos.",
+            "x": 55.0,
+            "y": 94.5
+        }
+    ],
+
+    "galeria": [
+        {
+            "imagem": "imagens/amostragem_projetos_02.png",
+            "titulo": "Distribuição dos investimentos",
+            "legenda": "Gráficos de violino: completo, sem outliers e somente outliers."
+        },
+        {
+            "imagem": "imagens/amostragem_projetos_03.png",
+            "titulo": "Identificação dos outliers",
+            "legenda": "Tabela de projetos classificados como valores extremos."
+        },
+        {
+            "imagem": "imagens/amostragem_projetos_04.png",
+            "titulo": "Distribuição monetária",
+            "legenda": "Composição dos investimentos por categoria."
+        },
+        {
+            "imagem": "imagens/amostragem_projetos_05.png",
+            "titulo": "Dimensionamento e estratificação",
+            "legenda": "Cálculo da amostra, distribuição por TI e projetos sorteados."
+        },
+        {
+            "imagem": "imagens/amostragem_projetos_06.png",
+            "titulo": "Exportação dos resultados",
+            "legenda": "Exportação CSV e planilha de amostras para fiscalização."
+        }
+    ]
+},
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Análise exploratória e identificação de outliers",
+
+            "finalidade": `
+Examinar a distribuição dos investimentos por TI, identificando concentração monetária, dispersão e registros com valores extremos.
+A análise permite avaliar se os outliers representam características esperadas da população ou situações que merecem investigação específica.
+            `,
+
+            "acionamento": `
+Seleção do tipo de instalação no campo "Selecione a TI para avaliar".
+A atualização dos resultados da amostragem pode ser acionada pelo botão "Refazer Amostragem".
+            `,
+
+            "etapas": [
+                "Obter os registros de investimentos disponíveis para análise.",
+                "Organizar os projetos conforme o tipo de instalação.",
+                "Selecionar a TI indicada pelo usuário.",
+                "Examinar a distribuição dos valores monetários.",
+                "Identificar os registros classificados como outliers.",
+                "Apresentar a distribuição completa dos investimentos.",
+                "Apresentar a distribuição sem outliers.",
+                "Apresentar a distribuição dos registros classificados como outliers.",
+                "Disponibilizar a relação de projetos extremos para avaliação."
+            ],
+
+            "funcoes": `
+MÓDULO: amostra_D.py
+
+Responsável pelo processamento da página e pela apresentação dos resultados da análise exploratória.
+            `,
+
+            "resultado": `
+Gráficos comparativos de distribuição dos investimentos e tabela dos projetos classificados como outliers.
+Informações disponíveis para apoiar a interpretação da população e a definição do tratamento dos registros extremos.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 2 — Dimensionamento da amostra monetária",
+
+            "finalidade": `
+Determinar a quantidade de projetos a serem selecionados para fiscalização, utilizando a metodologia de Amostragem por Unidade Monetária.
+O procedimento considera a relevância financeira dos investimentos e os parâmetros estatísticos definidos para o processo.
+            `,
+
+            "acionamento": `
+Processamento associado à execução ou ao reprocessamento da amostragem, com apresentação dos resultados na página.
+            `,
+
+            "etapas": [
+                "Obter a população monetária dos investimentos.",
+                "Examinar a composição dos valores por categoria.",
+                "Apresentar a distribuição monetária dos investimentos.",
+                "Identificar os parâmetros estatísticos aplicáveis.",
+                "Determinar o erro tolerável e o nível de confiança considerados.",
+                "Calcular o tamanho da amostra conforme a metodologia implementada.",
+                "Apresentar a quantidade de projetos a serem selecionados."
+            ],
+
+            "funcoes": `
+MÓDULO: amostra_D.py
+
+Responsável pelo dimensionamento da amostra e pela apresentação dos resultados.
+            `,
+
+            "resultado": `
+Quantidade de amostras dimensionada para a população examinada, acompanhada dos parâmetros estatísticos e das informações monetárias utilizadas no cálculo.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 3 — Estratificação e seleção dos projetos",
+
+            "finalidade": `
+Distribuir a quantidade de amostras entre os tipos de instalação e selecionar os projetos que integrarão a análise em campo.
+A distribuição considera a participação monetária dos estratos e os critérios de seleção implementados.
+            `,
+
+            "acionamento": `
+Processamento associado à execução ou ao reprocessamento da amostragem.
+            `,
+
+            "etapas": [
+                "Identificar os tipos de instalação presentes na população.",
+                "Determinar a participação monetária de cada TI.",
+                "Distribuir a quantidade de amostras entre os estratos.",
+                "Aplicar o procedimento de seleção dos projetos.",
+                "Identificar as obras selecionadas para fiscalização.",
+                "Organizar os resultados por TI e projeto.",
+                "Apresentar a tabela dos projetos sorteados.",
+                "Disponibilizar os resultados para conferência e exportação."
+            ],
+
+            "funcoes": `
+MÓDULO: amostra_D.py
+
+Responsável pela organização e seleção das amostras apresentadas na página.
+
+            `,
+
+            "resultado": `
+Relação dos projetos selecionados para análise em campo, distribuídos por TI e acompanhados dos valores e demais informações apresentadas na tabela de resultados.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 4 — Exportação dos resultados da amostragem",
+
+            "finalidade": `
+Disponibilizar os resultados da amostragem em formatos que permitam sua utilização, conferência e complementação pelos responsáveis pela fiscalização.
+A exportação facilita a circulação das informações e o registro dos resultados das análises realizadas em campo.
+            `,
+
+            "acionamento": `
+Botão "Exportar CSV", associado à tabela de projetos selecionados.
+
+Botão "Imprimir Amostras", disponível na seção "Exportação para o Excel".
+            `,
+
+            "etapas": [
+                "Obter a relação final dos projetos selecionados.",
+                "Organizar os dados necessários à exportação.",
+                "Disponibilizar os registros em formato CSV, quando solicitado.",
+                "Preparar a planilha destinada à fiscalização.",
+                "Gerar o arquivo de saída da amostragem.",
+                "Disponibilizar o resultado para preenchimento e análise."
+            ],
+
+            "funcoes": `
+MÓDULO: amostra_D.py
+
+Responsável pela apresentação dos controles de exportação e pelo acionamento das rotinas correspondentes.
+
+            `,
+
+            "resultado": `
+Arquivos com os projetos selecionados, incluindo a saída destinada à fiscalização, identificada na interface como SAIDA_F0_AMOSTRA, disponível na pasta RELATORIO.
+A planilha permite registrar informações e resultados da análise dos projetos, para posterior discussão com a coordenação.
+            `
+        }
+    ]
+},
+
+{
+    "grupo": "PLANEJAR:",
+    "titulo": "PLANEJAMENTO DE ATIVIDADES",
+
+    "source": [
+        "function",
+        "matriz_mestra"
+    ],
+
+    "objetivo": `
+Organiza o planejamento operacional das atividades de fiscalização, reunindo as informações gerais do trabalho, a composição da equipe, os marcos temporais e o cronograma de execução.
+O planejamento é estruturado a partir da Matriz Mestra do ROCT, que estabelece as atividades previstas para diferentes modalidades de fiscalização, permitindo selecionar o modelo correspondente ao trabalho realizado.
+A aplicação apresenta o cronograma em formato tabular, possibilitando a edição dos responsáveis, das datas previstas, dos produtos esperados e das informações relacionadas à execução, revisão e aprovação das atividades.
+Adicionalmente, disponibiliza uma representação gráfica por meio de diagrama de Gantt, facilitando a visualização da sequência das atividades, da distribuição temporal e do acompanhamento do andamento dos trabalhos.
+Os dados registrados podem ser salvos e posteriormente recuperados, preservando o planejamento realizado e permitindo sua atualização durante a fiscalização.
+O cronograma também pode ser exportado para uma planilha Excel, destinada ao acompanhamento operacional e ao compartilhamento das informações entre os integrantes da equipe.
+    `,
+
+    "entradas": `
+DADOS GERAIS DO TRABALHO
+
+Identificação da empresa fiscalizada, da avaliadora e da credenciada, quando aplicável.
+Período incremental de referência, incluindo as datas inicial e final consideradas no trabalho.
+
+EQUIPE DE FISCALIZAÇÃO
+
+Identificação dos profissionais responsáveis pelas atividades, incluindo coordenação, fiscais da SFF e profissionais credenciados.
+
+MARCOS TEMPORAIS
+
+Datas previstas ou registradas para início e encerramento da fiscalização, bem como para início e finalização das atividades em campo.
+
+MATRIZ MESTRA DO ROCT
+
+Seleção da modalidade de fiscalização utilizada como referência para o planejamento.
+A interface apresenta as seguintes opções:
+
+- Distribuidora anual.
+- Distribuidora periódica.
+- Distribuidora extraordinária.
+- Transmissora periódica.
+- Transmissora licitada.
+
+CRONOGRAMA DE ATIVIDADES
+
+Relação estruturada de atividades, responsáveis, datas de início e término, produtos esperados e registros de execução, revisão e aprovação.
+
+PRÉ-REQUISITOS
+
+Ambiente de trabalho configurado e informações necessárias ao planejamento disponíveis.
+    `,
+
+    "resultados": `
+CADASTRO DO TRABALHO
+
+Informações gerais da fiscalização registradas para utilização no planejamento.
+
+COMPOSIÇÃO DA EQUIPE
+
+Identificação dos profissionais e respectivas funções, associada aos marcos temporais da fiscalização.
+
+CRONOGRAMA OPERACIONAL
+
+Relação das atividades previstas na Matriz Mestra selecionada, com responsáveis, datas, produtos e informações de acompanhamento.
+
+VISUALIZAÇÃO TEMPORAL
+
+Representação gráfica das atividades por meio de diagrama de Gantt, permitindo acompanhar sua distribuição no tempo.
+
+PERSISTÊNCIA DO PLANEJAMENTO
+
+Dados registrados e disponíveis para recuperação e atualização nas utilizações posteriores da página.
+
+EXPORTAÇÃO PARA EXCEL
+
+Arquivo Saida_CRONO_F0.xlsx, pasta RELATORIO, contendo as informações do cronograma destinadas ao acompanhamento e à utilização operacional.
+    `,
+
+    "observacoes": `
+MATRIZ MESTRA DO ROCT
+
+A seleção da modalidade de fiscalização determina a estrutura de referência utilizada no planejamento.
+As atividades devem ser examinadas e ajustadas conforme as particularidades do trabalho efetivamente realizado
+e de acordo com o ROCT.
+
+ATUALIZAÇÃO DO CRONOGRAMA
+
+O cronograma deve ser atualizado periodicamente para refletir o andamento das atividades, eventuais alterações de prazo e a situação dos produtos previstos.
+
+RESPONSABILIDADES
+
+O preenchimento dos campos de execução, revisão e aprovação contribui para a definição das responsabilidades e para a rastreabilidade das atividades realizadas.
+
+MARCOS TEMPORAIS
+
+As datas de início e término da fiscalização e das atividades em campo devem ser coerentes com os períodos registrados no cronograma.
+
+VISUALIZAÇÃO EM GANTT
+
+O diagrama de Gantt complementa a tabela de planejamento, oferecendo uma representação temporal das atividades.
+A visualização gráfica não substitui a conferência dos dados e dos registros de acompanhamento.
+
+SALVAMENTO DOS DADOS
+
+Os botões de salvamento permitem registrar as informações preenchidas ou alteradas.
+Recomenda-se salvar as modificações após a atualização dos dados da equipe ou do cronograma.
+
+IMPORTAÇÃO E EXPORTAÇÃO
+
+A página apresenta controles para importar informações e exportar o cronograma para Excel.
+O arquivo de saída utilizado no procedimento é Saida_CRONO_F0.xlsx, pasta RELATORIO.
+
+RASTREABILIDADE
+
+O registro de responsáveis, datas, produtos e etapas de execução contribui para a documentação das atividades e para o acompanhamento dos procedimentos de fiscalização.
+    `,
+
+    "interface": {
+        "imagem": "imagens/cronograma_03.png",
+
+        "legenda": "Tela principal do planejamento de atividades, com identificação do trabalho e registro das informações da fiscalização.",
+
+        "elementos": [
+            {
+                "numero": 1,
+                "titulo": "Dados gerais do trabalho de revisão",
+                "descricao": "Tabela destinada ao registro da empresa fiscalizada, da avaliadora, da credenciada e das datas do período incremental.",
+                "x": 55.5,
+                "y": 75.5
+            },
+            {
+                "numero": 2,
+                "titulo": "Salvar dados gerais",
+                "descricao": "Salva as informações do trabalho de revisão na database local, permitindo sua recuperação nas utilizações posteriores.",
+                "x": 24.0,
+                "y": 93.0
+            },
+            {
+                "numero": 3,
+                "titulo": "Exportar para Excel",
+                "descricao": "Exporta para o Excel, arquivo Saida_CRONO_F0.xlsx, pasta RELATORIO, as informações do trabalho de revisão.",
+                "x": 52.0,
+                "y": 93.0
+            },
+            {
+                "numero": 4,
+                "titulo": "Importar do Excel",
+                "descricao": "Importa para o Excel, arquivo Saida_CRONO_F0.xlsx, pasta RELATORIO, as informações do trabalho de revisão.",
+                "x": 82.0,
+                "y": 93.0
+            }
+        ],
+
+        "imagens_adicionais": [
+            {
+                "imagem": "imagens/cronograma_01.png",
+                "titulo": "Equipe de fiscalização e seleção da Matriz Mestra",
+                "legenda": "Cadastro dos profissionais, funções e marcos temporais da fiscalização, seguido da seleção da modalidade de planejamento conforme a Matriz Mestra do ROCT. Botão Salvar, guarda configuração na database local."
+            },
+            {
+                "imagem": "imagens/cronograma_02.png",
+                "titulo": "Dados gerais do trabalho, incluindo Matriz Mestra, conforme ROCT, empregada. Botão Salvar, guarda configuração na database local."
+            }
+        ],
+
+        "nota": `
+O cronograma deve ser mantido atualizado durante a fiscalização, registrando os responsáveis, as datas e o andamento das atividades. O arquivo Saida_CRONO_F0.xlsx constitui a saída operacional em Excel.
+        `
+    },
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Cadastro do trabalho e da equipe",
+
+            "finalidade": `
+Registrar as informações gerais da fiscalização, identificar os profissionais envolvidos e estabelecer os principais marcos temporais do trabalho.
+Esses dados fornecem a referência administrativa e operacional necessária à organização do cronograma.
+            `,
+
+            "acionamento": `
+Preenchimento ou edição das tabelas de dados gerais do trabalho e da equipe.
+Os respectivos botões "Salvar" registram as informações.
+            `,
+
+            "etapas": [
+                "Identificar a empresa fiscalizada.",
+                "Registrar a avaliadora e a credenciada, quando aplicável.",
+                "Conferir as datas inicial e final do período incremental.",
+                "Identificar o coordenador e os fiscais da SFF.",
+                "Registrar os profissionais credenciados envolvidos.",
+                "Informar as datas de início e encerramento da fiscalização.",
+                "Informar os marcos de início e finalização das atividades em campo.",
+                "Salvar as informações cadastradas."
+            ],
+
+            "funcoes": `
+MÓDULO: matriz_mestra.py
+
+Responsável pela página de planejamento e pelo tratamento dos dados apresentados.
+            `,
+
+            "resultado": `
+Dados gerais do trabalho, composição da equipe e marcos temporais registrados para utilização no planejamento das atividades.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 2 — Seleção da Matriz Mestra e preparação do cronograma",
+
+            "finalidade": `
+Selecionar o modelo de planejamento correspondente à modalidade de fiscalização e disponibilizar a estrutura de atividades prevista na Matriz Mestra do ROCT.
+O procedimento estabelece a referência inicial para a organização e o acompanhamento das tarefas.
+            `,
+
+            "acionamento": `
+Campo "Selecione Matriz Mestra para planejamento".
+O usuário escolhe a modalidade de fiscalização entre as opções disponíveis.
+            `,
+
+            "etapas": [
+                "Acessar as modalidades de fiscalização disponíveis.",
+                "Selecionar a Matriz Mestra correspondente ao trabalho.",
+                "Obter a estrutura de atividades associada à modalidade escolhida.",
+                "Apresentar as etapas e subetapas do cronograma.",
+                "Disponibilizar os campos de responsáveis, produtos e datas.",
+                "Preparar o cronograma para edição e acompanhamento."
+            ],
+
+            "funcoes": `
+MÓDULO: matriz_mestra.py
+
+Responsável pela organização e apresentação da Matriz Mestra utilizada no planejamento.
+            `,
+
+            "resultado": `
+Cronograma estruturado conforme a modalidade de fiscalização selecionada, disponível para preenchimento e atualização.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 3 — Edição e acompanhamento das atividades",
+
+            "finalidade": `
+Permitir o gerenciamento operacional do cronograma, mediante a atualização de responsáveis, datas, produtos e registros associados à execução das atividades.
+A página disponibiliza uma visualização tabular e uma representação gráfica em Gantt, facilitando o acompanhamento do planejamento.
+            `,
+
+            "acionamento": `
+Aba "Dados do Cronograma", para edição das informações.
+
+Aba "Diagrama de Gantt", para visualização temporal.
+
+Botão "Salvar", para registrar as alterações.
+            `,
+
+            "etapas": [
+                "Consultar as atividades e subatividades do cronograma.",
+                "Identificar os responsáveis pelas tarefas.",
+                "Registrar ou atualizar os arquivos de saída previstos.",
+                "Definir as datas de início e término das atividades.",
+                "Atualizar os registros de execução, revisão e aprovação.",
+                "Consultar a distribuição temporal das atividades no diagrama de Gantt.",
+                "Examinar eventuais necessidades de reprogramação.",
+                "Salvar as alterações realizadas.",
+                "Recuperar os dados registrados em acessos posteriores."
+            ],
+
+            "funcoes": `
+MÓDULO: matriz_mestra.py
+
+Responsável pela apresentação, edição e acompanhamento do cronograma.
+            `,
+
+            "resultado": `
+Cronograma atualizado e disponível para acompanhamento, com informações de responsáveis, prazos, produtos e andamento das atividades.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 4 — Importação e exportação do cronograma",
+
+            "finalidade": `
+Permitir a utilização das informações do cronograma em planilhas Excel e apoiar o intercâmbio de dados entre a aplicação e os instrumentos operacionais de fiscalização.
+A exportação disponibiliza o planejamento para consulta, complementação e compartilhamento.
+            `,
+
+            "acionamento": `
+Botão "EXCEL", para exportação do cronograma.
+
+Botão "Importar", para acionar a funcionalidade de importação disponível na página.
+            `,
+
+            "etapas": [
+                "Obter os dados do cronograma selecionado.",
+                "Organizar as informações de atividades, responsáveis, datas e produtos.",
+                "Preparar os dados para exportação.",
+                "Gerar a planilha Excel do cronograma.",
+                "Disponibilizar o arquivo Saida_CRONO_F0.xlsx.",
+                "Permitir o acionamento da importação de dados, quando necessário."
+            ],
+
+            "funcoes": `
+MÓDULO: matriz_mestra.py
+
+Responsável pelo acionamento das funcionalidades de importação e exportação associadas ao cronograma.
+            `,
+
+            "resultado": `
+Arquivo Saida_CRONO_F0.xlsx, pasta RELATORIO, contendo o cronograma de atividades para utilização no acompanhamento da fiscalização.
+            `
+        }
+    ]
+},
+  
+{
+    "grupo": "EXECUTAR:",
+    "titulo": "TRILHA DE FISCALIZAÇÃO",
+
+    "source": [
+        "function",
+        "trilha_fiscalizacao"
+    ],
+
+    "objetivo": `
+Constitui o ambiente de execução dos testes automatizados associados ao planejamento das atividades de fiscalização.
+A página integra a Matriz Mestra selecionada na etapa de planejamento ao conjunto de procedimentos analíticos disponíveis na aplicação, permitindo que o técnico responsável escolha quais testes serão executados.
+O menu lateral apresenta dinamicamente as etapas de fiscalização aplicáveis à modalidade de trabalho adotada. A seleção é realizada por meio de caixas de marcação, possibilitando executar individualmente uma análise ou combinar diferentes procedimentos em um mesmo processamento.
+No painel principal, são disponibilizadas opções de configuração que permitem ajustar o comportamento dos cálculos, considerando particularidades das bases de dados, critérios de conciliação, parâmetros de depreciação e demais condições operacionais.
+Após a seleção dos testes e a definição dos parâmetros, o acionamento do processamento executa os procedimentos correspondentes às opções marcadas.
+Os resultados são organizados em diretórios temáticos, de modo a facilitar sua localização, avaliação e utilização nas etapas posteriores da fiscalização.
+A ferramenta oferece suporte à execução padronizada de análises, sem dispensar a avaliação técnica dos resultados e a verificação das premissas adotadas.
+    `,
+
+    "entradas": `
+PLANEJAMENTO DA FISCALIZAÇÃO
+
+Matriz Mestra selecionada na etapa de planejamento, utilizada para determinar as atividades e os testes disponíveis no menu lateral.
+
+BASES DE DADOS
+
+Bases previamente importadas e preparadas, conforme os requisitos de cada procedimento analítico.
+
+SELEÇÃO DOS TESTES
+
+Caixas de marcação apresentadas no menu lateral, permitindo selecionar as análises que serão executadas.
+
+CONFIGURAÇÕES DOS CÁLCULOS
+
+Parâmetros específicos dos procedimentos, incluindo opções de conciliação, tratamento de dados, critérios temporais e demais condições necessárias à execução.
+
+PRÉ-REQUISITOS
+
+Ambiente de trabalho configurado.
+Planejamento da fiscalização definido.
+Disponibilidade das bases de dados exigidas pelos testes selecionados.
+Conferência dos parâmetros aplicáveis antes do início do processamento.
+    `,
+
+    "resultados": `
+EXECUÇÃO DOS TESTES
+
+Processamento dos procedimentos analíticos correspondentes às opções selecionadas pelo técnico.
+
+RESULTADOS TEMÁTICOS
+
+Os arquivos produzidos são disponibilizados em diretórios organizados conforme o tema principal das análises:
+
+
+AIS_ANLS — Resultados das análises relacionadas ao AIS.
+
+BDGD_ANLS — Resultados das análises relacionadas à Base de Dados Geográfica da Distribuidora.
+
+BP_ANLS — Resultados das análises relacionadas ao banco de preços.
+
+INC_ANLS — Resultados das análises relacionadas à base incremental.
+
+OE_ANLS — Resultados das análises relacionadas à obrigações especiais.
+
+BB_ANLS — Resultados das análises relacionadas à base blindada.
+
+
+SUPORTE À FISCALIZAÇÃO
+
+Conjunto de resultados destinado à avaliação técnica, à identificação de inconsistências e à fundamentação das conclusões dos procedimentos de fiscalização.
+    `,
+
+    "observacoes": `
+MENU DINÂMICO
+
+As etapas apresentadas no menu lateral são determinadas pela Matriz Mestra adotada no planejamento.
+Consequentemente, a relação de testes disponíveis pode variar conforme a modalidade de fiscalização selecionada.
+
+EXECUÇÃO SELETIVA
+
+Somente os procedimentos correspondentes às caixas de marcação selecionadas deverão integrar a execução solicitada.
+A seleção de múltiplas etapas permite combinar diferentes análises em um mesmo acionamento.
+
+CONFIGURAÇÕES DOS CÁLCULOS
+
+As opções disponíveis no painel principal devem ser avaliadas antes do processamento.
+Alguns parâmetros podem alterar os resultados, como aqueles relacionados aos critérios temporais, à conciliação de bases e à utilização de informações complementares.
+
+ANÁLISES DO AIS E ROA
+
+A interface apresenta opções específicas para procedimentos associados ao AIS e ao ROA, incluindo a geração de resultados auxiliares.
+
+BANCO DE COMPRAS
+
+O painel disponibiliza parâmetros relativos ao aproveitamento de créditos de ICMS, à conciliação com outras bases, à utilização de informações de CNPJ e ao tratamento de valores associados aos itens do imobilizado.
+
+BASE INCREMENTAL
+
+São disponibilizadas configurações relativas à necessidade de arquivos de correspondência entre bases e ao critério temporal de depreciação.
+
+BASE BLINDADA
+
+O painel contempla opções relacionadas à utilização de informações de empresas resultantes de processos de fusão e à definição de datas de referência.
+
+ORGANIZAÇÃO DOS RESULTADOS
+
+As saídas são separadas em diretórios temáticos, facilitando a identificação dos produtos de cada conjunto de análises.
+
+A existência de um diretório não significa que todos os testes daquele tema tenham sido executados.
+
+MANIFESTO DE EXECUÇÃO
+
+Cada execução será armazenada no banco de manifestos de execução, de modo que se saiba entradas, saídas e versões de script empregadas.
+
+RESPONSABILIDADE TÉCNICA
+
+Os resultados automatizados devem ser interpretados pelo técnico responsável, considerando a qualidade das bases de entrada, os parâmetros utilizados e a metodologia aplicável ao procedimento.
+    `,
+
+    "interface": {
+        "imagem": "imagens/execucao_02.png",
+
+        "legenda": "Painel de execução da Trilha de Fiscalização, com menu dinâmico de testes à esquerda e opções de configuração dos cálculos à direita.",
+
+        "elementos": [
+            {
+                "numero": 1,
+                "titulo": "Menu dinâmico de etapas",
+                "descricao": "Apresenta as análises disponíveis conforme a Matriz Mestra selecionada no planejamento. Cada caixa de marcação permite incluir ou excluir um procedimento da execução.",
+                "x": 10.0,
+                "y": 39.0
+            },
+            {
+                "numero": 2,
+                "titulo": "Painel de execução",
+                "descricao": "Área destinada à configuração e ao controle dos testes automatizados. Reúne os parâmetros que orientam o processamento das análises selecionadas.",
+                "x": 48.0,
+                "y": 15.0
+            },
+            {
+                "numero": 3,
+                "titulo": "Configurações do AIS e ROA",
+                "descricao": "Disponibiliza opções específicas para a geração de resultados auxiliares associados às análises do AIS e do ROA.",
+                "x": 36.0,
+                "y": 46.0
+            },
+            {
+                "numero": 4,
+                "titulo": "Parâmetros do banco de compras",
+                "descricao": "Permite configurar critérios relativos a créditos de ICMS, conciliações, informações complementares e tratamento de valores dos itens do imobilizado.",
+                "x": 39.0,
+                "y": 71.0
+            },
+            {
+                "numero": 5,
+                "titulo": "Configurações do incremental",
+                "descricao": "Permite definir critérios temporais de depreciação e indicar a necessidade de correspondência entre registros do ROA e do AIS.",
+                "x": 70.0,
+                "y": 44.0
+            },
+            {
+                "numero": 6,
+                "titulo": "Configurações da obrigação especial",
+                "descricao": "Apresenta parâmetros relacionados ao cálculo da amortização.",
+                "x": 70.0,
+                "y": 63.0
+            },
+            {
+                "numero": 7,
+                "titulo": "Configurações da base blindada",
+                "descricao": "Apresenta parâmetros relacionados à identificação de empresas e à definição da data de referência da base blindada.",
+                "x": 70.0,
+                "y": 82.0
+            }
+        ],
+
+        "imagens_adicionais": [
+            {
+                "imagem": "imagens/execucao_01.png",
+                "titulo": "Apresentação da Trilha de Fiscalização",
+                "legenda": "Tela introdutória da execução do planejamento e dos testes automatizados, contendo observações iniciais, informações de licenciamento e referências normativas."
+            }
+        ],
+
+        "nota": `
+A seleção das etapas é dinâmica e depende da Matriz Mestra utilizada no planejamento. Após configurar os parâmetros, o técnico deve acionar o processamento para executar os testes selecionados. Os resultados são organizados nos diretórios AIS_ANLS, BDGD_ANLS, BP_ANLS, INC_ANLS, OE_ANLS e BB_ANLS, conforme o tema de cada análise.
+        `
+    },
+
+"parametros": [
+    {
+        "grupo": "AIS e ROA",
+        "controle": "Criar RAC ST",
+        "ativo": "Solicita a geração do RAC ST durante o processamento.",
+        "inativo": "Não solicita a geração do RAC ST."
+    },
+    {
+        "grupo": "AIS e ROA",
+        "controle": "Criar ROS_VAL",
+        "ativo": "Solicita a geração do ROS_VAL durante o processamento.",
+        "inativo": "Não solicita a geração do ROS_VAL."
+    },
+    {
+        "grupo": "Banco de compras",
+        "controle": "Aproveita crédito de ICMS na UF?",
+        "ativo": "Considera o aproveitamento do crédito de ICMS nos cálculos aplicáveis.",
+        "inativo": "Não considera o aproveitamento do crédito de ICMS."
+    },
+    {
+        "grupo": "Banco de compras",
+        "controle": "(Re)Conciliar SPED e ERP?",
+        "ativo": "Solicita a execução ou repetição da conciliação entre SPED e ERP.",
+        "inativo": "Não solicita uma nova conciliação."
+    },
+    {
+        "grupo": "Banco de compras",
+        "controle": "Buscar dados de CNPJ das empresas não conciliadas, lado EFD?",
+        "ativo": "Solicita a busca de informações de CNPJ para empresas não conciliadas na EFD.",
+        "inativo": "Não solicita a busca complementar."
+    },
+    {
+        "grupo": "Banco de compras",
+        "controle": "Valor de ODC apurado, para itens do imobilizado (R$)",
+        "ativo": "Utiliza o valor monetário informado no campo, conforme as regras do cálculo.",
+        "inativo": "Não se aplica. Campo numérico; verificar o tratamento do valor zero."
+    },
+    {
+        "grupo": "Banco de compras",
+        "controle": "Fluxo de pagamento: arquivo (ativo), se projeção (inativo)",
+        "ativo": "Utiliza o arquivo de fluxo de pagamento.",
+        "inativo": "Utiliza a projeção de fluxo de pagamento."
+    },
+    {
+        "grupo": "Banco de compras",
+        "controle": "Limitar DIFAL: sim (ativo), não (inativo)",
+        "ativo": "Aplica a limitação do DIFAL prevista no procedimento.",
+        "inativo": "Não aplica a limitação do DIFAL."
+    },
+    {
+        "grupo": "Incremental",
+        "controle": "Há necessidade de arquivo de-para para projetos entre ROA e AIS?",
+        "ativo": "Considera necessária a correspondência entre projetos do ROA e do AIS por meio de arquivo de-para.",
+        "inativo": "Não exige arquivo de-para para essa correspondência."
+    },
+    {
+        "grupo": "Incremental",
+        "controle": "Método de depreciação",
+        "ativo": "Mês seguinte: inicia a depreciação no mês posterior ao evento de referência.",
+        "inativo": "Próprio mês: inicia a depreciação no mês do evento de referência."
+    },
+    {
+        "grupo": "OE",
+        "controle": "Considerar o valor da taxa média do laudo, base blindada e base incremental",
+        "ativo": "Considera a taxa média do laudo, conforme a opção apresentada na interface.",
+        "inativo": "Utiliza o valor da contabilidade (DEFAULT)."
+    },
+    {
+        "grupo": "Base blindada",
+        "controle": "Resultante de fusão?",
+        "ativo": "Indica que a base envolve empresa resultante de fusão, exigindo a identificação da empresa correspondente.",
+        "inativo": "Não indica situação de fusão."
+    },
+    {
+        "grupo": "Base blindada",
+        "controle": "Empresa",
+        "ativo": "Identifica a empresa selecionada para a fusão das bases blindadas.",
+        "inativo": "Não se aplica. Campo de seleção."
+    },
+    {
+        "grupo": "Base blindada",
+        "controle": "Data de referência da blindada da distribuidora incorporada",
+        "ativo": "Define a data de referência utilizada no processamento da base blindada da distribuidora incorporada.",
+        "inativo": "Não se aplica. Campo de data."
+    }
+],
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Preparação da trilha de fiscalização",
+
+            "finalidade": `
+Preparar o ambiente de execução a partir da Matriz Mestra definida no planejamento, identificando os procedimentos disponíveis e apresentando as respectivas opções de seleção.
+            `,
+
+            "acionamento": `
+Acesso à página Trilha de Fiscalização.
+            `,
+
+            "etapas": [
+                "Identificar a Matriz Mestra selecionada no planejamento.",
+                "Determinar as etapas de fiscalização aplicáveis.",
+                "Organizar os procedimentos disponíveis para execução.",
+                "Construir dinamicamente o menu lateral de testes.",
+                "Apresentar as caixas de marcação correspondentes às análises.",
+                "Disponibilizar o painel de configurações dos cálculos."
+            ],
+
+            "funcoes": `
+MÓDULO: trilha_fiscalizacao.py
+
+Responsável pela organização da página, pela apresentação dinâmica das etapas e pelo controle do acionamento dos testes.
+
+            `,
+
+            "resultado": `
+Menu de execução preparado conforme a modalidade de fiscalização, com os testes disponíveis para seleção.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 2 — Seleção dos testes automatizados",
+
+            "finalidade": `
+Permitir que o técnico determine quais procedimentos analíticos serão executados, considerando os objetivos da fiscalização e as atividades previstas no planejamento.
+            `,
+
+            "acionamento": `
+Seleção das caixas de marcação no menu lateral "Etapas".
+            `,
+
+            "etapas": [
+                "Consultar as etapas disponíveis no menu lateral.",
+                "Identificar os procedimentos relevantes para a fiscalização.",
+                "Selecionar as análises desejadas.",
+                "Combinar diferentes testes quando necessário.",
+                "Conferir a seleção antes do processamento."
+            ],
+
+            "funcoes": `
+MÓDULO: trilha_fiscalizacao.py
+
+Responsável pelo gerenciamento das opções de execução selecionadas pelo usuário.
+            `,
+
+            "resultado": `
+Conjunto de testes selecionados e preparado para execução.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 3 — Configuração dos parâmetros de cálculo",
+
+            "finalidade": `
+Definir as condições operacionais e metodológicas que serão utilizadas nos procedimentos analíticos selecionados.
+A parametrização permite adequar os cálculos às características das bases e às premissas aplicáveis à fiscalização.
+            `,
+
+            "acionamento": `
+Preenchimento dos controles disponíveis no Painel de Execução.
+            `,
+
+            "etapas": [
+                "Avaliar as configurações aplicáveis às análises do AIS e do ROA.",
+                "Definir os critérios relativos ao banco de compras.",
+                "Configurar o aproveitamento de créditos de ICMS, quando aplicável.",
+                "Selecionar opções de conciliação e utilização de informações complementares.",
+                "Definir os critérios temporais associados ao processo incremental.",
+                "Indicar a necessidade de correspondência entre registros do ROA e do AIS.",
+                "Configurar os parâmetros relacionados à base blindada.",
+                "Conferir as premissas adotadas antes da execução."
+            ],
+
+            "funcoes": `
+MÓDULO: trilha_fiscalizacao.py
+
+Responsável pela apresentação e pelo encaminhamento das configurações dos cálculos.
+            `,
+
+            "resultado": `
+Parâmetros de execução definidos para os testes selecionados.
+            `
+        },
+
+        {
+            "titulo": "Pipeline 4 — Execução dos testes e organização dos resultados",
+
+            "finalidade": `
+Executar os procedimentos analíticos selecionados pelo técnico, utilizando os parâmetros definidos no painel de configuração.
+Os resultados são organizados em diretórios temáticos, permitindo sua localização e utilização nas atividades posteriores de fiscalização.
+            `,
+
+            "acionamento": `
+Botão de processamento da página, após a seleção das etapas e a configuração dos parâmetros.
+            `,
+
+            "etapas": [
+                "Obter a relação de testes selecionados no menu lateral.",
+                "Recuperar os parâmetros definidos no painel de execução.",
+                "Identificar os procedimentos analíticos correspondentes às seleções.",
+                "Acionar os testes associados às etapas marcadas.",
+                "Processar as bases de dados exigidas por cada procedimento.",
+                "Produzir os resultados das análises executadas.",
+                "Organizar as saídas conforme o tema principal.",
+                "Disponibilizar os resultados nos diretórios AIS_ANLS, BDGD_ANLS, BP_ANLS, INC_ANLS, OE_ANLS e BB_ANLS, conforme aplicável."
+            ],
+
+            "funcoes": `
+MÓDULO ORQUESTRADOR: trilha_fiscalizacao.py
+
+Responsável pelo controle da execução dos procedimentos selecionados.
+`,
+
+            "resultado": `
+Resultados dos testes automatizados disponibilizados nos diretórios temáticos correspondentes.
+
+AIS_ANLS — Análises do AIS.
+
+BDGD_ANLS — Análises da BDGD.
+
+BP_ANLS — Análises do banco de preços.
+
+INC_ANLS — Análises da base incremental.
+
+OE_ANLS — Análises de obrigações especiais.
+
+BB_ANLS — Análises da base blindada.
+            `
+        }
+    ]
+}
+,
+  
+{
+    "grupo": "VISUALIZAR:",
+    "titulo": "DASHBOARDS — VISUALIZAÇÃO DE RESULTADOS",
+
+    "source": [
+        "function",
+        "visual"
+    ],
+
+    "objetivo": `
+A Trilha de Visualização de Resultados reúne os painéis analíticos produzidos durante a execução dos procedimentos de fiscalização.
+A navegação é organizada por meio de abas (st.tabs), permitindo consultar os resultados de diferentes macroavaliações em um único ambiente, sem necessidade de retornar às páginas de execução.
+Cada aba apresenta as visualizações correspondentes ao seu tema, incluindo os indicadores, gráficos e tabelas disponíveis. Os painéis são destinados à interpretação dos resultados e ao apoio à avaliação técnica.
+    `,
+
+    "entradas": `
+RESULTADOS DOS PROCESSAMENTOS
+
+Resultados previamente produzidos pelos procedimentos automatizados da Trilha de Fiscalização.
+
+NAVEGAÇÃO
+
+Seleção da aba correspondente à macroavaliação que se deseja consultar.
+    `,
+
+    "resultados": `
+Disponibilização dos dashboards para consulta e interpretação dos resultados das análises executadas.
+A navegação permite alternar entre as macroavaliações, preservando a organização temática das informações.
+    `,
+
+    "observacoes": `
+NAVEGAÇÃO POR ABAS
+
+A interface utiliza o componente st.tabs do Streamlit para organizar os resultados.
+A seleção de uma aba altera o painel apresentado ao usuário, permitindo consultar diferentes conjuntos de análises.
+Os dashboards apresentam resultados de procedimentos previamente executados. A interpretação das informações e a avaliação de eventuais inconsistências permanecem sob responsabilidade do técnico.
+    `,
+
+    "interface": {
+        "imagem": "imagens/visualizacao_01.png",
+
+        "legenda": "Trilha de Visualização de Resultados, organizada em abas correspondentes às macroavaliações da fiscalização.",
+
+        "elementos": [
+            {
+                "numero": 1,
+                "titulo": "Navegação entre dashboards",
+                "descricao": "Selecione uma das abas para consultar os resultados da macroavaliação correspondente. As abas disponíveis são AIS, BDGD, ABERTURA VOC, BANCO COMPRAS, INCREMENTAL, MOVIMENTAÇÃO OE, MOVIMENTAÇÃO BB e RESUMO.",
+                "x": 53.0,
+                "y": 94.0
+            }
+        ],
+
+        "nota": `
+Os painéis são organizados por tema e podem ser consultados diretamente pelas abas. A disponibilidade de resultados depende dos processamentos anteriormente realizados.
+        `
+    },
+
+    "parametros": [],
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Navegação e consulta dos resultados",
+
+            "finalidade": `
+Permitir a consulta aos dashboards das diferentes macroavaliações por meio de uma interface única de navegação.
+            `,
+
+            "acionamento": `
+Seleção da aba correspondente ao conjunto de resultados desejado.
+            `,
+
+            "etapas": [
+                "Acessar a Trilha de Visualização de Resultados.",
+                "Identificar a macroavaliação desejada.",
+                "Selecionar a aba correspondente.",
+                "Consultar os indicadores, gráficos e tabelas apresentados.",
+                "Alternar entre as abas para examinar outros resultados."
+            ],
+
+            "funcoes": `
+MÓDULO: visual
+
+Navegação organizada pelo componente st.tabs do Streamlit.
+            `,
+
+            "resultado": `
+Dashboards das macroavaliações disponibilizados para consulta e interpretação técnica.
+            `
+        }
+    ]
+},
+  
+{
+    "grupo": "EXPORTAR RESULTADOS:",
+    "titulo": "RELATÓRIOS E ARQUIVOS DE RESULTADOS",
+
+    "source": [
+        "function",
+        "criar_rel"
+    ],
+
+    "objetivo": `
+Permite gerar e exportar os arquivos de resultados associados aos principais procedimentos da Trilha de Fiscalização.
+Os relatórios são organizados por macroavaliação e por etapa do processo, identificadas pelos códigos F0, F1 e, quando aplicável, F2. Cada botão aciona a geração do arquivo correspondente, reunindo demonstrativos, conciliações, testes e memórias de cálculo destinados à análise técnica.
+Os arquivos são disponibilizados em formato compatível com o Excel, facilitando a revisão, o compartilhamento e o registro das evidências produzidas durante a fiscalização.
+    `,
+
+    "entradas": `
+RESULTADOS DOS PROCESSAMENTOS
+
+Resultados previamente produzidos pelos procedimentos da Trilha de Fiscalização.
+
+SELEÇÃO DO RELATÓRIO
+
+Escolha do arquivo a gerar por meio dos botões F0, F1 ou F2 associados à macroavaliação desejada.
+
+CONFIGURAÇÃO ADICIONAL
+
+No Banco de Compras, o controle "Fluxo de pagamento: arquivo (ativo), se projeção (inativo)" determina a modalidade considerada no processamento correspondente.
+    `,
+
+    "resultados": `
+Arquivos de resultados associados aos procedimentos de abertura do AIS, análise incremental, movimentação de Obrigações Especiais (OE), movimentação da Base Blindada (BB) e Banco de Compras.
+Os arquivos apresentam demonstrativos, conciliações, testes e memórias de cálculo, conforme a natureza do procedimento selecionado.
+    `,
+
+    "observacoes": `
+ORGANIZAÇÃO DOS RELATÓRIOS
+
+A identificação F0, F1 ou F2 distingue os produtos de cada macroavaliação. O conteúdo varia conforme o processo principal.
+A geração dos arquivos depende da disponibilidade dos dados e dos resultados dos procedimentos correspondentes.
+Os relatórios devem ser utilizados como subsídio à avaliação técnica, incluindo a discussão de divergências, critérios de alocação e consistência das informações apresentadas pela empresa.
+    `,
+
+    "interface": {
+
+        "galeria": [
+            {
+                "imagem": "imagens/relatorio_01.png",
+                "legenda": "Banco de Compras: conciliações, análise do extrato e comparação dos resultados."
+            },
+            {
+                "imagem": "imagens/relatorio_02.png",
+                "legenda": "Abertura do AIS e análise do laudo incremental."
+            },
+            {
+                "imagem": "imagens/relatorio_03.png",
+                "legenda": "Relatórios de movimentação de Obrigações Especiais e Base Blindada."
+            }
+        ],
+
+        "elementos": [],
+
+        "nota": `
+As capturas apresentam os controles de geração dos relatórios e as respectivas explicações. Cada botão corresponde a um arquivo associado à macroavaliação indicada.
+        `
+    },
+	"tipoTabela": "P1",
+    "parametros": [
+        {
+            "grupo": "ABERTURA DO AIS",
+            "itens": [
+                {
+                    "controle": "F0 ABERTURA",
+                    "tipo": "Botão",
+                    "descricao": "Gera a análise da distribuição dos custos por projeto e TI, considerando a natureza do gasto e o tipo de atividade. Subsidiará a discussão dos critérios de alocação com a empresa."
+                },
+                {
+                    "controle": "F1 ABERTURA",
+                    "tipo": "Botão",
+                    "descricao": "Gera os resultados da análise do valor de fábrica do ROA e do processo de abertura fornecido pela empresa, incluindo a discussão da abertura do JOA."
+                }
+            ]
+        },
+        {
+            "grupo": "ANÁLISE DO LAUDO INCREMENTAL",
+            "itens": [
+                {
+                    "controle": "F0 INCREMENTAL",
+                    "tipo": "Botão",
+                    "descricao": "Gera a análise do VOC informado no arquivo incremental, confrontando-o com os resultados da avaliação do AIS."
+                },
+                {
+                    "controle": "F1 INCREMENTAL",
+                    "tipo": "Botão",
+                    "descricao": "Gera os resultados da emulação do laudo incremental para comparação com o laudo entregue."
+                }
+            ]
+        },
+        {
+            "grupo": "MOVIMENTAÇÃO DE OBRIGAÇÕES ESPECIAIS",
+            "itens": [
+                {
+                    "controle": "F0 OE",
+                    "tipo": "Botão",
+                    "descricao": "Gera o demonstrativo das obrigações da base incremental e da blindada, incluindo relatório do BMP (OE5a), consolidação por atividade (OE5b), teste de taxas de amortização (TSTE_TX_AMT_CNTB), ajustes (LISTA_AJUSTES) e dados de IPCA (TABELA_IPCA)."
+                },
+                {
+                    "controle": "F1 OE",
+                    "tipo": "Botão",
+                    "descricao": "Gera a síntese do cálculo da taxa média de depreciação (Resumo_UC) e a consolidação por atividade (Tx_MED_ATIVD)."
+                }
+            ]
+        },
+        {
+            "grupo": "MOVIMENTAÇÃO DA BASE BLINDADA",
+            "itens": [
+                {
+                    "controle": "F0 BB",
+                    "tipo": "Botão",
+                    "descricao": "Gera o comparativo entre o MEMO encaminhado à área de tarifas e o arquivo de PPBB (TESTE_PP), os testes de quantidade de baixas por UC (TESTE_BAIXAS e TESTE_BAIXAS_UC), o resumo dos dados (RESUMO) e o memorial dos cálculos (abas TESTE_VNRx)."
+                }
+            ]
+        },
+        {
+            "grupo": "BANCO DE COMPRAS",
+            "itens": [
+                {
+                    "controle": "Fluxo de pagamento: arquivo (ativo), se projeção (inativo)",
+                    "tipo": "Checkbox",
+                    "descricao": "Seleciona a utilização do fluxo de pagamento proveniente do arquivo ou da projeção no processamento correspondente."
+                },
+                {
+                    "controle": "F0 COMPRAS",
+                    "tipo": "Botão",
+                    "descricao": "Gera a conciliação entre a EFD ICMS e o ERP, permitindo verificar a consistência agregada e desagregada dos dados com a empresa."
+                },
+                {
+                    "controle": "F1 COMPRAS",
+                    "tipo": "Botão",
+                    "descricao": "Gera a análise do extrato de compras, com cruzamento de informações do SPED e do incremental, fluxo de pagamento, fórmula COGE, rateio financeiro de ICMS, ODC e classificação contábil. Inclui consolidações e estatísticas por item, TUCAGEM e COD_ITEM."
+                },
+                {
+                    "controle": "F2 COMPRAS",
+                    "tipo": "Botão",
+                    "descricao": "Gera a comparação entre o BP_UAR apresentado e os dados calculados, verificando a fórmula COGE, a utilização do item no ROA e as variações dos resultados."
+                }
+            ]
+        }
+    ],
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Geração e exportação dos relatórios",
+
+            "finalidade": `
+Gerar arquivos de resultados dos procedimentos de fiscalização, organizados por macroavaliação e etapa de análise.
+            `,
+
+            "acionamento": `
+Acionamento do botão F0, F1 ou F2 correspondente ao relatório desejado.
+            `,
+
+            "etapas": [
+                "Acessar a página de exportação de resultados.",
+                "Identificar a macroavaliação e o relatório desejado.",
+                "Definir eventuais opções de processamento, quando disponíveis.",
+                "Acionar o botão correspondente.",
+                "Executar a rotina de geração do arquivo.",
+                "Disponibilizar o arquivo produzido para revisão e análise técnica."
+            ],
+            "funcoes": `
+MÓDULO: criar_rel.py
+
+Responsável pelas rotinas de geração dos relatórios e arquivos de resultados associados às macroavaliações.
+            `,
+
+            "resultado": `
+Arquivo de resultados correspondente ao procedimento selecionado, contendo os demonstrativos, conciliações, testes ou memórias de cálculo aplicáveis.
+            `
+        }
+    ]
+},
+  
+{
+    "grupo": "MANIFESTO",
+    "titulo": "MANIFESTO DE DADOS E DE EXECUÇÃO",
+
+    "objetivo": `
+Disponibilizar uma interface de consulta aos registros de rastreabilidade dos dados e dos processamentos realizados pela aplicação.
+A navegação é organizada por meio do componente st.tabs do Streamlit, que separa as informações em duas perspectivas complementares: o manifesto de dados e o manifesto de execução.
+    `,
+
+    "entradas": `
+REGISTROS DO MANIFESTO
+
+Informações de rastreabilidade produzidas durante as etapas de importação, transformação e processamento dos dados.
+    `,
+
+    "resultados": `
+Consulta organizada aos registros do manifesto, permitindo acompanhar a origem dos dados e as execuções realizadas no ambiente de análise.
+    `,
+
+    "observacoes": `
+NAVEGAÇÃO
+
+A interface utiliza duas abas independentes, implementadas com st.tabs. A seleção de uma aba altera o conteúdo apresentado, sem necessidade de navegar para outra página.
+
+DADOS
+
+Apresenta o manifesto associado aos conjuntos de dados utilizados pela aplicação, permitindo consultar informações de identificação, origem e rastreabilidade.
+
+EXECUÇÃO
+
+Apresenta os registros relacionados à execução dos procedimentos, permitindo consultar o histórico dos processamentos registrados.
+    `,
+
+    "interface": {
+        "imagem": "imagens/manifesto_01.png",
+        "legenda": "Navegação do Manifesto por meio das abas DADOS e EXECUÇÃO.",
+
+        "elementos": [
+            {
+                "numero": 1,
+                "titulo": "Aba DADOS",
+                "descricao": "Seleciona a visualização do manifesto de dados, destinado à consulta dos registros de origem e rastreabilidade.",
+                "x": 15,
+                "y": 90
+            },
+            {
+                "numero": 2,
+                "titulo": "Aba EXECUÇÃO",
+                "descricao": "Seleciona a visualização do manifesto de execução, destinado à consulta dos registros dos processamentos realizados.",
+                "x": 20,
+                "y": 90
+            }
+        ],
+
+        "nota": "As duas abas são implementadas com st.tabs e organizam as informações sem alterar a página ativa."
+    },
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Consulta ao manifesto",
+
+            "finalidade": "Organizar a consulta aos registros de rastreabilidade de dados e de execução.",
+
+            "acionamento": "Seleção das abas DADOS ou EXECUÇÃO.",
+
+            "etapas": [
+                "Acessar a página Manifesto.",
+                "Selecionar a aba DADOS ou EXECUÇÃO.",
+                "Consultar os registros apresentados na aba selecionada."
+            ],
+
+            "funcoes": "Interface de consulta ao manifesto de dados e ao manifesto de execução.",
+
+            "resultado": "Visualização dos registros correspondentes à aba selecionada."
+        }
+    ]
+},
+  
+{
+    "grupo": "HELP",
+    "titulo": "REFERÊNCIAS NORMATIVAS E AJUDA",
+
+    "objetivo": `
+Disponibilizar um ambiente de consulta às referências normativas e aos materiais técnicos utilizados como suporte às atividades de fiscalização e às análises realizadas pela aplicação.
+A navegação é organizada por meio do componente st.tabs do Streamlit, permitindo acessar diferentes documentos e referências sem sair da página.
+    `,
+
+    "entradas": `
+REFERÊNCIAS NORMATIVAS E TÉCNICAS
+
+Conteúdos de apoio organizados nas abas MCPSE, PRORET 2.3, MCSE, ROCT, MDEFF e PHAMTON'S FANG.
+    `,
+
+    "resultados": `
+Consulta aos conteúdos técnicos e normativos disponibilizados na aplicação, contribuindo para a interpretação dos procedimentos e critérios empregados nas análises.
+    `,
+
+    "observacoes": `
+NAVEGAÇÃO
+
+A página utiliza seis abas implementadas com st.tabs. Cada aba apresenta um conjunto específico de informações de referência.
+
+ATUALIZAÇÃO NORMATIVA
+
+Os conteúdos disponibilizados têm finalidade de consulta e apoio técnico. Recomenda-se verificar regularmente o portal oficial da ANEEL para identificar versões atualizadas dos documentos e eventuais alterações normativas.
+    `,
+
+    "interface": {
+        "imagem": "imagens/help_01.png",
+        "legenda": "Página HELP: navegação entre referências normativas e materiais técnicos por meio de st.tabs.",
+
+        "elementos": [
+            {
+                "numero": 1,
+                "titulo": "MCPSE",
+                "descricao": "Acessa o conteúdo relacionado ao Manual de Controle Patrimonial do Setor Elétrico.",
+                "x": 14.7,
+                "y": 85
+            },
+            {
+                "numero": 2,
+                "titulo": "PRORET 2.3",
+                "descricao": "Acessa a referência ao Submódulo 2.3 dos Procedimentos de Regulação Tarifária.",
+                "x": 19,
+                "y": 85
+            },
+            {
+                "numero": 3,
+                "titulo": "MCSE",
+                "descricao": "Acessa o conteúdo relacionado ao Manual de Contabilidade do Setor Elétrico.",
+                "x": 22.8,
+                "y": 85
+            },
+            {
+                "numero": 4,
+                "titulo": "ROCT",
+                "descricao": "Acessa a referência ao roteiro de fiscalização - ROCT.",
+                "x": 25.8,
+                "y": 85
+            },
+            {
+                "numero": 5,
+                "titulo": "MDEFF",
+                "descricao": "Acessa o material do Manual de Dados.",
+                "x": 29.5,
+                "y": 85
+            },
+            {
+                "numero": 6,
+                "titulo": "PHAMTON'S FANG",
+                "descricao": "Acessa o conteúdo de apoio do PHAMTON'S FANG.",
+                "x": 34,
+                "y": 85
+            }
+        ],
+
+        "nota": "As referências devem ser confrontadas com as versões oficiais vigentes, especialmente quando utilizadas para fundamentar conclusões de fiscalização."
+    },
+
+    "pipelines": [
+        {
+            "titulo": "Pipeline 1 — Consulta às referências técnicas",
+
+            "finalidade": "Organizar o acesso aos materiais normativos e técnicos de apoio à fiscalização.",
+
+            "acionamento": "Seleção de uma das abas da página HELP.",
+
+            "etapas": [
+                "Acessar a página HELP.",
+                "Selecionar a referência desejada por meio das abas.",
+                "Consultar o conteúdo disponibilizado.",
+                "Quando necessário, verificar a versão vigente no portal oficial da ANEEL."
+            ],
+
+            "funcoes": "MCPSE.py — organização e apresentação das referências técnicas na interface Streamlit.",
+
+            "resultado": "Visualização do material correspondente à aba selecionada."
+        }
+    ]
+}
+
+];
+
+
+    const nav = document.getElementById('nav');
+    const content = document.getElementById('conteudo');
+    const toc = document.getElementById('sumario');
+	
+    function elemento(tag, classe, texto) {
+      const node = document.createElement(tag);
+      if (classe) node.className = classe;
+      if (texto !== undefined) node.textContent = String(texto);
+      return node;
+    }
+
+    function criarParagrafos(texto, rotulo = '') {
+      const container = elemento('div', 'texto-documentacao');
+      const blocos = String(texto ?? '').trim().split(/\n\s*\n/)
+        .map(b => b.trim().replace(/\s*\n\s*/g, ' ')).filter(Boolean);
+      let tabela = null;
+      const finalizarTabela = () => { if (tabela) { container.append(tabela); tabela = null; } };
+
+      blocos.forEach(bloco => {
+        const ehSubtitulo = bloco.length <= 75 && /[A-ZÀ-Ý]/.test(bloco) &&
+          !/[a-zà-ÿ]/.test(bloco) && !/[.!?]$/.test(bloco);
+        if (ehSubtitulo) {
+          finalizarTabela();
+          container.append(elemento('h3', 'subtitulo-documentacao', bloco));
+          return;
+        }
+
+        const entradaTecnica = rotulo === 'Entradas e pré-requisitos' &&
+          /^([^:]{3,90}):\s*(.+)$/.exec(bloco);
+        if (entradaTecnica) {
+          if (!tabela) tabela = elemento('table', 'doc-data-table');
+          const linha = document.createElement('tr');
+          linha.append(elemento('th', '', entradaTecnica[1]));
+          linha.append(elemento('td', '', entradaTecnica[2]));
+          tabela.append(linha);
+          return;
+        }
+        finalizarTabela();
+        container.append(elemento('p', '', bloco));
+      });
+      finalizarTabela();
+      return container;
+    }
+
+    function campo(container, rotulo, valor) {
+      const section = elemento('div', 'field');
+      const titulo = elemento('strong');
+      const icones = {
+        'Objetivo': '◎',
+        'Entradas e pré-requisitos': '▣',
+        'Resultados esperados': '✓',
+        'Observações': 'ⓘ',
+        'Finalidade': '◎',
+        'Acionamento': '▶',
+        'Funções / módulos envolvidos': '⌘',
+        'Resultado': '✓'
+      };
+      titulo.append(elemento('span', 'field-icon', icones[rotulo] || '•'));
+      titulo.append(document.createTextNode(rotulo));
+      section.append(titulo);
+      const texto = String(valor ?? '').trim();
+      const descricao = criarParagrafos(texto || '—', rotulo);
+      if (texto.startsWith('[')) descricao.classList.add('placeholder');
+      section.append(descricao);
+      container.append(section);
+    }
+
+function criarTabelaParametrosP1(parametros) {
+    if (!Array.isArray(parametros) || !parametros.length) return null;
+
+    const secao = elemento('section', 'page-card parametros-card');
+    secao.id = 'parametros-pagina';
+    secao.append(elemento('h2', '', 'Controles e relatórios disponíveis'));
+
+    const introducao = elemento(
+        'p',
+        'parametros-intro',
+        'Os controles abaixo permitem gerar os arquivos de resultados associados a cada macroavaliação.'
+    );
+    secao.append(introducao);
+
+    parametros.forEach(grupo => {
+        secao.append(elemento('h3', 'parametros-grupo', grupo.grupo));
+
+        const area = elemento('div', 'parametros-table-wrap');
+        const tabela = elemento('table', 'parametros-table');
+
+        const cabecalho = document.createElement('thead');
+        const linhaCabecalho = document.createElement('tr');
+
+        ['Controle', 'Tipo', 'Descrição operacional'].forEach(nome => {
+            linhaCabecalho.append(elemento('th', '', nome));
+        });
+
+        cabecalho.append(linhaCabecalho);
+        tabela.append(cabecalho);
+
+        const corpo = document.createElement('tbody');
+
+        (grupo.itens || []).forEach(item => {
+            const linha = document.createElement('tr');
+
+            linha.append(elemento('td', 'parametro-controle', item.controle));
+            linha.append(elemento('td', 'parametro-tipo', item.tipo));
+            linha.append(elemento('td', 'parametro-descricao', item.descricao));
+
+            corpo.append(linha);
+        });
+
+        tabela.append(corpo);
+        area.append(tabela);
+        secao.append(area);
+    });
+
+    return secao;
+}
+
+function criarTabelaParametros(parametros) {
+    if (!parametros?.length) return null;
+
+    const section = elemento('section', 'page-card');
+    section.id = 'parametros-operacionais';
+
+    section.append(
+        elemento('h2', '', 'Parâmetros operacionais')
+    );
+
+    section.append(
+        elemento(
+            'p',
+            'interface-intro',
+            'Controles que definem as condições de execução dos cálculos.'
+        )
+    );
+
+    const wrapper = elemento('div', 'parametros-table-wrap');
+    const table = elemento('table', 'doc-data-table parametros-table');
+
+    const thead = document.createElement('thead');
+    const cabecalho = document.createElement('tr');
+
+    [
+        'Grupo',
+        'Controle',
+        'Marcado / selecionado',
+        'Desmarcado / padrão'
+    ].forEach(rotulo => {
+        cabecalho.append(elemento('th', '', rotulo));
+    });
+
+    thead.append(cabecalho);
+    table.append(thead);
+
+    const tbody = document.createElement('tbody');
+
+    parametros.forEach(item => {
+        const linha = document.createElement('tr');
+
+        [
+            item.grupo,
+            item.controle,
+            item.ativo,
+            item.inativo
+        ].forEach(valor => {
+            linha.append(elemento('td', '', valor || '—'));
+        });
+
+        tbody.append(linha);
+    });
+
+    table.append(tbody);
+    wrapper.append(table);
+    section.append(wrapper);
+
+    return section;
+}
+    
+function criarInterface(pagina) {
+    const dados = pagina.interface;
+    if (!dados) return null;
+
+    const imagensExtras = dados.imagens_adicionais || dados.galeria || [];
+
+    if (!dados.imagem && !imagensExtras.length) return null;
+
+    const card = elemento('section', 'interface-card');
+    card.id = 'interface-operacional';
+
+    card.append(
+        elemento('h2', '', 'Interface operacional')
+    );
+
+    card.append(
+        elemento(
+            'p',
+            'interface-intro',
+            'Consulte as capturas e as orientações operacionais. Clique nas imagens para ampliar.'
+        )
+    );
+
+    // Ampliação reutilizável para todas as capturas.
+    function configurarAmpliacao(img, caminho) {
+        img.tabIndex = 0;
+        img.setAttribute('role', 'button');
+        img.setAttribute('aria-label', 'Ampliar captura da tela');
+
+        const ampliar = () => {
+            const dialog = document.createElement('dialog');
+            dialog.className = 'image-dialog';
+
+            const fechar = elemento('button', '', 'Fechar ✕');
+            fechar.type = 'button';
+
+            fechar.addEventListener('click', () => dialog.close());
+
+            const imagem = elemento('img');
+            imagem.src = caminho;
+            imagem.alt = img.alt;
+
+            dialog.append(fechar, imagem);
+
+            dialog.addEventListener('click', e => {
+                if (e.target === dialog) dialog.close();
+            });
+
+            dialog.addEventListener('close', () => dialog.remove());
+
+            document.body.append(dialog);
+            dialog.showModal();
+        };
+
+        img.addEventListener('click', ampliar);
+
+        img.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                ampliar();
+            }
+        });
+    }
+
+    // 1. Imagem principal e marcadores.
+    if (dados.imagem) {
+        const figure = elemento('figure', 'interface-figure');
+        const wrap = elemento('div', 'interface-image-wrap');
+
+        const img = elemento('img', 'interface-image');
+        img.src = dados.imagem;
+        img.alt = dados.legenda || 'Captura da interface Streamlit';
+        img.loading = 'lazy';
+
+        configurarAmpliacao(img, dados.imagem);
+
+        wrap.append(img);
+
+        (dados.elementos || []).forEach(item => {
+            if (
+                typeof item.x !== 'number' ||
+                typeof item.y !== 'number'
+            ) return;
+
+            const marker = elemento(
+                'button',
+                'interface-marker',
+                item.numero
+            );
+
+            marker.type = 'button';
+            marker.style.left = item.x + '%';
+            marker.style.top = item.y + '%';
+            marker.title = item.titulo;
+
+            marker.setAttribute(
+                'aria-label',
+                item.numero + '. ' + item.titulo
+            );
+
+            marker.addEventListener('click', () => {
+                document
+                    .getElementById('interface-passo-' + item.numero)
+                    ?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+            });
+
+            wrap.append(marker);
+        });
+
+        figure.append(wrap);
+
+        if (dados.legenda) {
+            figure.append(
+                elemento('figcaption', 'interface-caption', dados.legenda)
+            );
+        }
+
+        card.append(figure);
+    }
+
+    // 2. Descrição dos controles numerados.
+    if (dados.elementos?.length) {
+        const lista = elemento('div', 'interface-elements');
+
+        dados.elementos.forEach(item => {
+            const passo = elemento('article', 'interface-step');
+            passo.id = 'interface-passo-' + item.numero;
+
+            const titulo = elemento('div', 'interface-step-title');
+
+            titulo.append(
+                elemento('span', 'interface-number', item.numero)
+            );
+
+            titulo.append(document.createTextNode(item.titulo));
+
+            passo.append(
+                titulo,
+                elemento('p', '', item.descricao)
+            );
+
+            lista.append(passo);
+        });
+
+        card.append(lista);
+    }
+
+    // 3. Galeria de imagens complementares.
+    if (imagensExtras.length) {
+        const galeria = elemento('div', 'interface-gallery');
+
+        galeria.append(
+            elemento('h3', 'interface-gallery-heading', 'Etapas ilustradas')
+        );
+
+        imagensExtras.forEach((item, indice) => {
+            if (!item.imagem) return;
+
+            const figure = elemento(
+                'figure',
+                'interface-gallery-item'
+            );
+
+            const titulo = elemento(
+                'h4',
+                'interface-gallery-title',
+                item.titulo || `Etapa ${indice + 2}`
+            );
+
+            const wrap = elemento(
+                'div',
+                'interface-gallery-image-wrap'
+            );
+
+            const img = elemento(
+                'img',
+                'interface-gallery-image'
+            );
+
+            img.src = item.imagem;
+            img.alt = item.legenda || item.titulo || 'Captura complementar';
+            img.loading = 'lazy';
+
+            configurarAmpliacao(img, item.imagem);
+
+            wrap.append(img);
+            figure.append(titulo, wrap);
+
+            if (item.legenda) {
+                figure.append(
+                    elemento(
+                        'figcaption',
+                        'interface-caption',
+                        item.legenda
+                    )
+                );
+            }
+
+            galeria.append(figure);
+        });
+
+        card.append(galeria);
+    }
+
+    // 4. Nota complementar.
+    if (dados.nota) {
+        card.append(
+            elemento('p', 'interface-note', dados.nota)
+        );
+    }
+
+    return card;
+}
+
+
+    function mostrarPagina(indice) {
+      const pagina = DOCUMENTACAO_PAGINAS[indice];
+      document.getElementById('grupo-atual').textContent = pagina.grupo;
+      document.getElementById('titulo').textContent = pagina.titulo;
+      document.getElementById('subtitulo').textContent = 'Documentação funcional e fluxos de trabalho';
+      content.replaceChildren();
+      toc.replaceChildren();
+      document.querySelectorAll('.page-nav').forEach((b, i) => b.classList.toggle('active', i === indice));
+
+      const info = elemento('section', 'page-card');
+      info.id = 'descricao-pagina';
+      info.append(elemento('h2', '', 'Descrição da página'));
+      campo(info, 'Objetivo', pagina.objetivo);
+      campo(info, 'Entradas e pré-requisitos', pagina.entradas);
+      campo(info, 'Resultados esperados', pagina.resultados);
+      campo(info, 'Observações', pagina.observacoes);
+      const interfaceOperacional = criarInterface(pagina);
+      if (interfaceOperacional) info.append(interfaceOperacional);
+      content.append(info)
+	  const renderizadoresTabela = {
+			P1: criarTabelaParametrosP1,
+			padrao: criarTabelaParametros
+		};
+
+		const tipoTabela = pagina.tipoTabela || 'padrao';
+		const renderizarTabela = renderizadoresTabela[tipoTabela];
+
+		if (pagina.parametros?.length && renderizarTabela) {
+			const tabela = renderizarTabela(pagina.parametros);
+
+			if (tabela) {
+				content.append(tabela);
+			}
+		}
+      const tituloPipelines = elemento('h2', 'section-label', 'PIPELINES DA PÁGINA');
+      tituloPipelines.id = 'pipelines';
+      content.append(tituloPipelines);
+      (pagina.pipelines || []).forEach((pipeline, j) => {
+        const details = elemento('details', 'pipeline-card');
+        details.id = 'pipeline-' + j;
+        if (j === 0) details.open = true;
+        details.append(elemento('summary', '', pipeline.titulo || `Pipeline ${j + 1}`));
+        const body = elemento('div', 'pipeline-content');
+        campo(body, 'Finalidade', pipeline.finalidade);
+        campo(body, 'Acionamento', pipeline.acionamento);
+        const section = elemento('div', 'field');
+        const tituloEtapas = elemento('strong');
+        tituloEtapas.append(elemento('span', 'field-icon', '≡'));
+        tituloEtapas.append(document.createTextNode('Etapas do processo'));
+        section.append(tituloEtapas);
+        const ol = elemento('ol');
+        (pipeline.etapas || []).forEach(etapa => ol.append(elemento('li', '', etapa)));
+        section.append(ol);
+        body.append(section);
+        campo(body, 'Funções / módulos envolvidos', pipeline.funcoes);
+        campo(body, 'Resultado', pipeline.resultado);
+        details.append(body);
+        content.append(details);
+      });
+
+      const linksSumario = [['Descrição da página', '#descricao-pagina']];
+      if (pagina.interface?.imagem) linksSumario.push(['Interface operacional', '#interface-operacional']);
+      if (pagina.parametros?.length) {
+    const tabelaP1 = pagina.tipoTabela === 'P1';
+
+    linksSumario.push([
+        tabelaP1
+            ? 'Controles e relatórios disponíveis'
+            : 'Parâmetros operacionais',
+        tabelaP1
+            ? '#parametros-pagina'
+            : '#parametros-operacionais'
+    ]);
+}
+	  linksSumario.push(['Pipelines', '#pipelines']);
+      linksSumario.forEach(([name, href]) => {
+        const link = elemento('a', '', name);
+        link.href = href;
+        toc.append(link);
+      });
+      (pagina.pipelines || []).forEach((pipeline, j) => {
+        const link = elemento('a', 'sub', pipeline.titulo || `Pipeline ${j + 1}`);
+        link.href = '#pipeline-' + j;
+        link.addEventListener('click', () => {
+          document.getElementById('pipeline-' + j).open = true;
+        });
+        toc.append(link);
+      });
+    }
+
+    let ultimoGrupo = null;
+    DOCUMENTACAO_PAGINAS.forEach((pagina, indice) => {
+      if (pagina.grupo !== ultimoGrupo) {
+        nav.append(elemento('div', 'group-name', pagina.grupo));
+        ultimoGrupo = pagina.grupo;
+      }
+      const botao = elemento('button', 'page-nav', pagina.titulo);
+      botao.type = 'button';
+      botao.addEventListener('click', () => mostrarPagina(indice));
+      nav.append(botao);
+    });
+    if (DOCUMENTACAO_PAGINAS.length) mostrarPagina(0);
+  </script>
+</body>
+</html>

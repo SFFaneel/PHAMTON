@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Introdução | Documentação Técnica</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .inicio { max-width:1000px; margin:0 auto; padding:clamp(24px,5vw,64px); color:var(--text); }
+    .inicio .kicker { color:var(--accent); font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
+    .inicio h1 { font-size:clamp(28px,4vw,44px); line-height:1.18; margin:16px 0 20px; color:var(--text); }
+    .inicio .lead { font-size:16px; line-height:1.8; max-width:820px; }
+    .inicio .status { display:inline-flex; margin:18px 0 28px; padding:9px 14px; border:1px solid var(--border); border-radius:8px; background:var(--panel); color:var(--accent); font-size:12px; font-weight:700; }
+    .inicio .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; }
+    .inicio .card { padding:24px; border:1px solid var(--border); border-radius:12px; background:var(--panel); }
+    .inicio .card h2 { margin:0 0 12px; font-size:19px; color:var(--text); }
+    .inicio .card p { color:var(--muted); line-height:1.7; font-size:14px; }
+    .inicio .card a { color:var(--accent); font-weight:700; text-decoration:none; }
+    .inicio .card a:hover { text-decoration:underline; }
+    .inicio .nota { margin-top:32px; color:var(--muted); font-size:14px; line-height:1.7; }
+  </style>
+</head>
+<body>
+  <main class="inicio">
+    <div class="kicker">Apresentação da documentação</div>
+    <h1>Documentação técnica em desenvolvimento</h1>
+    <p class="lead">Esta documentação encontra-se em desenvolvimento e está disponível em uma versão inicial. Seu objetivo é apresentar a organização da aplicação, os fluxos de processamento, a visão operacional das interfaces e a descrição das funções empregadas nas atividades de análise e fiscalização.</p>
+    <div class="status">VERSÃO INICIAL · CONTEÚDO EM EVOLUÇÃO</div>
+    <div class="cards">
+      <section class="card">
+        <h2>Pipeline principal e visão operacional</h2>
+        <p>Apresenta as páginas da aplicação, os fluxos de trabalho e as etapas operacionais, incluindo controles, procedimentos e módulos associados.</p>
+        <a href="PIPELINE_PRINCIPAL.html" data-doc="pipeline">Consultar pipeline principal →</a>
+      </section>
+      <section class="card">
+        <h2>Dados, módulos e funções</h2>
+        <p>Reúne a descrição técnica das funções empregadas, os módulos envolvidos e suas responsabilidades nos processos documentados.</p>
+        <a href="DADOS_FUNCOES.html" data-doc="dados">Consultar dados e funções →</a>
+      </section>
+    </div>
+    <p class="nota">O conteúdo será ampliado e revisado progressivamente. Descrições, relacionamentos entre módulos e procedimentos poderão ser complementados à medida que a documentação evoluir.</p>
+  </main>
+  <script>
+    // Se incorporada ao portal, navega pelo menu principal em vez de abrir outra página dentro do iframe.
+    document.querySelectorAll('[data-doc]').forEach(link => {
+      link.addEventListener('click', event => {
+        if (window.parent !== window && typeof window.parent.selecionar === 'function') {
+          event.preventDefault();
+          window.parent.selecionar(link.dataset.doc);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

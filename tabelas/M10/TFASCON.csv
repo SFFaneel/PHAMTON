@@ -1,0 +1,20 @@
+OBJECTID,COD_ID,QUANT_FIOS,FASES,DESCR
+1,0,0,0,Não informado
+2,ABCN,4,3,Conexão a 4 fios com 3 fases
+3,ABC,3,3,Conexão a 3 fios com 3 fases
+4,ABN,3,2,Conexão a 3 fios com 2 fases
+5,BCN,3,2,Conexão a 3 fios com 2 fases
+6,CAN,3,2,Conexão a 3 fios com 2 fases
+7,AX,3,1,Conexão a 3 fios com 1 fase
+8,BX,3,1,Conexão a 3 fios com 1 fase
+9,CX,3,1,Conexão a 3 fios com 1 fase
+10,AB,2,2,Conexão a 2 fios com 2 fases
+11,BC,2,2,Conexão a 2 fios com 2 fases
+12,CA,2,2,Conexão a 2 fios com 2 fases
+13,AN,2,1,Conexão a 2 fios com 1 fase
+14,BN,2,1,Conexão a 2 fios com 1 fase
+15,CN,2,1,Conexão a 2 fios com 1 fase
+16,A,1,1,Conexão a 1 fio com 1 fase
+17,B,1,1,Conexão a 1 fio com 1 fase
+18,C,1,1,Conexão a 1 fio com 1 fase
+19,N,1,0,Conexão a 1 fio sem fase

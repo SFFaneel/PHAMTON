@@ -1,0 +1,22 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,AT,Autoportante
+3,CA,Cabine
+4,CI,Circular
+5,CP,Contra poste
+6,CD,Curvo duplo
+7,CS,Curvo simples
+8,DT,Duplo T
+9,ES,Estaiada
+10,OR,Ornamental
+11,QU,Quadrado
+12,RE,Retangular
+13,TO,Torre ou Treliça
+14,TG,Triangular
+15,TL,Trilho
+16,TS,Trilho simples
+17,TP,Trusspole
+18,TU,Tubular
+19,TQ,Tubular - Seção quadrada
+20,H,H (2 colunas e Viga Central)
+21,ST,Sextavado

@@ -1,0 +1,51 @@
+COD_ID,Unidade,TIPO_UNIDADE
+0,0,ND
+1,Medidor,Comparador fiscal ou concentrador
+2,Medidor,Medidor eletromecânico
+3,Medidor,Medidor eletrônico
+52,Medidor,Módulos de Display e/ou Corte-Religa separados do medidor
+9,Unidade Compensadora de Reativo,Banco de capacitor serial e paralelo
+10,Unidade Compensadora de Reativo,Banco de capacitores paralelo
+11,Unidade Compensadora de Reativo,Banco de capacitores serial
+12,Unidade Compensadora de Reativo,Compensador de reativos estático
+51,Unidade Compensadora de Reativo,Compensador de reativos rotativo
+56,Unidade Compensadora de Reativo,Reator
+13,Unidade Reguladora,Auto booster
+14,Unidade Reguladora,Regulador automático de tensão
+15,Unidade Seccionadora,Abertura de jumper
+16,Unidade Seccionadora,Chave a gás
+17,Unidade Seccionadora,Chave a óleo
+18,Unidade Seccionadora,Chave de transferência automática
+19,Unidade Seccionadora,Chave faca
+20,Unidade Seccionadora,Chave faca tripolar abertura com carga
+21,Unidade Seccionadora,Chave faca unipolar abertura com carga
+22,Unidade Seccionadora,Chave fusível
+23,Unidade Seccionadora,Chave fusível abertura com carga com aterramento
+24,Unidade Seccionadora,Chave fusível abertura sem carga
+25,Unidade Seccionadora,Chave fusível abertura sem carga com aterramento
+26,Unidade Seccionadora,Chave fusível lâmina
+27,Unidade Seccionadora,Chave fusível religadora (três operações)
+28,Unidade Seccionadora,Chave motorizada
+49,Unidade Seccionadora,Chave Tipo Tandem
+29,Unidade Seccionadora,Disjuntor
+30,Unidade Seccionadora,Disjuntor de interligação de barra
+53,Unidade Seccionadora,Disjuntor em módulo de manobra SF6
+31,Unidade Seccionadora,Lâmina desligadora
+32,Unidade Seccionadora,Religador
+33,Unidade Seccionadora,Seccionadora tripolar de subestação
+34,Unidade Seccionadora,Seccionadora unipolar de subestação
+47,Unidade Seccionadora,Seccionadora com lâmina de terra
+48,Unidade Seccionadora,Seccionadora em módulo de manobra
+50,Unidade Seccionadora,Seccionadora com bob red corr cc
+35,Unidade Seccionadora,Seccionalizador
+36,Unidade Seccionadora,Seccionalizador monofásico
+45,Unidade Seccionadora,Protetor de Rede de Transformador Subterrâneo
+46,Unidade Seccionadora,Fusível
+38,Unidade Transformadora,Transformador de distribuição de média tensão (MT/BT)
+41,Unidade Transformadora,Transformador de força de alta tensão (AT/AT – AT/MT)
+54,Unidade Transformadora,Transformador de força de média tensão (MT/MT)
+42,Unidade Transformadora de Medidas,Transformador de corrente
+43,Unidade Transformadora de Medidas,Transformador de potencial
+44,Unidade Transformadora de Medidas,Conjunto de Medição
+55,Unidade Transformadora de Medidas,Transformador de defasamento
+57,Unidade Seccionadora,Chave By-Pass

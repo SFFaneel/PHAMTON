@@ -1,0 +1,689 @@
+[
+  {
+    "funcao": {
+      "nome": "_vis_001",
+      "tipo": "function",
+      "linha_inicio": 31,
+      "linha_fim": 54,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.existe_tabela",
+          "pandas",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "ANL_LST_TUC.columns.to_list",
+          "apply",
+          "astype",
+          "existe_tabela",
+          "pd.read_sql",
+          "pd.to_numeric",
+          "replace",
+          "sl.connect",
+          "st.columns",
+          "st.dataframe",
+          "st.fragment",
+          "st.html",
+          "str.replace",
+          "upper"
+        ]
+      },
+      "codigo": "def _vis_001(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\"):\n    with sl.connect(bd_path) as bd:\n        if existe_tabela('ANL_BMP_MANUAL', bd):\n            st.html(f\"\"\"<h2>Dados analíticos do BMP e do Manual de Dados</h2>\n                    <p  style=\"text-align: justify;text-indent: 40px\">Avalie abaixo os dados\n                    da comparação com os dados do BMP. Se houver diferenças, questione a empresa.</p>\n                    \"\"\")\n            \n            sSQL = \"\"\"SELECT * FROM ANL_BMP_MANUAL\"\"\"\n            ANL_LST_TUC = pd.read_sql(sSQL, bd)\n            for n in ANL_LST_TUC.columns.to_list():\n                if ANL_LST_TUC[n].dtype == 'object' and n[:2].upper() in [\"VL\",\"QT\",\"PC\"]:\n                    ANL_LST_TUC[n] = pd.to_numeric(ANL_LST_TUC[n].astype(str).str.replace(',','.'), \n                                                                errors='coerce',\n                                                                downcast='float')\n    \n                if n[:2].upper() in ['VL', 'QT']:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                elif n[:2].upper() in ['PC']:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n    \n            tab0 =st.columns([1, 5, 1])\n            with tab0[1]:\n                st.dataframe(ANL_LST_TUC, use_container_width=True, hide_index=True)"
+    },
+    "documentacao": {
+      "resumo": "Visualiza dados analíticos do BMP e do Manual de Dados.",
+      "descricao": "A função conecta a um banco de dados SQLite, verifica se uma tabela específica existe, e então carrega os dados dessa tabela para serem visualizados. Os dados são formatados conforme necessário e exibidos em uma interface Streamlit.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho do arquivo do banco de dados SQLite."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para renderizar a interface da web."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa, embora não seja usado no código fornecido."
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho do segundo arquivo do banco de dados SQLite, embora não seja usado no código fornecido."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "UTILS.existe_tabela",
+          "categoria": "import"
+        },
+        {
+          "nome": "pandas",
+          "categoria": "import"
+        },
+        {
+          "nome": "sqlite3",
+          "categoria": "import"
+        },
+        {
+          "nome": "streamlit",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Visualiza dados analíticos do BMP e do Manual de Dados.\n\nArgs:\n    bd_path (str): Caminho do arquivo do banco de dados SQLite.\n    st (StreamlitSessionState): Objeto Streamlit para renderizar a interface da web.\n    empresa (str): Nome da empresa, embora não seja usado no código fornecido.\n    bd_path2 (str): Caminho do segundo arquivo do banco de dados SQLite, embora não seja usado no código fornecido.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_002",
+      "tipo": "function",
+      "linha_inicio": 57,
+      "linha_fim": 161,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.existe_tabela",
+          "pandas",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "ANL_LST_TUC.columns.to_list",
+          "apply",
+          "astype",
+          "existe_tabela",
+          "pd.read_sql",
+          "pd.to_numeric",
+          "replace",
+          "sl.connect",
+          "st.columns",
+          "st.dataframe",
+          "st.fragment",
+          "st.html",
+          "str.replace",
+          "upper"
+        ]
+      },
+      "codigo": "def _vis_002(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\"):\n    with sl.connect(bd_path) as bd:\n        if existe_tabela('ANL_OE_UN', bd):\n            st.html(f\"\"\"<h2>Dados analíticos para o cálculo de OE (5A)</h2>\n                    <p  style=\"text-align: justify;text-indent: 40px\">Avalie abaixo os dados\n                    da distribuição analítica da OE ao longo do ciclo. \n                    Há diferenças significativas em relação ao laudo? Verifique e justifique. \n                    Abaixo é apresentado os resultados, leia o relatório \n                    de Cálculos para análise completa.</p>\n                    \"\"\")\n            \n            sSQL = \"\"\"SELECT * FROM ANL_OE_UN\"\"\"\n            ANL_LST_TUC = pd.read_sql(sSQL, bd)\n            for n in ANL_LST_TUC.columns.to_list():\n                if ANL_LST_TUC[n].dtype == 'object' and n[:2].upper() in [\"VL\",\"QT\",\"PC\"]:\n                    ANL_LST_TUC[n] = pd.to_numeric(ANL_LST_TUC[n].astype(str).str.replace(',','.'), \n                                                                errors='coerce',\n                                                                downcast='float')\n    \n                if n[:2].upper() in ['VL', 'QT']:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                elif n[:2].upper() in ['PC']:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n    \n            tab0 =st.columns([1, 5, 1])\n            with tab0[1]:\n                st.dataframe(ANL_LST_TUC, use_container_width=True, hide_index=True)\n    \n            st.html(\"\"\"\n                    <p  style=\"text-align: justify;text-indent: 40px\">Avalie abaixo os dados\n                    da distribuição sintética da OE ao longo do ciclo. \n                    Há diferenças significativas em relação ao laudo? Verifique e justifique. \n                    Abaixo é apresentado os resultados, leia o relatório \n                    de Cálculos para análise completa.</p><br>\n                    \"\"\")\n            \n            sSQL = \"\"\"SELECT * FROM ANL_OE_FIM\"\"\"\n            ANL_LST_TUC = pd.read_sql(sSQL, bd)\n            for n in ANL_LST_TUC.columns.to_list():\n                if ANL_LST_TUC[n].dtype == 'object' and n[:2].upper() in [\"VL\",\"QT\",\"PC\"]:\n                    ANL_LST_TUC[n] = pd.to_numeric(ANL_LST_TUC[n].astype(str).str.replace(',','.'), \n                                                                errors='coerce',\n                                                                downcast='float')\n    \n                if n[:2].upper() in ['VL', 'QT']:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                elif n[:2].upper() in ['PC']:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n    \n            tab1 =st.columns([1, 5, 1])\n            with tab1[1]:\n                st.dataframe(ANL_LST_TUC, use_container_width=True, hide_index=True)\n    \n            st.html(f\"\"\"<h2>Dados resultantes do cálculo de OE (5B)</h2>\n                        <p  style=\"text-align: justify;text-indent: 40px\">Avalie abaixo os dados\n                        dos cálculos resultantes da OE ao longo do ciclo. A primeira tabela apresenta\n                        o resultado da movimentação da blindada, com as principais variáveis.\n                        Há diferenças significativas em relação ao laudo? Verifique e justifique. \n                        Abaixo é apresentado os resultados, leia o relatório \n                        de Cálculos para análise completa.</p>\n                        \"\"\")\n            \n            sSQL = \"\"\"SELECT * FROM ANL_OE_BB\"\"\"\n            ANL_LST_TUC = pd.read_sql(sSQL, bd)\n            for n in ANL_LST_TUC.columns.to_list():\n                if ANL_LST_TUC[n].dtype == 'object' and n[:2].upper() in [\"VA\"]:\n                    ANL_LST_TUC[n] = pd.to_numeric(ANL_LST_TUC[n].astype(str).str.replace(',','.'), \n                                                                errors='coerce',\n                                                                downcast='float')\n    \n                if n[:2].upper() in ['VA']:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                elif n[:2].upper() in ['PC']:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n    \n            tab2 =st.columns([1, 5, 1])\n            with tab2[1]:\n                st.dataframe(ANL_LST_TUC, use_container_width=True, hide_index=True)\n    \n            st.html(\"\"\"\n                    <p  style=\"text-align: justify;text-indent: 40px\">A seguir temos a tabela \n                    que apresenta o resultado da movimentação da incremental, \n                    com as principais variáveis. Não lançamentos no incremental, mas há nos \n                    arquivos de OE incremental, faz sentido isso?\n                    Há diferenças significativas em relação ao laudo? Verifique e justifique. \n                    Abaixo é apresentado os resultados, leia o relatório \n                    de Cálculos para análise completa.</p>\n                    \"\"\")\n            \n            sSQL = \"\"\"SELECT * FROM ANL_OE_BI\"\"\"\n            ANL_LST_TUC = pd.read_sql(sSQL, bd)\n            for n in ANL_LST_TUC.columns.to_list():\n                if ANL_LST_TUC[n].dtype == 'object' and n[:2].upper() in [\"VA\"]:\n                    ANL_LST_TUC[n] = pd.to_numeric(ANL_LST_TUC[n].astype(str).str.replace(',','.'), \n                                                                errors='coerce',\n                                                                downcast='float')\n    \n                if n[:2].upper() in ['VA']:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                elif n[:2].upper() in ['PC']:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n    \n            tab3 =st.columns([1, 5, 1])\n            with tab3[1]:\n                st.dataframe(ANL_LST_TUC, use_container_width=True, hide_index=True)"
+    },
+    "documentacao": {
+      "resumo": "Visualiza dados analíticos de uma base de dados SQLite e exibe em um layout Streamlit.",
+      "descricao": "A função lê tabelas específicas de uma base de dados SQLite, realiza conversões numéricas e formata os valores para exibição. Exibe as tabelas em colunas do Streamlit com formatação específica para valores monetários e percentuais.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o arquivo SQLite."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para renderizar a interface do usuário."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa, não utilizado no código."
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para outra base de dados SQLite, não utilizado no código."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": {
+        "imports": [
+          "UTILS.existe_tabela",
+          "pandas",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "ANL_LST_TUC.columns.to_list",
+          "apply",
+          "astype",
+          "existe_tabela",
+          "pd.read_sql",
+          "pd.to_numeric",
+          "replace",
+          "sl.connect",
+          "st.columns",
+          "st.dataframe",
+          "st.fragment",
+          "st.html",
+          "str.replace",
+          "upper"
+        ]
+      },
+      "docstring": "Visualiza dados analíticos de uma base de dados SQLite e exibe em um layout Streamlit.\n\nArgs:\n    bd_path (any): Caminho para o arquivo SQLite.\n    st (any): Objeto Streamlit para renderizar a interface do usuário.\n    empresa (any): Nome da empresa, não utilizado no código.\n    bd_path2 (any): Caminho para outra base de dados SQLite, não utilizado no código.\n\nReturns:\n    None\n\nNotes:\n    - A função lê tabelas específicas de uma base de dados SQLite e realiza conversões numéricas e formata os valores para exibição.\n    - Exibe as tabelas em colunas do Streamlit com formatação específica para valores monetários e percentuais."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_003",
+      "tipo": "function",
+      "linha_inicio": 164,
+      "linha_fim": 191,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.existe_tabela",
+          "pandas",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "ANL_LST_TUC.columns.to_list",
+          "apply",
+          "astype",
+          "existe_tabela",
+          "pd.read_sql",
+          "pd.to_numeric",
+          "replace",
+          "sl.connect",
+          "st.columns",
+          "st.dataframe",
+          "st.fragment",
+          "st.html",
+          "str.replace",
+          "upper"
+        ]
+      },
+      "codigo": "def _vis_003(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\"):\n    with sl.connect(bd_path) as bd:\n        if existe_tabela('ANL_TX_AMT_OE', bd):\n            st.html(f\"\"\"<h2>Teste da Taxa de Depreciação Contábil</h2>\n                        <p  style=\"text-align: justify;text-indent: 40px\">Avalie abaixo os dados\n                    da avaliação analítica da taxa de depreciação contábil, visão analítica,\n                    na movimentação tanto da OE incremental quanto blindada. \n                    Há diferenças significativas em relação ao laudo? Verifique e justifique. \n                    Abaixo é apresentado os resultados, leia o relatório \n                    de Cálculos para análise completa.</p>\n                    \"\"\")\n            \n            sSQL = \"\"\"SELECT * FROM ANL_TX_AMT_OE\"\"\"\n            ANL_LST_TUC = pd.read_sql(sSQL, bd)\n            for n in ANL_LST_TUC.columns.to_list():\n                if ANL_LST_TUC[n].dtype == 'object' and n[:2].upper() in [\"VL\",\"QT\",\"PC\",\"TX\",\"LI\"]:\n                    ANL_LST_TUC[n] = pd.to_numeric(ANL_LST_TUC[n].astype(str).str.replace(',','.'), \n                                                                errors='coerce',\n                                                                downcast='float')\n    \n                if n[:2].upper() in ['VL', 'QT',\"LI\"]:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                elif n[:2].upper() in ['PC',\"TX\"]:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n    \n            tab0 =st.columns([1, 5, 1])\n            with tab0[1]:\n                st.dataframe(ANL_LST_TUC, use_container_width=True, hide_index=True)"
+    },
+    "documentacao": {
+      "resumo": "Visualiza dados da tabela 'ANL_TX_AMT_OE' em um aplicativo Streamlit.",
+      "descricao": "A função conecta a base de dados SQLite especificada por `bd_path`, verifica se a tabela 'ANL_TX_AMT_OE' existe, e então carrega os dados para uma visualização no Streamlit. Os dados são formatados conforme necessário e exibidos em uma tabela.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o arquivo do banco de dados SQLite."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit usado para criar a interface da web."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa, embora não seja utilizado no código fornecido."
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho adicional para o arquivo do banco de dados SQLite, embora não seja utilizado no código fornecido."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "UTILS.existe_tabela",
+          "tipo": null,
+          "categoria": "import"
+        },
+        {
+          "nome": "pandas",
+          "tipo": null,
+          "categoria": "import"
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": null,
+          "categoria": "import"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": null,
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Visualiza dados da tabela 'ANL_TX_AMT_OE' em um aplicativo Streamlit.\n\nArgs:\n    bd_path (str): Caminho para o arquivo do banco de dados SQLite.\n    st (streamlit._internal.app_state.ScriptRunner): Objeto Streamlit usado para criar a interface da web.\n    empresa (str): Nome da empresa, embora não seja utilizado no código fornecido.\n    bd_path2 (str): Caminho adicional para o arquivo do banco de dados SQLite, embora não seja utilizado no código fornecido.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_004",
+      "tipo": "function",
+      "linha_inicio": 194,
+      "linha_fim": 221,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.max_arq",
+          "pandas",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "ANL_LST_TUC.columns.to_list",
+          "apply",
+          "astype",
+          "max_arq",
+          "pd.read_sql",
+          "pd.to_numeric",
+          "replace",
+          "sl.connect",
+          "st.columns",
+          "st.dataframe",
+          "st.fragment",
+          "st.html",
+          "str.replace",
+          "upper"
+        ]
+      },
+      "codigo": "def _vis_004(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\"):\n    with sl.connect(bd_path) as bd:\n        dt_ARQ = max_arq(\"OE_AJS\", bd, empresa)\n        if dt_ARQ:\n            st.html(f\"\"\"<h2>Lista de ajustes aplicados no cálculo</h2>\n                        <p  style=\"text-align: justify;text-indent: 40px\">Avalie a lista de ajustes\n                    abaixo e evidencie e valide os dados apresentados, nos papéis de trabalho. \n                    Há diferenças significativas em relação ao laudo? Verifique e justifique. \n                    Abaixo é apresentado os resultados, leia o relatório \n                    de Cálculos para análise completa.</p><br>\n                    \"\"\")\n            \n            sSQL = \"\"\"SELECT * FROM OE_AJS\"\"\"\n            ANL_LST_TUC = pd.read_sql(sSQL, bd)\n            for n in ANL_LST_TUC.columns.to_list():\n                if ANL_LST_TUC[n].dtype == 'object' and n[:2].upper() in [\"VL\",\"QT\",\"PC\",\"TX\",\"LI\"]:\n                    ANL_LST_TUC[n] = pd.to_numeric(ANL_LST_TUC[n].astype(str).str.replace(',','.'), \n                                                                errors='coerce',\n                                                                downcast='float')\n    \n                if n[:2].upper() in ['VL', 'QT',\"LI\"]:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                elif n[:2].upper() in ['PC',\"TX\"]:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n    \n            tab0 =st.columns([1, 5, 1])\n            with tab0[1]:\n                st.dataframe(ANL_LST_TUC, use_container_width=True, hide_index=True)"
+    },
+    "documentacao": {
+      "resumo": "Visualiza uma lista de ajustes aplicados no cálculo e normaliza os dados.",
+      "descricao": "A função conecta a um banco de dados SQLite, consulta os ajustes em 'OE_AJS', normaliza valores numéricos e exibe os resultados em uma interface Streamlit. A visualização inclui formatação dos valores para melhorar a apresentação.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho do arquivo de banco de dados SQLite."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para renderizar a interface gráfica."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa, usado na consulta ao banco de dados."
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho adicional do arquivo de banco de dados SQLite (não utilizado no código fornecido)."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "UTILS.max_arq",
+          "categoria": "importação",
+          "descricao": "Função para obter a data da última modificação de um arquivo."
+        },
+        {
+          "nome": "pandas",
+          "categoria": "importação",
+          "descricao": "Biblioteca para manipulação e análise de dados."
+        },
+        {
+          "nome": "sqlite3",
+          "categoria": "importação",
+          "descricao": "Biblioteca padrão do Python para interagir com bancos de dados SQLite."
+        },
+        {
+          "nome": "streamlit",
+          "categoria": "importação",
+          "descricao": "Framework para criação de aplicativos web em Python."
+        }
+      ],
+      "docstring": "Visualiza uma lista de ajustes aplicados no cálculo e normaliza os dados.\n\nArgs:\n    bd_path (str): Caminho do arquivo de banco de dados SQLite.\n    st (streamlit.ScriptRunner.ScriptContext): Objeto Streamlit para renderizar a interface gráfica.\n    empresa (str): Nome da empresa, usado na consulta ao banco de dados.\n    bd_path2 (str): Caminho adicional do arquivo de banco de dados SQLite (não utilizado no código fornecido).\n\nReturns:\n    None\n\nNotes:\n    - A função normaliza valores numéricos para melhorar a apresentação.\n    - O parâmetro 'bd_path2' não é usado no código fornecido."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_005",
+      "tipo": "function",
+      "linha_inicio": 224,
+      "linha_fim": 258,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.existe_tabela",
+          "pandas",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "ANL_LST_TUC.columns.to_list",
+          "ANL_LST_TUC.to_csv",
+          "apply",
+          "astype",
+          "encode",
+          "existe_tabela",
+          "pd.read_sql",
+          "pd.to_datetime",
+          "pd.to_numeric",
+          "replace",
+          "sl.connect",
+          "st.column_config.DateColumn",
+          "st.columns",
+          "st.dataframe",
+          "st.download_button",
+          "st.fragment",
+          "st.html",
+          "str.replace",
+          "upper"
+        ]
+      },
+      "codigo": "def _vis_005(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\"):\n    with sl.connect(bd_path) as bd:\n        if existe_tabela('ANL_IPCA_OE', bd):\n            st.html(f\"\"\"<h2>Dados de IPCA empregados</h2>\n                    <p  style=\"text-align: justify;text-indent: 40px\">Para simples conferência\n                        dos indicadores econômicos aplicado nos cálculos.</p><br>\n                    \"\"\")\n            \n            sSQL = \"\"\"SELECT * FROM ANL_IPCA_OE\"\"\"\n            ANL_LST_TUC = pd.read_sql(sSQL, bd)\n            for n in ANL_LST_TUC.columns.to_list():\n                if ANL_LST_TUC[n].dtype == 'object' and n[:2].upper() in [\"NR\", \"VL\",\"QT\",\"PC\",\"TX\",\"LI\"]:\n                    ANL_LST_TUC[n] = pd.to_numeric(ANL_LST_TUC[n].astype(str).str.replace(',','.'), \n                                                                errors='coerce',\n                                                                downcast='float')\n    \n                if n[:2].upper() in ['VL', 'QT',\"LI\", \"NR\"]:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                elif n[:2].upper() in ['PC',\"TX\"]:\n                    ANL_LST_TUC[n] = ANL_LST_TUC[n].apply(lambda x: f\"{x:,.2%}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n            \n            ANL_LST_TUC[\"DT_CMPT\"] = pd.to_datetime(ANL_LST_TUC[\"DT_CMPT\"], errors='coerce')\n            config = {\n                    \"DT_CMPT\": st.column_config.DateColumn(\"Data de Competência\", format=\"DD/MM/YYYY\"),\n                } \n            tab0 =st.columns([1, 5, 1], gap='small', vertical_alignment=\"center\")\n            with tab0[1]:\n                st.dataframe(ANL_LST_TUC, use_container_width=True, hide_index=True, column_config=config)\n            with tab0[2]:\n                st.download_button(label=\"📥 Baixar CSV\",\n                                    data=ANL_LST_TUC.to_csv(index=False, sep=\"|\", decimal=\",\").encode(\"utf-8\"),\n                                    file_name=\"dados_ipca.csv\",\n                                    mime=\"text/csv\",\n                                    key=f\"ipca_chv\"\n                                    )"
+    },
+    "documentacao": {
+      "resumo": "Visualiza dados de IPCA empregados a partir de um banco de dados SQLite.",
+      "descricao": "Esta função lê dados da tabela 'ANL_IPCA_OE' em um banco de dados SQLite, normaliza e formata os valores numéricos, e exibe esses dados em uma interface Streamlit. Além disso, oferece a opção de baixar os dados como um arquivo CSV.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o banco de dados SQLite."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit usado para renderizar a interface da web."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa, embora não seja utilizado no código fornecido."
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho adicional para o banco de dados SQLite, embora não seja utilizado no código fornecido."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "UTILS.existe_tabela",
+          "tipo": null,
+          "categoria": "import"
+        },
+        {
+          "nome": "pandas",
+          "tipo": null,
+          "categoria": "import"
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": null,
+          "categoria": "import"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": null,
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Visualiza dados de IPCA empregados a partir de um banco de dados SQLite.\n\nArgs:\n    bd_path (str): Caminho para o banco de dados SQLite.\n    st (streamlit._internal.app_state.ScriptRunner.StreamlitAppState): Objeto Streamlit usado para renderizar a interface da web.\n    empresa (str): Nome da empresa, embora não seja utilizado no código fornecido.\n    bd_path2 (str): Caminho adicional para o banco de dados SQLite, embora não seja utilizado no código fornecido.\n\nReturns:\n    None\n\nNotes:\n    - A função normaliza e formata os valores numéricos antes de exibi-los.\n    - Oferece a opção de baixar os dados como um arquivo CSV."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "visualizador_OE",
+      "tipo": "function",
+      "linha_inicio": 260,
+      "linha_fim": 363,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "UTILS.bsc_dados_reg",
+          "UTILS.executar_vis",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "drop_duplicates",
+          "executar_vis",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "st.html",
+          "str",
+          "to_list"
+        ]
+      },
+      "codigo": "def visualizador_OE(st = None):\n    if not'tra_dir' in st.session_state:\n        st.html(\"\"\"\n                    <p style=\"text-align: justify;text-indent: 40px\">\n                    Você deve configurar o diretório de trabalho, empresa e período\n                    na aba <i>Criar Pasta de Trabalho</i>, barra lateral.</p>\n                \"\"\")\n        return\n\n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    dds = bsc_dados_reg('TBL_EMPRESAS')\n    lst_emp = dds['Nm_EMPRESA'].drop_duplicates().to_list()\n    st.html(f\"<style>{css}</style>\")\n    raiz = Path(local)\n    caminho_manifesto = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n    caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n    inicializa_database(str(caminho_manifesto))\n    inicializa_detalhes(str(caminho_manifesto))\n    inicializar_rastreamento(str(caminho_manifesto))\n    database = str(caminho_manifesto)\n    bd_path = f'{local}/BD_LOCAL/{empresa}_{ano}.db'\n    bd_BDGDAT_path = f'{local}/BD_LOCAL/BDGD_AT_{empresa}_{ano}.db'\n    bd_BDGDANT_path = f'{local}/BD_LOCAL/BDGD_ANT_{empresa}_{ano}.db'\n    bd_EFD_path = f'{local}\\BD_LOCAL\\EFD_ICMS_{empresa}_{ano}.db'\n\n    st.html(\"\"\"\n                <h2>Análise das Obrigações Especiais</h2>\n                <hr>\n\n                <h3>Observações iniciais</h3>\n                <div style=\"text-align: justify; text-indent: 40px;\">\n                    Esse é um documento base para se executar análise das obrigações\n                especiais. Pode-se alterar o arquivo, porém somente será aplicado a versão original \n                para análise do valor empregado no laudo. Sugere-se usar este arquivo como \n                base para modificações e inclusões de análises, para discussões com a \n                fiscalização.\n                </div>\n\n                <h3>Licença Pública Geral GNU (GPL)</h3>\n                <div style=\"text-align: justify; padding-top: 10px;\">\n                    Versão 3, 29 de junho de 2007\n                </div>\n                <div style=\"text-align: justify; padding-top: 5px;\">\n                    Copyright (C) 2025, SFF/ANEEL.\n                </div>\n                <div style=\"text-align: justify; text-indent: 40px; padding-top: 10px;\">\n                    Este é um documento de uso livre: você pode redistribuí-lo ou modificá-lo sob os termos da Licença Pública Geral GNU, conforme publicada pela Free Software Foundation, tanto na versão 3 da Licença, ou qualquer versão posterior. Ele é distribuído na expectativa de que seja útil, mas SEM QUALQUER GARANTIA; sem mesmo a garantia implícita de COMERCIALIZAÇÃO ou ADEQUAÇÃO A UM PROPÓSITO ESPECÍFICO. Consulte a Licença Pública Geral GNU para obter mais detalhes no sítio \n                    <a href=\"http://www.gnu.org/licenses/\" target=\"_blank\">http://www.gnu.org/licenses/</a>.\n                </div>\n\n                <hr>\n\n                <h3>Normas</h3>\n                <div style=\"text-align: justify; text-indent: 40px;\">\n                    Conforme PRORET 2.3, item 3.2.1, o valor monetário referente às \n                Obrigações Especiais da base blindada será obtido atualizando-se o valor \n                aprovado na revisão tarifária anterior pela variação do IPCA. Nenhum valor \n                deverá ser deduzido das Obrigações Especiais a título de baixas efetuadas \n                na base blindada.\n                </div>\n                <div style=\"text-align: justify;text-indent: 40px; padding-top: 10px;\">\n                Nada obstante, o item 5.3 trata das obrigações especiais \n                da base incremental. Destaca-se os §§134, 136 e 137:<br></div>\n                <p style='text-align: justify;padding-left: 60px; padding-top: 10px;'><i>\n                134. Para determinação do valor atualizado das Obrigações Especiais a ser \n                considerado como parcela redutora na base de remuneração, deverá ser \n                aplicada a variação verificada entre o Valor Novo de Reposição total e \n                o Valor Original Contábil não depreciado da conta “Máquinas e Equipamentos”, \n                sobre o saldo das Obrigações Especiais. No caso da aplicação do Banco de \n                Preços Referenciais, o valor novo de reposição será o resultante dentro \n                dos limites de reconhecimento, conforme critérios deste Submódulo.</i></p>\n                <p style='text-align: justify;padding-left: 60px; padding-top: 10px;'><i>\n                136. Para os investimentos relacionados ao Programa Luz para Todos – PLpT, \n                na participação das fontes de recursos referentes à Conta de Desenvolvimento \n                Energético – CDE, Estados, Municípios e Reserva Global de Reversão – RGR, \n                serão considerados os montantes efetivamente realizados, caso o contrato \n                já tenha sido integralmente executado fisicamente e liquidados junto à \n                ELETROBRAS ou, então, proporcionalizados quando o contrato ainda estiver \n                em execução.</i></p>\n                <p style='text-align: justify;padding-left: 60px; padding-top: 10px;'><i>\n                137. Como forma de demonstração dos valores de obrigações especiais, as \n                concessionárias deverão, no Laudo de Avaliação, incluir o Demonstrativo de \n                Obrigações Especiais, o qual deverá mostrar os valores Brutos e Líquidos \n                de Obrigações Especiais. Para tanto, o percentual acumulado da amortização \n                contábil deverá ser mantido para a amortização das Obrigações Especiais \n                avaliadas.</i></p>\n\n                <div style=\"text-align: justify;text-indent: 40px\">\n                <a href=\"https://www.gov.br/aneel/pt-br/centrais-de-conteudos/procedimentos-regulatorios/proret\">Visite o sitio da Aneel para mais detalhes!</a>\n                </div>\n                <br><br><br>\n                <hr></hr>\n                <h2>Resultados</h2>\n                <hr></hr>\n                \"\"\")\n                \n    executar_vis(_vis_001, bd_path, st, empresa, bd_EFD_path)\n    executar_vis(_vis_002, bd_path, st, empresa, bd_EFD_path)\n    executar_vis(_vis_003, bd_path, st, empresa, bd_EFD_path)\n    executar_vis(_vis_004, bd_path, st, empresa, bd_EFD_path)\n    executar_vis(_vis_005, bd_path, st, empresa, bd_EFD_path)"
+    },
+    "documentacao": {
+      "resumo": "Visualiza os resultados das Obrigações Especiais.",
+      "descricao": "Esta função é responsável por visualizar os resultados das Obrigações Especiais, exibindo informações relevantes e normas associadas. Ela verifica se o diretório de trabalho está configurado e, em seguida, inicializa bancos de dados e executa várias visualizações.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": "objeto",
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para interação com a interface do usuário."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.inicializa_database",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializa_detalhes",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializar_rastreamento",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.bsc_dados_reg",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.executar_vis",
+          "tipo": "função"
+        },
+        {
+          "nome": "pathlib.Path",
+          "tipo": "classe"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca"
+        }
+      ],
+      "docstring": "Visualiza os resultados das Obrigações Especiais.\n\nArgs:\n    st (objeto): Objeto Streamlit para interação com a interface do usuário.\n\nReturns:\n    None\n\nNotes:\n    - A função verifica se o diretório de trabalho está configurado.\n    - Inicializa bancos de dados e executa várias visualizações."
+    },
+    "status": "sucesso"
+  }
+]

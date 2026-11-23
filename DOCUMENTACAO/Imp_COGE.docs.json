@@ -1,0 +1,336 @@
+[
+  {
+    "funcao": {
+      "nome": "imp_ARQ",
+      "tipo": "function",
+      "linha_inicio": 29,
+      "linha_fim": 222,
+      "parametros": [
+        {
+          "nome": "LST_ARQ",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "dir_arq_fcoge",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "colunas",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "ajstdo",
+          "tipo": null,
+          "default": "False",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "database",
+          "tipo": null,
+          "default": null,
+          "categoria": "somente_keyword"
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": null,
+          "default": null,
+          "categoria": "somente_keyword"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "rastrear_funcao"
+      ],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.registrar_artefato",
+          "MANIFESTO.registrar_evento",
+          "MANIFESTO.registrar_metrica",
+          "datetime.datetime",
+          "pandas",
+          "pandas.tseries.offsets.DateOffset",
+          "pathlib.Path",
+          "re",
+          "streamlit"
+        ],
+        "chamadas": [
+          "DateOffset",
+          "Path",
+          "UserWarning",
+          "ValueError",
+          "arq.endswith",
+          "arq.find",
+          "arq.upper",
+          "assign",
+          "copy",
+          "datetime.strptime",
+          "df.copy",
+          "enumerate",
+          "find",
+          "grupo.sort_values",
+          "int",
+          "len",
+          "match.group",
+          "meus_arq.append",
+          "notnull",
+          "novas_linhas.append",
+          "pd.DataFrame",
+          "pd.DateOffset",
+          "pd.concat",
+          "pd.read_csv",
+          "pd.to_datetime",
+          "pd.to_numeric",
+          "progresso.progress",
+          "quadros.append",
+          "re.findall",
+          "re.search",
+          "registrar_artefato",
+          "registrar_evento",
+          "registrar_metrica",
+          "reset_index",
+          "st.progress",
+          "str",
+          "str.startswith",
+          "str.strip",
+          "tbl_FCOGE.drop_duplicates",
+          "tbl_FCOGE.groupby",
+          "tbl_FCOGE.sort_values",
+          "ultima.copy"
+        ]
+      },
+      "codigo": "def imp_ARQ(LST_ARQ=None,\n            dir_arq_fcoge=None,\n            colunas=None,\n            ajstdo=False,\n            *,\n            database,\n            execucao_id,):\n    \n    LST_ARQ = LST_ARQ or []\n    meus_arq = []\n    quadros = []\n    nr_arq = len(LST_ARQ)\n    progresso = st.progress(0, text= \"Iniciando a importação COGE...\")\n\n    registrar_evento(\n                        database,\n                        execucao_id,\n                        \"INICIO_LEITURA_COGE\",\n                        mensagem=f\"Iniciada a leitura de {nr_arq} arquivos.\",\n                    )\n    registrar_metrica(\n                        database,\n                        execucao_id,\n                        \"arquivos_encontrados\",\n                        nr_arq,\n                    )\n\n    for i, arq in enumerate(LST_ARQ, start=1):\n        arq_cam = Path(dir_arq_fcoge) / arq\n        progresso.progress(\n                                int((i - 1) / nr_arq * 100),\n                                text=f\"Processando {arq}...\"\n                            )\n        registrar_evento(\n                            database,\n                            execucao_id,\n                            \"INICIO_ARQUIVO_COGE\",\n                            mensagem=f\"Iniciada a leitura do arquivo {arq}.\",\n                        )\n        meus_arq.append(arq_cam)\n\n        if arq.upper()[:6] == 'CONFID':\n            df = (\n                    pd.read_csv(\n                                    arq_cam,\n                                    sep=\"|\",\n                                    decimal=\".\",\n                                    encoding=\"latin-1\",\n                                    lineterminator=\"\\r\",\n                                    dtype=str\n                                )\n                    .assign(\n                                Cd_FOR_COGE=lambda x: x[\"Código\"].str.strip(),\n                                Nr_COGE=lambda x: pd.to_numeric(x[\"Variação(%)\"], errors=\"coerce\"),\n                                DT_INI=lambda x: pd.to_datetime(x[\"DATA (ANO.MES)\"], format=\"%Y.%m\", errors=\"coerce\"),\n                                DT_FIM=lambda x: pd.to_datetime(x[\"Data Base\"], format=\"%Y.%m\", errors=\"coerce\"),\n                            )\n                )\n\n            df = df[['Cd_FOR_COGE','Nr_COGE','DT_INI','DT_FIM']]\n            df=df[df['DT_INI'].notnull()]\n        elif arq.endswith(\".txt\"):\n            df=pd.read_csv(arq_cam,sep=\"|\",decimal=',',on_bad_lines='skip',encoding=\"utf_8_sig\",\n                        header = None,names=colunas,lineterminator='\\r', dtype=str);\n            \n            df[1]=df[0].str[1:9].str.strip() \n            df[2]=pd.to_numeric(df[0].str[9:],errors='coerce')\n            df[3]=datetime.strptime(df.loc[0,0][0:df.loc[0,0].find(\",\")],'%m/%Y')\n            df[4]=datetime.strptime(df.loc[0,0][df.loc[0,0].find(\",\") + (1 ):],'%m/%Y')\n            df=df[[1,2,3,4]]\n            df=df[df[1].notnull() & df[1].str.startswith(\"FCM\")]\n        elif (arq[0:6] == 'Forms_'):\n            df=pd.read_csv(arq_cam,sep=\";\",decimal='.',on_bad_lines='skip',encoding=\"utf_8_sig\",\n                        header=0, lineterminator='\\n', dtype=str);\n            df[1]=df['Código']\n            df[2]=pd.to_numeric(df['Variação(%)'],errors='coerce')\n            df[3]=datetime.strptime(arq[17:arq.find(\"_to_\")],'%Y-%m')\n            df[4]=datetime.strptime(arq[arq.find(\"_to_\")+4:arq.find(\"_\",arq.find(\"_to_\")+4)],'%Y-%m')\n            df=df[[1,2,3,4]]\n            df=df[df[2].notnull()]\n        elif  (arq[0:12] == 'FormulasCOGE'):\n            try:\n                df=pd.read_csv(arq_cam,sep=\";\",on_bad_lines='skip',encoding=\"utf_8_sig\",\n                        header = None,lineterminator='\\n', dtype=str);\n            except:\n                df=pd.read_csv(arq_cam,sep=\"|\",on_bad_lines='skip',encoding=\"Latin-1\",\n                        header = None,lineterminator='\\n', dtype=str);\n            df[1]=df[0]\n            df[2]=pd.to_numeric(df[2],errors='coerce')\n            datas = re.findall(r'(\\d{1,2})-(\\d{4})', arq)\n\n            df[3]=datetime.strptime(f\"{datas[0][0]}-{datas[0][1]}\", \"%m-%Y\")\n            df[4]=datetime.strptime(f\"{datas[1][0]}-{datas[1][1]}\", \"%m-%Y\")\n            df=df[[1,2,3,4]]\n            df=df[df[2].notnull()]\n        elif arq.endswith(\".csv\"):\n            try:\n                df=pd.read_csv(arq_cam,sep=\";\",on_bad_lines='skip',encoding=\"utf_8_sig\",\n                        header = None,lineterminator='\\n', dtype=str);\n            except:\n                df=pd.read_csv(arq_cam,sep=\"|\", on_bad_lines='skip',encoding=\"Latin-1\",\n                        header = None, lineterminator='\\n', dtype=str);\n            df1 = df.copy()\n            if df.iloc[0,0] == 'Fórmula Original':\n                df = df.iloc[1:][[1,4,3,5]]\n                df[4]=pd.to_numeric(df[4],errors='coerce')\n                df[3] = pd.to_datetime(df[3], format='%Y.%m', errors='coerce')\n                df[5] = pd.to_datetime(df[5], errors='coerce')\n            else:\n                df[1]=df[0]\n                df[2]=pd.to_numeric(df[2],errors='coerce')\n                padrao_data = r\"\\b(\\d{4}-\\d{2})\\b\"\n                match = re.search(padrao_data, arq)\n                if match:\n                    data_texto = match.group(1)\n                    df[3] = datetime.strptime(data_texto, \"%Y-%m\")\n                else:\n                    raise UserWarning(\"Não foi encontrado o formato de ano-mes no arquivo\")\n                df[4]=datetime.strptime(arq[arq.find(\"_to_\")+4:arq.find(\"_\",arq.find(\"_to_\")+4)],'%Y-%m')\n                df=df[[1,2,3,4]]\n                df=df[df[2].notnull()]\n        quadros.append(df)\n        meus_arq.append(str(arq_cam))\n\n        registrar_artefato(database, execucao_id, str(arq_cam), \"ENTRADA\")\n\n        registrar_evento(\n                            database,\n                            execucao_id,\n                            \"ARQUIVO_COGE_PROCESSADO\",\n                            mensagem=(\n                                f\"Arquivo {arq} processado: \"\n                                f\"{len(df)} registros.\"\n                            ),\n                        )\n\n        registrar_metrica(\n                                database,\n                                execucao_id,\n                                f\"linhas_arquivo_{i}\",\n                                len(df),\n                            )\n    progresso.progress(100, text=\"Leitura dos arquivos concluída.\")\n    if not quadros:\n        raise ValueError(\n                            \"Nenhum arquivo COGE produziu dados para importação.\"\n                        )\n\n    tbl_FCOGE = pd.concat(\n                            quadros,\n                            ignore_index=True\n                        )\n\n    tbl_FCOGE.columns = ['Cd_FOR_COGE','Nr_COGE','DT_INI','DT_FIM']\n    tbl_FCOGE = tbl_FCOGE.sort_values(by=['Cd_FOR_COGE','DT_INI'])\n\n    tbl_FCOGE['DT_REF']=tbl_FCOGE['DT_INI']+pd.DateOffset(months=-(1-ajstdo))\n    if 'Nr_COGE' in tbl_FCOGE.columns and tbl_FCOGE['Nr_COGE'].dtype in [object, \"string\"]:\n        tbl_FCOGE['Nr_COGE'] = pd.to_numeric(tbl_FCOGE['Nr_COGE'].str.strip(), errors=\"coerce\")\n\n    tbl_FCOGE['FC']=tbl_FCOGE['Nr_COGE']/100 + 1\n    tbl_FCOGE = tbl_FCOGE.drop_duplicates(subset=['Cd_FOR_COGE','Nr_COGE','DT_INI'])\n\n    novas_linhas = []\n    for _, grupo in tbl_FCOGE.groupby('Cd_FOR_COGE'):\n        ultima = grupo.sort_values('DT_REF').iloc[-1].copy()\n        nova = ultima.copy()\n        nova['DT_INI'] += DateOffset(months=1)\n        nova['DT_FIM'] += DateOffset(months=1)\n        nova['DT_REF'] += DateOffset(months=1)\n        nova['Nr_COGE'] = 0\n        nova['FC'] = 1\n        novas_linhas.append(nova)\n\n    tbl_FCOGE = pd.concat([tbl_FCOGE, pd.DataFrame(novas_linhas)], ignore_index=True)\n    tbl_FCOGE = tbl_FCOGE.sort_values(['Cd_FOR_COGE', 'DT_REF']).reset_index(drop=True)\n\n    registrar_metrica(\n                        database,\n                        execucao_id,\n                        \"linhas_coge_consolidadas\",\n                        len(tbl_FCOGE),\n                    )\n\n    registrar_evento(\n                        database,\n                        execucao_id,\n                        \"CONSOLIDACAO_COGE\",\n                        mensagem=(\n                            f\"Consolidação concluída com \"\n                            f\"{len(tbl_FCOGE)} registros.\"\n                        ),\n                    )\n    return tbl_FCOGE, meus_arq"
+    },
+    "documentacao": {
+      "resumo": "Importa e processa arquivos COGE, normalizando-os e consolidando os dados.",
+      "descricao": "A função `imp_ARQ` é responsável por importar arquivos COGE de uma lista especificada, processá-los conforme o tipo do arquivo e retornar um DataFrame consolidado com as informações relevantes. A função também registra eventos, métricas e artefatos durante o processo.",
+      "parametros": [
+        {
+          "nome": "LST_ARQ",
+          "tipo": "list[str]",
+          "default": "None",
+          "categoria": "posicional",
+          "descricao": "Lista de nomes dos arquivos COGE a serem importados."
+        },
+        {
+          "nome": "dir_arq_fcoge",
+          "tipo": "str",
+          "default": "None",
+          "categoria": "posicional",
+          "descricao": "Diretório onde os arquivos COGE estão localizados."
+        },
+        {
+          "nome": "colunas",
+          "tipo": "list[str]",
+          "default": "None",
+          "categoria": "posicional",
+          "descricao": "Lista de nomes das colunas para arquivos .txt."
+        },
+        {
+          "nome": "ajstdo",
+          "tipo": "bool",
+          "default": "False",
+          "categoria": "posicional",
+          "descricao": "Indica se deve ajustar a data de referência."
+        },
+        {
+          "nome": "database",
+          "tipo": "object",
+          "default": null,
+          "categoria": "somente_keyword",
+          "descricao": "Objeto de banco de dados para registro de eventos e métricas."
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "default": null,
+          "categoria": "somente_keyword",
+          "descricao": "ID da execução atual, usado para rastreamento."
+        }
+      ],
+      "retorno": {
+        "tipo": "tuple[pd.DataFrame, list[str]]",
+        "descricao": "Um DataFrame consolidado com os dados dos arquivos COGE e uma lista de caminhos dos arquivos processados."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando nenhum arquivo COGE produzir dados para importação."
+        },
+        {
+          "tipo": "UserWarning",
+          "descricao": "Quando não é encontrado o formato de ano-mês no arquivo .csv."
+        }
+      ],
+      "dependencias": [
+        "MANIFESTO.registrar_artefato",
+        "MANIFESTO.registrar_evento",
+        "MANIFESTO.registrar_metrica",
+        "datetime.datetime",
+        "pandas",
+        "pandas.tseries.offsets.DateOffset",
+        "pathlib.Path",
+        "re",
+        "streamlit"
+      ],
+      "docstring": "Importa e processa arquivos COGE, normalizando-os e consolidando os dados.\n\nArgs:\n    LST_ARQ (list[str]): Lista de nomes dos arquivos COGE a serem importados.\n    dir_arq_fcoge (str): Diretório onde os arquivos COGE estão localizados.\n    colunas (list[str]): Lista de nomes das colunas para arquivos .txt.\n    ajstdo (bool): Indica se deve ajustar a data de referência.\n    database (object): Objeto de banco de dados para registro de eventos e métricas.\n    execucao_id (str): ID da execução atual, usado para rastreamento.\n\nReturns:\n    tuple[pd.DataFrame, list[str]]: Um DataFrame consolidado com os dados dos arquivos COGE e uma lista de caminhos dos arquivos processados.\n\nRaises:\n    ValueError: Quando nenhum arquivo COGE produzir dados para importação.\n    UserWarning: Quando não é encontrado o formato de ano-mês no arquivo .csv."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "imp_COGE",
+      "tipo": "function",
+      "linha_inicio": 224,
+      "linha_fim": 379,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "MANIFESTO.registrar_artefato",
+          "MANIFESTO.registrar_evento",
+          "MANIFESTO.registrar_metrica",
+          "UTILS.bsc_dados_reg",
+          "UTILS.busca_ipca",
+          "UTILS.existe_tabela",
+          "numpy",
+          "os",
+          "pandas",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "bsc_dados_reg",
+          "busca_ipca",
+          "caminho_bd.parent.mkdir",
+          "caminho_manifesto.parent.mkdir",
+          "data.replace",
+          "execucao_trilha",
+          "existe_tabela",
+          "imp_ARQ",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "ipca.to_excel",
+          "len",
+          "np.isclose",
+          "os.listdir",
+          "pd.DataFrame",
+          "pd.DateOffset",
+          "pd.read_sql",
+          "pd.to_datetime",
+          "range",
+          "registrar_artefato",
+          "registrar_evento",
+          "registrar_metrica",
+          "rename",
+          "replace",
+          "sl.connect",
+          "st.button",
+          "st.checkbox",
+          "st.column_config.DateColumn",
+          "st.column_config.NumberColumn",
+          "st.column_config.TextColumn",
+          "st.columns",
+          "st.container",
+          "st.dataframe",
+          "st.divider",
+          "st.html",
+          "st.success",
+          "str",
+          "sum",
+          "tbl_FCOGE.merge",
+          "tbl_FCOGE.to_sql"
+        ]
+      },
+      "codigo": "def imp_COGE():\n    if not 'tra_dir' in st.session_state:\n        st.html(\"\"\"\n                <p>Você deve configurar o diretório de trabalho na aba <i>Criar Pasta de Trabalho</i>, barra lateral.</p>\n            \"\"\")\n        return\n    col1 = st.columns([1,5,1], gap='small')\n    with col1[1]:\n        with st.container():\n            local = st.session_state.tra_dir\n            empresa = st.session_state.nm_empr\n            ano = st.session_state.dt_fim.year\n            css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n            st.html(f\"<style>{css}</style>\")\n\n            raiz = Path(local)\n            caminho_manifesto = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n            caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n            inicializa_database(str(caminho_manifesto))\n            inicializa_detalhes(str(caminho_manifesto))\n            inicializar_rastreamento(str(caminho_manifesto))\n            database = str(caminho_manifesto)\n\n            colunas = [i for i in range(0, 40)]\n\n            st.html(\"\"\"<h1>Importação dos arquivos da COGE</h1><br><br>\n                <p  style=\"text-align: justify;text-indent: 40px\">Nesta etapa do processo, \n                realiza-se o carregamento dos arquivos correspondentes aos fatores\n                de atualização da COGE.</p><br>\n                \"\"\")\n\n            dir_arq_fcoge = f\"{local}/FCOGE\"\n            dir_arq_base = f\"{local}/BD_LOCAL\"\n            LST_ARQ = os.listdir(dir_arq_fcoge)\n            cols = st.columns([1,1,1,1,1,4], gap='small')\n            with cols[5]:\n                ajstdo = st.checkbox(\"Delay ajustado nos indicadores importados?\", value=False, help=\"Se a avaliadora fez a extração considerando o delay, colocar ativar a opção.\")\n            with cols[1]:\n                btIMP = st.button(\"Importar\", width='stretch')\n            if btIMP and len(LST_ARQ)>0:\n                caminho_bd = (\n                                    Path(local)\n                                    / \"BD_LOCAL\"\n                                    / f\"{empresa}_{ano}.db\"\n                                )\n\n                caminho_bd.parent.mkdir(\n                                            parents=True,\n                                            exist_ok=True\n                                        )\n\n                with execucao_trilha(\n                                        db_path=database, script_nome=\"Importação Indicadores Econômicos\",\n                                        parametros={\"empresa\": empresa, \"ano\": ano},\n                                    ) as execucao_id:\n                    registrar_evento(\n                                        database,\n                                        execucao_id,\n                                        \"INICIO_IMPORTACAO_COGE\",\n                                        mensagem=(\n                                            f\"Empresa: {empresa}; \"\n                                            f\"ano: {ano}; \"\n                                            f\"delay ajustado: {ajstdo}.\"\n                                        ),\n                                    )\n\n                    tbl_FCOGE, meus_arq = imp_ARQ(\n                                                    LST_ARQ,\n                                                    dir_arq_fcoge,\n                                                    colunas,\n                                                    ajstdo,\n                                                    database=database,\n                                                    execucao_id=execucao_id,\n                                                )\n                    with sl.connect(caminho_bd) as bd:\n                        tbl_FCOGE.to_sql('tbl_FCOGE', bd, if_exists='replace', index=False)\n\n                    registrar_artefato(database, execucao_id, str(caminho_bd), \"SAIDA\")\n\n                    registrar_metrica(\n                                        database,\n                                        execucao_id,\n                                        \"linhas_gravadas_sqlite\",\n                                        len(tbl_FCOGE),\n                                    )\n\n                    registrar_evento(\n                                        database,\n                                        execucao_id,\n                                        \"FIM_IMPORTACAO_COGE\",\n                                        mensagem=(\n                                            \"Tabela tbl_FCOGE gravada \"\n                                            \"com sucesso no banco local.\"\n                                        ),\n                                    )\n\n                    st.success(\"Carregado dados na database local.\")\n\n                st.html(\"\"\"<p>Tabela COGE:</p>\"\"\")\n                config = {\n                                \"Cd_FOR_COGE\": st.column_config.TextColumn(\"Código COGE\"),\n                                \"DT_INI\": st.column_config.DateColumn(\"Data de Início\", format=\"DD/MM/YYYY\"),\n                                \"DT_FIM\": st.column_config.DateColumn(\"Data de Fim\", format=\"DD/MM/YYYY\"),\n                                \"DT_REF\": st.column_config.DateColumn(\"Data de Referência\", format=\"DD/MM/YYYY\"),\n                                \"FC\": st.column_config.NumberColumn(\"FATOR ATUALIZAÇÃO\"),\n                            }\n\n                st.dataframe(tbl_FCOGE, width='stretch', hide_index=True,  column_config=config)\n\n            with sl.connect(f'{local}\\BD_LOCAL\\{empresa}_{ano}.db') as bd:\n                if existe_tabela(\"tbl_FCOGE\", bd):\n                    tbl_FCOGE = pd.read_sql(\"SELECT * FROM tbl_FCOGE WHERE Cd_FOR_COGE = 'FCM0403'\", bd)\n                else:\n                    tbl_FCOGE = pd.DataFrame()\n\n            if not tbl_FCOGE.empty:\n                ipca = busca_ipca()[['Dt_REF', 'Nr_IPCA']].rename(columns={'Dt_REF': 'DT_REF'})\n                tbl_FCOGE['DT_REF'] = pd.to_datetime(tbl_FCOGE['DT_REF'])\n                tbl_FCOGE['DT_FIM'] = pd.to_datetime(tbl_FCOGE['DT_FIM'])\n                tbl_FCOGE['DT_INI'] = pd.to_datetime(tbl_FCOGE['DT_INI'])\n                data = pd.to_datetime(tbl_FCOGE.iloc[0,-3])\n                mes_anterior = (data.replace(day=1) - pd.DateOffset(months=1))\n                Nr_IPCA = ipca[ipca['DT_REF'] == mes_anterior]['Nr_IPCA'].iloc[0]\n                ipca = tbl_FCOGE.merge(ipca, how='left', on='DT_REF')\n\n                ipca['IPCA_DT_BASE'] = Nr_IPCA\n                ipca['FT_IPCA'] = ipca['IPCA_DT_BASE'] / ipca['Nr_IPCA']\n                ipca[\"FLG_CONVERGE\"] = np.isclose(\n                                                        ipca[\"FC\"],\n                                                        ipca[\"FT_IPCA\"],\n                                                        rtol=0.001\n                                                    )\n                st.divider()\n                perc = (len(ipca) - ipca['FLG_CONVERGE'].sum()) / len(ipca)\n                erros = f\"{perc:.2%}\".replace(\".\",\",\")\n                if perc < 0.001:\n                    msg = f\"está 'ok' ({erros} de divergência)\"\n                else:\n                    msg = f\"atenção: {erros} não convergiu\"\n\n                st.html(\n                            f\"\"\"\n                            <p style='text-align: justify; padding-left:60px;'>\n                                Será realizada a comparação entre o indicador COGE equivalente ao IPCA e o dado oficial divulgado pelo IBGE, com \n                                o objetivo de verificar a consistência entre as duas métricas. Caso sejam observadas divergências entre os valores, \n                                deverá ser conduzida investigação para identificar suas possíveis causas, considerando diferenças metodológicas, \n                                de processamento ou de atualização das bases utilizadas. Ressalta-se que a metodologia do indicador COGE pode \n                                introduzir um delay temporal na apuração do resultado, o que requer atenção na análise comparativa. Nesse contexto, \n                                solicita-se confirmar se o delay previsto na metodologia COGE foi devidamente compensado no procedimento de comparação \n                                com o dado divulgado pelo IBGE, de modo a garantir a adequada correspondência entre os períodos de referência \n                                analisados. No caso, {msg}.\n                            </p>\n                            \"\"\"\n                        )\n                st.dataframe(ipca, width='stretch', hide_index=True)\n                ipca.to_excel(fr\"{local}/BP_ANLS/teste_coge_IPCA.xlsx\", index=False)"
+    },
+    "documentacao": {
+      "resumo": "Realiza a importação dos arquivos da COGE e processa os dados.",
+      "descricao": "A função verifica se o diretório de trabalho está configurado, carrega os arquivos correspondentes aos fatores de atualização da COGE, realiza a normalização dos dados e registra eventos no banco de dados. Também compara os valores do indicador COGE com o IPCA para verificar a consistência entre as duas métricas.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.execucao_trilha",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializa_database",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializa_detalhes",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializar_rastreamento",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.registrar_artefato",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.registrar_evento",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.registrar_metrica",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.bsc_dados_reg",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.busca_ipca",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.existe_tabela",
+          "tipo": "função"
+        },
+        {
+          "nome": "numpy",
+          "tipo": "biblioteca"
+        },
+        {
+          "nome": "os",
+          "tipo": "biblioteca"
+        },
+        {
+          "nome": "pandas",
+          "tipo": "biblioteca"
+        },
+        {
+          "nome": "pathlib.Path",
+          "tipo": "classe"
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": "biblioteca"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca"
+        }
+      ],
+      "docstring": "Realiza a importação dos arquivos da COGE e processa os dados.\n\nArgs:\n    Nenhum parâmetro explicitamente definido.\n\nReturns:\n    None\n\nNotes:\n    A função verifica se o diretório de trabalho está configurado, carrega os arquivos correspondentes aos fatores de atualização da COGE, realiza a normalização dos dados e registra eventos no banco de dados. Também compara os valores do indicador COGE com o IPCA para verificar a consistência entre as duas métricas."
+    },
+    "status": "sucesso"
+  }
+]

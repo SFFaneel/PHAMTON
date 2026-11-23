@@ -1,0 +1,41 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,RE1,Residencial
+3,RE2,Residencial baixa renda
+4,RE3,Residencial baixa renda indígena
+5,RE4,Residencial baixa renda quilombola
+6,RE5,Residencial baixa renda benefício de prestação continuada da assistência social  BPC
+7,RE6,Residencial baixa renda multifamiliar
+8,IN,Industrial
+9,CO1,Comercial
+10,CO2,"Serviços de transporte, exceto tração elétrica"
+11,CO3,Serviços de comunicações e telecomunicações
+12,CO4,Associação e entidades filantrópicas
+13,CO5,Templos religiosos
+14,CO6,Administração condominial: iluminação e instalações de uso comum de prédio ou conjunto de edificações
+15,CO7,Iluminação em rodovias: solicitada por quem detenha concessão ou autorização para administração em rodovias
+16,CO8,"Semáforos, radares e câmeras de monitoramento de trânsito, solicitados por quem detenha concessão ou autorização para controle de trânsito"
+17,CO9,Outros serviços e outras atividades
+18,RU1,Agropecuária rural
+19,RU1A,"Agropecuária rural (poços de captação de água, para atender finalidades de que trata este inciso, desde que não haja comercialização da água)"
+20,RU1B,Agropecuária rural (serviço de bombeamento de água destinada à atividade de irrigação)
+21,RU2,Agropecuária urbana
+22,RU3,Residencial rural
+23,RU4,Cooperativa de eletrificação rural
+24,RU5,Agroindustrial
+25,RU6,Serviço público de irrigação rural
+26,RU7,Escola agrotécnica
+27,RU8,Aquicultura
+28,PP1,Poder público federal
+29,PP2,Poder público estadual ou distrital
+30,PP3,Poder público municipal
+31,IP,Iluminação pública
+32,SP1,Tração elétrica
+33,SP2,"Água, esgoto e saneamento"
+34,CPR,Consumo próprio pela distribuidora
+35,CSPS,Concessionária ou Permissionária
+36,CPRV,Consumo próprio pela distribuidora para estação de recarga de veículos elétricos
+37,REBR,Residencial de baixa renda indígena
+38,REQU,Residencial de baixa renda quilombola
+39,REBP,Residencial de baixa renda benefício de prestação continuada da assistência social - BPC
+40,REMU,Residencial de baixa renda multifamiliar

@@ -1,0 +1,602 @@
+[
+  {
+    "funcao": {
+      "nome": "carregar_configuracao",
+      "tipo": "function",
+      "linha_inicio": 51,
+      "linha_fim": 82,
+      "parametros": [],
+      "retorno": "dict",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pandas",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "ARQUIVO_CONFIG.is_file",
+          "Path.home",
+          "ValueError",
+          "issubset",
+          "pd.read_csv",
+          "st.warning",
+          "str"
+        ]
+      },
+      "codigo": "def carregar_configuracao() -> dict:\n    padrao = {\n                    \"dir_trab\": str(Path.home() / \"Downloads\" / \"TRABALHO\"),\n                    \"nm_emp\": \"\",\n                    \"dt_ini\": \"\",\n                    \"dt_fim\": \"\",\n                }\n\n    if not ARQUIVO_CONFIG.is_file():\n        return padrao\n\n    try:\n        df = pd.read_csv(\n                            ARQUIVO_CONFIG,\n                            sep=\"|\",\n                            encoding=\"Latin-1\",\n                            dtype=str,\n                            keep_default_na=False,\n                        )\n\n        if not {\"cat\", \"dado\"}.issubset(df.columns):\n            raise ValueError(\"Estrutura inválida de tbl_ini.csv\")\n\n        for campo in CAMPOS_CONFIG:\n            valores = df.loc[df[\"cat\"] == campo, \"dado\"]\n            if not valores.empty:\n                padrao[campo] = str(valores.iloc[-1])\n\n    except (OSError, ValueError, pd.errors.ParserError) as erro:\n        st.warning(f\"Configuração anterior não carregada: {erro}\")\n\n    return padrao"
+    },
+    "documentacao": {
+      "resumo": "Carrega a configuração de trabalho a partir de um arquivo CSV.",
+      "descricao": "A função carrega as configurações de trabalho a partir de um arquivo CSV, se existir. Caso contrário, retorna um dicionário padrão com valores vazios ou preenchidos com os últimos valores disponíveis no arquivo.",
+      "parametros": [],
+      "retorno": {
+        "tipo": "dict",
+        "descricao": "Configurações de trabalho carregadas."
+      },
+      "excecoes": [
+        {
+          "tipo": "OSError",
+          "descricao": "Quando ocorre um erro ao acessar o arquivo de configuração."
+        },
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando a estrutura do arquivo CSV é inválida."
+        },
+        {
+          "tipo": "pd.errors.ParserError",
+          "descricao": "Quando ocorre um erro ao ler o arquivo CSV."
+        }
+      ],
+      "dependencias": [
+        "pandas",
+        "pathlib.Path",
+        "streamlit"
+      ],
+      "docstring": "Carrega a configuração de trabalho a partir de um arquivo CSV.\n\nReturns:\n    dict: Configurações de trabalho carregadas.\n\nRaises:\n    OSError: Quando ocorre um erro ao acessar o arquivo de configuração.\n    ValueError: Quando a estrutura do arquivo CSV é inválida.\n    pd.errors.ParserError: Quando ocorre um erro ao ler o arquivo CSV."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "salvar_configuracao",
+      "tipo": "function",
+      "linha_inicio": 85,
+      "linha_fim": 101,
+      "parametros": [
+        {
+          "nome": "config",
+          "tipo": "dict",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "None",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pandas"
+        ],
+        "chamadas": [
+          "df.to_csv",
+          "pd.DataFrame",
+          "str"
+        ]
+      },
+      "codigo": "def salvar_configuracao(config: dict) -> None:\n    df = pd.DataFrame(\n                        {\n                            \"cat\": CAMPOS_CONFIG,\n                            \"dado\": [\n                                str(config[campo])\n                                for campo in CAMPOS_CONFIG\n                            ],\n                        }\n                    )\n\n    df.to_csv(\n                ARQUIVO_CONFIG,\n                sep=\"|\",\n                encoding=\"Latin-1\",\n                index=False,\n            )"
+    },
+    "documentacao": {
+      "resumo": "Salva as configurações em um arquivo CSV.",
+      "descricao": "Converte um dicionário de configurações em um DataFrame e salva-o em um arquivo CSV com separador de coluna como pipe (|) e codificação Latin-1. O arquivo é salvo no caminho especificado por ARQUIVO_CONFIG.",
+      "parametros": [
+        {
+          "nome": "config",
+          "tipo": "dict",
+          "categoria": "posicional",
+          "descricao": "Dicionário contendo as configurações a serem salvas."
+        }
+      ],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "Nenhum valor retornado."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "pandas"
+      ],
+      "docstring": "Salva as configurações em um arquivo CSV.\n\nArgs:\n    config (dict): Dicionário contendo as configurações a serem salvas.\n\nReturns:\n    None\n\nDependencies:\n    pandas: Utilizado para criar o DataFrame e salvar o arquivo CSV."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "converter_data",
+      "tipo": "function",
+      "linha_inicio": 104,
+      "linha_fim": 111,
+      "parametros": [
+        {
+          "nome": "valor",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "padrao",
+          "tipo": "date",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "date",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "datetime.date",
+          "datetime.datetime"
+        ],
+        "chamadas": [
+          "date",
+          "datetime.strptime"
+        ]
+      },
+      "codigo": "def converter_data(valor: str, padrao: date) -> date:\n    if not valor:\n        return padrao\n\n    try:\n        return datetime.strptime(valor, \"%Y-%m-%d\").date()\n    except ValueError:\n        return padrao"
+    },
+    "documentacao": {
+      "resumo": "Converte uma string de data em um objeto date.",
+      "descricao": "Tenta converter uma string no formato 'YYYY-MM-DD' em um objeto date. Se a conversão falhar ou o valor for vazio, retorna o padrão fornecido.",
+      "parametros": [
+        {
+          "nome": "valor",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "String representando uma data no formato 'YYYY-MM-DD'."
+        },
+        {
+          "nome": "padrao",
+          "tipo": "date",
+          "categoria": "posicional",
+          "descricao": "Valor padrão a ser retornado em caso de falha na conversão."
+        }
+      ],
+      "retorno": {
+        "tipo": "date",
+        "descricao": "Objeto date resultante da conversão ou o valor padrão."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando a string de data não está no formato 'YYYY-MM-DD'."
+        }
+      ],
+      "dependencias": [
+        "datetime.date",
+        "datetime.datetime"
+      ],
+      "docstring": "Converte uma string de data em um objeto date.\n\nArgs:\n    valor (str): String representando uma data no formato 'YYYY-MM-DD'.\n    padrao (date): Valor padrão a ser retornado em caso de falha na conversão.\n\nReturns:\n    date: Objeto date resultante da conversão ou o valor padrão.\n\nRaises:\n    ValueError: Quando a string de data não está no formato 'YYYY-MM-DD'.\n\nDependencies:\n    datetime.date: Usado para criar objetos date.\n    datetime.datetime: Usado para realizar a conversão."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "validar_diretorio",
+      "tipo": "function",
+      "linha_inicio": 114,
+      "linha_fim": 131,
+      "parametros": [
+        {
+          "nome": "caminho",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "Path",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pathlib.Path"
+        ],
+        "chamadas": [
+          "Path",
+          "Path.cwd",
+          "Path.home",
+          "ValueError",
+          "caminho.strip",
+          "expanduser",
+          "resolve"
+        ]
+      },
+      "codigo": "def validar_diretorio(caminho: str) -> Path:\n    if not caminho.strip():\n        raise ValueError(\"Informe o diretório de trabalho.\")\n\n    raiz = Path(caminho.strip()).expanduser().resolve()\n\n    if raiz == Path(raiz.anchor):\n        raise ValueError(\"Não é permitido usar a raiz do disco.\")\n\n    if raiz == Path.home().resolve():\n        raise ValueError(\"Não é permitido usar a pasta do usuário.\")\n\n    if raiz == Path.cwd().resolve():\n        raise ValueError(\n                            \"O diretório de trabalho não pode ser a pasta da aplicação.\"\n                        )\n\n    return raiz"
+    },
+    "documentacao": {
+      "resumo": "Valida um caminho de diretório e retorna uma instância de Path.",
+      "descricao": "Verifica se o caminho fornecido é válido, não sendo a raiz do disco, a pasta do usuário ou a pasta da aplicação. Caso contrário, lança exceções específicas.",
+      "parametros": [
+        {
+          "nome": "caminho",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Caminho do diretório que será validado."
+        }
+      ],
+      "retorno": {
+        "tipo": "Path",
+        "descricao": "Instância de Path representando o caminho válido."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o caminho está vazio."
+        },
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o caminho é a raiz do disco."
+        },
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o caminho é a pasta do usuário."
+        },
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o caminho é a pasta da aplicação."
+        }
+      ],
+      "dependencias": [
+        "pathlib.Path"
+      ],
+      "docstring": "Valida um caminho de diretório e retorna uma instância de Path.\n\nArgs:\n    caminho (str): Caminho do diretório que será validado.\n\nReturns:\n    Path: Instância de Path representando o caminho válido.\n\nRaises:\n    ValueError: Quando o caminho está vazio, é a raiz do disco, a pasta do usuário ou a pasta da aplicação."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "criar_estrutura",
+      "tipo": "function",
+      "linha_inicio": 134,
+      "linha_fim": 142,
+      "parametros": [
+        {
+          "nome": "raiz",
+          "tipo": "Path",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "None",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "mkdir",
+          "raiz.mkdir"
+        ]
+      },
+      "codigo": "def criar_estrutura(raiz: Path) -> None:\n    raiz.mkdir(parents=True, exist_ok=True)\n    for nome in DIRETORIOS_TRABALHO:\n        (raiz / nome).mkdir(parents=True, exist_ok=True)\n    (raiz / \"LOGS\").mkdir(parents=True, exist_ok=True)\n    (raiz / \"MANIFESTO\" / \"TRILHA_EXEC\").mkdir(\n                                                    parents=True,\n                                                    exist_ok=True,\n                                                )"
+    },
+    "documentacao": {
+      "resumo": "Cria uma estrutura de diretórios em um caminho especificado.",
+      "descricao": "A função cria a estrutura de diretórios definida em `DIRETORIOS_TRABALHO` e adiciona dois diretórios extras: 'LOGS' e 'MANIFESTO/TRILHA_EXEC'. Se o caminho já existir, não será lançada uma exceção.",
+      "parametros": [
+        {
+          "nome": "raiz",
+          "tipo": "Path",
+          "categoria": "posicional",
+          "descricao": "Caminho onde a estrutura de diretórios será criada."
+        }
+      ],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "A função não retorna nenhum valor."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "DIRETORIOS_TRABALHO",
+          "categoria": "constante",
+          "descricao": "Lista de diretórios a serem criados dentro do caminho raiz."
+        }
+      ],
+      "docstring": "Cria uma estrutura de diretórios em um caminho especificado.\n\nArgs:\n    raiz (Path): Caminho onde a estrutura de diretórios será criada.\n\nReturns:\n    None\n\nNotes:\n    A função cria os diretórios definidos em DIRETORIOS_TRABALHO e adiciona 'LOGS' e 'MANIFESTO/TRILHA_EXEC'. Se o caminho já existir, não será lançada uma exceção."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "aplicar_configuracao",
+      "tipo": "function",
+      "linha_inicio": 144,
+      "linha_fim": 185,
+      "parametros": [
+        {
+          "nome": "raiz",
+          "tipo": "Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "data_ini",
+          "tipo": "date",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "data_fim",
+          "tipo": "date",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "None",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.execucao_trilha",
+          "UTILS.configurar_logger",
+          "streamlit"
+        ],
+        "chamadas": [
+          "configurar_logger",
+          "criar_estrutura",
+          "data_fim.isoformat",
+          "data_ini.isoformat",
+          "execucao_trilha",
+          "logger.info",
+          "salvar_configuracao",
+          "st.session_state.update",
+          "str"
+        ]
+      },
+      "codigo": "def aplicar_configuracao(\n                            raiz: Path,\n                            empresa: str,\n                            data_ini: date,\n                            data_fim: date,\n                        ) -> None:\n \n    criar_estrutura(raiz)\n    pasta_execucao = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\"\n    with execucao_trilha(\n                            db_path=str(pasta_execucao / \"execucoes.db\"),\n                            script_nome=\"inicio\",\n                            script_versao=\"1.0.0\",\n                        ):\n        \n        logger = configurar_logger(nome_arquivo=empresa, diretorio_logs=str(raiz / \"LOGS\"),)\n        config = {\n                    \"dir_trab\": str(raiz),\n                    \"nm_emp\": empresa,\n                    \"dt_ini\": data_ini.isoformat(),\n                    \"dt_fim\": data_fim.isoformat(),\n                 }\n\n        salvar_configuracao(config)\n        st.session_state.update(\n                                    {\n                                        \"tra_dir\": str(raiz),\n                                        \"nm_empr\": empresa,\n                                        \"dt_ini\": data_ini,\n                                        \"dt_fim\": data_fim,\n                                        \"RTE\": False,\n                                        \"SIST_CONFIG\": True,\n                                        \"LOGGER\": logger,\n                                        \"database_MAN\" : \"\",\n                                        \"execucao_id\" : \"\"\n                                    }\n                                )\n        logger.info(\n                        \"Configuração concluída: empresa=%s, diretório=%s\",\n                        empresa,\n                        raiz,\n                    )"
+    },
+    "documentacao": {
+      "resumo": "Aplica uma configuração em um diretório raiz, utilizando informações de empresa e datas.",
+      "descricao": "Esta função cria a estrutura necessária no diretório raiz, configura um logger, salva as informações de configuração e atualiza o estado da sessão do Streamlit com os dados fornecidos. Também registra uma mensagem de log indicando que a configuração foi concluída.",
+      "parametros": [
+        {
+          "nome": "raiz",
+          "tipo": "Path",
+          "categoria": "posicional",
+          "descricao": "O diretório raiz onde as operações serão realizadas."
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "O nome da empresa associada à configuração."
+        },
+        {
+          "nome": "data_ini",
+          "tipo": "date",
+          "categoria": "posicional",
+          "descricao": "A data inicial para a configuração."
+        },
+        {
+          "nome": "data_fim",
+          "tipo": "date",
+          "categoria": "posicional",
+          "descricao": "A data final para a configuração."
+        }
+      ],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "Não retorna nenhum valor."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.execucao_trilha",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "UTILS.configurar_logger",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "streamlit",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Aplica uma configuração em um diretório raiz, utilizando informações de empresa e datas.\n\nArgs:\n    raiz (Path): O diretório raiz onde as operações serão realizadas.\n    empresa (str): O nome da empresa associada à configuração.\n    data_ini (date): A data inicial para a configuração.\n    data_fim (date): A data final para a configuração.\n\nReturns:\n    None: Não retorna nenhum valor."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "confirmar_exclusao",
+      "tipo": "function",
+      "linha_inicio": 189,
+      "linha_fim": 232,
+      "parametros": [
+        {
+          "nome": "raiz",
+          "tipo": "Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "data_ini",
+          "tipo": "date",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "data_fim",
+          "tipo": "date",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "None",
+      "decorators": [
+        "st.dialog('⚠️ Confirmar exclusão')"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.liberar_logger",
+          "shutil",
+          "streamlit"
+        ],
+        "chamadas": [
+          "ValueError",
+          "aplicar_configuracao",
+          "liberar_logger",
+          "raiz.exists",
+          "raiz.is_dir",
+          "raiz.is_symlink",
+          "shutil.rmtree",
+          "st.button",
+          "st.columns",
+          "st.dialog",
+          "st.error",
+          "st.rerun",
+          "st.warning"
+        ]
+      },
+      "codigo": "def confirmar_exclusao(\n                            raiz: Path,\n                            empresa: str,\n                            data_ini: date,\n                            data_fim: date,\n                        ) -> None:\n    st.warning(\n                    f\"Todos os arquivos de **{raiz}** serão excluídos \"\n                    \"permanentemente. Esta ação não pode ser desfeita.\"\n                )\n\n    _, col_sim, _, col_nao, _  = st.columns([1,2,1,2,1])\n\n    with col_sim:\n        if st.button(\n                    \"Sim, apagar\",\n                    type=\"primary\",\n                ):\n            try:\n                if raiz.exists():\n                    if not raiz.is_dir() or raiz.is_symlink():\n                        raise ValueError(\n                                            \"O destino não é um diretório comum.\"\n                                        )\n                    liberar_logger(raiz)\n                    shutil.rmtree(raiz)\n\n                aplicar_configuracao(\n                                        raiz, empresa, data_ini, data_fim\n                                    )\n            except Exception as erro:\n                st.error(f\"Falha na configuração: {erro}\")\n                return\n\n            st.session_state[\"config_sucesso\"] = (\n                                                    f\"Diretório {raiz} configurado com sucesso.\"\n                                                )\n            st.rerun()\n\n    with col_nao:\n        if st.button(\n                        \"Não, cancelar\",\n                    ):\n            st.rerun()"
+    },
+    "documentacao": {
+      "resumo": "Confirma a exclusão de arquivos em um diretório específico.",
+      "descricao": "Exibe uma mensagem de aviso e dois botões para confirmar ou cancelar a exclusão de todos os arquivos em um diretório. Se confirmado, exclui o diretório e aplica uma configuração específica.",
+      "parametros": [
+        {
+          "nome": "raiz",
+          "tipo": "Path",
+          "categoria": "posicional",
+          "descricao": "Caminho do diretório que será excluído."
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome da empresa associada à exclusão."
+        },
+        {
+          "nome": "data_ini",
+          "tipo": "date",
+          "categoria": "posicional",
+          "descricao": "Data inicial para a configuração."
+        },
+        {
+          "nome": "data_fim",
+          "tipo": "date",
+          "categoria": "posicional",
+          "descricao": "Data final para a configuração."
+        }
+      ],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "Nenhum valor retornado."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "categoria": "lançada internamente",
+          "descricao": "Quando o destino não é um diretório comum."
+        }
+      ],
+      "dependencias": [
+        {
+          "nome": "UTILS.liberar_logger",
+          "categoria": "importado",
+          "descricao": "Função para liberar o logger."
+        },
+        {
+          "nome": "shutil",
+          "categoria": "importado",
+          "descricao": "Biblioteca para operações de sistema de arquivos."
+        },
+        {
+          "nome": "streamlit",
+          "categoria": "importado",
+          "descricao": "Framework web para criação de interfaces de usuário."
+        }
+      ],
+      "docstring": "Confirma a exclusão de arquivos em um diretório específico.\n\nArgs:\n    raiz (Path): Caminho do diretório que será excluído.\n    empresa (str): Nome da empresa associada à exclusão.\n    data_ini (date): Data inicial para a configuração.\n    data_fim (date): Data final para a configuração.\n\nRaises:\n    ValueError: Quando o destino não é um diretório comum."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "iniciar",
+      "tipo": "function",
+      "linha_inicio": 234,
+      "linha_fim": 354,
+      "parametros": [],
+      "retorno": "None",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "UTILS.bsc_dados_reg",
+          "datetime.date",
+          "streamlit"
+        ],
+        "chamadas": [
+          "aplicar_configuracao",
+          "astype",
+          "bsc_dados_reg",
+          "carregar_configuracao",
+          "confirmar_exclusao",
+          "converter_data",
+          "date",
+          "date.today",
+          "drop_duplicates",
+          "dropna",
+          "isinstance",
+          "lista_empresas.index",
+          "raiz.exists",
+          "st.button",
+          "st.caption",
+          "st.checkbox",
+          "st.columns",
+          "st.date_input",
+          "st.divider",
+          "st.error",
+          "st.html",
+          "st.selectbox",
+          "st.session_state.pop",
+          "st.spinner",
+          "st.success",
+          "st.text_input",
+          "tolist",
+          "validar_diretorio"
+        ]
+      },
+      "codigo": "def iniciar() -> None:\n    config = carregar_configuracao()\n    css = bsc_dados_reg(\"estilo_001\",tipo=\"Estilo_CSS\")\n    if isinstance(css, str) and css:\n        st.html(f\"<style>{css}</style>\")\n\n    st.html(\n                    \"\"\"<p style=\"text-align: justify;text-indent: 40px; padding-top: 10px\">\n                    Defina um diretório de trabalho. Caso já exista, \n                    seus arquivos serão preservados, exceto quando \n                    a opção de exclusão for selecionada.</p>\"\"\"\n                )\n\n    st.caption(f\"Endereço do aplicativo: {st.context.url}\")\n    st.divider()\n    apagar = st.checkbox(\"Excluir diretório, se existir\", value=False,)\n\n    tra_dir = st.text_input(\"Diretório de trabalho\", value=config[\"dir_trab\"],)\n    empresas = bsc_dados_reg(\"TBL_EMPRESAS\")\n\n    if (not isinstance(empresas, pd.DataFrame) or \"Nm_EMPRESA\" not in empresas.columns):\n        st.error(\"Não foi possível carregar o cadastro de empresas.\")\n        return\n\n    lista_empresas = (\n                        empresas[\"Nm_EMPRESA\"]\n                        .dropna()\n                        .astype(str)\n                        .drop_duplicates()\n                        .tolist()\n                    )\n\n    if not lista_empresas:\n        st.error(\"Nenhuma empresa cadastrada.\")\n        return\n\n    empresa_padrao = config[\"nm_emp\"]\n\n    indice = (\n                lista_empresas.index(empresa_padrao)\n                if empresa_padrao in lista_empresas\n                else 0\n            )\n\n    hoje = date.today()\n\n    data_ini_padrao = converter_data(config[\"dt_ini\"], hoje)\n    data_fim_padrao = converter_data(config[\"dt_fim\"], hoje)\n\n    data_min_ini = (\n                        date(1900, 1, 1)\n                        if data_ini_padrao.year == 1900\n                        else date(2019, 1, 1)\n                    )\n\n    data_max = date(hoje.year + 5, 12, 31)\n\n    col1, col2, col3 = st.columns(3)\n\n    with col1:\n        empresa = st.selectbox(\n                                \"Empresa:\",\n                                lista_empresas,\n                                index=indice,\n                            )\n\n    with col2:\n        data_ini = st.date_input(\n                                    \"Data inicial período incremental:\",\n                                    value=data_ini_padrao,\n                                    min_value=data_min_ini,\n                                    max_value=data_max,\n                                )\n\n    with col3:\n        data_fim = st.date_input(\n                                    \"Data final período incremental:\",\n                                    value=data_fim_padrao,\n                                    min_value=date(hoje.year - 10, 1, 1),\n                                    max_value=data_max,\n                                )\n\n    st.divider()\n\n    _, centro, _ = st.columns([2, 1, 2])\n\n    with centro:\n        configurar = st.button(\n                                    \"(RE)Configurar\",\n                                    type=\"primary\",\n                                    use_container_width=True,\n                                )\n\n    if mensagem := st.session_state.pop(\"config_sucesso\", None):\n        st.success(mensagem)\n\n    if not configurar:\n        return\n\n    if data_fim <= data_ini:\n        st.error(\n                    \"A data final deve ser posterior à data inicial.\"\n                )\n        return\n\n    try:\n        raiz = validar_diretorio(tra_dir)\n\n        if apagar and raiz.exists():\n            confirmar_exclusao(\n                                    raiz, empresa, data_ini, data_fim\n                                )\n            return\n\n        with st.spinner(\"Configurando ambiente de trabalho...\"):\n            aplicar_configuracao(raiz, empresa, data_ini, data_fim)\n\n        st.success(f\"Diretório {raiz} configurado com sucesso.\")\n\n    except Exception as erro:\n        st.error(f\"Erro ao configurar ambiente: {erro}\")"
+    },
+    "documentacao": {
+      "resumo": "Inicia a interface do usuário e configura o ambiente de trabalho.",
+      "descricao": "Carrega as configurações iniciais, carrega os dados necessários e exibe uma interface para seleção de empresa e período. Realiza validações e aplica a configuração no diretório de trabalho selecionado.",
+      "parametros": [],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "Nenhum valor retornado."
+      },
+      "excecoes": [
+        {
+          "tipo": "Exception",
+          "descricao": "Quando ocorre um erro durante a configuração do ambiente de trabalho."
+        }
+      ],
+      "dependencias": [
+        "UTILS.bsc_dados_reg",
+        "datetime.date",
+        "streamlit"
+      ],
+      "docstring": "Inicia a interface do usuário e configura o ambiente de trabalho.\n\nReturns:\n    None\n\nRaises:\n    Exception: Quando ocorre um erro durante a configuração do ambiente de trabalho."
+    },
+    "status": "sucesso"
+  }
+]

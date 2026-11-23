@@ -1,0 +1,10 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,1,Singelo
+3,2,Multiplexado Duplex
+4,3,Multiplexado Triplex
+5,4,Multiplexado Quadruplex
+6,5,Interno de subestação
+7,6,Concêntrico Monofásico
+8,7,Concêntrico Bifásico
+9,8,Concêntrico Trifásico

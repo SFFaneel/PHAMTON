@@ -1,0 +1,756 @@
+[
+  {
+    "funcao": {
+      "nome": "abt_VOC",
+      "tipo": "function",
+      "linha_inicio": 44,
+      "linha_fim": 48,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "SRC.ais_funcoes.abertura_voc",
+          "datetime.date"
+        ],
+        "chamadas": [
+          "abertura_voc",
+          "date.today"
+        ]
+      },
+      "codigo": "def abt_VOC(st=None):\n    if st.session_state.dt_fim > date.today():\n        abertura_voc(st, True, html_config = False)\n    else:\n        abertura_voc(st, html_config = False)"
+    },
+    "documentacao": {
+      "resumo": "Controla a abertura da interface de usuário para o VOC (Vulnerabilidade Operacional Crítica).",
+      "descricao": "Verifica se a data final configurada no estado da sessão é posterior à data atual. Se for, chama a função `abertura_voc` com um parâmetro adicional indicando uma abertura condicional. Caso contrário, apenas chama a função `abertura_voc` sem o parâmetro adicional.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Estado da sessão do Streamlit."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "SRC.ais_funcoes.abertura_voc",
+        "datetime.date"
+      ],
+      "docstring": "Controla a abertura da interface de usuário para o VOC (Vulnerabilidade Operacional Crítica).\n\nArgs:\n    st: Estado da sessão do Streamlit.\n\nNotes:\n    - Verifica se a data final configurada no estado da sessão é posterior à data atual.\n    - Se for, chama a função `abertura_voc` com um parâmetro adicional indicando uma abertura condicional.\n    - Caso contrário, apenas chama a função `abertura_voc` sem o parâmetro adicional.\n\nDependencies:\n    SRC.ais_funcoes.abertura_voc: Função utilizada para abrir a interface de usuário do VOC.\n    datetime.date: Utilizado para obter a data atual."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "banco_compras",
+      "tipo": "function",
+      "linha_inicio": 50,
+      "linha_fim": 99,
+      "parametros": [
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_EFD",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "ano",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "SRC.calculos.calc_fin_icms",
+          "SRC.calculos.pre_dados",
+          "UTILS.existe_tabela",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "calc_fin_icms",
+          "existe_tabela",
+          "isinstance",
+          "pre_dados",
+          "progresso.empty",
+          "sl.connect",
+          "st.error",
+          "st.progress",
+          "str"
+        ]
+      },
+      "codigo": "def banco_compras(local, bd, bd_EFD, empresa, ano, st):\n    if not isinstance(bd, str):\n        return None\n\n    caminho = str(Path(local))\n    progresso = st.progress(0, text=\"Avaliando ICMS globalmente\")\n\n    try:\n        with sl.connect(bd) as conn:\n\n            if not existe_tabela(\"BL_C\", bd_EFD):\n                (\n                    df,\n                    BL_G110,\n                    BL_G125,\n                    BL_G126,\n                    BL_G125cmp1,\n                    BL_UN\n                ) = calc_fin_icms(\n                    bd_EFD,\n                    st.session_state.dt_ini,\n                    st.session_state.dt_fim,\n                    progresso,\n                    st\n                )\n\n            x1 = pre_dados(\n                caminho,\n                st.session_state.dt_ini,\n                st.session_state.dt_fim,\n                st.session_state.FLG_ARQ,\n                st.session_state.credito_icms,\n                st.session_state.val_odc,\n                bd,\n                bd_EFD,\n                empresa,\n                ano,\n                st,\n                st.session_state.conc_SPED_ERP,\n                st.session_state.FLG_DIFAL\n            )\n\n        return x1\n\n    except Exception as e:\n        st.error(f\"Erro ao processar banco de compras: {e}\")\n        raise\n\n    finally:\n        progresso.empty()"
+    },
+    "documentacao": {
+      "resumo": "Processa o banco de compras para calcular e preencher dados relacionados a ICMS.",
+      "descricao": "A função `banco_compras` realiza o processamento do banco de compras, calculando e preenchendo dados relacionados à ICMS. Ela verifica se o banco de dados fornecido é uma string válida, lê os dados do caminho especificado, calcula a progressão global do ICMS e preenche os dados necessários.",
+      "parametros": [
+        {
+          "nome": "local",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho local onde os dados estão armazenados."
+        },
+        {
+          "nome": "bd",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Banco de dados SQLite que contém as informações necessárias para o processamento."
+        },
+        {
+          "nome": "bd_EFD",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Banco de dados EFD que será utilizado para cálculos específicos."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa associada aos dados."
+        },
+        {
+          "nome": "ano",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ano dos dados a serem processados."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para atualização de progresso e exibição de mensagens de erro."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Resultado do processamento dos dados, que pode ser um DataFrame ou outro objeto dependendo da implementação."
+      },
+      "excecoes": [
+        {
+          "tipo": "Exception",
+          "descricao": "Exceção genérica lançada em caso de erro durante o processamento."
+        }
+      ],
+      "dependencias": [
+        {
+          "nome": "SRC.calculos.calc_fin_icms",
+          "categoria": "importação",
+          "descricao": "Módulo que contém a função `calc_fin_icms` para cálculo financeiro de ICMS."
+        },
+        {
+          "nome": "SRC.calculos.pre_dados",
+          "categoria": "importação",
+          "descricao": "Módulo que contém a função `pre_dados` para pré-processamento dos dados."
+        },
+        {
+          "nome": "UTILS.existe_tabela",
+          "categoria": "importação",
+          "descricao": "Função utilitária para verificar a existência de uma tabela no banco de dados EFD."
+        },
+        {
+          "nome": "pathlib.Path",
+          "categoria": "importação",
+          "descricao": "Classe do módulo `pathlib` para manipulação de caminhos de arquivo."
+        },
+        {
+          "nome": "sqlite3",
+          "categoria": "importação",
+          "descricao": "Módulo padrão do Python para interação com bancos de dados SQLite."
+        },
+        {
+          "nome": "streamlit",
+          "categoria": "importação",
+          "descricao": "Biblioteca Streamlit para criação de aplicativos web em Python."
+        }
+      ],
+      "docstring": "Processa o banco de compras para calcular e preencher dados relacionados a ICMS.\n\nArgs:\n    local: Caminho local onde os dados estão armazenados.\n    bd: Banco de dados SQLite que contém as informações necessárias para o processamento.\n    bd_EFD: Banco de dados EFD que será utilizado para cálculos específicos.\n    empresa: Nome da empresa associada aos dados.\n    ano: Ano dos dados a serem processados.\n    st: Objeto Streamlit para atualização de progresso e exibição de mensagens de erro.\n\nReturns:\n    Resultado do processamento dos dados, que pode ser um DataFrame ou outro objeto dependendo da implementação.\n\nRaises:\n    Exception: Exceção genérica lançada em caso de erro durante o processamento."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "ler_rcp_ant",
+      "tipo": "function",
+      "linha_inicio": 101,
+      "linha_fim": 109,
+      "parametros": [
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_ANT",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "ano",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "BDGD.RCP_base_M10",
+          "BDGD.RCP_base_V11",
+          "streamlit"
+        ],
+        "chamadas": [
+          "RCPant",
+          "RCPat",
+          "st.warning"
+        ]
+      },
+      "codigo": "def ler_rcp_ant(local, bd_ANT, empresa, ano, st):\n    try:\n        return RCPant(f\"{local}\", bd_ANT, empresa, ano, st)\n    except Exception:\n        st.warning(\n                        \"Falhou leitura pela estrutura antiga, \"\n                        \"tentando nova estrutura da BDGD.\"\n                    )\n        return RCPat(bd_ANT, f\"{local}\",empresa, ano, st, \"ANT\")"
+    },
+    "documentacao": {
+      "resumo": "Lê dados de um RCP (Registro de Compras e Pagamentos) utilizando duas estruturas diferentes.",
+      "descricao": "Tenta ler os dados do RCP usando a estrutura antiga (`RCPant`). Se falhar, tenta novamente com a nova estrutura da BDGD (`RCPat`). Em caso de falha em ambas as estruturas, exibe uma mensagem de aviso no Streamlit.",
+      "parametros": [
+        {
+          "nome": "local",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Local ou caminho onde os dados do RCP estão armazenados."
+        },
+        {
+          "nome": "bd_ANT",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Base de dados antiga utilizada para a leitura dos dados do RCP."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa associada aos dados do RCP."
+        },
+        {
+          "nome": "ano",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ano dos dados do RCP."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit usado para exibir mensagens de aviso."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Instância do objeto RCP lido, seja da estrutura antiga ou nova."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "BDGD.RCP_base_M10",
+          "categoria": "import"
+        },
+        {
+          "nome": "BDGD.RCP_base_V11",
+          "categoria": "import"
+        },
+        {
+          "nome": "streamlit",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Lê dados de um RCP (Registro de Compras e Pagamentos) utilizando duas estruturas diferentes.\n\nArgs:\n    local: Local ou caminho onde os dados do RCP estão armazenados.\n    bd_ANT: Base de dados antiga utilizada para a leitura dos dados do RCP.\n    empresa: Nome da empresa associada aos dados do RCP.\n    ano: Ano dos dados do RCP.\n    st: Objeto Streamlit usado para exibir mensagens de aviso.\n\nReturns:\n    Instância do objeto RCP lido, seja da estrutura antiga ou nova.\n\nNotes:\n    Tenta ler os dados usando a estrutura antiga (`RCPant`). Se falhar, tenta novamente com a nova estrutura da BDGD (`RCPat`). Em caso de falha em ambas as estruturas, exibe uma mensagem de aviso no Streamlit."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "descrever_lambda",
+      "tipo": "function",
+      "linha_inicio": 111,
+      "linha_fim": 121,
+      "parametros": [
+        {
+          "nome": "acao",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "inspect"
+        ],
+        "chamadas": [
+          "TypeError",
+          "inspect.getsource",
+          "split",
+          "str",
+          "texto.find"
+        ]
+      },
+      "codigo": "def descrever_lambda(acao):\n    texto = str(inspect.getsource(acao))\n    if not 'lambda' in texto:\n        raise TypeError(\"Ação deve ser uma função lambda\")\n    nm_funcao = texto[texto.find(\":\")+2:texto.find(\"(\")]\n    arg_funcao = texto[texto.find(\"(\")+1:texto.find(\")\")].split(\",\")\n\n    return {\n                \"funcao\": nm_funcao,\n                \"parametros\": arg_funcao\n            }"
+    },
+    "documentacao": {
+      "resumo": "Descreve uma função lambda, extraíndo seu nome e parâmetros.",
+      "descricao": "A função recebe uma função lambda como argumento e retorna um dicionário com o nome da função e seus parâmetros. Se a entrada não for uma função lambda, lança um TypeError.",
+      "parametros": [
+        {
+          "nome": "acao",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Função lambda para ser analisada."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Dicionário contendo o nome da função e seus parâmetros."
+      },
+      "excecoes": [
+        {
+          "tipo": "TypeError",
+          "descricao": "Quando a entrada não é uma função lambda."
+        }
+      ],
+      "dependencias": [
+        "inspect"
+      ],
+      "docstring": "Descreve uma função lambda, extraíndo seu nome e parâmetros.\n\nArgs:\n    acao: Função lambda para ser analisada.\n\nReturns:\n    dict: Dicionário contendo o nome da função e seus parâmetros.\n\nRaises:\n    TypeError: Quando a entrada não é uma função lambda."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "coluna_01",
+      "tipo": "function",
+      "linha_inicio": 124,
+      "linha_fim": 142,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "opcoes",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tbl_codigos",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "trilha",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "streamlit"
+        ],
+        "chamadas": [
+          "copy",
+          "escolhas.append",
+          "replace",
+          "st.checkbox",
+          "st.fragment"
+        ]
+      },
+      "codigo": "def coluna_01(st=None, opcoes = None, tbl_codigos = None, trilha = None):\n    escolhas = []\n    for opcao in opcoes:\n        df_HELP = tbl_codigos[tbl_codigos['Nm_MENU']==opcao].copy()\n        if df_HELP.empty:\n            txt_HELP = \"\"\n        else:\n            txt_HELP = df_HELP['Cd_TESTE'].iloc[0].replace(\"'\",\"\")\n        if opcao in ['RAC ST', 'ROS VAL']:\n            continue\n        if st.checkbox(opcao, value=False, help=txt_HELP, key=opcao, disabled = trilha[opcao][1]):\n            escolhas.append(opcao)\n\n    if st.checkbox(\"RAC ST\", value=False, help=\"['VAL-010']\", key=\"RAC_ST\", disabled = not st.session_state.calc_rac_st):\n        escolhas.append(\"RAC ST\")\n    if st.checkbox(\"ROS VAL\", value=False, key=\"ROS_VAL\", disabled = not st.session_state.calc_ros_val):\n        escolhas.append(\"ROS VAL\")\n\n    return escolhas"
+    },
+    "documentacao": {
+      "resumo": "Seleciona opções de uma interface gráfica baseada em checkboxes.",
+      "descricao": "A função percorre uma lista de opções e cria checkboxes correspondentes. Se a opção for 'RAC ST' ou 'ROS VAL', ela é ignorada. As escolhas são armazenadas em uma lista e retornadas no final da função.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para interação com a interface gráfica."
+        },
+        {
+          "nome": "opcoes",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Lista de opções que serão exibidas como checkboxes."
+        },
+        {
+          "nome": "tbl_codigos",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Tabela contendo códigos e descrições associadas às opções."
+        },
+        {
+          "nome": "trilha",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Dicionário que controla a ativação ou desativação das checkboxes."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Lista de opções selecionadas pelo usuário."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "streamlit"
+      ],
+      "docstring": "Seleciona opções de uma interface gráfica baseada em checkboxes.\n\nArgs:\n    st (objeto Streamlit): Objeto para interação com a interface gráfica.\n    opcoes (list): Lista de opções que serão exibidas como checkboxes.\n    tbl_codigos (DataFrame): Tabela contendo códigos e descrições associadas às opções.\n    trilha (dict): Dicionário que controla a ativação ou desativação das checkboxes.\n\nReturns:\n    list: Lista de opções selecionadas pelo usuário."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "trilha_fisc",
+      "tipo": "function",
+      "linha_inicio": 144,
+      "linha_fim": 606,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "BDGD.RCP_TOT",
+          "BDGD.RCP_base_V11",
+          "BDGD.anl_incr_rcp",
+          "BDGD.eqp_rsv",
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "MANIFESTO.registrar_evento",
+          "MANIFESTO.registrar_metrica",
+          "SRC.ais_funcoes.ANL_ODD",
+          "SRC.ais_funcoes.ROS_VAL",
+          "SRC.ais_funcoes.ais_roa_conc_cmp",
+          "SRC.ais_funcoes.analise_mop",
+          "SRC.ais_funcoes.anl_AIS_COM_MED",
+          "SRC.ais_funcoes.anl_AIS_ROA",
+          "SRC.ais_funcoes.anl_FLXTMP",
+          "SRC.ais_funcoes.anl_LADO_A_vs_B",
+          "SRC.ais_funcoes.anl_LST_TUC",
+          "SRC.ais_funcoes.anl_OBRAS_EMERG",
+          "SRC.ais_funcoes.anl_RACcom",
+          "SRC.ais_funcoes.bsc_ddsTI",
+          "SRC.ais_funcoes.estornos",
+          "SRC.ais_funcoes.ger_LSTS",
+          "SRC.ais_funcoes.rac_st",
+          "SRC.ais_funcoes.ros_rod_baixas_cmp",
+          "SRC.calculos.calc_bb",
+          "SRC.calculos.calc_incr",
+          "SRC.calculos.calc_oe_nv",
+          "UTILS.TCKdE",
+          "UTILS.TCKdEa1a6",
+          "UTILS.TCKdeIndicadores",
+          "UTILS.bsc_dados_reg",
+          "UTILS.existe_tabela",
+          "datetime.date",
+          "os",
+          "pandas",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit",
+          "time"
+        ],
+        "chamadas": [
+          "ANL_ODD",
+          "Path",
+          "RCP_TOT",
+          "RCPat",
+          "ROS_VAL",
+          "TCKdE",
+          "TCKdEa1a6",
+          "TCKdeIndicadores",
+          "abt_VOC",
+          "ais_roa_conc_cmp",
+          "analise_mop",
+          "anl_AIS_COM_MED",
+          "anl_AIS_ROA",
+          "anl_FLXTMP",
+          "anl_LADO_A_vs_B",
+          "anl_LST_TUC",
+          "anl_OBRAS_EMERG",
+          "anl_RACcom",
+          "anl_incr_rcp",
+          "banco_compras",
+          "bsc_dados_reg",
+          "bsc_ddsTI",
+          "calc_bb",
+          "calc_incr",
+          "calc_oe_nv",
+          "caminho_manifesto.parent.mkdir",
+          "coluna_01",
+          "cond",
+          "date",
+          "date.today",
+          "descrever_lambda",
+          "drop_duplicates",
+          "enumerate",
+          "eqp_rsv",
+          "estado.update",
+          "estornos",
+          "eval",
+          "execucao_trilha",
+          "existe_tabela",
+          "func",
+          "ger_LSTS",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "int",
+          "isin",
+          "join",
+          "len",
+          "ler_rcp_ant",
+          "list",
+          "nm.replace",
+          "nxx.strip",
+          "os.path.exists",
+          "pd.read_sql",
+          "progresso.status",
+          "progresso.update",
+          "rac_st",
+          "registrar_evento",
+          "registrar_metrica",
+          "replace",
+          "ros_rod_baixas_cmp",
+          "set",
+          "sl.connect",
+          "split",
+          "st.button",
+          "st.checkbox",
+          "st.columns",
+          "st.container",
+          "st.date_input",
+          "st.divider",
+          "st.error",
+          "st.exception",
+          "st.html",
+          "st.number_input",
+          "st.radio",
+          "st.rerun",
+          "st.selectbox",
+          "st.session_state.get",
+          "st.status",
+          "st.toggle",
+          "str",
+          "sum",
+          "tempos.items",
+          "tempos.values",
+          "time.perf_counter",
+          "to_list",
+          "trilha.keys"
+        ]
+      },
+      "codigo": "def trilha_fisc():\n    if not 'tra_dir' in st.session_state:\n        st.html(\"\"\"\n                <p style=\"text-align: justify;text-indent: 40px\">\n                Você deve configurar o diretório de trabalho, empresa e período\n                 na aba <i>Criar Pasta de Trabalho</i>, barra lateral.</p>\n            \"\"\")\n        return\n\n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    dds = bsc_dados_reg('TBL_EMPRESAS')\n    lst_emp = dds['Nm_EMPRESA'].drop_duplicates().to_list()\n    st.html(f\"<style>{css}</style>\")\n    raiz = Path(local)\n    caminho_manifesto = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n    caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n    inicializa_database(str(caminho_manifesto))\n    inicializa_detalhes(str(caminho_manifesto))\n    inicializar_rastreamento(str(caminho_manifesto))\n    database = str(caminho_manifesto)\n    bd_path = f'{local}/BD_LOCAL/{empresa}_{ano}.db'\n    bd_BDGDAT_path = f'{local}/BD_LOCAL/BDGD_AT_{empresa}_{ano}.db'\n    bd_BDGDANT_path = f'{local}/BD_LOCAL/BDGD_ANT_{empresa}_{ano}.db'\n    bd_EFD_path = f'{local}\\BD_LOCAL\\EFD_ICMS_{empresa}_{ano}.db'\n    if 'calc_rac_st' not in st.session_state:\n        st.session_state.calc_rac_st = False\n    if 'calc_ros_val' not in st.session_state:\n        st.session_state.calc_ros_val = False\n\n    st.html(f\"\"\"\n                <h1>Execução do planejamento, testes automatizados</h1>\n                <br></br>            \n                <h2>Observações iniciais</h2>\n                <div style=\"text-align: justify;text-indent: 40px; padding-top: 10px\">Base para se executar análises do \n                do trabalho de fiscalização. Pode-se alterar, porém somente será aplicado a versão original \n                para análise na fiscalização. Sugere-se usar este como base para modificações e \n                inclusões de análises, para discussões com a fiscalização.<p></p></div>\n                <h3> Licença Pública Geral GNU (GPL)</h3>\n                <div style=\"text-align: justify; padding-top: 10px\">Versão 3, 29 de junho de 2007<p></p></div>\n                <div style=\"text-align: justify\">Copyright (C) 2025, SFF/ANEEL.<p></p></div>\n                <div style=\"text-align: justify;text-indent: 40px; padding-top: 10px\">Este é um documento de uso livre: você pode redistribuí-lo ou modificá-lo sob os termos da Licença Pública Geral GNU, conforme publicada pela Free Software Foundation, tanto na versão 3 da Licença, ou qualquer versão posterior. Ele é distribuído na expectativa de que seja útil, mas SEM QUALQUER GARANTIA; sem mesmo a garantia implícita de COMERCIALIZAÇÃO ou ADEQUAÇÃO A UM PROPÓSITO ESPECÍFICO. Consulte a Licença Pública Geral GNU para obter mais detalhes, no sitio <a>http://www.gnu.org/licenses/</a>.<p></p></div>\n                <hr></hr>              \n                <h2> Normas</h2>\n                <a href=\"https://www.gov.br/aneel/pt-br/centrais-de-conteudos/procedimentos-regulatorios/proret\">Visite o sitio da Aneel para mais detalhes!</a>        \n                <hr></hr>              \n                \"\"\")\n\n    processo = \"Não selecionado\"\n    with sl.connect(bd_path) as bd:\n        if (existe_tabela('tbl_PLANEJAMENTO', bd)):\n            tbl_PLAN = pd.read_sql('SELECT * FROM tbl_PLANEJAMENTO WHERE TP_FISC IS NOT NULL ORDER BY TP_FISC ASC', bd)\n            if not tbl_PLAN.empty:\n                processo = tbl_PLAN['TP_FISC'].values[0]\n            else:\n                st.error(\"Tem de ser feito o planejamento\")\n                return\n        else:\n            st.error(\"Tem de ser feito o planejamento\")\n            return\n\n    tbl_codigos = bsc_dados_reg(\"tab_rel_testes_scripts\")\n    df_CARACT = bsc_ddsTI(f\"{local}\", st)    \n    trilha = {\n               'AIS vs ROA': [True, True, ('bd_path', \"Verificando AIS ROA conciliado...\", \n                lambda: ais_roa_conc_cmp(bd, f\"{local}/AIS_ANLS\", empresa, st))],\n\n                'ESTORNO': [True, True, ('bd_path', \"Analisando estornos do ROA...\", \n                lambda: estornos(f\"{local}\", bd, empresa, st))],\n\n                'BAIXAS': [True, True, ('bd_path', \"Verificando UC para arquivo de baixas e de AIS...\", \n                lambda: ros_rod_baixas_cmp(bd, f\"{local}/AIS_ANLS\", empresa, st))],\n\n                'MOP': [True, True, ('bd_path', \"Verificando Dados de MOP...\", \n                lambda:  analise_mop(st, bd, empresa, f\"{local}/AIS_ANLS\"))],\n\n                'MEDIDORES COMERCIAL' : [True, True, ('bd_path', \"Verificando medidores...\", \n                lambda: anl_AIS_COM_MED(bd, f\"{local}/AIS_ANLS\", empresa, st))],\n\n                'ANÁLISES DATAS' : [False, True, ('bd_path', \"Verificando datas do ROA contra ROS...\", \n                lambda: anl_AIS_ROA(bd, f\"{local}/AIS_ANLS\", empresa, st))],\n\n                'UC por TI' : [True, True, ('bd_path', \"Verificando grupos de TUC por TI...\", \n                lambda: anl_LST_TUC(bd, f\"{local}/AIS_ANLS\", empresa, st))],\n\n                'LISTAS' : [True, True, ('bd_path', \"Gerando listas de Materiais e Serviços...\", \n                lambda: ger_LSTS(bd, f\"{local}/AIS_ANLS\", empresa, st),\n                lambda: not (\n                    os.path.exists(f\"{local}/AIS_ANLS/LST_MAT_AJ_{empresa}.csv\") and\n                    os.path.exists(f\"{local}/AIS_ANLS/LST_SER_AJ_{empresa}.csv\")\n                ))],\n\n                'FLUXO TEMPORAL' : [True, True, ('bd_path', \"Analisando fluxo temporal...\", \n                lambda: anl_FLXTMP(bd, f\"{local}/AIS_ANLS\", empresa, st, df_CARACT))],\n\n                'OUTLIERS INDICADORES' : [True, True, ('bd_path', \"Avaliando outliers pelos indicadores...\", \n                lambda: TCKdeIndicadores(st))],\n\n                'RACIONALIZAÇÃO COM' : [True, True, ('bd_path', \"Analisando racionalização de COM...\", \n                lambda: anl_RACcom(bd, f\"{local}/AIS_ANLS\", empresa, st))],\n\n                'ODD vs ROS' : [True, True, ('bd_path', \"Analisando ODD vs ROS...\", \n                lambda: ANL_ODD(bd, f\"{local}/AIS_ANLS\", empresa, st))],\n\n                'OBRAS EMERGENCIAIS' : [True, True, ('bd_path', \"Analisando Obras Emergenciais...\", \n                                        lambda: anl_OBRAS_EMERG(bd, f\"{local}/AIS_ANLS\", empresa, st))],\n                \n                'Anomalia Tucagem' : [True, True, ('bd_path', \"Analisando anomalias considerando Tucagem...\", \n                                        lambda: TCKdE(st))],\n\n                'Anomalia Atributos' : [True, True, ('bd_path', \"Analisando anomalias considerando atributos...\", \n                                        lambda: TCKdEa1a6(st))],\n\n                'RAC ST' : [True, True, ('bd_path', \"Analisando racionalização de Serviços...\",\n                                         lambda: rac_st(st.session_state.get(\"calc_rac_st\", False), \"CRIAR\", st, bd))],\n\n                'ROS VAL' : [True, True, ('bd_path', \"Criando ROS Validado...\",\n                                          lambda: ROS_VAL(bd, f\"{local}/AIS_ANLS\", f\"{local}/AIS_ANLS\", empresa, st))],\n\n                'ABERTURA VOC' : [True, True, ('bd_path', \"Analisando Abertura do VOC...\", \n                                        lambda: abt_VOC(st))],\n\n                'RCP BDGD AT' : [True, True, ('bd_BDGDAT_path', \"Criando RCP BDGD AT...\",\n                                          lambda: RCPat(bd, f'{local}/BDGD_ANLS', empresa, ano, st))],\n\n                'RCP BDGD ANT' : [True, True, ('bd_BDGDANT_path', \"Criando RCP BDGD ANT...\",\n                                            lambda: ler_rcp_ant(f'{local}/BDGD_ANLS', bd, empresa, ano, st))],\n\n                'RCP TOT' : [True, True, ('bd_path', \"Criando RCP Total...\",\n                                            lambda: RCP_TOT(f'{local}', bd, empresa, st))],\n\n                'CONCILIAÇÃO INCREMENTAL BDGD' : [True, True, ('bd_path', \"Conciliando base incremental com BDGD...\",\n                                            lambda: anl_incr_rcp(f'{local}', bd, empresa, \n                                           st.session_state.dt_ini, st.session_state.dt_fim, st))],\n\n                'CONCILIAÇÃO TOTAL BDGD' : [True, True, ('bd_path', \"Conciliando base completa com BDGD...\",\n                                                            lambda: anl_incr_rcp(f'{local}', bd, empresa, \n                                                           st.session_state.dt_ini, st.session_state.dt_fim, st, False))],\n\n                'EQUIPAMENTO RESERVA BDGD' : [True, True, ('bd_path', \"Conciliando equipamento de reservas com BDGD...\",\n                                            lambda: eqp_rsv(f'{local}\\BDGD_ANLS', 'AT', bd, bd_path, st))],\n\n                'BANCO DE COMPRAS' : [True, True, ('bd_EFD_path', \"Emulando banco de compras...\",\n                                        lambda: banco_compras(f'{local}\\BP_ANLS', bd_path, bd, empresa, ano, st))],\n\n                'INCREMENTAL' : [True, True, ('bd_path', \"Emulando base incremental...\",\n                                        lambda: calc_incr(f'{local}\\INC_ANLS', st.session_state.dt_ini, \n                                            st.session_state.dt_fim, st.session_state.ROA_RD, st.session_state.genre, \n                                            bd, empresa, ano, st))],\n\n                'LADO A vs B' : [True, True, ('bd_path', \"Analisando LADO A vs B...\", \n                                lambda: anl_LADO_A_vs_B(\n                                bd, f\"{local}/AIS_ANLS\", empresa, \n                                st.session_state.dt_ini, st.session_state.dt_fim, st))],\n\n                'OE' : [True, True, ('bd_path', \"Emulando movimentação de OE...\",\n                                    lambda: calc_oe_nv(f'{local}\\OE_ANLS', \n                                    st.session_state.dt_ini, \n                                    st.session_state.dt_fim, \n                                    st.session_state.TX_AMT_OE, \n                                    bd, empresa, ano, st))],\n\n                'BB' : [True, True, ('bd_path', \"Emulando movimentação de BB...\",\n                                    lambda: calc_bb(f'{local}\\BB_ANLS', st.session_state.dt_ini, \n                                    st.session_state.dt_fim, bd, empresa, ano, st, st.session_state.opcao, \n                                    st.session_state.nm_empr_fus, st.session_state.data_ref))],\n                                                }\n    \n    tbl_codigos[\"existe\"] = tbl_codigos[\"Nm_MENU\"].isin(trilha)\n    lst_ATV = [nm for nm in tbl_codigos[tbl_codigos[\"existe\"]][\"Nm_MENU\"].drop_duplicates().to_list()]\n    for nm_menu in lst_ATV:\n        resultado = tbl_codigos.loc[tbl_codigos[\"Nm_MENU\"].isin([nm_menu]), \"Cd_TESTE\"]\n        saida = resultado.iloc[0] if not resultado.empty else None\n        lst_TSTS = [nm.replace(\"'\",\"\") for nm in saida[1:-2].split(\",\")]\n        lst_PLAN = tbl_PLAN['Cd_TESTE'].drop_duplicates().to_list()\n        intersecao = list(set(lst_TSTS) & set(lst_PLAN))\n        if len(intersecao)>0:\n            trilha[nm_menu][1] = False\n\n    st.html(f\"\"\"<h2 style=\"text-align: center;\">{processo}</h2>\"\"\")\n    opcoes = [nm for nm in trilha.keys()]\n    col1, _, col2 = st.columns([2,.1,8], gap='small')\n    with col1:\n        with st.container(border=True, height=1500, key='escolhas'):\n            st.html(f\"\"\"<h2 style=\"text-align: left;\">Etapas:</h2>\"\"\")\n            escolhas = coluna_01(st, opcoes, tbl_codigos, trilha)\n            \n    with col2:\n        with st.container(border=True, height=1500, key='execucoes'):\n            st.html(f\"\"\"<h2 style=\"text-align: left;\">Painel de Execução:</h2>\"\"\")\n            st.html(f\"\"\"\n                        <p  style=\"text-align: justify;text-indent: 40px\">O painel de execução controla o comportamento\n                        de alguns dos testes. Somente execute os testes após configurar adequadamente cada elemento a \n                        seguir. Após, inicio-os por meio de <b>Calcular</b>.</p>  \n                        <hr></hr>\n                                \n                    \"\"\")\n            with st.container(border=True):\n                st.html(\"\"\"<h3 style=\"text-align: center;\">Opções de Execução:</h3>\"\"\")\n                st.divider()\n                colunas = st.columns([1,7,1,7,1], gap='small', vertical_alignment=\"center\")\n                with colunas[1]:\n                    st.html(\"\"\"<p><b>Do AIS e ROA</b></p>\"\"\")\n                    est_ANT1 = st.session_state.get(\"calc_rac_st\", False)\n                    est_ANT2 = st.session_state.get(\"calc_ros_val\", False)\n                    est_ANT3 = st.session_state.get(\"credito_icms\", True)\n                    est_ANT4 = st.session_state.get(\"conc_SPED_ERP\", False)\n                    est_ANT5 = st.session_state.get(\"bsc_cnpj_bc\", False)\n                    est_ANT6 = st.session_state.get(\"val_odc\", 0)\n                    est_ANT7 = st.session_state.get(\"FLG_ARQ\", True)\n                    est_ANT8 = st.session_state.get(\"FLG_DIFAL\", True)\n                    st.session_state.calc_rac_st = st.checkbox(\"Criar RAC ST\", value=est_ANT1, \n                                              help=\"Só ative após primeira rodada\", \n                                              key=\"rac_st_check\")\n                    st.session_state.calc_ros_val = st.checkbox(\"Criar ROS_VAL\", value=est_ANT2, \n                                              help=\"Só ative após primeira rodada\", \n                                              key=\"ros_val_check\")\n                    st.divider()\n                    st.html(\"\"\"<p><b>Do Banco de compras</b></p>\"\"\")\n                    st.session_state.credito_icms = st.checkbox(\"Aproveita crédito de ICMS na UF?\", value=est_ANT3, \n                                                                  help=\"Reaproveita o crédito de ICMS do imobilizado\", \n                                                                  key=\"credito_icms_chv\")\n                    st.session_state.conc_SPED_ERP = st.checkbox(\"(Re)Conciliar SPED e ERP?\", value=est_ANT4, \n                                                help=\"(Re)Concilia SPED ICMS e AIS\", \n                                                key=\"conc_SPED_ERP_chv\")\n                    st.session_state.bsc_cnpj_bc = st.checkbox(\"Buscar dados de CNPJ das empresas não conciliadas, lado EFD?\", value=est_ANT5, \n                                                            help=\"Apenas se realmente for necessário\", \n                                                            key=\"bsc_cnpj_bc_chv\")\n                    st.session_state.val_odc = st.number_input(\"Valor de ODC apurado, para itens do imobilizado, (R$):\", \n                                                                                                   min_value=0., max_value=100e7, value=0.,width='stretch', key=\"vl_odc_chv\")\n                    st.session_state.FLG_ARQ = st.checkbox(\"Fluxo de pagamento: arquivo (ativo), se projeção (inativo)\", value=est_ANT7, \n                                                                    help=\"Empregar o fluxo de pagamento informado\", \n                                                                    key=\"FLG_ARQ_chv\")\n                    st.session_state.FLG_DIFAL = st.checkbox(\"Limitar DIFAL: sim (ativo), não (inativo)\", value=est_ANT8, \n                                                help=\"Limita o percentual de DIFAL informado ao valor esperado\", \n                                                key=\"FLG_DIFAL_chv\")\n                    st.divider()\n\n                    if ((est_ANT1 != st.session_state.calc_rac_st) or\n                       (est_ANT2 != st.session_state.calc_ros_val) or\n                       (est_ANT3 != st.session_state.credito_icms) or\n                       (est_ANT4 != st.session_state.conc_SPED_ERP) or\n                       (est_ANT5 != st.session_state.bsc_cnpj_bc) or\n                       (est_ANT6 != st.session_state.val_odc) or\n                        (est_ANT7 != st.session_state.FLG_ARQ) or\n                        (est_ANT8 != st.session_state.FLG_DIFAL)):\n                       st.rerun()\n                with colunas[3]:\n                    est_ANT9 = st.session_state.get(\"ROA_RD\", False)\n                    est_ANT10 = st.session_state.get(\"genre\", \"***Mês seguinte***\")\n                    est_ANT11 = st.session_state.get(\"TX_AMT_OE\", False)\n                    est_ANT12 = st.session_state.get(\"opcao\", False)\n                    est_ANT13 = st.session_state.get(\"nm_empr_fus\", \"\")\n                    est_ANT14 = st.session_state.get(\"data_ref\", st.session_state.dt_ini)\n                    data_default = date.today()\n                    dt_min=date(2019, 1, 1)\n\n                    st.html(\"\"\"<p><b>Do Incremental</b></p>\"\"\")\n                    st.session_state.ROA_RD = st.checkbox(\"\"\"Há necessidade de arquivo de-para para projetos \n                                                            entre ROA e AIS?\"\"\", value=est_ANT9, \n                                                            key=\"ROA_RD_chv\")\n                    st.session_state.genre = st.radio(\n                                        \"Sobre o método de depreciação:\",\n                                        [\"***Mês seguinte***\", \"***Próprio mês***\"],\n                                        captions=[\n                                            \"Considerar o dia para depreciar (exemplo: imobilizado dia 1º toma carga no mesmo mês. Imobilizado no dia 30 toma carga somente no mês seguinte)?\",\n                                            \"Considerar o próprio mês para depreciar?\",\n                                        ],\n                                    )\n                    st.divider()\n                    st.html(\"\"\"<p><b>De OE</b></p>\"\"\")\n                    st.session_state.TX_AMT_OE = st.toggle(\"\"\"Considerar o valor da taxa média do laudo, base blindada e base incremental, \n                                            (ativo) ou valor da contabilidade (inativo -> DEFAULT)\"\"\", \n                                            value=est_ANT11)\n                    st.divider()\n                    st.html(\"\"\"<p><b>De base blindada</b></p>\"\"\")\n\n                    st.session_state.opcao = st.checkbox(\"Resultante de fusão? Se sim, indicar qual a empresa abaixo.\", \n                                                        value=est_ANT12, help=\"Sim, ativar a  opção!\")\n                    st.session_state.nm_empr_fus = st.selectbox(\"Empresa:\", lst_emp, \n                                                            help=\"Selecione a empresa que foi fusionada\")\n                    st.session_state.data_ref = st.date_input(\n                                    \"Data de referência da blindada da distribuidora incorporada:\",\n                                    value = est_ANT14,\n                                    min_value=dt_min,\n                                    max_value=date(data_default.year + 5, 12, 31) \n                                    )\n\n\n                    if (\n                        (est_ANT9 != st.session_state.ROA_RD) or\n                        (est_ANT10 != st.session_state.genre) or\n                        (est_ANT11 != st.session_state.TX_AMT_OE) or\n                        (est_ANT12 != st.session_state.opcao) or\n                        (est_ANT13 != st.session_state.nm_empr_fus) or\n                        (est_ANT14 != st.session_state.data_ref)):\n                        st.rerun()\n                st.divider()\n                colunasB = st.columns(7, gap='small')\n                with colunasB[3]:\n                    recalcular = st.button(\"Calcular\", width='stretch')\n\n    \n    if recalcular:\n        with st.container(border=True):\n            st.html(f\"\"\"<h2 style=\"text-align: left;\">Resultados de Execução:</h2>\"\"\")\n            st.html(f\"\"\"\n                        <p  style=\"text-align: justify;text-indent: 40px\">Para maior detalhes avaliar os relatórios \n                        de saída dos testes. Abaixo temos um resumo com informações, quando disponíveis, dos testes\n                        executados.</p>  \n                        <hr></hr>\n                                \n                    \"\"\")\n            progresso = st.status(label=\"0. Iniciando análises...\")\n            etapas = [trilha[nm][2] for nm in trilha.keys() if nm in escolhas]\n            with execucao_trilha(\n                                db_path=database, script_nome=\"Execucao_Trilha_Fiscalizacao\",\n                                parametros={\"empresa\": empresa, \"ano\": ano, \"solicitacoes\" : len(etapas)},\n                                ) as execucao_id:\n                \n                st.session_state.database_MAN = database\n                st.session_state.execucao_id = execucao_id\n                total = len(etapas)\n\n                resultados = {}\n                tempos = {}\n\n                for i, etapa in enumerate(etapas, start=1):\n\n                    dic_evento = descrever_lambda(etapa[2])\n                    detalhes = {}\n                    for nxx in dic_evento['parametros']:\n                        if nxx.strip()==\"bd\":\n                            detalhes['BANCO'] = bd_path\n                        elif 'f\"' in nxx:\n                            detalhes['SAIDA'] = eval(nxx)\n                        elif 'empresa' in nxx:\n                            detalhes['empresa'] = eval(nxx)\n                        elif 'ano' in nxx:\n                            detalhes['ano'] = eval(nxx)\n                        elif 'dt_ini' in nxx:\n                            detalhes['Dt_INI'] = f\"{st.session_state.dt_ini:%d/%m/%Y}\"\n                        elif 'dt_fim' in nxx:\n                            detalhes['Dt_FIM'] = f\"{st.session_state.dt_fim::%d/%m/%Y}\"\n\n                    registrar_evento(database, execucao_id, nome_evento = dic_evento[\"funcao\"],\n                                    mensagem = etapa[0], nivel = 'INFO',\n                                    detalhes = detalhes)\n                    msg = etapa[1]\n                    func = etapa[2]\n                    cond = etapa[3] if len(etapa) > 3 else lambda: True\n\n                    if not cond():\n                        continue\n\n                    estado = progresso.status(f\"{int(i)}. {msg}\", state=\"running\")\n\n                    inicio = time.perf_counter()\n                    bd_REF = eval(etapa[0])\n                    try:\n                        with sl.connect(bd_REF) as bd:\n                            resultados[msg] = func()\n                        estado.update(label=f\"{int(i)}. {msg}\", state=\"complete\")\n                        registrar_evento(database, execucao_id, nome_evento = dic_evento[\"funcao\"],\n                                        mensagem = \"Finalizado\", nivel = 'INFO',\n                                        detalhes = detalhes)\n                    except Exception as e:\n                        estado.update(label=f\"{int(i)}. {msg}\", state = 'error')\n                        progresso.update(label=\"Finalizado\", state = 'error')\n                        st.exception(e)\n                        registrar_evento(database, execucao_id, nome_evento = dic_evento[\"funcao\"],\n                                        mensagem = f\"Erro: {e}\", nivel = 'ERRO',\n                                        detalhes = detalhes)\n                        raise\n                    finally:\n                        a_seg = time.perf_counter() - inicio\n                        tempos[msg] = a_seg\n                        registrar_metrica(database, execucao_id, nome = f\"Tempo_{dic_evento['funcao']}\",\n                                            valor = a_seg, unidade = \"s\")\n\n\n                progresso.update(label=\"Finalizado\", state = 'complete')\n\n                tempo_total = f\"{sum(tempos.values()):,.2f}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n                itens_html = \"\".join(\n                                        f\"\"\"\n                                        <div style=\"\n                                            display: flex;\n                                            justify-content: space-between;\n                                            align-items: center;\n                                            padding: 10px 0;\n                                            border-bottom: 1px solid rgba(128, 128, 128, 0.20);\n                                        \">\n                                            <span style=\"\n                                                font-size: 0.95rem;\n                                            \">\n                                                {mensagem}\n                                            </span>\n\n                                            <span style=\"\n                                                font-size: 0.90rem;\n                                                font-weight: 600;\n                                                font-family: monospace;\n                                                white-space: nowrap;\n                                            \">\n                                                {tempo:.2f} s\n                                            </span>\n                                        </div>\n                                        \"\"\"\n                                        for mensagem, tempo in tempos.items()\n                                    )\n                cols = st.columns([1,3,1], gap='small')\n                with cols[1]:\n                    st.html(\n                            f\"\"\"\n                            <div style=\"\n                                padding: 18px 22px;\n                                border: 1px solid rgba(128, 128, 128, 0.25);\n                                border-radius: 12px;\n                                margin: 12px 0;\n                            \">\n                                <div style=\"\n                                    font-size: 1.05rem;\n                                    font-weight: 600;\n                                    margin-bottom: 4px;\n                                \">\n                                    Tempo de execução dos processos\n                                </div>\n\n                                <div style=\"\n                                    font-size: 0.85rem;\n                                    opacity: 0.70;\n                                    margin-bottom: 14px;\n                                \">\n                                    Detalhamento do tempo consumido em cada etapa do processamento.\n                                </div>\n\n                                {itens_html}\n\n                                <div style=\"\n                                    display: flex;\n                                    justify-content: space-between;\n                                    align-items: center;\n                                    padding-top: 14px;\n                                    font-weight: 700;\n                                \">\n                                    <span>Tempo total de processamento</span>\n                                    <span style=\"\n                                        font-family: monospace;\n                                        white-space: nowrap;\n                                    \">\n                                        {tempo_total} s\n                                    </span>\n                                </div>\n                            </div>\n                            \"\"\"\n                        )\n                st.session_state.database_MAN = \"\"\n                st.session_state.execucao_id = \"\"\n        st.divider()\n    return"
+    },
+    "documentacao": {
+      "name": "trilha_fiscalizacao",
+      "description": "Executa uma série de testes e análises relacionadas à fiscalização, incluindo AIS, ROA, Banco de Compras, entre outros.",
+      "parameters": [],
+      "return_type": null,
+      "dependencies": {
+        "imports": [
+          "BDGD.RCP_TOT",
+          "BDGD.RCP_base_V11",
+          "BDGD.anl_incr_rcp",
+          "BDGD.eqp_rsv",
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "MANIFESTO.registrar_evento",
+          "MANIFESTO.registrar_metrica",
+          "SRC.ais_funcoes.ANL_ODD",
+          "SRC.ais_funcoes.ROS_VAL",
+          "SRC.ais_funcoes.ais_roa_conc_cmp",
+          "SRC.ais_funcoes.analise_mop",
+          "SRC.ais_funcoes.anl_AIS_COM_MED",
+          "SRC.ais_funcoes.anl_AIS_ROA",
+          "SRC.ais_funcoes.anl_FLXTMP",
+          "SRC.ais_funcoes.anl_LADO_A_vs_B",
+          "SRC.ais_funcoes.anl_LST_TUC",
+          "SRC.ais_funcoes.anl_OBRAS_EMERG",
+          "SRC.ais_funcoes.anl_RACcom",
+          "SRC.ais_funcoes.bsc_ddsTI",
+          "SRC.ais_funcoes.estornos",
+          "SRC.ais_funcoes.ger_LSTS",
+          "SRC.ais_funcoes.rac_st",
+          "SRC.ais_funcoes.ros_rod_baixas_cmp",
+          "SRC.calculos.calc_bb",
+          "SRC.calculos.calc_incr",
+          "SRC.calculos.calc_oe_nv",
+          "UTILS.TCKdE",
+          "UTILS.TCKdEa1a6",
+          "UTILS.TCKdeIndicadores",
+          "UTILS.bsc_dados_reg",
+          "UTILS.existe_tabela",
+          "datetime.date",
+          "os",
+          "pandas",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit",
+          "time"
+        ],
+        "chamadas": [
+          "ANL_ODD",
+          "Path",
+          "RCP_TOT",
+          "RCPat",
+          "ROS_VAL",
+          "TCKdE",
+          "TCKdEa1a6",
+          "TCKdeIndicadores",
+          "abt_VOC",
+          "ais_roa_conc_cmp",
+          "analise_mop",
+          "anl_AIS_COM_MED",
+          "anl_AIS_ROA",
+          "anl_FLXTMP",
+          "anl_LADO_A_vs_B",
+          "anl_LST_TUC",
+          "anl_OBRAS_EMERG",
+          "anl_RACcom",
+          "anl_incr_rcp",
+          "banco_compras",
+          "bsc_dados_reg",
+          "bsc_ddsTI",
+          "calc_bb",
+          "calc_incr",
+          "calc_oe_nv",
+          "caminho_manifesto.parent.mkdir",
+          "coluna_01",
+          "cond",
+          "date",
+          "date.today",
+          "descrever_lambda",
+          "drop_duplicates",
+          "enumerate",
+          "eqp_rsv",
+          "estado.update",
+          "estornos",
+          "eval",
+          "execucao_trilha",
+          "existe_tabela",
+          "func",
+          "ger_LSTS",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "int",
+          "isin",
+          "join",
+          "len",
+          "ler_rcp_ant",
+          "list",
+          "nm.replace",
+          "nxx.strip",
+          "os.path.exists",
+          "pd.read_sql",
+          "progresso.status",
+          "progresso.update",
+          "rac_st",
+          "registrar_evento",
+          "registrar_metrica",
+          "replace",
+          "ros_rod_baixas_cmp",
+          "set",
+          "sl.connect",
+          "split",
+          "st.button",
+          "st.checkbox",
+          "st.columns",
+          "st.container",
+          "st.date_input",
+          "st.divider",
+          "st.error",
+          "st.exception",
+          "st.html",
+          "st.number_input",
+          "st.radio",
+          "st.rerun",
+          "st.selectbox",
+          "st.session_state.get",
+          "st.status",
+          "st.toggle",
+          "str",
+          "sum",
+          "tempos.items",
+          "tempos.values",
+          "time.perf_counter",
+          "to_list",
+          "trilha.keys"
+        ]
+      }
+    },
+    "status": "sucesso"
+  }
+]

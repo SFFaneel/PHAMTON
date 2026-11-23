@@ -1,0 +1,610 @@
+[
+  {
+    "funcao": {
+      "nome": "duplo_positivo",
+      "tipo": "function",
+      "linha_inicio": 14,
+      "linha_fim": 36,
+      "parametros": [
+        {
+          "nome": "campo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": []
+      },
+      "codigo": "def duplo_positivo(campo):\n    return [\n                {\n                    \"campo\": campo,\n                    \"valor\": \"0.\",\n                    \"descricao\": \"Valor zero\",\n                },\n                {\n                    \"campo\": campo,\n                    \"valor\": \"-1.\",\n                    \"descricao\": \"Valor negativo\",\n                },\n                {\n                    \"campo\": campo,\n                    \"valor\": \"abc\",\n                    \"descricao\": \"Valor não numérico\",\n                },\n                {\n                    \"campo\": campo,\n                    \"valor\": \"\",\n                    \"descricao\": \"Valor vazio\",\n                },\n            ]"
+    },
+    "documentacao": {
+      "resumo": "Gera uma lista de valores para um campo específico.",
+      "descricao": "A função cria uma lista contendo diferentes tipos de valores (zero, negativo, não numérico e vazio) associados ao campo fornecido. Cada valor é descrito em uma string.",
+      "parametros": [
+        {
+          "nome": "campo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome do campo para o qual os valores serão gerados."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Lista de dicionários, cada um contendo informações sobre um valor específico."
+      },
+      "excecoes": [],
+      "dependencias": [],
+      "docstring": "Gera uma lista de valores para um campo específico.\n\nArgs:\n    campo: Nome do campo para o qual os valores serão gerados.\n\nReturns:\n    Lista de dicionários, cada um contendo informações sobre um valor específico."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "inteiro_positivo",
+      "tipo": "function",
+      "linha_inicio": 38,
+      "linha_fim": 60,
+      "parametros": [
+        {
+          "nome": "campo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": []
+      },
+      "codigo": "def inteiro_positivo(campo):\n    return [\n                {\n                    \"campo\": campo,\n                    \"valor\": \"0\",\n                    \"descricao\": \"Valor zero\",\n                },\n                {\n                    \"campo\": campo,\n                    \"valor\": \"-1\",\n                    \"descricao\": \"Valor negativo\",\n                },\n                {\n                    \"campo\": campo,\n                    \"valor\": \"abc\",\n                    \"descricao\": \"Valor não numérico\",\n                },\n                {\n                    \"campo\": campo,\n                    \"valor\": \"\",\n                    \"descricao\": \"Valor vazio\",\n                },\n            ]"
+    },
+    "documentacao": {
+      "resumo": "Gera uma lista de exemplos para um campo específico.",
+      "descricao": "A função cria uma lista contendo diferentes tipos de valores, incluindo zero, negativo, não numérico e vazio, todos associados ao campo fornecido.",
+      "parametros": [
+        {
+          "nome": "campo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome do campo para o qual os exemplos serão gerados."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Lista de dicionários, cada um contendo informações sobre um exemplo."
+      },
+      "excecoes": [],
+      "dependencias": [],
+      "docstring": "Gera uma lista de exemplos para um campo específico.\n\nArgs:\n    campo: Nome do campo para o qual os exemplos serão gerados.\n\nReturns:\n    Lista de dicionários, cada um contendo informações sobre um exemplo."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "texto_maximo",
+      "tipo": "function",
+      "linha_inicio": 62,
+      "linha_fim": 69,
+      "parametros": [
+        {
+          "nome": "campo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "limite",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": []
+      },
+      "codigo": "def texto_maximo(campo, limite):\n    return [\n                {\n                    \"campo\": campo,\n                    \"valor\": \"X\" * (limite + 1),\n                    \"descricao\": f\"Texto acima de {limite} caracteres\",\n                },\n            ]"
+    },
+    "documentacao": {
+      "resumo": "Gera um texto com o valor 'X' repetido acima de um determinado limite de caracteres.",
+      "descricao": "A função cria uma lista contendo um único dicionário. Esse dicionário possui as chaves 'campo', 'valor' e 'descricao'. O valor é uma string composta por 'X' repetidas vezes, onde o número de repetições é igual ao limite fornecido mais um.",
+      "parametros": [
+        {
+          "nome": "campo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome do campo associado ao texto gerado."
+        },
+        {
+          "nome": "limite",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Limite de caracteres que o valor 'X' deve ultrapassar."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Lista contendo um único dicionário com as informações do campo, valor e descrição."
+      },
+      "excecoes": [],
+      "dependencias": [],
+      "docstring": "Gera um texto com o valor 'X' repetido acima de um determinado limite de caracteres.\n\nArgs:\n    campo: Nome do campo associado ao texto gerado.\n    limite: Limite de caracteres que o valor 'X' deve ultrapassar.\n\nReturns:\n    Lista contendo um único dicionário com as informações do campo, valor e descrição."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "data_inc",
+      "tipo": "function",
+      "linha_inicio": 71,
+      "linha_fim": 98,
+      "parametros": [
+        {
+          "nome": "campo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": []
+      },
+      "codigo": "def data_inc(campo):\n    return [\n                {\n                    \"campo\": campo,\n                    \"valor\": \"01/01/2025\",\n                    \"descricao\": f\"{campo} com formato inválido (dd/mm/yyyy).\",\n                },\n                {\n                    \"campo\": campo,\n                    \"valor\": \"12/21/2025\",\n                    \"descricao\": f\"{campo} com formato inválido (mm/dd/yyyy).\",\n                },\n                {\n                    \"campo\": campo,\n                    \"valor\": \"\",\n                    \"descricao\": f\"{campo} com formato inválido (vazio).\",\n                },\n                {\n                    \"campo\": campo,\n                    \"valor\": \"20250225\",\n                    \"descricao\": f\"{campo} com formato inválido (yyyymmdd).\",\n                },\n                {\n                    \"campo\": campo,\n                    \"valor\": \"2025-02-25\",\n                    \"descricao\": f\"{campo} com formato inválido (yyyy-mm-dd).\",\n                },\n            ]"
+    },
+    "documentacao": {
+      "resumo": "Gera uma lista de objetos contendo informações sobre diferentes formatos inválidos para um campo específico.",
+      "descricao": "A função cria uma lista de objetos, cada um representando um formato inválido que o campo pode ter. Cada objeto contém o nome do campo, o valor com o formato inválido e uma descrição explicativa.",
+      "parametros": [
+        {
+          "nome": "campo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome do campo para o qual os formatos inválidos serão gerados."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Lista de objetos, cada um com informações sobre um formato inválido do campo."
+      },
+      "excecoes": [],
+      "dependencias": [],
+      "docstring": "Gera uma lista de objetos contendo informações sobre diferentes formatos inválidos para um campo específico.\n\nArgs:\n    campo: Nome do campo para o qual os formatos inválidos serão gerados.\n\nReturns:\n    Lista de objetos, cada um com informações sobre um formato inválido do campo."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "gerar_modelos",
+      "tipo": "function",
+      "linha_inicio": 137,
+      "linha_fim": 142,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pytest"
+        ],
+        "chamadas": [
+          "pytest.param"
+        ]
+      },
+      "codigo": "def gerar_modelos():\n    for caso in CASOS_MODELOS:\n        yield pytest.param(\n                                caso,\n                                id=caso[\"modelo\"].__name__,\n                            )"
+    },
+    "documentacao": {
+      "resumo": "Gera parâmetros de teste para diferentes casos de modelos.",
+      "descricao": "Itera sobre uma lista de casos de modelos e gera parâmetros de teste utilizando a função `pytest.param` do módulo pytest. Cada caso é identificado pelo nome da classe do modelo correspondente.",
+      "parametros": [],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Parâmetros de teste gerados para cada caso de modelo."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "pytest"
+      ],
+      "docstring": "Gera parâmetros de teste para diferentes casos de modelos.\n\nYields:\n    pytest.param: Parâmetro de teste contendo o caso de modelo e seu identificador."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "gerar_invalidos",
+      "tipo": "function",
+      "linha_inicio": 144,
+      "linha_fim": 157,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pytest"
+        ],
+        "chamadas": [
+          "pytest.param"
+        ]
+      },
+      "codigo": "def gerar_invalidos():\n    for caso in CASOS_MODELOS:\n        modelo = caso[\"modelo\"]\n\n        for invalido in caso[\"invalidos\"]:\n            yield pytest.param(\n                                    caso,\n                                    invalido,\n                                    id=(\n                                        f\"{modelo.__name__}-\"\n                                        f\"{invalido['campo']}-\"\n                                        f\"{invalido['descricao']}\"\n                                    ),\n                                )"
+    },
+    "documentacao": {
+      "resumo": "Gera parâmetros de teste inválidos para modelos.",
+      "descricao": "Itera sobre uma lista de casos de modelo e gera parâmetros de teste inválidos utilizando a biblioteca pytest. Cada caso contém um modelo e uma lista de valores inválidos associados a ele. Os parâmetros gerados incluem o caso completo, o valor inválido específico e uma string de identificação única.",
+      "parametros": [],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Parâmetros de teste inválidos gerados pela função."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "pytest"
+      ],
+      "docstring": "Gera parâmetros de teste inválidos para modelos.\n\nYields:\n    pytest.param: Parâmetro de teste inválido contendo o caso, o valor inválido e uma string de identificação única."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "gerar_obrigatorios",
+      "tipo": "function",
+      "linha_inicio": 159,
+      "linha_fim": 169,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pytest"
+        ],
+        "chamadas": [
+          "info.is_required",
+          "modelo.model_fields.items",
+          "pytest.param"
+        ]
+      },
+      "codigo": "def gerar_obrigatorios():\n    for caso in CASOS_MODELOS:\n        modelo = caso[\"modelo\"]\n\n        for campo, info in modelo.model_fields.items():\n            if info.is_required():\n                yield pytest.param(\n                                        caso,\n                                        campo,\n                                        id=f\"{modelo.__name__}-{campo}-obrigatorio\",\n                                    )"
+    },
+    "documentacao": {
+      "resumo": "Gera parâmetros para testes de campos obrigatórios em modelos.",
+      "descricao": "Itera sobre uma lista de casos de modelo e identifica os campos que são obrigatórios, gerando parâmetros para testes utilizando a biblioteca pytest.",
+      "parametros": [],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Parâmetros gerados para testes de campos obrigatórios."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "pytest"
+      ],
+      "docstring": "Gera parâmetros para testes de campos obrigatórios em modelos.\n\nYields:\n    pytest.param: Parâmetro contendo o caso, o campo e uma descrição única para cada teste."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "aplicar_invalido",
+      "tipo": "function",
+      "linha_inicio": 171,
+      "linha_fim": 188,
+      "parametros": [
+        {
+          "nome": "dados_validos",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "invalido",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "copy.deepcopy"
+        ],
+        "chamadas": [
+          "ValueError",
+          "dados.pop",
+          "deepcopy",
+          "invalido.get"
+        ]
+      },
+      "codigo": "def aplicar_invalido(dados_validos, invalido):\n    dados = deepcopy(dados_validos)\n\n    operacao = invalido.get(\"operacao\", \"alterar\")\n    campo = invalido[\"campo\"]\n\n    if operacao in (\"alterar\", \"adicionar\"):\n        dados[campo] = invalido[\"valor\"]\n\n    elif operacao == \"remover\":\n        dados.pop(campo)\n\n    else:\n        raise ValueError(\n                            f\"Operação não suportada: {operacao}\"\n                        )\n\n    return dados"
+    },
+    "documentacao": {
+      "resumo": "Aplica uma operação de alteração, adição ou remoção em um conjunto de dados.",
+      "descricao": "Esta função recebe dois parâmetros: `dados_validos`, que é um dicionário representando os dados válidos, e `invalido`, que contém informações sobre a operação a ser realizada. A função realiza uma cópia dos dados válidos para evitar modificá-los diretamente.",
+      "parametros": [
+        {
+          "nome": "dados_validos",
+          "tipo": "dict",
+          "categoria": "posicional",
+          "descricao": "Dicionário contendo os dados válidos que serão modificados."
+        },
+        {
+          "nome": "invalido",
+          "tipo": "dict",
+          "categoria": "posicional",
+          "descricao": "Dicionário contendo informações sobre a operação a ser realizada, incluindo o tipo de operação (`operacao`), o campo alvo (`campo`) e o valor a ser usado (`valor`)."
+        }
+      ],
+      "retorno": {
+        "tipo": "dict",
+        "descricao": "Novo dicionário com as modificações aplicadas."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando a operação especificada não é suportada."
+        }
+      ],
+      "dependencias": [
+        "copy.deepcopy"
+      ],
+      "docstring": "Aplica uma operação de alteração, adição ou remoção em um conjunto de dados.\n\nArgs:\n    dados_validos (dict): Dicionário contendo os dados válidos que serão modificados.\n    invalido (dict): Dicionário contendo informações sobre a operação a ser realizada, incluindo o tipo de operação (`operacao`), o campo alvo (`campo`) e o valor a ser usado (`valor`).\n\nReturns:\n    dict: Novo dicionário com as modificações aplicadas.\n\nRaises:\n    ValueError: Quando a operação especificada não é suportada."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "test_modelo_valido",
+      "tipo": "function",
+      "linha_inicio": 191,
+      "linha_fim": 197,
+      "parametros": [
+        {
+          "nome": "caso",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "pytest.mark.parametrize('caso', gerar_modelos())"
+      ],
+      "dependencias": {
+        "imports": [
+          "pytest"
+        ],
+        "chamadas": [
+          "gerar_modelos",
+          "isinstance",
+          "modelo.model_validate",
+          "pytest.mark.parametrize"
+        ]
+      },
+      "codigo": "def test_modelo_valido(caso):\n    modelo = caso[\"modelo\"]\n    dados = caso[\"valido\"]\n\n    instancia = modelo.model_validate(dados)\n\n    assert isinstance(instancia, modelo)"
+    },
+    "documentacao": {
+      "resumo": "Testa se os dados são válidos para um modelo específico.",
+      "descricao": "Valida os dados fornecidos contra um modelo especificado, utilizando a função `model_validate` do modelo. Lança uma exceção caso os dados não sejam válidos.",
+      "parametros": [
+        {
+          "nome": "caso",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Um dicionário contendo o modelo e os dados a serem validados."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "pytest"
+      ],
+      "docstring": "Testa se os dados são válidos para um modelo específico.\n\nArgs:\n    caso (dict): Um dicionário contendo o modelo e os dados a serem validados.\n\nReturns:\n    None\n\nRaises:\n    AssertionError: Caso os dados não sejam válidos."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "test_modelo_invalido",
+      "tipo": "function",
+      "linha_inicio": 200,
+      "linha_fim": 230,
+      "parametros": [
+        {
+          "nome": "caso",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "invalido",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "pytest.mark.parametrize('caso, invalido', gerar_invalidos())"
+      ],
+      "dependencias": {
+        "imports": [
+          "pytest"
+        ],
+        "chamadas": [
+          "any",
+          "aplicar_invalido",
+          "exc.value.errors",
+          "gerar_invalidos",
+          "modelo.model_validate",
+          "pytest.mark.parametrize",
+          "pytest.raises"
+        ]
+      },
+      "codigo": "def test_modelo_invalido(caso, invalido):\n    modelo = caso[\"modelo\"]\n\n    dados = aplicar_invalido(\n                                caso[\"valido\"],\n                                invalido,\n                            )\n\n    modelo.model_validate(caso[\"valido\"])\n\n    with pytest.raises(ValidationError) as exc:\n        modelo.model_validate(dados)\n\n    erros = exc.value.errors()\n\n    campo_esperado = invalido[\"campo\"]\n\n    assert any(\n                    erro[\"loc\"] == (campo_esperado,)\n                    for erro in erros\n                ), (\n                    f\"Esperado erro no campo {campo_esperado}. \"\n                    f\"Erros encontrados: {erros}\"\n                )\n\n    if \"tipo_erro\" in invalido:\n        assert any(\n                        erro[\"loc\"] == (campo_esperado,)\n                        and erro[\"type\"] == invalido[\"tipo_erro\"]\n                        for erro in erros\n                    )"
+    },
+    "documentacao": {
+      "resumo": "Testa um modelo com dados inválidos para verificar a geração de erros de validação.",
+      "descricao": "A função testa um modelo utilizando dados válidos e inválidos. Ela aplica as alterações inválidas aos dados válidos, tenta validar o modelo com os dados modificados e verifica se ocorrem erros de validação conforme esperado. Se especificado, também verifica o tipo do erro gerado.",
+      "parametros": [
+        {
+          "nome": "caso",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Um dicionário contendo os dados necessários para o teste, incluindo um modelo válido e uma lista de alterações inválidas."
+        },
+        {
+          "nome": "invalido",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Uma lista de dicionários, onde cada dicionário contém informações sobre uma alteração inválida a ser aplicada aos dados válidos."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "pytest"
+      ],
+      "docstring": "Testa um modelo com dados inválidos para verificar a geração de erros de validação.\n\nArgs:\n    caso: Um dicionário contendo os dados necessários para o teste, incluindo um modelo válido e uma lista de alterações inválidas.\n    invalido: Uma lista de dicionários, onde cada dicionário contém informações sobre uma alteração inválida a ser aplicada aos dados válidos.\n\nReturns:\n    None\n\nNotes:\n    A função utiliza o pytest para verificar as exceções geradas durante a validação do modelo com os dados modificados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "test_campos_obrigatorios",
+      "tipo": "function",
+      "linha_inicio": 233,
+      "linha_fim": 246,
+      "parametros": [
+        {
+          "nome": "caso",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "campo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "pytest.mark.parametrize('caso, campo', gerar_obrigatorios())"
+      ],
+      "dependencias": {
+        "imports": [
+          "pytest"
+        ],
+        "chamadas": [
+          "any",
+          "copy",
+          "dados.pop",
+          "exc.value.errors",
+          "gerar_obrigatorios",
+          "modelo.model_validate",
+          "pytest.mark.parametrize",
+          "pytest.raises"
+        ]
+      },
+      "codigo": "def test_campos_obrigatorios(caso, campo):\n    modelo = caso[\"modelo\"]\n    dados = caso[\"valido\"].copy()\n\n    dados.pop(campo)\n\n    with pytest.raises(ValidationError) as exc:\n        modelo.model_validate(dados)\n\n    assert any(\n                    erro[\"loc\"] == (campo,)\n                    and erro[\"type\"] == \"missing\"\n                    for erro in exc.value.errors()\n                )"
+    },
+    "documentacao": {
+      "resumo": "Testa se um campo é obrigatório em um modelo de dados.",
+      "descricao": "Valida que a remoção de um campo obrigatório resulta em uma exceção de validação.",
+      "parametros": [
+        {
+          "nome": "caso",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caso de teste contendo o modelo e os dados válidos."
+        },
+        {
+          "nome": "campo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome do campo que deve ser removido para testar a validação."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "ValidationError",
+          "descricao": "Quando o campo obrigatório é removido e não há tratamento adequado."
+        }
+      ],
+      "dependencias": [
+        "pytest"
+      ],
+      "docstring": "Testa se um campo é obrigatório em um modelo de dados.\n\nArgs:\n    caso: Caso de teste contendo o modelo e os dados válidos.\n    campo: Nome do campo que deve ser removido para testar a validação.\n\nRaises:\n    ValidationError: Quando o campo obrigatório é removido e não há tratamento adequado."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "test_campos_extras",
+      "tipo": "function",
+      "linha_inicio": 249,
+      "linha_fim": 262,
+      "parametros": [
+        {
+          "nome": "caso",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "pytest.mark.parametrize('caso', gerar_modelos())"
+      ],
+      "dependencias": {
+        "imports": [
+          "pytest"
+        ],
+        "chamadas": [
+          "any",
+          "copy",
+          "exc.value.errors",
+          "gerar_modelos",
+          "modelo.model_validate",
+          "pytest.mark.parametrize",
+          "pytest.raises"
+        ]
+      },
+      "codigo": "def test_campos_extras(caso):\n    modelo = caso[\"modelo\"]\n    dados = caso[\"valido\"].copy()\n\n    dados[\"campo_inexistente\"] = \"teste\"\n\n    with pytest.raises(ValidationError) as exc:\n        modelo.model_validate(dados)\n\n    assert any(\n                erro[\"loc\"] == (\"campo_inexistente\",)\n                and erro[\"type\"] == \"extra_forbidden\"\n                for erro in exc.value.errors()\n                )"
+    },
+    "documentacao": {
+      "resumo": "Testa se um modelo rejeita campos extras em dados de entrada.",
+      "descricao": "A função testa a capacidade do modelo para rejeitar campos que não estão definidos no esquema. Ele cria uma cópia dos dados válidos, adiciona um campo inexistente e valida os dados usando o método `model_validate` do modelo. Se o campo extra for rejeitado corretamente, a função passa.",
+      "parametros": [
+        {
+          "nome": "caso",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Um dicionário contendo informações sobre o caso de teste, incluindo um modelo e dados válidos."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "ValidationError",
+          "descricao": "Quando ocorre uma validação de erro durante a chamada de `model_validate`."
+        }
+      ],
+      "dependencias": [
+        "pytest"
+      ],
+      "docstring": "Testa se um modelo rejeita campos extras em dados de entrada.\n\nArgs:\n    caso: Um dicionário contendo informações sobre o caso de teste, incluindo um modelo e dados válidos.\n\nRaises:\n    ValidationError: Quando ocorre uma validação de erro durante a chamada de `model_validate`."
+    },
+    "status": "sucesso"
+  }
+]

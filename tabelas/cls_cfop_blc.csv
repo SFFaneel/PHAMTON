@@ -1,0 +1,69 @@
+Cd_Blc|Cd_SubBlc|Txt_Desc|Txt_Uso|Txt_Cls
+1000||Entradas do Estado|Compras e entradas dentro do estado|Operacional
+1000|1100|Compras para industrialização/comercialização|Compra de mercadorias e insumos|Operacional
+1000|1150|Transferências|Transferências entre estabelecimentos|Operacional
+1000|1200|Devoluções de vendas/anulações|Estorno de vendas|Operacional
+1000|1250|Compras de energia elétrica|Energia para operação|Operacional
+1000|1300|Aquisição de serviços de comunicação|Telefonia, dados, telecom|Operacional
+1000|1350|Aquisição de serviços de transporte|Fretes e transportes|Operacional
+1000|1400|Entradas sujeitas à ST|Compras com ICMS-ST|Operacional
+1000|1450|Sistemas de integração|Operações integradas|Operacional
+1000|1500|Entradas para exportação|Operações ligadas à exportação|Operacional
+1000|1550|Ativo imobilizado e uso/consumo|Compra/transferência de ativos e materiais|Imobilizado / Uso e Consumo
+1000|1600|Créditos e ressarcimentos de ICMS|Ajustes e créditos fiscais|Outros
+1000|1900|Outras entradas|Bonificação, comodato, ajustes|Outros
+2000||Entradas de Outros Estados|Compras interestaduais|Operacional
+2000|2100|Compras para industrialização/comercialização|Compra interestadual|Operacional
+2000|2150|Transferências|Transferência interestadual|Operacional
+2000|2200|Devoluções de vendas/anulações|Estornos interestaduais|Operacional
+2000|2250|Compras de energia elétrica|Energia interestadual|Operacional
+2000|2300|Aquisição de serviços de comunicação|Serviços interestaduais|Operacional
+2000|2350|Aquisição de serviços de transporte|Fretes interestaduais|Operacional
+2000|2400|Entradas sujeitas à ST|ICMS-ST interestadual|Operacional
+2000|2500|Entradas para exportação|Exportação indireta|Operacional
+2000|2550|Ativo imobilizado e uso/consumo|Aquisição interestadual de ativos|Imobilizado / Uso e Consumo
+2000|2600|Créditos e ressarcimentos de ICMS|Ajustes fiscais|Outros
+2000|2900|Outras entradas|Ajustes diversos|Outros
+3000||Entradas do Exterior|Importações|Operacional
+3000|3100|Compras para industrialização/comercialização|Importação de mercadorias|Operacional
+3000|3200|Devoluções/anulações|Estornos de importação|Operacional
+3000|3250|Compras de energia elétrica|Energia do exterior|Operacional
+3000|3300|Serviços de comunicação|Serviços do exterior|Operacional
+3000|3350|Serviços de transporte|Fretes internacionais|Operacional
+3000|3500|Entradas para exportação|Exportação vinculada|Operacional
+3000|3550|Ativo imobilizado e uso/consumo|Ativos importados|Imobilizado / Uso e Consumo
+3000|3900|Outras entradas|Ajustes diversos|Outros
+5000||Saídas para o Estado|Vendas internas|Operacional
+5000|5100|Vendas de produção própria/terceiros|Venda de mercadorias|Operacional
+5000|5150|Transferências|Transferências internas|Operacional
+5000|5200|Devoluções de compras/anulações|Devolução ao fornecedor|Operacional
+5000|5250|Vendas de energia elétrica|Comercialização de energia|Operacional
+5000|5300|Serviços de comunicação|Prestação de serviços|Operacional
+5000|5350|Serviços de transporte|Prestação de fretes|Operacional
+5000|5400|Saídas sujeitas à ST|Vendas com ICMS-ST|Operacional
+5000|5450|Sistemas de integração|Remessas integradas|Operacional
+5000|5500|Exportação|Remessas para exportação|Operacional
+5000|5550|Ativo imobilizado e uso/consumo|Venda/transferência de ativos|Imobilizado / Uso e Consumo
+5000|5600|Créditos e ressarcimentos|Ajustes fiscais|Outros
+5000|5900|Outras saídas|Bonificações, ajustes|Outros
+6000||Saídas para Outros Estados|Vendas interestaduais|Operacional
+6000|6100|Vendas de produção própria/terceiros|Venda interestadual|Operacional
+6000|6150|Transferências|Transferências interestaduais|Operacional
+6000|6200|Devoluções de compras/anulações|Devoluções interestaduais|Operacional
+6000|6250|Vendas de energia elétrica|Energia interestadual|Operacional
+6000|6300|Serviços de comunicação|Prestação interestadual|Operacional
+6000|6350|Serviços de transporte|Fretes interestaduais|Operacional
+6000|6400|Saídas sujeitas à ST|ICMS-ST interestadual|Operacional
+6000|6500|Exportação|Remessas interestaduais para exportação|Operacional
+6000|6550|Ativo imobilizado e uso/consumo|Venda de ativos interestadual|Imobilizado / Uso e Consumo
+6000|6600|Créditos e ressarcimentos|Ajustes fiscais|Outros
+6000|6900|Outras saídas|Ajustes diversos|Outros
+7000||Saídas para o Exterior|Exportações|Operacional
+7000|7100|Vendas de produção própria/terceiros|Exportação direta|Operacional
+7000|7200|Devoluções/anulações|Estornos de exportação|Operacional
+7000|7250|Vendas de energia elétrica|Energia para exterior|Operacional
+7000|7300|Serviços de comunicação|Serviços para exterior|Operacional
+7000|7350|Serviços de transporte|Transporte internacional|Operacional
+7000|7500|Exportação específica|Exportação vinculada|Operacional
+7000|7550|Ativo imobilizado e uso/consumo|Venda de ativos ao exterior|Imobilizado / Uso e Consumo
+7000|7900|Outras saídas|Ajustes diversos|Outros

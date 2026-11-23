@@ -1,0 +1,16 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,PIS,Ponto interno subestação
+3,PSA,Ponto de saída de circuito de média tensão
+4,PSU,Ponto subterrâneo
+5,POS,Poste
+6,TOR,Torre
+7,PSE,Ponto de suporte de equipamento
+8,PSB,Ponto de suporte de barramento
+9,PEC,Ponto de entrada de condomínio
+10,PMF,Ponto de medição de fronteira
+11,FLT,Fly-tap
+12,PFL,Ponto de fim de linha
+13,CXP,Caixa de passagem
+14,PON,Pontalete
+15,DRV,Derivação

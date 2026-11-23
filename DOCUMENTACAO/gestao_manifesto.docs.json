@@ -1,0 +1,81 @@
+[
+  {
+    "funcao": {
+      "nome": "criar_manifesto",
+      "tipo": "function",
+      "linha_inicio": 6,
+      "linha_fim": 134,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [
+        "st.fragment"
+      ],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.criar_manifesto_multi",
+          "os",
+          "re",
+          "streamlit"
+        ],
+        "chamadas": [
+          "criar_manifesto_multi",
+          "endswith",
+          "enumerate",
+          "len",
+          "nome.lower",
+          "os.listdir",
+          "os.path.join",
+          "os.path.splitext",
+          "progresso.progress",
+          "re.sub",
+          "resultados.append",
+          "sorted",
+          "st.columns",
+          "st.container",
+          "st.error",
+          "st.html",
+          "st.info",
+          "st.progress",
+          "st.status",
+          "st.write",
+          "status.update"
+        ]
+      },
+      "codigo": "def criar_manifesto():\n\n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n\n    pasta_origem = rf\"{local}\\DADOS_BRUTOS_MANUAL\"\n    diretorio_auditoria = rf\"{local}\\MANIFESTO\\TRILHA_DADOS\"\n    padrao_numerico = r'_\\d{5}_\\d{8}'\n    chave_primaria = \"ID\"\n\n    arquivos = os.listdir(pasta_origem)\n    arquivos_csv = sorted(\n                        nome for nome in arquivos\n                        if nome.lower().endswith(\".csv\")\n                    )\n    total = len(arquivos_csv)\n    if total == 0:\n        st.info(\"Nenhum arquivo CSV encontrado para processamento.\")\n    else:\n            with st.container():\n                    col1 = st.columns([1,5,1], gap='small')\n                    with col1[1]:\n                        st.html(\"<h1>Criando Manifesto Eletrônico de Dados</h1>\")\n                        progresso = st.progress(\n                                                    0,\n                                                    text=f\"Preparando processamento de {total} arquivo(s)...\"\n                                                )\n\n                        resultados = []\n                        sucessos = 0\n                        erros = 0\n\n                        with st.status(\n                                            \"Gerando manifestos eletrônicos...\",\n                                            expanded=True\n                                        ) as status:\n\n                            for numero, nome_arquivo in enumerate(arquivos_csv, start=1):\n\n                                caminho_completo = os.path.join(\n                                                                    pasta_origem,\n                                                                    nome_arquivo\n                                                                )\n\n                                id_arquivo = re.sub(\n                                                        padrao_numerico,\n                                                        \"\",\n                                                        os.path.splitext(nome_arquivo)[0]\n                                                    )\n\n                                progresso.progress(\n                                                        (numero - 1) / total,\n                                                        text=(\n                                                            f\"Processando {numero}/{total}: \"\n                                                            f\"{nome_arquivo}\"\n                                                        )\n                                                    )\n\n                                st.write(\n                                            f\"**{numero}/{total} — {nome_arquivo}**\"\n                                        )\n\n                                try:\n                                    resultado = criar_manifesto_multi(\n                                                                        arquivo=caminho_completo,\n                                                                        id_arquivo=id_arquivo,\n                                                                        diretorio_auditoria=diretorio_auditoria,\n                                                                        chave=chave_primaria,\n                                                                        sep=\"|\",\n                                                                        encoding=\"latin-1\",\n                                                                        st=st\n                                                                    )\n\n                                    resultados.append({\n                                                        \"arquivo\": nome_arquivo,\n                                                        \"id_arquivo\": id_arquivo,\n                                                        \"status\": resultado[\"status\"],\n                                                        \"versao\": resultado[\"versao\"],\n                                                    })\n\n                                    sucessos += 1\n\n                                    if resultado[\"status\"] == \"sem_alteracao\":\n                                        st.write(\n                                                    f\"Sem alterações no arquivo. \"\n                                                    f\"Versão ativa: **{resultado['versao']}**\"\n                                                )\n\n                                    else:\n                                        st.write(\n                                                    f\"Nova versão: **{resultado['versao']}** \"\n                                                    f\"— +{resultado['incluidos']} incluídos, \"\n                                                    f\"-{resultado['excluidos']} excluídos, \"\n                                                    f\"{resultado['registros_alterados']} alterados.\"\n                                                )\n\n                                except Exception as exc:\n                                    erros += 1\n\n                                    st.error(\n                                                f\"Erro ao processar {nome_arquivo}: {exc}\"\n                                            )\n\n                                finally:\n                                    progresso.progress(\n                                                            numero / total,\n                                                            text=(\n                                                                f\"Processamento: {numero}/{total} \"\n                                                                f\"arquivo(s) concluído(s)\"\n                                                            )\n                                                        )\n\n                            if erros:\n                                status.update(\n                                                    label=(\n                                                        f\"Processamento finalizado: \"\n                                                        f\"{sucessos} sucesso(s), {erros} erro(s)\"\n                                                    ),\n                                                    state=\"error\",\n                                                    expanded=True\n                                                )\n                            else:\n                                status.update(\n                                                    label=f\"{sucessos} manifesto(s) processado(s)\",\n                                                    state=\"complete\",\n                                                    expanded=False\n                                                )\n    return diretorio_auditoria"
+    },
+    "documentacao": {
+      "resumo": "Cria um manifesto eletrônico de dados a partir de arquivos CSV.",
+      "descricao": "A função lê arquivos CSV de uma pasta específica, processa cada um para criar manifestos eletrônicos e retorna o diretório onde os manifestos foram armazenados. Caso não encontre nenhum arquivo CSV, informa que não há nada a processar.",
+      "parametros": [],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "Caminho do diretório onde os manifestos eletrônicos foram criados."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.criar_manifesto_multi",
+          "tipo": "função",
+          "descricao": "Função que cria o manifesto eletrônico para um arquivo CSV específico."
+        },
+        {
+          "nome": "os",
+          "tipo": "módulo",
+          "descricao": "Módulo Python para interação com o sistema operacional."
+        },
+        {
+          "nome": "re",
+          "tipo": "módulo",
+          "descricao": "Módulo Python para operações de expressões regulares."
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca",
+          "descricao": "Biblioteca Python para criação de aplicativos web interativos."
+        }
+      ],
+      "docstring": "Cria um manifesto eletrônico de dados a partir de arquivos CSV.\n\nReturns:\n    str: Caminho do diretório onde os manifestos eletrônicos foram criados.\n\nNotes:\n    A função lê arquivos CSV de uma pasta específica, processa cada um para criar manifestos eletrônicos e retorna o diretório onde os manifestos foram armazenados. Caso não encontre nenhum arquivo CSV, informa que não há nada a processar."
+    },
+    "status": "sucesso"
+  }
+]

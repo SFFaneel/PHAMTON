@@ -1,0 +1,738 @@
+[
+  {
+    "funcao": {
+      "nome": "_utc_now",
+      "tipo": "function",
+      "linha_inicio": 16,
+      "linha_fim": 17,
+      "parametros": [],
+      "retorno": "str",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "datetime.datetime"
+        ],
+        "chamadas": [
+          "datetime.now",
+          "isoformat"
+        ]
+      },
+      "codigo": "def _utc_now() -> str:\n    return datetime.now(timezone.utc).isoformat(timespec=\"microseconds\")"
+    },
+    "documentacao": {
+      "resumo": "Retorna a data e hora atual no formato UTC.",
+      "descricao": "Obtém a data e hora atual em UTC e formata-a como uma string ISO 8601, incluindo microsegundos.",
+      "parametros": [],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "Data e hora no formato UTC em ISO 8601 com microsegundos."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "datetime.datetime"
+      ],
+      "docstring": "Retorna a data e hora atual no formato UTC.\n\nReturns:\n    str: Data e hora no formato UTC em ISO 8601 com microsegundos."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_connect",
+      "tipo": "function",
+      "linha_inicio": 20,
+      "linha_fim": 50,
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "Iterator[sqlite3.Connection]",
+      "decorators": [
+        "contextmanager"
+      ],
+      "dependencias": {
+        "imports": [
+          "pathlib.Path",
+          "sqlite3"
+        ],
+        "chamadas": [
+          "Path",
+          "TypeError",
+          "conn.close",
+          "conn.commit",
+          "conn.execute",
+          "conn.rollback",
+          "expanduser",
+          "isinstance",
+          "path.parent.mkdir",
+          "resolve",
+          "sqlite3.connect",
+          "str"
+        ]
+      },
+      "codigo": "def _connect(\n                db_path: sqlite3.Connection | str | Path,\n            ) -> Iterator[sqlite3.Connection]:\n\n    if isinstance(db_path, sqlite3.Connection):\n        yield db_path\n        return\n\n    if not isinstance(db_path, (str, Path)):\n        raise TypeError(\n                            \"db_path deve ser str, Path ou sqlite3.Connection\"\n                        )\n\n    path = Path(db_path).expanduser().resolve()\n    path.parent.mkdir(parents=True, exist_ok=True)\n\n    conn = sqlite3.connect(str(path), timeout=30)\n\n    try:\n        conn.execute(\"PRAGMA busy_timeout = 30000\")\n        conn.execute(\"PRAGMA foreign_keys = ON\")\n\n        yield conn\n        conn.commit()\n\n    except BaseException:\n        conn.rollback()\n        raise\n\n    finally:\n        conn.close()"
+    },
+    "documentacao": {
+      "resumo": "Estabelece uma conexão com um banco de dados SQLite e retorna uma iteração sobre essa conexão.",
+      "descricao": "A função `_connect` é responsável por estabelecer uma conexão com um banco de dados SQLite. Ela aceita como parâmetro `db_path`, que pode ser uma instância de `sqlite3.Connection`, uma string ou um objeto do tipo `Path`. A função retorna um iterador sobre a conexão, garantindo que ela seja fechada corretamente após o uso.",
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "descricao": "Caminho para o banco de dados SQLite ou uma instância já aberta de `sqlite3.Connection`."
+        }
+      ],
+      "retorno": {
+        "tipo": "Iterator[sqlite3.Connection]",
+        "descricao": "Iterador que produz a conexão com o banco de dados SQLite."
+      },
+      "excecoes": [
+        {
+          "tipo": "TypeError",
+          "descricao": "Quando `db_path` não é uma instância de `str`, `Path` ou `sqlite3.Connection`."
+        }
+      ],
+      "dependencias": [
+        "pathlib.Path",
+        "sqlite3"
+      ],
+      "docstring": "Estabelece uma conexão com um banco de dados SQLite e retorna uma iteração sobre essa conexão.\n\nArgs:\n    db_path (sqlite3.Connection | str | Path): Caminho para o banco de dados SQLite ou uma instância já aberta de `sqlite3.Connection`.\n\nReturns:\n    Iterator[sqlite3.Connection]: Iterador que produz a conexão com o banco de dados SQLite.\n\nRaises:\n    TypeError: Quando `db_path` não é uma instância de `str`, `Path` ou `sqlite3.Connection`."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "inicializa_database",
+      "tipo": "function",
+      "linha_inicio": 52,
+      "linha_fim": 74,
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "None",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "_connect",
+          "conn.execute"
+        ]
+      },
+      "codigo": "def inicializa_database(db_path: sqlite3.Connection | str | Path) -> None:\n    with _connect(db_path) as conn:\n        conn.execute(\"\"\"\n            CREATE TABLE IF NOT EXISTS tbl_manifesto_execucao (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                execucao_id TEXT NOT NULL UNIQUE,\n                script_nome TEXT NOT NULL,\n                script_versao TEXT NOT NULL,\n                executado_por TEXT NOT NULL,\n                hostname TEXT,\n                iniciado_em TEXT NOT NULL,\n                finalizado_em TEXT,\n                estado TEXT NOT NULL CHECK(estado IN ('RODANDO','SUCESSO','FALHA')),\n                erro_tipo TEXT,\n                erro_mensagem TEXT,\n                erro_rastreamento TEXT,\n                parametros TEXT CHECK(parametros IS NULL OR json_valid(parametros)),\n                CHECK(estado = 'RODANDO' OR finalizado_em IS NOT NULL),\n                CHECK(estado != 'FALHA' OR erro_mensagem IS NOT NULL)\n            )\n        \"\"\")\n        conn.execute(\"CREATE INDEX IF NOT EXISTS idx_manifesto_script ON tbl_manifesto_execucao(script_nome, iniciado_em)\")\n        conn.execute(\"CREATE INDEX IF NOT EXISTS idx_manifesto_estado ON tbl_manifesto_execucao(estado, iniciado_em)\")"
+    },
+    "documentacao": {
+      "resumo": "Inicializa a base de dados SQLite para armazenar informações sobre execuções de scripts.",
+      "descricao": "Cria uma tabela chamada 'tbl_manifesto_execucao' se ela não existir e adiciona índices para melhorar o desempenho das consultas. A tabela contém campos para identificar a execução, detalhes do script, estado da execução e informações de erro.",
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "descricao": "Caminho para o arquivo do banco de dados SQLite ou uma conexão existente."
+        }
+      ],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "Nenhum valor é retornado."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "sqlite3"
+      ],
+      "docstring": "Inicializa a base de dados SQLite para armazenar informações sobre execuções de scripts.\n\nArgs:\n    db_path (sqlite3.Connection | str | Path): Caminho para o arquivo do banco de dados SQLite ou uma conexão existente.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "inicio_execucao",
+      "tipo": "function",
+      "linha_inicio": 77,
+      "linha_fim": 99,
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "script_nome",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "script_versao",
+          "tipo": "str",
+          "default": "'1.0.0'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "parametros",
+          "tipo": "Any",
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "str",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "getpass",
+          "json",
+          "socket",
+          "uuid"
+        ],
+        "chamadas": [
+          "ValueError",
+          "_connect",
+          "_utc_now",
+          "conn.execute",
+          "getpass.getuser",
+          "inicializa_database",
+          "json.dumps",
+          "script_nome.strip",
+          "script_versao.strip",
+          "socket.gethostname",
+          "str",
+          "uuid.uuid4"
+        ]
+      },
+      "codigo": "def inicio_execucao(\n                        db_path: sqlite3.Connection | str | Path,\n                        script_nome: str,\n                        script_versao: str = \"1.0.0\",\n                        parametros: Any = None,\n                    ) -> str:\n\n    if not script_nome or not script_nome.strip():\n        raise ValueError(\"script_nome é obrigatório\")\n    if not script_versao or not script_versao.strip():\n        raise ValueError(\"script_versao é obrigatório\")\n    params_json = json.dumps(parametros, ensure_ascii=False, allow_nan=False) if parametros is not None else None\n    inicializa_database(db_path)\n    execucao_id  = str(uuid.uuid4())\n    with _connect(db_path) as conn:\n        conn.execute(\"\"\"\n            INSERT INTO tbl_manifesto_execucao (\n                execucao_id, script_nome, script_versao, executado_por,\n                hostname, iniciado_em, estado, parametros\n            ) VALUES (?, ?, ?, ?, ?, ?, 'RODANDO', ?)\n        \"\"\", (execucao_id, script_nome, script_versao,\n              getpass.getuser(), socket.gethostname(), _utc_now(), params_json))\n    return execucao_id"
+    },
+    "documentacao": {
+      "resumo": "Inicia a execução de um script em um banco de dados SQLite.",
+      "descricao": "Registra uma nova execução no banco de dados, armazenando informações sobre o script e seus parâmetros. Valida se os nomes do script e da versão estão presentes e não vazios. Gera um ID único para a execução e insere registros no banco de dados.",
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "descricao": "Conexão com o banco de dados ou caminho do arquivo do banco de dados."
+        },
+        {
+          "nome": "script_nome",
+          "tipo": "str",
+          "descricao": "Nome do script a ser executado."
+        },
+        {
+          "nome": "script_versao",
+          "tipo": "str",
+          "default": "'1.0.0'",
+          "descricao": "Versão do script a ser executado."
+        },
+        {
+          "nome": "parametros",
+          "tipo": "Any",
+          "default": "None",
+          "descricao": "Parâmetros adicionais para o script, serializados em JSON."
+        }
+      ],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "ID único gerado para a execução do script."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o nome do script ou da versão está vazio."
+        }
+      ],
+      "dependencias": [
+        "getpass",
+        "json",
+        "socket",
+        "uuid"
+      ],
+      "docstring": "Inicia a execução de um script em um banco de dados SQLite.\n\nArgs:\n    db_path (sqlite3.Connection | str | Path): Conexão com o banco de dados ou caminho do arquivo do banco de dados.\n    script_nome (str): Nome do script a ser executado.\n    script_versao (str, optional): Versão do script a ser executado. Valor padrão é '1.0.0'.\n    parametros (Any, optional): Parâmetros adicionais para o script, serializados em JSON. Valor padrão é None.\n\nReturns:\n    str: ID único gerado para a execução do script.\n\nRaises:\n    ValueError: Quando o nome do script ou da versão está vazio."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "execucao_finalizada",
+      "tipo": "function",
+      "linha_inicio": 102,
+      "linha_fim": 129,
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "sucesso",
+          "tipo": "bool",
+          "default": "True",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "erro",
+          "tipo": "BaseException | str | None",
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "None",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "traceback"
+        ],
+        "chamadas": [
+          "ValueError",
+          "_connect",
+          "_utc_now",
+          "conn.execute",
+          "isinstance",
+          "join",
+          "str",
+          "traceback.format_exception",
+          "type"
+        ]
+      },
+      "codigo": "def execucao_finalizada(\n                            db_path: sqlite3.Connection | str | Path,\n                            execucao_id: str,\n                            sucesso: bool = True,\n                            erro: BaseException | str | None = None,\n                        ) -> None:\n    \n    if not sucesso and erro is None:\n        raise ValueError(\"Uma falha precisa conter um erro\")\n    erro_tipo = erro_mensagem = erro_rastreamento = None\n    if not sucesso:\n        if isinstance(erro, BaseException):\n            erro_tipo = type(erro).__name__\n            erro_mensagem = str(erro) or erro_tipo\n            erro_rastreamento = \"\".join(traceback.format_exception(type(erro), erro, erro.__traceback__))\n        else:\n            erro_tipo = \"Falha Manual\"\n            erro_mensagem = str(erro) or \"Falha não especificada\"\n    with _connect(db_path) as conn:\n        cursor = conn.execute(\"\"\"\n            UPDATE tbl_manifesto_execucao\n               SET finalizado_em = ?, estado = ?, erro_tipo = ?,\n                   erro_mensagem = ?, erro_rastreamento = ?\n             WHERE execucao_id = ? AND estado = 'RODANDO'\n        \"\"\", (_utc_now(), \"SUCESSO\" if sucesso else \"FALHA\",\n              erro_tipo, erro_mensagem, erro_rastreamento, execucao_id))\n        if cursor.rowcount != 1:\n            raise ValueError(f\"Execução inexistente ou já finalizada: {execucao_id}\")"
+    },
+    "documentacao": {
+      "resumo": "Atualiza o status de execução em um banco de dados SQLite.",
+      "descricao": "Esta função atualiza o registro de uma execução no banco de dados, marcando-a como finalizada e registrando informações sobre seu sucesso ou falha. Se a execução falhar, é necessário fornecer um erro correspondente.",
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "categoria": "posicional",
+          "descricao": "Conexão existente com o banco de dados ou caminho para o arquivo do banco de dados."
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Identificador único da execução a ser atualizada."
+        },
+        {
+          "nome": "sucesso",
+          "tipo": "bool",
+          "categoria": "posicional",
+          "default": "True",
+          "descricao": "Indica se a execução foi concluída com sucesso. Se for `False`, é necessário fornecer um erro."
+        },
+        {
+          "nome": "erro",
+          "tipo": "BaseException | str | None",
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Erro ocorrido durante a execução, se houver. Se `sucesso` for `False`, este parâmetro é obrigatório."
+        }
+      ],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "Nenhum valor retornado."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "categoria": "lançada",
+          "descricao": "Quando uma falha é indicada (`sucesso=False`) mas nenhum erro foi fornecido."
+        }
+      ],
+      "dependencias": {
+        "imports": [
+          "traceback"
+        ],
+        "chamadas": [
+          "ValueError",
+          "_connect",
+          "_utc_now",
+          "conn.execute",
+          "isinstance",
+          "join",
+          "str",
+          "traceback.format_exception",
+          "type"
+        ]
+      },
+      "docstring": "Atualiza o status de execução em um banco de dados SQLite.\n\nArgs:\n    db_path (sqlite3.Connection | str | Path): Conexão existente com o banco de dados ou caminho para o arquivo do banco de dados.\n    execucao_id (str): Identificador único da execução a ser atualizada.\n    sucesso (bool, optional): Indica se a execução foi concluída com sucesso. Se for `False`, é necessário fornecer um erro. Padrão: True.\n    erro (BaseException | str | None, optional): Erro ocorrido durante a execução, se houver. Se `sucesso` for `False`, este parâmetro é obrigatório. Padrão: None.\n\nRaises:\n    ValueError: Quando uma falha é indicada (`sucesso=False`) mas nenhum erro foi fornecido."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "execucao_trilha",
+      "tipo": "function",
+      "linha_inicio": 133,
+      "linha_fim": 172,
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "script_nome",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "script_versao",
+          "tipo": "str",
+          "default": "'1.0.0'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "parametros",
+          "tipo": "Any",
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "Iterator[str]",
+      "decorators": [
+        "contextmanager"
+      ],
+      "dependencias": {
+        "imports": [
+          "manifesto_exec_detalhes.contexto_rastreamento"
+        ],
+        "chamadas": [
+          "contexto_rastreamento",
+          "exc.add_note",
+          "execucao_finalizada",
+          "inicio_execucao"
+        ]
+      },
+      "codigo": "def execucao_trilha(\n                        db_path: sqlite3.Connection | str | Path,\n                        script_nome: str,\n                        script_versao: str = \"1.0.0\",\n                        parametros: Any = None,\n                    ) -> Iterator[str]:\n\n\n    execucao_id = inicio_execucao(\n                                    db_path,\n                                    script_nome,\n                                    script_versao,\n                                    parametros,\n                                )\n\n    try:\n        with contexto_rastreamento(db_path, execucao_id):\n            yield execucao_id\n\n    except BaseException as exc:\n        try:\n            execucao_finalizada(\n                                    db_path,\n                                    execucao_id,\n                                    sucesso=False,\n                                    erro=exc,\n                                )\n        except Exception as erro_auditoria:\n            exc.add_note(\n                            \"Não foi possível registrar a falha \"\n                            f\"no manifesto: {erro_auditoria}\"\n                        )\n        raise\n\n    else:\n        execucao_finalizada(\n                                db_path,\n                                execucao_id,\n                                sucesso=True,\n                            )"
+    },
+    "documentacao": {
+      "resumo": "Executa um script em uma trilha e retorna o ID da execução.",
+      "descricao": "Esta função inicia a execução de um script em uma trilha, rastreia seu progresso e finaliza com sucesso ou falha. Ela utiliza um contexto de rastreamento para monitorar a execução e registra os resultados no banco de dados.",
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "descricao": "Conexão com o banco de dados ou caminho do arquivo do banco de dados."
+        },
+        {
+          "nome": "script_nome",
+          "tipo": "str",
+          "descricao": "Nome do script a ser executado."
+        },
+        {
+          "nome": "script_versao",
+          "tipo": "str",
+          "default": "'1.0.0'",
+          "descricao": "Versão do script a ser executado."
+        },
+        {
+          "nome": "parametros",
+          "tipo": "Any",
+          "default": "None",
+          "descricao": "Parâmetros adicionais para o script, se necessário."
+        }
+      ],
+      "retorno": {
+        "tipo": "Iterator[str]",
+        "descricao": "Iterador que retorna o ID da execução."
+      },
+      "excecoes": [
+        {
+          "tipo": "BaseException",
+          "descricao": "Qualquer exceção que ocorra durante a execução do script será capturada e rethrown com uma nota adicional indicando um problema na auditoria."
+        }
+      ],
+      "dependencias": [
+        "manifesto_exec_detalhes.contexto_rastreamento"
+      ],
+      "docstring": "Executa um script em uma trilha e retorna o ID da execução.\n\nArgs:\n    db_path (sqlite3.Connection | str | Path): Conexão com o banco de dados ou caminho do arquivo do banco de dados.\n    script_nome (str): Nome do script a ser executado.\n    script_versao (str, optional): Versão do script a ser executado. Valor padrão é '1.0.0'.\n    parametros (Any, optional): Parâmetros adicionais para o script, se necessário. Valor padrão é None.\n\nReturns:\n    Iterator[str]: Iterador que retorna o ID da execução.\n\nRaises:\n    BaseException: Qualquer exceção que ocorra durante a execução do script será capturada e rethrown com uma nota adicional indicando um problema na auditoria."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "busca_execucao",
+      "tipo": "function",
+      "linha_inicio": 175,
+      "linha_fim": 181,
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "dict[str, Any] | None",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "_connect",
+          "conn.execute",
+          "dict",
+          "fetchone",
+          "inicializa_database"
+        ]
+      },
+      "codigo": "def busca_execucao(db_path: sqlite3.Connection | str | Path, execucao_id : str) -> dict[str, Any] | None:\n\n    inicializa_database(db_path)\n    with _connect(db_path) as conn:\n        conn.row_factory = sqlite3.Row\n        row = conn.execute(\"SELECT * FROM tbl_manifesto_execucao WHERE execucao_id  = ?\", (execucao_id ,)).fetchone()\n        return dict(row) if row is not None else None"
+    },
+    "documentacao": {
+      "resumo": "Busca uma execução no banco de dados.",
+      "descricao": "Realiza a busca por uma execução específica no banco de dados utilizando o ID da execução fornecido. Retorna os detalhes da execução como um dicionário ou None se não encontrar.",
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "descricao": "Caminho para o banco de dados ou conexão já estabelecida."
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "descricao": "ID da execução que será buscada no banco de dados."
+        }
+      ],
+      "retorno": {
+        "tipo": "dict[str, Any] | None",
+        "descricao": "Detalhes da execução encontrada como um dicionário ou None se não encontrar."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "_connect",
+        "conn.execute",
+        "dict",
+        "fetchone",
+        "inicializa_database"
+      ],
+      "docstring": "Busca uma execução no banco de dados.\n\nArgs:\n    db_path (sqlite3.Connection | str | Path): Caminho para o banco de dados ou conexão já estabelecida.\n    execucao_id (str): ID da execução que será buscada no banco de dados.\n\nReturns:\n    dict[str, Any] | None: Detalhes da execução encontrada como um dicionário ou None se não encontrar."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "lista_execucoes",
+      "tipo": "function",
+      "linha_inicio": 184,
+      "linha_fim": 208,
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "script_nome",
+          "tipo": "str | None",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "estado",
+          "tipo": "str | None",
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "limite",
+          "tipo": "int",
+          "default": "100",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "list[dict[str, Any]]",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "ValueError",
+          "_connect",
+          "args.append",
+          "conn.execute",
+          "dict",
+          "fetchall",
+          "inicializa_database",
+          "isinstance"
+        ]
+      },
+      "codigo": "def lista_execucoes(\n                        db_path: sqlite3.Connection | str | Path,\n                        script_nome: str | None = None,\n                        estado: str | None = None,\n                        limite: int = 100,\n                    ) -> list[dict[str, Any]]:\n  \n    if not isinstance(limite, int) or isinstance(limite, bool) or limite < 1:\n        raise ValueError(\"limite deve ser um inteiro positivo\")\n    if estado is not None and estado not in (\"RODANDO\", \"SUCESSO\", \"FALHA\"):\n        raise ValueError(\"estado inválido\")\n    inicializa_database(db_path)\n    sql = \"SELECT * FROM tbl_manifesto_execucao WHERE 1=1\"\n    args: list[Any] = []\n    if script_nome is not None:\n        sql += \" AND script_nome = ?\"\n        args.append(script_nome)\n    if estado is not None:\n        sql += \" AND estado = ?\"\n        args.append(estado)\n    sql += \" ORDER BY iniciado_em DESC, id DESC LIMIT ?\"\n    args.append(limite)\n    with _connect(db_path) as conn:\n        conn.row_factory = sqlite3.Row\n        return [dict(row) for row in conn.execute(sql, args).fetchall()]"
+    },
+    "documentacao": {
+      "resumo": "Lista execuções de scripts em um banco de dados SQLite.",
+      "descricao": "Retorna uma lista de dicionários contendo as informações das execuções de scripts armazenadas no banco de dados SQLite, filtrando por nome do script e estado, se especificados. O resultado é limitado pelo número fornecido.",
+      "parametros": [
+        {
+          "nome": "db_path",
+          "tipo": "sqlite3.Connection | str | Path",
+          "categoria": "posicional",
+          "descricao": "Conexão SQLite ou caminho para o arquivo do banco de dados."
+        },
+        {
+          "nome": "script_nome",
+          "tipo": "str | None",
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Nome do script a ser filtrado. Se None, não há filtro por nome."
+        },
+        {
+          "nome": "estado",
+          "tipo": "str | None",
+          "categoria": "posicional",
+          "default": "None",
+          "descricao": "Estado da execução a ser filtrado (RODANDO, SUCESSO, FALHA). Se None, não há filtro por estado."
+        },
+        {
+          "nome": "limite",
+          "tipo": "int",
+          "categoria": "posicional",
+          "default": "100",
+          "descricao": "Número máximo de resultados a serem retornados. Deve ser um inteiro positivo."
+        }
+      ],
+      "retorno": {
+        "tipo": "list[dict[str, Any]]",
+        "descricao": "Lista de dicionários contendo informações das execuções filtradas."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "categoria": "lançada",
+          "descricao": "Quando o valor de 'limite' não é um inteiro positivo."
+        },
+        {
+          "tipo": "ValueError",
+          "categoria": "lançada",
+          "descricao": "Quando o valor de 'estado' não é válido (RODANDO, SUCESSO, FALHA)."
+        }
+      ],
+      "dependencias": [
+        {
+          "nome": "_connect",
+          "categoria": "chamada",
+          "descricao": "Função para estabelecer uma conexão com o banco de dados."
+        },
+        {
+          "nome": "args.append",
+          "categoria": "chamada",
+          "descricao": "Método para adicionar elementos à lista de argumentos SQL."
+        },
+        {
+          "nome": "conn.execute",
+          "categoria": "chamada",
+          "descricao": "Método para executar uma consulta SQL no banco de dados."
+        },
+        {
+          "nome": "dict",
+          "categoria": "chamada",
+          "descricao": "Função para converter um objeto Row em um dicionário."
+        },
+        {
+          "nome": "fetchall",
+          "categoria": "chamada",
+          "descricao": "Método para recuperar todos os resultados de uma consulta SQL."
+        },
+        {
+          "nome": "inicializa_database",
+          "categoria": "chamada",
+          "descricao": "Função para inicializar o banco de dados, se necessário."
+        },
+        {
+          "nome": "isinstance",
+          "categoria": "chamada",
+          "descricao": "Função para verificar o tipo de um objeto."
+        }
+      ],
+      "docstring": "Lista execuções de scripts em um banco de dados SQLite.\n\nArgs:\n    db_path (sqlite3.Connection | str | Path): Conexão SQLite ou caminho para o arquivo do banco de dados.\n    script_nome (str | None, optional): Nome do script a ser filtrado. Se None, não há filtro por nome. Defaults to None.\n    estado (str | None, optional): Estado da execução a ser filtrado (RODANDO, SUCESSO, FALHA). Se None, não há filtro por estado. Defaults to None.\n    limite (int, optional): Número máximo de resultados a serem retornados. Deve ser um inteiro positivo. Defaults to 100.\n\nReturns:\n    list[dict[str, Any]]: Lista de dicionários contendo informações das execuções filtradas.\n\nRaises:\n    ValueError: Quando o valor de 'limite' não é um inteiro positivo.\n    ValueError: Quando o valor de 'estado' não é válido (RODANDO, SUCESSO, FALHA)."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "busca_log_execucao",
+      "tipo": "function",
+      "linha_inicio": 211,
+      "linha_fim": 217,
+      "parametros": [
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "name",
+          "tipo": "str",
+          "default": "'execucao'",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "logging"
+        ],
+        "chamadas": [
+          "ValueError",
+          "execucao_id.strip",
+          "logging.LoggerAdapter",
+          "logging.getLogger"
+        ]
+      },
+      "codigo": "def busca_log_execucao(execucao_id : str, name: str = \"execucao\"):\n\n    import logging\n\n    if not execucao_id  or not execucao_id .strip():\n        raise ValueError(\"execucao_id  é obrigatório\")\n    return logging.LoggerAdapter(logging.getLogger(name), {\"execucao_id \": execucao_id })"
+    },
+    "documentacao": {
+      "resumo": "Cria um adaptador de logger para rastrear logs com base em uma execução específica.",
+      "descricao": "Esta função cria e retorna um adaptador de logger que adiciona o ID da execução como um contexto no registro dos logs. Lança um erro se o ID da execução não for fornecido ou for uma string vazia.",
+      "parametros": [
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Identificador único da execução que será usado para rastrear os logs."
+        },
+        {
+          "nome": "name",
+          "tipo": "str",
+          "categoria": "posicional",
+          "default": "'execucao'",
+          "descricao": "Nome do logger a ser adaptado. O padrão é 'execucao'."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Adaptador de logger configurado com o ID da execução."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o ID da execução não é fornecido ou é uma string vazia."
+        }
+      ],
+      "dependencias": [
+        "logging"
+      ],
+      "docstring": "Cria um adaptador de logger para rastrear logs com base em uma execução específica.\n\nArgs:\n    execucao_id (str): Identificador único da execução que será usado para rastrear os logs.\n    name (str, optional): Nome do logger a ser adaptado. O padrão é 'execucao'.\n\nReturns:\n    Adaptador de logger configurado com o ID da execução.\n\nRaises:\n    ValueError: Quando o ID da execução não é fornecido ou é uma string vazia."
+    },
+    "status": "sucesso"
+  }
+]

@@ -1,0 +1,134 @@
+[
+  {
+    "funcao": {
+      "nome": "visualizar",
+      "tipo": "function",
+      "linha_inicio": 11,
+      "linha_fim": 84,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "DASHBOARDS.visualizador_AIS",
+          "DASHBOARDS.visualizador_BB",
+          "DASHBOARDS.visualizador_BC",
+          "DASHBOARDS.visualizador_BDGD",
+          "DASHBOARDS.visualizador_INCR",
+          "DASHBOARDS.visualizador_OE",
+          "DASHBOARDS.visualizador_resumo_cmp",
+          "SRC.ais_funcoes.abertura_voc",
+          "UTILS.bsc_dados_reg",
+          "UTILS.existe_tabela",
+          "datetime.date",
+          "pandas",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "abertura_voc",
+          "bsc_dados_reg",
+          "date.today",
+          "existe_tabela",
+          "pd.read_sql",
+          "sl.connect",
+          "st.columns",
+          "st.container",
+          "st.error",
+          "st.html",
+          "st.tabs",
+          "st.warning",
+          "visualizador_AIS",
+          "visualizador_BB",
+          "visualizador_BC",
+          "visualizador_BDGD",
+          "visualizador_INCR",
+          "visualizador_OE",
+          "visualizador_resumo_cmp"
+        ]
+      },
+      "codigo": "def visualizar(st=None):\n    if st is None:\n        import streamlit as st\n\n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    st.html(f\"<style>{css}</style>\")\n    bd_path = f'{local}/BD_LOCAL/{empresa}_{ano}.db'\n    st.html(f\"\"\"<h1 style=\"text-align: center;\">Trilha de Visualização de Resultados</h1><br><br>\n                <p  style=\"text-align: justify;text-indent: 40px\">Nesta aba temos as visualizações \n                de resultados. Guie-se pelo seletor abaixo:</p>  \n                <hr></hr>\n                        \n            \"\"\")\n\n    with sl.connect(bd_path) as bd:\n        if (existe_tabela('tbl_PLANEJAMENTO', bd)):\n            tbl_PLAN = pd.read_sql('SELECT * FROM tbl_PLANEJAMENTO WHERE TP_FISC IS NOT NULL ORDER BY TP_FISC ASC', bd)\n            if not tbl_PLAN.empty:\n                processo = tbl_PLAN['TP_FISC'].values[0]\n            else:\n                st.error(\"Tem de ser feito o planejamento\")\n                return\n        else:\n            st.error(\"Tem de ser feito o planejamento\")\n            return\n\n    cols = st.columns([1,10,1], gap='small')\n    with cols[1]:\n        with st.container(border=True):\n            if processo == 'DISTRIBUIDORA PERIÓDICA':\n                abas = ['AIS', 'BDGD', 'ABERTURA VOC', 'BANCO COMPRAS', \n                        'INCREMENTAL', 'MOVIMENTAÇÃO OE', 'MOVIMENTAÇÃO BB',\n                        'RESUMO']\n                tab = st.tabs(abas)\n                \n                with tab[0]:\n                    visualizador_AIS(st)\n                with tab[1]:\n                    visualizador_BDGD(st)\n                with tab[2]:\n                    if st.session_state.dt_fim > date.today():\n                        abertura_voc(st, True, html_config = True)\n                    else:\n                        abertura_voc(st, html_config = True)\n                with tab[3]:\n                    visualizador_BC(st)\n                with tab[4]:\n                    visualizador_INCR(st)\n                with tab[5]:\n                    visualizador_OE(st)     \n                with tab[7]:\n                    visualizador_resumo_cmp(st) \n                with tab[6]:\n                    visualizador_BB(st)\n            elif processo == 'DISTRIBUIDORA ANUAL':\n                abas = ['AIS', 'BDGD', 'ABERTURA VOC', 'BANCO COMPRAS']\n                tab = st.tabs(abas)\n\n                with tab[0]:\n                    visualizador_AIS(st)\n                with tab[1]:\n                    visualizador_BDGD(st)\n                with tab[2]:\n                    if st.session_state.dt_fim > date.today():\n                        abertura_voc(st, True, html_config = True)\n                    else:\n                        abertura_voc(st, html_config = True)\n                with tab[3]:\n                    visualizador_BC(st)\n            else:\n                st.warning(f\"Não implantado para {processo}\")"
+    },
+    "documentacao": {
+      "resumo": "Visualiza resultados de acordo com o processo selecionado.",
+      "descricao": "Esta função visualiza os resultados baseados no processo selecionado, utilizando abas para diferentes tipos de visualizações. Se nenhum processo for encontrado ou estiver incompleto, exibe mensagens de erro.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": "streamlit",
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para interação com a interface do usuário."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "DASHBOARDS.visualizador_AIS",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "DASHBOARDS.visualizador_BB",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "DASHBOARDS.visualizador_BC",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "DASHBOARDS.visualizador_BDGD",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "DASHBOARDS.visualizador_INCR",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "DASHBOARDS.visualizador_OE",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "DASHBOARDS.visualizador_resumo_cmp",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "SRC.ais_funcoes.abertura_voc",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "UTILS.bsc_dados_reg",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "UTILS.existe_tabela",
+          "tipo": "módulo"
+        },
+        {
+          "nome": "datetime.date",
+          "tipo": "biblioteca Python"
+        },
+        {
+          "nome": "pandas",
+          "tipo": "biblioteca Python"
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": "biblioteca Python"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca Python"
+        }
+      ],
+      "docstring": "Visualiza resultados de acordo com o processo selecionado.\n\nArgs:\n    st (streamlit): Objeto Streamlit para interação com a interface do usuário.\n\nReturns:\n    None\n\nNotes:\n    - A função verifica se há um processo selecionado e exibe mensagens de erro caso contrário.\n    - Utiliza abas para diferentes tipos de visualizações dependendo do processo selecionado."
+    },
+    "status": "sucesso"
+  }
+]

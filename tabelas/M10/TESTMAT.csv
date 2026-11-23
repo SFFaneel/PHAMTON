@@ -1,0 +1,13 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado ou não aplicável
+2,AC,Aço
+3,CO,Concreto
+4,CL,Concreto leve
+5,EC,Em compósito
+6,FE,Ferro
+7,CQ,Madeira
+8,ME,Madeira eucalipto
+9,MQ,Madeira quadrado
+10,MT,Metálica
+11,AV,Alvenaria
+12,CA,Nista (Concreto e Aço)

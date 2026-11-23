@@ -1,0 +1,459 @@
+[
+  {
+    "funcao": {
+      "nome": "_conectar",
+      "tipo": "function",
+      "linha_inicio": 43,
+      "linha_fim": 47,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "str | Path",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "sqlite3.Connection",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pathlib.Path",
+          "sqlite3"
+        ],
+        "chamadas": [
+          "FileNotFoundError",
+          "Path",
+          "caminho.as_uri",
+          "caminho.is_file",
+          "expanduser",
+          "resolve",
+          "sqlite3.connect"
+        ]
+      },
+      "codigo": "def _conectar(database: str | Path) -> sqlite3.Connection:\n    caminho = Path(database).expanduser().resolve()\n    if not caminho.is_file():\n        raise FileNotFoundError(f\"Banco de auditoria não encontrado: {caminho}\")\n    return sqlite3.connect(caminho.as_uri() + \"?mode=ro\", uri=True, timeout=10)"
+    },
+    "documentacao": {
+      "resumo": "Conecta a um banco de dados SQLite.",
+      "descricao": "Estabelece uma conexão com um banco de dados SQLite localizado no caminho especificado. Verifica se o arquivo do banco de dados existe antes de tentar a conexão.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "str | Path",
+          "descricao": "Caminho para o arquivo do banco de dados SQLite."
+        }
+      ],
+      "retorno": {
+        "tipo": "sqlite3.Connection",
+        "descricao": "Conexão estabelecida com o banco de dados."
+      },
+      "excecoes": [
+        {
+          "tipo": "FileNotFoundError",
+          "descricao": "Quando o arquivo do banco de dados não é encontrado no caminho especificado."
+        }
+      ],
+      "dependencias": [
+        "pathlib.Path",
+        "sqlite3"
+      ],
+      "docstring": "Conecta a um banco de dados SQLite.\n\nArgs:\n    database (str | Path): Caminho para o arquivo do banco de dados SQLite.\n\nReturns:\n    sqlite3.Connection: Conexão estabelecida com o banco de dados.\n\nRaises:\n    FileNotFoundError: Quando o arquivo do banco de dados não é encontrado no caminho especificado."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_tabelas_existentes",
+      "tipo": "function",
+      "linha_inicio": 49,
+      "linha_fim": 54,
+      "parametros": [
+        {
+          "nome": "conn",
+          "tipo": "sqlite3.Connection",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "set[str]",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "conn.execute",
+          "fetchall"
+        ]
+      },
+      "codigo": "def _tabelas_existentes(conn: sqlite3.Connection) -> set[str]:\n    return {\n        linha[0] for linha in conn.execute(\n            \"SELECT name FROM sqlite_master WHERE type='table'\"\n        ).fetchall()\n    }"
+    },
+    "documentacao": {
+      "resumo": "Obtém um conjunto de nomes das tabelas existentes em uma conexão SQLite.",
+      "descricao": "Executa uma consulta SQL para recuperar os nomes de todas as tabelas no banco de dados associado à conexão fornecida e retorna esses nomes como um conjunto de strings.",
+      "parametros": [
+        {
+          "nome": "conn",
+          "tipo": "sqlite3.Connection",
+          "categoria": "posicional",
+          "descricao": "Conexão SQLite estabelecida com o banco de dados."
+        }
+      ],
+      "retorno": {
+        "tipo": "set[str]",
+        "descricao": "Conjunto contendo os nomes das tabelas existentes no banco de dados."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "sqlite3",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Obtém um conjunto de nomes das tabelas existentes em uma conexão SQLite.\n\nArgs:\n    conn (sqlite3.Connection): Conexão SQLite estabelecida com o banco de dados.\n\nReturns:\n    set[str]: Conjunto contendo os nomes das tabelas existentes no banco de dados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_colunas",
+      "tipo": "function",
+      "linha_inicio": 56,
+      "linha_fim": 57,
+      "parametros": [
+        {
+          "nome": "conn",
+          "tipo": "sqlite3.Connection",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tabela",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "list[str]",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "conn.execute"
+        ]
+      },
+      "codigo": "def _colunas(conn: sqlite3.Connection, tabela: str) -> list[str]:\n    return [linha[1] for linha in conn.execute(f'PRAGMA table_info(\"{tabela}\")')]"
+    },
+    "documentacao": {
+      "resumo": "Recupera as colunas de uma tabela no banco de dados SQLite.",
+      "descricao": "Executa um comando SQL para obter informações sobre as colunas de uma tabela específica e retorna os nomes dessas colunas.",
+      "parametros": [
+        {
+          "nome": "conn",
+          "tipo": "sqlite3.Connection",
+          "categoria": "posicional",
+          "descricao": "Conexão com o banco de dados SQLite."
+        },
+        {
+          "nome": "tabela",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome da tabela do qual as colunas serão recuperadas."
+        }
+      ],
+      "retorno": {
+        "tipo": "list[str]",
+        "descricao": "Lista de nomes das colunas na tabela especificada."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "sqlite3"
+      ],
+      "docstring": "Recupera as colunas de uma tabela no banco de dados SQLite.\n\nArgs:\n    conn (sqlite3.Connection): Conexão com o banco de dados SQLite.\n    tabela (str): Nome da tabela do qual as colunas serão recuperadas.\n\nReturns:\n    list[str]: Lista de nomes das colunas na tabela especificada."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_descricao_html",
+      "tipo": "function",
+      "linha_inicio": 59,
+      "linha_fim": 69,
+      "parametros": [
+        {
+          "nome": "titulo",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "objetivo",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tabela",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "str",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "html"
+        ],
+        "chamadas": [
+          "html.escape"
+        ]
+      },
+      "codigo": "def _descricao_html(titulo: str, objetivo: str, tabela: str) -> str:\n    return f\"\"\"\n                <section style=\"font-family:system-ui,sans-serif; border:1px solid #d7dce2;\n                                border-radius:12px; padding:16px 20px; margin:6px 0 18px;\">\n                <div style=\"font-size:12px; font-weight:700; letter-spacing:.08em;\n                            color:#65758b; text-transform:uppercase;\">{html.escape(titulo)}</div>\n                <p style=\"font-size:15px; line-height:1.55; margin:8px 0;\">\n                    {html.escape(objetivo)}\n                </p>\n                </section>\n                \"\"\""
+    },
+    "documentacao": {
+      "resumo": "Gera uma descrição HTML formatada com um título, objetivo e tabela.",
+      "descricao": "A função cria uma seção HTML estilizada contendo um título em letras maiúsculas, um parágrafo de texto e uma tabela. Utiliza a biblioteca `html` para escapar caracteres especiais nos textos fornecidos.",
+      "parametros": [
+        {
+          "nome": "titulo",
+          "tipo": "str",
+          "descricao": "Título da seção, exibido em letras maiúsculas."
+        },
+        {
+          "nome": "objetivo",
+          "tipo": "str",
+          "descricao": "Texto descrevendo o objetivo ou conteúdo da seção."
+        },
+        {
+          "nome": "tabela",
+          "tipo": "str",
+          "descricao": "Conteúdo da tabela a ser exibido dentro da seção."
+        }
+      ],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "String contendo o código HTML gerado."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "html"
+      ],
+      "docstring": "Gera uma descrição HTML formatada com um título, objetivo e tabela.\n\nArgs:\n    titulo (str): Título da seção, exibido em letras maiúsculas.\n    objetivo (str): Texto descrevendo o objetivo ou conteúdo da seção.\n    tabela (str): Conteúdo da tabela a ser exibido dentro da seção.\n\nReturns:\n    str: String contendo o código HTML gerado."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "visualizar_manifesto_exec",
+      "tipo": "function",
+      "linha_inicio": 71,
+      "linha_fim": 305,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "str | Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "None",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "UTILS.bsc_dados_reg",
+          "pandas"
+        ],
+        "chamadas": [
+          "TABELAS.items",
+          "_colunas",
+          "_conectar",
+          "_descricao_html",
+          "_tabelas_existentes",
+          "bsc_dados_reg",
+          "conn.execute",
+          "df.to_csv",
+          "encode",
+          "fetchall",
+          "fetchone",
+          "list",
+          "max",
+          "next",
+          "pd.read_sql_query",
+          "replace",
+          "st.caption",
+          "st.columns",
+          "st.container",
+          "st.dataframe",
+          "st.download_button",
+          "st.error",
+          "st.html",
+          "st.info",
+          "st.number_input",
+          "st.selectbox",
+          "st.tabs",
+          "zip"
+        ]
+      },
+      "codigo": "def visualizar_manifesto_exec(database: str | Path, st=None) -> None:\n    if not st:\n        return\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    st.html(f\"<style>{css}</style>\")\n    cols1 = st.columns([1,5,1], gap='small')\n    with cols1[1]:\n        with st.container() as borda:\n            st.html(\"\"\"\n                        <style>\n                        .manifesto-ajuda {\n                            font-family: inherit;\n                            line-height: 1.65;\n                            color: var(--text-color);\n                        }\n\n                        .manifesto-ajuda h1 {\n                            text-align: center;\n                            font-size: 1.5rem;\n                            margin-bottom: 24px;\n                        }\n\n                        .manifesto-ajuda h2 {\n                            font-size: 1.1rem;\n                            font-weight: 650;\n                            margin: 22px 0 10px;\n                        }\n\n                        .manifesto-ajuda p {\n                            margin: 8px 0;\n                            font-size: 0.92rem;\n                            text-align: justify;\n                            text-indent: 40px;\n                        }\n\n                        .manifesto-ajuda .destaque {\n                            background: var(--secondary-background-color);\n                            border-left: 3px solid #4F8DBD;\n                            padding: 12px 16px;\n                            border-radius: 5px;\n                            margin: 18px 0;\n                        }\n\n                        .manifesto-ajuda .destaque p {\n                            text-indent: 0;\n                            margin: 0;\n                        }\n                    </style>\n\n                    <section class=\"manifesto-ajuda\">\n\n                        <h1>Visualização do Manifesto Eletrônico de Execuções</h1>\n\n                        <h2>O que é o Manifesto Eletrônico de Execuções?</h2>\n\n                        <p  style=\"text-align: justify;text-indent: 40px\">\n                            O <strong>Manifesto Eletrônico de Execuções</strong> é um mecanismo\n                            de registro e acompanhamento das rotinas computacionais\n                            utilizadas no processamento, na validação e na análise\n                            dos dados. Sua finalidade é documentar a execução dos\n                            programas, identificando quando foram iniciados,\n                            quais procedimentos foram realizados, quais recursos\n                            foram utilizados e quais resultados foram produzidos.\n                        </p>\n\n                        <p  style=\"text-align: justify;text-indent: 40px\">\n                            Cada execução recebe um identificador único, que permite\n                            relacionar o processamento principal às operações\n                            auxiliares, aos eventos registrados, às métricas\n                            calculadas e aos arquivos envolvidos. Esses registros\n                            são armazenados em um banco de dados SQLite, formando\n                            um histórico estruturado e consultável das atividades.\n                        </p>\n\n                        <h2>Importância para a auditoria do processo de fiscalização</h2>\n\n                        <p  style=\"text-align: justify;text-indent: 40px\">\n                            O manifesto contribui para a\n                            <strong>rastreabilidade, transparência e\n                            reprodutibilidade dos procedimentos</strong>.\n                            Ao registrar a sequência das operações e seus\n                            resultados, permite identificar a origem de falhas,\n                            examinar o comportamento das rotinas e verificar\n                            quais etapas foram efetivamente executadas.\n                            Também oferece subsídios para avaliar o desempenho\n                            dos processos e documentar as evidências técnicas\n                            que fundamentam as atividades de fiscalização.\n                        </p>\n\n                        <h2>Como funciona o registro das execuções?</h2>\n\n                        <p  style=\"text-align: justify;text-indent: 40px\">\n                            O registro é iniciado juntamente com a rotina\n                            monitorada e permanece associado ao processamento\n                            até sua conclusão. Durante esse período, o sistema\n                            pode armazenar acontecimentos relevantes, indicadores\n                            quantitativos, referências a arquivos e informações\n                            sobre as chamadas de funções auxiliares.\n                            Ao término, são registrados o estado final da\n                            execução e, quando aplicável, os detalhes de\n                            eventuais falhas.\n                        </p>\n\n                        <div class=\"destaque\">\n                            <p  style=\"text-align: justify;text-indent: 40px\">\n                                <strong>Importante:</strong> a conclusão bem-sucedida\n                                de uma execução não significa necessariamente\n                                que todos os dados analisados foram aprovados.\n                                O manifesto distingue o funcionamento técnico\n                                do programa dos resultados das regras de validação.\n                                Uma rotina pode ser concluída normalmente e,\n                                ainda assim, identificar arquivos ou registros\n                                com inconsistências.\n                            </p>\n                        </div>\n\n                        <h2>Consulta e interpretação dos registros</h2>\n\n                        <p  style=\"text-align: justify;text-indent: 40px\">\n                            As informações são organizadas em tabelas relacionadas\n                            pelo identificador da execução. Essa estrutura permite\n                            consultar tanto o histórico geral dos processamentos\n                            quanto os detalhes de uma execução específica.\n                            Nas abas a seguir, são apresentados os registros\n                            disponíveis, acompanhados da descrição da finalidade\n                            de cada tabela e dos respectivos dados armazenados.\n                        </p>\n\n                    </section>\n                        \"\"\")\n    try:\n        with _conectar(database) as conn:\n            existentes = _tabelas_existentes(conn)\n            ids = []\n            if \"tbl_manifesto_execucao\" in existentes:\n                ids = [\n                    row[0] for row in conn.execute(\n                        'SELECT execucao_id FROM \"tbl_manifesto_execucao\" '\n                        'ORDER BY iniciado_em DESC LIMIT 1000'\n                    ).fetchall()\n                ]\n    except (OSError, sqlite3.Error) as exc:\n        st.error(f\"Não foi possível abrir o banco de auditoria: {exc}\")\n        return\n\n    cols2 = st.columns([2,5,2], gap='small')\n    with cols2[1]:\n        with st.container() as borda1:\n            st.html(\"\"\"<h2 style='text-align: center;'>Resultados do Manifesto Eletrônico de Execuções</h2>\n                        <p style=\"text-align: justify; text-indent: 40px; line-height: 1.65;\">\n                            Organizamos os registros de\n                            rastreabilidade dos procedimentos computacionais em cinco categorias\n                            complementares, apresentadas nas abas a seguir:\n                            <strong>Execuções</strong>, que documenta a identificação, o período\n                            de processamento e o estado final das rotinas;\n                            <strong>Eventos</strong>, que registra os acontecimentos, avisos e\n                            ocorrências relevantes;\n                            <strong>Métricas</strong>, que reúne indicadores quantitativos\n                            sobre o processamento;\n                            <strong>Artefatos</strong>, que identifica os arquivos utilizados\n                            ou produzidos; e <strong>Chamadas</strong>, que acompanha a execução\n                            das funções auxiliares e seus respectivos resultados.\n                            Cada aba representa, portanto, uma dimensão específica do manifesto,\n                            permitindo consultar os registros de forma individualizada ou\n                            correlacioná-los por meio do identificador único da execução.\n                        </p>\n                        \"\"\")\n            cols3 = st.columns([2,4,2], gap='small')\n            with cols3[1]:\n                escolha = st.selectbox(\n                                            \"Filtrar por execução\",\n                                            options=[\"Todas as execuções\", *ids],\n                                            key=\"manifesto_filtro_execucao\",\n                                        )\n                execucao_id = None if escolha == \"Todas as execuções\" else escolha\n            \n            abas = st.tabs(list(TABELAS))\n            for aba, (rotulo, (tabela, titulo, objetivo)) in zip(abas, TABELAS.items()):\n                with aba:\n                    st.html(_descricao_html(titulo, objetivo, tabela))\n                    if tabela not in existentes:\n                        st.info(\"Esta tabela ainda não foi criada no banco selecionado.\")\n                        continue\n\n                    try:\n                        with _conectar(database) as conn:\n                            colunas = _colunas(conn, tabela)\n                            filtrar = execucao_id is not None and \"execucao_id\" in colunas\n                            where = ' WHERE \"execucao_id\" = ?' if filtrar else \"\"\n                            parametros = (execucao_id,) if filtrar else ()\n                            total = conn.execute(\n                                                    f'SELECT COUNT(*) FROM \"{tabela}\"{where}', parametros\n                                                 ).fetchone()[0]\n\n                            _, c1, _,  c2, _ = st.columns([1,2,1,2,1], gap='small')\n                            with c1:\n                                pagina_tam = st.selectbox(\n                                                            \"Linhas por página\", [25, 50, 100, 250],\n                                                            index=1, key=f\"manifesto_tamanho_{tabela}\"\n                                                        )\n                            total_paginas = max(1, (total + pagina_tam - 1) // pagina_tam)\n                            with c2:\n                                pagina = st.number_input(\n                                                            \"Página\", min_value=1, max_value=total_paginas,\n                                                            value=1, step=1, key=f\"manifesto_pagina_{tabela}\"\n                                                        )\n\n                            data_col = next(\n                                                (c for c in (\"criado_em\", \"iniciado_em\") if c in colunas),\n                                                None,\n                                            )\n                            ordem = f'\"{data_col}\" DESC' if data_col else \"rowid DESC\"\n                            consulta = (\n                                            f'SELECT * FROM \"{tabela}\"{where} ORDER BY {ordem} '\n                                            \"LIMIT ? OFFSET ?\"\n                                        )\n                            df = pd.read_sql_query(\n                                                        consulta, conn,\n                                                        params=(*parametros, pagina_tam, (pagina - 1) * pagina_tam),\n                                                    )\n\n                        st.caption(f\"{total:,} registro(s) encontrado(s).\".replace(\",\", \".\"))\n                        st.dataframe(df, hide_index=True)\n                        st.download_button(\n                                                \"Exportar página em CSV\",\n                                                data=df.to_csv(index=False, sep=\"|\").encode(\"latin-1\"),\n                                                file_name=f\"{tabela}_pagina_{pagina}.csv\",\n                                                mime=\"text/csv\",\n                                                key=f\"manifesto_exportar_{tabela}\",\n                                                disabled=df.empty,\n                                            )\n                        if \"detalhes\" in df.columns or \"parametros\" in df.columns:\n                            st.caption(\"Campos JSON são exibidos como texto na grade.\")\n                    except (OSError, sqlite3.Error, pd.errors.DatabaseError) as exc:\n                        st.error(f\"Falha ao consultar {tabela}: {exc}\")"
+    },
+    "documentacao": {
+      "resumo": "Visualiza o Manifesto Eletrônico de Execuções em uma interface web utilizando Streamlit.",
+      "descricao": "A função `visualizar_manifesto_exec` é responsável por carregar e exibir os dados do Manifesto Eletrônico de Execuções em uma interface web interativa usando a biblioteca Streamlit. Ela permite visualizar detalhes sobre as execuções, eventos, métricas, artefatos e chamadas auxiliares.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "str | Path",
+          "descricao": "Caminho para o banco de dados SQLite que contém os registros do Manifesto Eletrônico de Execuções."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "opcional",
+          "descricao": "Objeto Streamlit usado para criar a interface web. Se não for fornecido, a função retornará imediatamente."
+        }
+      ],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "A função não retorna nenhum valor explícito."
+      },
+      "excecoes": [
+        {
+          "tipo": "OSError",
+          "descricao": "Quando ocorre um erro ao abrir o banco de dados."
+        },
+        {
+          "tipo": "sqlite3.Error",
+          "descricao": "Quando ocorre um erro relacionado à operação do banco de dados SQLite."
+        },
+        {
+          "tipo": "pd.errors.DatabaseError",
+          "descricao": "Quando ocorre um erro ao ler os dados do banco de dados usando pandas."
+        }
+      ],
+      "dependencias": [
+        {
+          "nome": "UTILS.bsc_dados_reg",
+          "categoria": "importação"
+        },
+        {
+          "nome": "pandas",
+          "categoria": "importação"
+        },
+        {
+          "nome": "TABELAS.items",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "_colunas",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "_conectar",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "_descricao_html",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "_tabelas_existentes",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "conn.execute",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "df.to_csv",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "encode",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "fetchall",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "fetchone",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "list",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "max",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "next",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "pd.read_sql_query",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "replace",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "st.caption",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "st.columns",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "st.container",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "st.dataframe",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "st.download_button",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "st.error",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "st.html",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "st.info",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "st.number_input",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "st.selectbox",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "st.tabs",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "zip",
+          "categoria": "chamada"
+        }
+      ],
+      "docstring": "Visualiza o Manifesto Eletrônico de Execuções em uma interface web utilizando Streamlit.\n\nArgs:\n    database (str | Path): Caminho para o banco de dados SQLite que contém os registros do Manifesto Eletrônico de Execuções.\n    st (optional): Objeto Streamlit usado para criar a interface web. Se não for fornecido, a função retornará imediatamente.\n\nReturns:\n    None: A função não retorna nenhum valor explícito.\n\nRaises:\n    OSError: Quando ocorre um erro ao abrir o banco de dados.\n    sqlite3.Error: Quando ocorre um erro relacionado à operação do banco de dados SQLite.\n    pd.errors.DatabaseError: Quando ocorre um erro ao ler os dados do banco de dados usando pandas."
+    },
+    "status": "sucesso"
+  }
+]

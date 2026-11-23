@@ -1,0 +1,76 @@
+[
+  {
+    "funcao": {
+      "nome": "busca_ipca",
+      "tipo": "function",
+      "linha_inicio": 5,
+      "linha_fim": 41,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "datetime.date",
+          "os",
+          "pandas"
+        ],
+        "chamadas": [
+          "astype",
+          "copy",
+          "date",
+          "date.today",
+          "df_ipca.columns.to_list",
+          "df_ipca.rename",
+          "df_ipca.sort_values",
+          "df_ipca.to_csv",
+          "index",
+          "len",
+          "os.path.isfile",
+          "pd.DataFrame",
+          "pd.read_csv",
+          "pd.read_json",
+          "pd.to_datetime",
+          "shift",
+          "str.replace"
+        ]
+      },
+      "codigo": "def busca_ipca(st=None):\n    arq = 'tabelas/IPCA.csv'\n    if os.path.isfile(arq):\n        df_ipca = pd.read_csv(arq,sep=\"|\", encoding=\"Latin-1\")\n        df_ipca['Dt_REF'] = pd.to_datetime(df_ipca['Dt_REF'], errors='coerce')\n    else:\n        df_ipca = pd.DataFrame()\n    pos = df_ipca.columns.to_list().index(\"Dt_REF\")\n    if (len(df_ipca)==0) or ((date.today() - df_ipca.iloc[-1,pos].date()).days >= 70):\n        try:\n            url_ipca_csv = \"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=csv\"\n            url_ipca_csv_sidra = \"https://apisidra.ibge.gov.br/values/t/1737/n1/1/v/2266/p/all\"\n            df_ipca = pd.read_json(url_ipca_csv_sidra)\n\n        \n            df_ipca = df_ipca.iloc[1:].copy()\n            df_ipca = df_ipca.rename(columns={\n                                        'V': 'Nr_IPCA',\n                                        'D3C': 'periodo'\n                                    })\n            df_ipca['Dt_REF'] = pd.to_datetime(df_ipca['periodo'], format='%Y%m')\n            df_ipca['Nr_IPCA'] = (\n                                df_ipca['Nr_IPCA']\n                                .str.replace(',', '.', regex=False)\n                                .astype(float)\n                            )\n            df_ipca = df_ipca.sort_values(\"Dt_REF\")\n\n            df_ipca[\"VAR_MENSAL\"] = (\n                                    (df_ipca[\"Nr_IPCA\"] / df_ipca[\"Nr_IPCA\"].shift(1) - 1) * 100\n                                )\n            \n            df_ipca = df_ipca[['Dt_REF', 'VAR_MENSAL', 'Nr_IPCA']]\n            df_ipca.to_csv(arq,sep=\"|\", encoding=\"Latin-1\")\n        except:\n            df_ipca = pd.read_csv(arq,sep=\"|\", encoding=\"Latin-1\")\n    return df_ipca"
+    },
+    "documentacao": {
+      "resumo": "Busca e retorna os dados do Índice de Preços ao Consumidor (IPCA).",
+      "descricao": "A função busca os dados do IPCA a partir de um arquivo CSV local ou, se o arquivo não existir ou estiver mais antigo que 70 dias, baixa os dados da API do Banco Central e IBGE. Os dados são normalizados e retornados em um DataFrame Pandas.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Parâmetro não utilizado no código."
+        }
+      ],
+      "retorno": {
+        "tipo": "DataFrame",
+        "descricao": "DataFrame Pandas contendo os dados do IPCA, incluindo a data de referência, variação mensal e valor do IPCA."
+      },
+      "excecoes": [
+        {
+          "tipo": null,
+          "descricao": "Exceções não especificadas no código."
+        }
+      ],
+      "dependencias": [
+        "datetime.date",
+        "os",
+        "pandas"
+      ],
+      "docstring": "Busca e retorna os dados do Índice de Preços ao Consumidor (IPCA).\n\nArgs:\n    st: Parâmetro não utilizado no código.\n\nReturns:\n    DataFrame: DataFrame Pandas contendo os dados do IPCA, incluindo a data de referência, variação mensal e valor do IPCA."
+    },
+    "status": "sucesso"
+  }
+]

@@ -1,0 +1,1357 @@
+[
+  {
+    "funcao": {
+      "nome": "criar_RCP_BDGD",
+      "tipo": "function",
+      "linha_inicio": 35,
+      "linha_fim": 1405,
+      "parametros": [
+        {
+          "nome": "suf",
+          "tipo": null,
+          "default": "'_AT'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "x1",
+          "tipo": null,
+          "default": "False",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "BDGD.geo_funcoes._map",
+          "BDGD.geo_funcoes._mk_ax",
+          "BDGD.geo_funcoes.carregar_uc_unificada",
+          "BDGD.geo_funcoes.cnt_bloco",
+          "BDGD.geo_funcoes.cnt_bloco_rd",
+          "BDGD.geo_funcoes.cnt_bloco_rm",
+          "BDGD.geo_funcoes.ponnot_filtrados",
+          "BDGD.geo_funcoes.ponnot_filtrados_rd",
+          "BDGD.geo_funcoes.ponnot_filtrados_rm",
+          "BDGD.geo_funcoes.texto_exp_postes",
+          "BDGD.geo_funcoes.texto_exp_postes_rd",
+          "BDGD.geo_funcoes.texto_exp_postes_rm",
+          "UTILS.existe_tabela",
+          "UTILS.tabela_existe",
+          "pandas",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "_map",
+          "_mk_ax",
+          "agg",
+          "apply",
+          "carregar_uc_unificada",
+          "cnt_bloco",
+          "cnt_bloco_rd",
+          "cnt_bloco_rm",
+          "col.isna",
+          "copy",
+          "cte_bar",
+          "cte_bay",
+          "cte_eqtrat",
+          "cte_eqtrm",
+          "cte_eqtrmtmt",
+          "cte_modelo",
+          "cte_simples",
+          "cte_unificado",
+          "ctes_resultado.append",
+          "ctes_sql.append",
+          "dado.to_sql",
+          "df.copy",
+          "df.drop",
+          "df.head",
+          "df1.drop",
+          "df_LD.columns.to_list",
+          "df_LD.sort_values",
+          "df_MED.copy",
+          "df_MED.head",
+          "df_SE.columns.to_list",
+          "df_SE.groupby",
+          "df_SE.sort_values",
+          "dic_ATIVOS.items",
+          "dic_ATIVOS.keys",
+          "dic_EQ.items",
+          "existe_tabela",
+          "ffill",
+          "formatar_grupo",
+          "hasattr",
+          "head",
+          "isin",
+          "isinstance",
+          "join",
+          "len",
+          "map_tip_pn.items",
+          "nome_cte.replace",
+          "pd.DataFrame",
+          "pd.concat",
+          "pd.read_sql",
+          "pd.to_numeric",
+          "ponnot_filtrados",
+          "ponnot_filtrados_rd",
+          "ponnot_filtrados_rm",
+          "rel.items",
+          "replace",
+          "reset_index",
+          "resumo_bdgd.to_sql",
+          "sel_eq",
+          "sl.connect",
+          "sql_final",
+          "sql_na",
+          "st.columns",
+          "st.dataframe",
+          "st.divider",
+          "st.error",
+          "st.html",
+          "st.spinner",
+          "st.warning",
+          "st.write",
+          "str.replace",
+          "strip",
+          "subquery_uniao",
+          "tabela",
+          "tabela_existe",
+          "tbl.copy",
+          "texto_exp_postes",
+          "texto_exp_postes_rd",
+          "texto_exp_postes_rm",
+          "uniao_unidades",
+          "unidades_existentes",
+          "upper"
+        ]
+      },
+      "codigo": "def criar_RCP_BDGD(suf=\"_AT\", st=None, x1=False):\n    if not st:\n        st.warning(\"Falhou\")\n        return pd.DataFrame()\n\n    if 'tra_dir' in st.session_state:\n        local = st.session_state.tra_dir\n        empresa = st.session_state.nm_empr\n        ano = st.session_state.dt_fim.year\n\n        with sl.connect(rf'{local}\\BD_LOCAL\\BDGD{suf}_{empresa}_{ano}.db') as bd:\n            if suf==\"_AT\":\n                st.html(f\"\"\"<h1>Busca dos dados da BDGD atual</h1><br>\n                        <p  style=\"text-align: justify;text-indent: 40px\">\n                        Vamos buscar os dados da BDGD atual, fazendo um RCP físico.   \n                        </p>\n                        <hr/>        \n                    \"\"\")\n            else:\n                st.html(f\"\"\"<h1>Busca dos dados da BDGD anterior</h1><br>\n                        <p  style=\"text-align: justify;text-indent: 40px\">\n                        Vamos buscar os dados da BDGD anterior, fazendo um RCP físico.   \n                        </p>\n                        <hr/>          \n                    \"\"\")\n            LST_TBL = [f'UNCRBT{suf}', f'UNCRMT{suf}', f'UNCRAT{suf}',\n                    f'UNREBT{suf}', f'UNREMT{suf}', f'UNREAT{suf}',\n                    f'UNSEBT{suf}', f'UNSEMT{suf}', f'UNSEAT{suf}',\n                    f'UCAT{suf}', f'UCMT{suf}', f'UCBT{suf}',\n                    f'UGAT{suf}', f'UGMT{suf}', f'UGBT{suf}',\n                    f'SSDAT{suf}', f'SSDMT{suf}', f'SSDBT{suf}',\n                    f'RAMLIG{suf}']\n            tabelas_existentes = [t for t in LST_TBL if tabela_existe(bd, t)]\n\n            cols_texto = st.columns([1,8,1], gap='small')\n            \n            with cols_texto[1]:\n                if x1 or (not existe_tabela(\"UC_UNIFIC\", bd)):\n\n                    COLS = \"\"\"\n                                COD_ID    TEXT,\n                                PN_CON    TEXT,\n                                RAMAL     TEXT,\n                                PAC       TEXT,\n                                CTAT      TEXT,\n                                CTMT      TEXT,\n                                UNI_TR_AT TEXT,\n                                UNI_TR_MT TEXT,\n                                SUB       TEXT,\n                                CONJ      TEXT,\n                                MUN       TEXT,\n                                SIT_ATIV  TEXT,\n                                DAT_CON   TEXT,\n                                CAR_INST  REAL,\n                                DEM_CONT  REAL,\n                                TIP_SIST  TEXT,\n                                POT_INST  REAL,\n                                CNAE TEXT,\n                                GRU_TEN TEXT\n                            \"\"\"\n                    if x1 or (not existe_tabela(\"UC_UNIFIC\", bd)):\n                        with st.spinner(\"Fazendo a agregação de UC e UG...\"):\n                            rel = carregar_uc_unificada(\n                                                        bd=bd,\n                                                        suf=suf,\n                                                        tabelas_existentes=tabelas_existentes,\n                                                        dst_table=\"UC_UNIFIC\",\n                                                        criar_indices=True,\n                                                        pragmas_carga=True,\n                                                        COLS=COLS\n                                                    )\n                        for nm, valor in rel.items():\n                            st.write(f\"{nm} possui {valor} itens.\")\n\n                    st.html(f\"\"\"<br><p  style=\"text-align: justify;text-indent: 40px\">\n                        A consulta, a seguir, tem como objetivo identificar, para cada subestação (SE), as quantidades físicas de \n                        equipamentos modeladas na base da BDGD, agrupando por tipo, localização e características técnicas. \n                        Os dados são extraídos de diversas entidades representativas dos equipamentos instalados ou associados às \n                        SE, com destaque para aqueles ligados diretamente à subestação (ex.: BAY, BARRAMENTO) e aqueles vinculados \n                        por meio de entidades geográficas (ex.: transformadores, seccionadores, compensadores). A coluna Qtd_BDGD \n                        representa a quantidade consolidada por combinação de atributos técnicos, sendo que os itens cujo campo \n                        CONJ (modelado indiretamente pela junção dos campos TI, TUC, A1 a A6) possuem valor distinto de 'NA' \n                        são tratados como alocações diretas — ou seja, com correspondência física com o conjunto. Já nos casos \n                        em que CONJ equivale a 'NA', os equipamentos são considerados como parte de uma agregação coletiva e, \n                        portanto, serão rateados por critério, oportunamente explicitado. Essa distinção permite analisar com o melhor\n                        grau de granularidade a modelagem patrimonial por subestação.   \n                        </p>\n                        <hr/>        \n                    \"\"\")\n                \n                    ESQUEMA_EQ = [\n                                    \"TipoEquipamento\",\n                                    \"Subestacao\",\n                                    \"CodigoEquipamento\",\n                                    \"DescricaoEquipamento\",\n                                    \"ODI\",\n                                    \"TI\",\n                                    \"TUC\",\n                                    \"A1\",\n                                    \"A2\",\n                                    \"A3\",\n                                    \"A4\",\n                                    \"A5\",\n                                    \"A6\",\n                                    \"UAR\",\n                                    \"IDUC\",\n                                    \"SITCONT\",\n                                    \"DAT_IMO\",\n                                    \"CONJ\",\n                                    \"Qtd_BDGD\",\n                                ]\n\n                    COLUNAS_T1 = [\n                                    \"T1.COD_ID\",\n                                    \"T1.DESCR\",\n                                    \"T1.ODI\",\n                                    \"T1.TI\",\n                                    \"T1.TUC\",\n                                    \"T1.A1\",\n                                    \"T1.A2\",\n                                    \"T1.A3\",\n                                    \"T1.A4\",\n                                    \"T1.A5\",\n                                    \"T1.A6\",\n                                    \"T1.UAR\",\n                                    \"T1.IDUC\",\n                                    \"T1.SITCONT\",\n                                    \"T1.DAT_IMO\"\n                                ]\n                    def sel_eq(\n                                    tipo,\n                                    sub,\n                                    cod,\n                                    descr,\n                                    odi,\n                                    ti,\n                                    tuc,\n                                    a1,\n                                    a2,\n                                    a3,\n                                    a4,\n                                    a5,\n                                    a6,\n                                    uar,\n                                    iduc,\n                                    sitcont,\n                                    dat_imo,\n                                    conj,\n                                    qtd=\"COUNT(*)\",\n                                ):\n                        return f\"\"\"\n                                    SELECT\n                                        '{tipo}'  AS TipoEquipamento,\n                                        {sub}     AS Subestacao,\n                                        {cod}     AS CodigoEquipamento,\n                                        {descr}   AS DescricaoEquipamento,\n                                        {odi}     AS ODI,\n                                        {ti}      AS TI,\n                                        {tuc}     AS TUC,\n                                        {a1}      AS A1,\n                                        {a2}      AS A2,\n                                        {a3}      AS A3,\n                                        {a4}      AS A4,\n                                        {a5}      AS A5,\n                                        {a6}      AS A6,\n                                        {uar}     AS UAR,\n                                        {iduc}    AS IDUC,\n                                        {sitcont} AS SITCONT,\n                                        {dat_imo} AS DAT_IMO,\n                                        {conj}    AS CONJ,\n                                        {qtd}     AS Qtd_BDGD\n                                \"\"\"\n                    \n                    def formatar_grupo(cols):\n                        return \",\\n            \".join(cols)\n\n                    def cte_modelo(nome, select_sql, from_sql, where_sql, grupo_colunas):\n                        grupo_sql = formatar_grupo(grupo_colunas)\n                        return f\"\"\"\n                                    {nome} AS (\n                                        {select_sql}\n                                        {from_sql}\n                                        {where_sql}\n                                        GROUP BY\n                                            {grupo_sql}\n                                    )\n                                    \"\"\".strip()\n                    def tabela(nome_base, suf):\n                        return f\"{nome_base}{suf}\"\n                    \n                    def subquery_uniao(tabelas_un):\n                        return \"\\n            UNION ALL\\n            \".join(\n                            f\"SELECT COD_ID, SUB, CONJ, GRU_TEN FROM {t}\"\n                            for t in tabelas_un\n                        )\n                    \n                    def cte_simples(\n                                            nome,\n                                            tipo,\n                                            tabela_base,\n                                            suf,\n                                            join_sql,\n                                            where_sql,\n                                            conj_expr,\n                                        ):\n                        select_sql = sel_eq(\n                                            tipo=tipo,\n                                            sub=\"S.COD_ID\",\n                                            cod=\"COALESCE(NULLIF(T1.UC_UG,''), S.COD_ID)\",\n                                            descr=\"T1.DESCR\",\n                                            odi=\"T1.ODI\",\n                                            ti=\"T1.TI\",\n                                            tuc=\"T1.TUC\",\n                                            a1=\"T1.A1\",\n                                            a2=\"T1.A2\",\n                                            a3=\"T1.A3\",\n                                            a4=\"T1.A4\",\n                                            a5=\"T1.A5\",\n                                            a6=\"T1.A6\",\n                                            uar=\"T1.UAR\",\n                                            iduc=\"T1.IDUC\",\n                                            sitcont=\"T1.SITCONT\",\n                                            dat_imo=\"T1.DAT_IMO\",\n                                            conj=conj_expr,\n                                        )\n\n                        from_sql = f\"\"\"\n                                        FROM {tabela(tabela_base, suf)} T1\n                                        {join_sql}\n                                    \"\"\"\n\n                        grupo_cols = [\"S.COD_ID\", \"UCG.COD_ID\", *COLUNAS_T1, conj_expr]\n\n                        return cte_modelo(\n                                            nome=nome,\n                                            select_sql=select_sql,\n                                            from_sql=from_sql,\n                                            where_sql=where_sql,\n                                            grupo_colunas=grupo_cols,\n                                        )\n                    def sql_na():\n                            return \"'NA'\"\n                    \n                    def cte_bay(suf):\n                        bar_odi_por_sub = f\"\"\"\n                                            SELECT\n                                                SUB,\n                                                ODI\n                                            FROM {tabela(\"BAR\", suf)}\n                                        \"\"\"\n                        \n                        select_sql = sel_eq(\n                                                tipo=\"BAY\",\n                                                sub=\"S.COD_ID\",\n                                                cod=\"T1.COD_ID\",\n                                                descr=\"T1.DESCR\",\n                                                odi=\"R.ODI\",\n                                                ti=sql_na(),\n                                                tuc=sql_na(),\n                                                a1=sql_na(),\n                                                a2=sql_na(),\n                                                a3=sql_na(),\n                                                a4=sql_na(),\n                                                a5=sql_na(),\n                                                a6=sql_na(),\n                                                uar=sql_na(),\n                                                iduc=sql_na(),\n                                                sitcont=sql_na(),\n                                                dat_imo=sql_na(),\n                                                conj=sql_na(),\n                                            )\n\n                        from_sql = f\"\"\"\n                                        FROM {tabela(\"BAY\", suf)} T1\n                                        LEFT JOIN {tabela(\"SUB\", suf)} S\n                                            ON T1.SUB = S.COD_ID\n                                        LEFT JOIN (\n                                            {bar_odi_por_sub}\n                                        ) R\n                                            ON R.SUB = T1.SUB\n                                    \"\"\"\n\n                        where_sql = \"\"\"\n                                        WHERE T1.POS = 'PD'\n                                    \"\"\"\n\n                        grupo_cols = [\n                                            \"S.COD_ID\",\n                                            \"T1.COD_ID\",\n                                            \"T1.DESCR\",\n                                            \"R.ODI\",\n                                        ]\n\n                        return cte_modelo(\n                                            nome=\"BAY_SUB\",\n                                            select_sql=select_sql,\n                                            from_sql=from_sql,\n                                            where_sql=where_sql,\n                                            grupo_colunas=grupo_cols,\n                                        )\n\n\n                    def cte_bar(suf):\n                        select_sql = sel_eq(\n                                                tipo=\"BARRAMENTO\",\n                                                sub=\"S.COD_ID\",\n                                                cod=\"T1.COD_ID\",\n                                                descr=\"T1.DESCR\",\n                                                odi=\"T1.ODI\",\n                                                ti=\"T1.TI\",\n                                                tuc=\"T1.TUC\",\n                                                a1=\"T1.A1\",\n                                                a2=\"T1.A2\",\n                                                a3=\"T1.A3\",\n                                                a4=\"T1.A4\",\n                                                a5=\"T1.A5\",\n                                                a6=\"T1.A6\",\n                                                uar=\"T1.UAR\",\n                                                iduc=\"T1.IDUC\",\n                                                sitcont=\"T1.SITCONT\",\n                                                dat_imo=\"T1.DAT_IMO\",\n                                                conj=sql_na(),\n                                            )\n\n                        from_sql = f\"\"\"\n                                        FROM {tabela(\"BAR\", suf)} T1\n                                        LEFT JOIN {tabela(\"SUB\", suf)} S\n                                            ON T1.SUB = S.COD_ID\n                                    \"\"\"\n\n                        where_sql = \"\"\"\n                                        WHERE T1.POS = 'PD'\n                                    \"\"\"\n\n                        grupo_cols = [\n                                            \"S.COD_ID\",\n                                            *COLUNAS_T1,\n                                        ]\n\n                        return cte_modelo(\n                                            nome=\"BAR_SUB\",\n                                            select_sql=select_sql,\n                                            from_sql=from_sql,\n                                            where_sql=where_sql,\n                                            grupo_colunas=grupo_cols,\n                                        )\n\n\n                    def cte_eqtrm(suf):\n                        join_sql = f\"\"\"\n                                        LEFT JOIN {tabela(\"SUB\", suf)} S\n                                            ON T1.SUB = S.COD_ID\n                                        LEFT JOIN UC_UNIFIC UCG\n                                            ON T1.UC_UG = UCG.COD_ID\n                                        AND UCG.GRU_TEN = T1.GRU_TEN\n                                    \"\"\"\n\n                        where_sql = \"\"\"\n                                        WHERE T1.TIP_INST IN ('SE_MT', 'SE_AT')\n                                        AND T1.SITCONT IN ('AT1', 'SF', 'RT')\n                                    \"\"\"\n\n                        return cte_simples(\n                                                nome=\"EQTRM_SUB\",\n                                                tipo=\"EQTRM\",\n                                                tabela_base=\"EQTRM\",\n                                                suf=suf,\n                                                join_sql=join_sql,\n                                                where_sql=where_sql,\n                                                conj_expr=\"UCG.CONJ\",\n                                            )\n\n\n                    def cte_eqtrmtmt():\n                        select_sql = sel_eq(\n                                                tipo=\"TRAFO MT-MT\",\n                                                sub=\"S.COD_ID\",\n                                                cod=\"UNT.COD_ID\",\n                                                descr=\"T1.DESCR\",\n                                                odi=\"T1.ODI\",\n                                                ti=\"T1.TI\",\n                                                tuc=\"T1.TUC\",\n                                                a1=\"T1.A1\",\n                                                a2=\"T1.A2\",\n                                                a3=\"T1.A3\",\n                                                a4=\"T1.A4\",\n                                                a5=\"T1.A5\",\n                                                a6=\"T1.A6\",\n                                                uar=\"T1.UAR\",\n                                                iduc=\"T1.IDUC\",\n                                                sitcont=\"T1.SITCONT\",\n                                                dat_imo=\"T1.DAT_IMO\",\n                                                conj=\"UNT.CONJ\",\n                                            )\n\n                        from_sql = \"\"\"\n                                        FROM EQTRMT_AT T1\n                                        LEFT JOIN UNTRMT_AT UNT\n                                            ON T1.UNI_TR_MT = UNT.COD_ID\n                                        LEFT JOIN SUB_AT S\n                                            ON UNT.SUB = S.COD_ID\n                                    \"\"\"\n\n                        where_sql = \"\"\"\n                                        WHERE T1.TIP_INST IN ('SE_MT', 'SE_AT')\n                                        AND T1.SITCONT IN ('AT1', 'SF', 'RT')\n                                    \"\"\"\n\n                        grupo_cols = [\n                                        \"S.COD_ID\",\n                                        *COLUNAS_T1,\n                                        \"UNT.CONJ\",\n                                        \"UNT.COD_ID\",\n                                    ]\n\n                        return cte_modelo(\n                                            nome=\"EQTRMTMT_SUB\",\n                                            select_sql=select_sql,\n                                            from_sql=from_sql,\n                                            where_sql=where_sql,\n                                            grupo_colunas=grupo_cols,\n                                        )\n\n                    def cte_eqtrat(suf):\n                        select_sql = sel_eq(\n                                                tipo=\"TRAFO AT-MT\",\n                                                sub=\"S.COD_ID\",\n                                                cod=\"UNT.COD_ID\",\n                                                descr=\"T1.DESCR\",\n                                                odi=\"T1.ODI\",\n                                                ti=\"T1.TI\",\n                                                tuc=\"T1.TUC\",\n                                                a1=\"T1.A1\",\n                                                a2=\"T1.A2\",\n                                                a3=\"T1.A3\",\n                                                a4=\"T1.A4\",\n                                                a5=\"T1.A5\",\n                                                a6=\"T1.A6\",\n                                                uar=\"T1.UAR\",\n                                                iduc=\"T1.IDUC\",\n                                                sitcont=\"T1.SITCONT\",\n                                                dat_imo=\"T1.DAT_IMO\",\n                                                conj=\"UNT.CONJ\",\n                                            )\n\n                        from_sql = f\"\"\"\n                                        FROM {tabela(\"EQTRAT\", suf)} T1\n                                        LEFT JOIN UNTRAT_AT UNT\n                                            ON T1.UNI_TR_AT = UNT.COD_ID\n                                        LEFT JOIN SUB_AT S\n                                            ON UNT.SUB = S.COD_ID\n                                    \"\"\"\n\n                        where_sql = \"\"\"\n                                        WHERE T1.TIP_INST IN ('SE_MT', 'SE_AT')\n                                        AND T1.SITCONT IN ('AT1', 'SF', 'RT')\n                                    \"\"\"\n\n                        grupo_cols = [\n                                        \"S.COD_ID\",\n                                        *COLUNAS_T1,\n                                        \"UNT.CONJ\",\n                                        \"UNT.COD_ID\",\n                                    ]\n\n                        return cte_modelo(\n                                            nome=\"EQTRAT_SUB\",\n                                            select_sql=select_sql,\n                                            from_sql=from_sql,\n                                            where_sql=where_sql,\n                                            grupo_colunas=grupo_cols,\n                                        )\n\n                    def cte_unificado(nome_cte, tabela_eq, campo_join, tabelas_un, suf):\n                        if not tabelas_un:\n                            return \"\"\n\n                        select_sql = sel_eq(\n                                            tipo=nome_cte.replace(\"_UNS\", \"\"),\n                                            sub=\"S.COD_ID\",\n                                            cod=\"UNT.COD_ID\",\n                                            descr=\"T1.DESCR\",\n                                            odi=\"T1.ODI\",\n                                            ti=\"T1.TI\",\n                                            tuc=\"T1.TUC\",\n                                            a1=\"T1.A1\",\n                                            a2=\"T1.A2\",\n                                            a3=\"T1.A3\",\n                                            a4=\"T1.A4\",\n                                            a5=\"T1.A5\",\n                                            a6=\"T1.A6\",\n                                            uar=\"T1.UAR\",\n                                            iduc=\"T1.IDUC\",\n                                            sitcont=\"T1.SITCONT\",\n                                            dat_imo=\"T1.DAT_IMO\",\n                                            conj=\"UNT.CONJ\",\n                                        )\n\n                        from_sql = f\"\"\"\n                                        FROM {tabela(tabela_eq, suf)} T1\n                                        LEFT JOIN (\n                                            {subquery_uniao(tabelas_un)}\n                                        ) UNT\n                                            ON T1.{campo_join} = UNT.COD_ID\n                                        AND T1.GRU_TEN = UNT.GRU_TEN\n                                        LEFT JOIN {tabela(\"SUB\", suf)} S\n                                            ON UNT.SUB = S.COD_ID\n                                    \"\"\"\n\n                        where_sql = \"\"\"\n                                        WHERE T1.TIP_INST IN ('SE_MT', 'SE_AT')\n                                        AND T1.SITCONT IN ('AT1', 'SF', 'RT')\n                                    \"\"\"\n\n                        grupo_cols = [\n                                        \"S.COD_ID\",\n                                        *COLUNAS_T1,\n                                        \"UNT.CONJ\",\n                                        \"UNT.COD_ID\",\n                                    ]\n\n                        return cte_modelo(\n                                            nome=nome_cte,\n                                            select_sql=select_sql,\n                                            from_sql=from_sql,\n                                            where_sql=where_sql,\n                                            grupo_colunas=grupo_cols,\n                                        )\n\n                    def sql_final(ctes):\n                        cols = \", \".join(ESQUEMA_EQ)\n\n                        union_sql = \"\\nUNION ALL\\n\".join(\n                                                            f\"SELECT {cols} FROM {cte}\"\n                                                            for cte in ctes\n                                                        )\n                        cte_p1 = \",\\n\".join(ctes_sql)\n                        return f\"\"\"\n                                    WITH\n                                    {cte_p1}\n\n                                    SELECT\n                                        {cols}\n                                    FROM (\n                                        {union_sql}\n                                    ) BASE\n                                    ;\n                                \"\"\".strip()\n\n\n                    tabs_cr = [\n                                    f\"UNCRBT{suf}\",\n                                    f\"UNCRMT{suf}\",\n                                    f\"UNCRAT{suf}\",\n                                ]\n                    tabs_cr = [t for t in tabs_cr if t in tabelas_existentes]\n\n                    tabs_re = [\n                                    f\"UNREBT{suf}\",\n                                    f\"UNREMT{suf}\",\n                                    f\"UNREAT{suf}\",\n                                ]\n                    tabs_re = [t for t in tabs_re if t in tabelas_existentes]\n\n                    tabs_se = [\n                                    f\"UNSEBT{suf}\",\n                                    f\"UNSEMT{suf}\",\n                                    f\"UNSEAT{suf}\",\n                                ]\n                    tabs_se = [t for t in tabs_se if t in tabelas_existentes]\n                    ctes_sql = [\n                                    cte_bay(suf),\n                                    cte_bar(suf),\n                                    cte_eqtrm(suf),\n                                    cte_eqtrmtmt(),\n                                    cte_eqtrat(suf),\n                                ]\n\n                    cte_eqcr = cte_unificado(\"EQCR_UNS\", \"EQCR\", \"UN_CR\", tabs_cr, suf)\n                    cte_eqre = cte_unificado(\"EQRE_UNS\", \"EQRE\", \"UN_RE\", tabs_re, suf)\n                    cte_eqse = cte_unificado(\"EQSE_UNS\", \"EQSE\", \"UN_SE\", tabs_se, suf)\n\n                    if cte_eqcr:\n                        ctes_sql.append(cte_eqcr)\n\n                    if cte_eqre:\n                        ctes_sql.append(cte_eqre)\n\n                    if cte_eqse:\n                        ctes_sql.append(cte_eqse)\n\n                    ctes_resultado = [\n                                        \"BAY_SUB\",\n                                        \"BAR_SUB\",\n                                        \"EQTRM_SUB\",\n                                        \"EQTRMTMT_SUB\",\n                                        \"EQTRAT_SUB\",\n                                    ]\n\n                    if cte_eqcr:\n                        ctes_resultado.append(\"EQCR_UNS\")\n\n                    if cte_eqre:\n                        ctes_resultado.append(\"EQRE_UNS\")\n\n                    if cte_eqse:\n                        ctes_resultado.append(\"EQSE_UNS\")\n\n                    SQLq = sql_final(ctes_resultado)        \n                    df_SE = pd.read_sql(SQLq, bd)\n\n                    ax = (\n                            df_SE.groupby(['Subestacao','CONJ'], dropna=False)\n                                .agg(CONJ_COUNT = ('CONJ', 'count'))\n                                .reset_index()\n                        )\n\n                    df_SE = df_SE.sort_values(\n                                                by=[\"Subestacao\",\"TipoEquipamento\",\"TUC\",\"ODI\"],\n                                                key=lambda col: col.isna(),\n                                                kind=\"stable\"\n                                            ).reset_index(drop=True)\n                    df_SE['ODI'] = df_SE['ODI'].ffill()\n                    for n in df_SE.columns.to_list():\n                        if n[:2].upper() == 'QT':\n                            df_SE[n] = df_SE[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n\n                    st.dataframe(df_SE, width='stretch', hide_index=True)  \n\n                    dic_ATIVOS = {}\n                    dic_ATIVOS['SE'] = df_SE\n\n                    map_tip_pn = {\n                                    '': 'ND','0':'ND',\n                                    'PIS':'Ponto interno subestação','PSA':'Ponto de saída de circuito de média tensão',\n                                    'PSU':'Ponto subterrâneo','POS':'Poste','TOR':'Torre','PSE':'Ponto de suporte de equipamento',\n                                    'PSB':'Ponto de suporte de barramento','PEC':'Ponto de entrada de condomínio','PMF':'Ponto de medição de fronteira',\n                                    'FLT':'Fly-tap','PFL':'Ponto de fim de linha','CXP':'Caixa de passagem','PON':'Pontalete','DRV':'Derivação'\n                                }\n\n                    map_tip_pn = {**{'': 'ND', '0': 'ND'}, **{k:v for k,v in map_tip_pn.items() if isinstance(k,str)}}\n\n                    map_estr = {\n                        '': 'ND','0':'ND','AT':'Autoportante','CA':'Cabine','CI':'Circular','CP':'Contra poste','CD':'Curvo duplo',\n                        'CS':'Curvo simples','DT':'Duplo T','ES':'Estaiada','HH':'(2 Colunas e Viga Central)','OR':'Ornamental',\n                        'QU':'Quadrado','RE':'Retangular','ST':'Sextavado','TO':'Torre ou Treliça','TG':'Triangular','TL':'Trilho',\n                        'TS':'Trilho simples','TP':'Trusspole','TU':'Tubular','TQ':'Tubular – Seção quadrada'\n                    }\n\n                    map_mat = {\n                        '': 'ND','0':'ND','AC':'Aço','CA':'Mista (Concreto e Aço)','CO':'Concreto','CL':'Concreto leve','EC':'Em compósito',\n                        'FE':'Ferro','CQ':'Madeira','ME':'Madeira eucalipto','MQ':'Madeira quadrado','MT':'Metálica','AV':'Alvenaria'\n                    }\n\n                    map_esf_especial = {\n                        '66':'Leve (Madeira)','67':'Médio (Madeira)','68':'Pesado (Madeira)','69':'Extra Pesado (Madeira)',\n                        '70':'22 (Trilho)','71':'32 (Trilho)','72':'42 (Trilho)'\n                    }\n                    map_esf_numerico = {\n                        '1':'50 daN','2':'75 daN','3':'90 daN','4':'100 daN','5':'150 daN','6':'200 daN','77':'250 daN','7':'300 daN',\n                        '8':'400 daN','9':'450 daN','10':'500 daN','11':'600 daN','12':'700 daN','13':'750 daN','14':'800 daN',\n                        '15':'850 daN','16':'900 daN','17':'950 daN','18':'1000 daN','19':'1050 daN','20':'1100 daN','21':'1150 daN',\n                        '22':'1200 daN','23':'1250 daN','24':'1300 daN','25':'1350 daN','26':'1400 daN','27':'1450 daN','28':'1500 daN',\n                        '29':'1550 daN','30':'1600 daN','31':'1650 daN','32':'1700 daN','33':'1750 daN','34':'1800 daN','73':'1900 daN',\n                        '35':'2000 daN','74':'2100 daN','75':'2200 daN','76':'2300 daN','36':'2400 daN','37':'2500 daN','38':'2600 daN',\n                        '39':'2700 daN','40':'2800 daN','41':'2900 daN','42':'3000 daN','43':'3100 daN','44':'3200 daN','45':'3300 daN',\n                        '46':'3400 daN','47':'3500 daN','48':'3600 daN','49':'3700 daN','50':'3800 daN','51':'3900 daN','52':'4000 daN',\n                        '53':'4100 daN','54':'4200 daN','55':'4300 daN','56':'4400 daN','57':'4500 daN','58':'4600 daN','59':'4700 daN',\n                        '60':'4800 daN','61':'4900 daN','62':'5000 daN','63':'5100 daN','64':'5600 daN','65':'5700 daN'\n                    }\n                    map_esf = {**{'': 'ND','0':'ND'}, **map_esf_numerico, **map_esf_especial}\n\n                    map_alt = {'0' : 'Não informado ou não aplicável', '1' : '4,3 m', '2' : '4,5 m', '3' : '5 m', '4' : '6 m', '5' : '7 m', \n                            '6' : '7,5 m', '7' : '8 m', '8' : '8,5 m', '9' : '9 m', '10' : '10 m', '11' : '10,5 m', '12' : '11 m', \n                            '13' : '12 m', '14' : '13 m', '15' : '14 m', '16' : '15 m', '17' : '16 m', '18' : '17 m', '19' : '17,5 m', \n                            '20' : '18 m', '21' : '19 m', '22' : '20 m', '23' : '20,5 m', '24' : '21 m', '25' : '21,5 m', '26' : '22 m', \n                            '27' : '23 m', '28' : '23,5 m', '29' : '24 m', '30' : '24,6 m', '31' : '25 m', '32' : '26 m', '33' : '26,6 m', \n                            '34' : '27 m', '35' : '27,6 m', '36' : '27,7 m', '37' : '28 m', '38' : '28,6 m', '39' : '28,7 m', '40' : '29 m', \n                            '41' : '29,6 m', '42' : '29,7 m', '43' : '30 m', '44' : '30,2 m', '45' : '31 m', '46' : '32 m', '47' : '33 m', \n                            '48' : '34 m', '49' : '35 m', '50' : '36 m', '51' : '37 m', '52' : '38 m', '53' : '39 m', '54' : '40 m', \n                            '55' : '42 m', '56' : '43 m', '57' : '44 m', '58' : '45 m', '59' : '46 m', '60' : '47 m', '61' : '48 m', \n                            '62' : '49 m', '63' : '50 m', '64' : '51 m', '65' : '52 m', '70' : '53 m', '66' : '54 m', '71' : '55 m', \n                            '72' : '56 m', '73' : '57 m', '74' : '58 m', '75' : '59 m', '76' : '60 m', '77' : '61 m', '78' : '62 m', \n                            '79' : '63 m', '67' : '64 m', '80' : '65 m', '68' : '66 m', '81' : '67 m', '82' : '68 m', '83' : '69 m', \n                            '84' : '70 m', '85' : '71 m', '86' : '72 m', '87' : '73 m', '88' : '74 m', '89' : '75 m', '90' : '76 m', \n                            '91' : '77 m', '92' : '78 m', '93' : '79 m', '94' : '80 m', '95' : '81 m', '96' : '82 m', '97' : '83 m', \n                            '69' : '84 m', '98' : '85 m', '99' : '86 m', '100' : '87 m', '101' : '88 m', '102' : '89 m', '103' : '90 m'\n                            }\n                    \n                    SQLest = \"\"\n                    \n                    for nmLD in [\"SSDAT\", \"SSDMT\"]:\n                        texto, dic_ATIVOS[f'df_LD_{nmLD[-2:]}'] = cnt_bloco(nmLD, suf, bd, tabelas_existentes, st=st)\n                        if len(dic_ATIVOS[f'df_LD_{nmLD[-2:]}']):\n                            _, _, label = _mk_ax(nmLD)\n                            st.html(\n                                            f\"<p style='text-align: justify; text-indent: 40px'>Resultado para linhas em {label} nesta empresa.</p><hr/>\"\n                                        )\n                            st.dataframe(dic_ATIVOS[f'df_LD_{nmLD[-2:]}'], width='stretch', hide_index=True)\n                        else:\n                            _, _, label = _mk_ax(nmLD)\n                            st.html(\n                                            f\"<p style='text-align: justify; text-indent: 40px'>Não há linhas de distribuição para {label} nesta empresa.</p><hr/>\"\n                                        )\n                        if f\"{nmLD}{suf}\" in tabelas_existentes:\n                            df = pd.read_sql(ponnot_filtrados(nmLD, suf), bd)\n                            df['TIP_PN_DESC']  = _map(df, 'TIP_PN', map_tip_pn)\n                            df['TIP_ESTR']     = _map(df, 'ESTR',   map_estr)\n                            df['TIP_MAT']      = _map(df, 'MAT',    map_mat)\n                            df['TIP_ESF']      = _map(df, 'ESF',    map_esf)\n                            df['TIP_ALT']      = _map(df, 'ALT',    map_alt)\n\n                            df = df.drop(columns=['TIP_PN', 'ESTR','MAT', 'ESF', 'ALT'])\n                            dic_ATIVOS[f'df_LD_ESTR_{nmLD[-2:]}'] = df.copy()\n                            if f\"{nmLD}{suf}\" not in tabelas_existentes:\n                                _, _, label = _mk_ax(nmLD)\n                                st.html(\n                                    f\"\"\"<p style='text-align: justify; text-indent: 40px'>Não há linhas para {label} nesta \n                                    empresa.</p><hr/>\"\"\"\n                                )\n                            else:\n                                if len(df):\n                                    st1 = st.html(texto_exp_postes(nmLD))\n                                    st.dataframe(df, width='stretch', hide_index=True)\n\n                    def unidades_existentes(prefixos, suf, tabelas_existentes):\n                        tabs = [f\"{p}{suf}\" for p in prefixos]\n                        return [t for t in tabs if t in tabelas_existentes]\n\n\n                    def uniao_unidades(tabs):\n                        return \" UNION ALL \".join(\n                            f\"SELECT COD_ID, SUB, CONJ, GRU_TEN FROM {t}\"\n                            for t in tabs\n                        )\n                    \n                    dic_EQ = {\n                                'LD': ('LD_AER_MT', 'LD_AER_AT', 'LD_SUB_MT', 'LD_SUB_AT'),\n                                'RD': ('RD_AER_URB', 'RD_AER_RUR', 'RD_SUBT_URB', 'RD_SUBT_RUR', 'RD_SUBM')\n                            }\n                    \n                    for chave, valor in dic_EQ.items():\n                        tabs_cr = unidades_existentes(\n                                                        [\"UNCRBT\", \"UNCRMT\", \"UNCRAT\"],\n                                                        suf,\n                                                        tabelas_existentes\n                                                    )\n                        if tabs_cr:\n                            SQLq_ECR = f\"\"\",EQCR_UNS AS (\n                                SELECT \n                                    'EQCR_{chave}' AS TipoEquipamento,\n                                    S.COD_ID AS Subestacao,\n                                    UNT.COD_ID AS CodigoEquipamento,\n                                    T1.DESCR AS DescricaoEquipamento,\n                                    T1.ODI,\n                                    T1.TI,\n                                    T1.TUC,\n                                    T1.A1,\n                                    T1.A2,\n                                    T1.A3,\n                                    T1.A4,\n                                    T1.A5,\n                                    T1.A6,\n                                    T1.UAR,\n                                    T1.IDUC,\n                                    T1.SITCONT,\n                                    T1.DAT_IMO,\n                                    UNT.CONJ,\n                                    COUNT(*) AS Qtd_BDGD\n                                FROM (\n                                        {uniao_unidades(tabs_cr)}\n                                    ) UNT\n                                LEFT JOIN EQCR{suf} T1\n                                    ON T1.UN_CR = UNT.COD_ID\n                                AND T1.GRU_TEN = UNT.GRU_TEN\n                                LEFT JOIN SUB{suf} S ON UNT.SUB = S.COD_ID\n                                WHERE T1.TIP_INST IN {valor}\n                                AND T1.SITCONT IN ('AT1','SF','RT')\n                                GROUP BY\n                                    S.COD_ID,\n                                    T1.DESCR,\n                                    T1.ODI,\n                                    T1.TI,\n                                    T1.TUC,\n                                    T1.A1,\n                                    T1.A2,\n                                    T1.A3,\n                                    T1.A4,\n                                    T1.A5,\n                                    T1.A6,\n                                    T1.UAR,\n                                    T1.IDUC,\n                                    T1.SITCONT,\n                                    T1.DAT_IMO,\n                                    UNT.CONJ,\n                                    UNT.COD_ID\n                            )\"\"\"\n                        else:\n                            SQLq_ECR = \"\"\n\n                        tabs_re = unidades_existentes(\n                                                        [\"UNREBT\", \"UNREMT\", \"UNREAT\"],\n                                                        suf,\n                                                        tabelas_existentes\n                                                    )\n\n                        if tabs_re:\n                            SQLq_RE = f\"\"\",EQRE_UNS AS (\n                                SELECT \n                                    'EQRE_{chave}' AS TipoEquipamento,\n                                    S.COD_ID AS Subestacao,\n                                    UNT.COD_ID AS CodigoEquipamento,\n                                    T1.DESCR AS DescricaoEquipamento,\n                                    T1.ODI,\n                                    T1.TI,\n                                    T1.TUC,\n                                    T1.A1,\n                                    T1.A2,\n                                    T1.A3,\n                                    T1.A4,\n                                    T1.A5,\n                                    T1.A6,\n                                    T1.UAR,\n                                    T1.IDUC,\n                                    T1.SITCONT,\n                                    T1.DAT_IMO,\n                                    UNT.CONJ,\n                                    COUNT(*) AS Qtd_BDGD\n                                FROM (\n                                    {uniao_unidades(tabs_re)}\n                                ) UNT\n                                LEFT JOIN EQRE{suf} T1\n                                    ON T1.UN_RE = UNT.COD_ID\n                                AND T1.GRU_TEN = UNT.GRU_TEN\n                                LEFT JOIN SUB{suf} S ON UNT.SUB = S.COD_ID\n                                WHERE T1.TIP_INST IN {valor}\n                                AND T1.SITCONT IN ('AT1','SF','RT')\n                                GROUP BY\n                                    S.COD_ID,\n                                    T1.DESCR,\n                                    T1.TI,\n                                    T1.TUC,\n                                    T1.A1,\n                                    T1.A2,\n                                    T1.A3,\n                                    T1.A4,\n                                    T1.A5,\n                                    T1.A6,\n                                    T1.UAR,\n                                    T1.IDUC,\n                                    T1.SITCONT,\n                                    T1.DAT_IMO,\n                                    UNT.CONJ,\n                                    UNT.COD_ID\n                            )\"\"\"\n                        else:\n                            SQLq_RE = \"\"\n\n                        tabs_se = unidades_existentes(\n                                                        [\"UNSEBT\", \"UNSEMT\", \"UNSEAT\"],\n                                                        suf,\n                                                        tabelas_existentes\n                                                    )\n\n                        if tabs_se:\n                            SQLq_SE = f\"\"\",EQSE_UNS AS (\n                                SELECT \n                                    'EQSE_{chave}' AS TipoEquipamento,\n                                    S.COD_ID AS Subestacao,\n                                    UNT.COD_ID AS CodigoEquipamento,\n                                    T1.DESCR AS DescricaoEquipamento,\n                                    T1.ODI,\n                                    T1.TI,\n                                    T1.TUC,\n                                    T1.A1,\n                                    T1.A2,\n                                    T1.A3,\n                                    T1.A4,\n                                    T1.A5,\n                                    T1.A6,\n                                    T1.UAR,\n                                    T1.IDUC,\n                                    T1.SITCONT,\n                                    T1.DAT_IMO,\n                                    UNT.CONJ,\n                                    COUNT(*) AS Qtd_BDGD\n                                FROM (\n                                    {uniao_unidades(tabs_se)}\n                                ) UNT\n                                LEFT JOIN EQSE{suf} T1\n                                    ON T1.UN_SE = UNT.COD_ID\n                                AND T1.GRU_TEN = UNT.GRU_TEN\n                                LEFT JOIN SUB{suf} S ON UNT.SUB = S.COD_ID\n                                WHERE T1.TIP_INST IN {valor}\n                                AND T1.SITCONT IN ('AT1','SF','RT')\n                                GROUP BY\n                                    S.COD_ID,\n                                    T1.DESCR,\n                                    T1.TI,\n                                    T1.TUC,\n                                    T1.A1,\n                                    T1.A2,\n                                    T1.A3,\n                                    T1.A4,\n                                    T1.A5,\n                                    T1.A6,\n                                    T1.UAR,\n                                    T1.IDUC,\n                                    T1.SITCONT,\n                                    T1.DAT_IMO,\n                                    UNT.CONJ,\n                                    UNT.COD_ID\n                            )\"\"\"\n                        else:\n                            SQLq_SE = \"\"\n\n                        SQLq = f\"\"\"\n                                    WITH\n                                    EQTRAT_SUB AS (\n                                        SELECT 'TRAFO_{chave}' AS TipoEquipamento,\n                                            S.COD_ID AS Subestacao,\n                                            UNT.COD_ID AS CodigoEquipamento,\n                                            T1.DESCR AS DescricaoEquipamento,\n                                            T1.ODI,\n                                            T1.TI,\n                                            T1.TUC,\n                                            T1.A1,\n                                            T1.A2,\n                                            T1.A3,\n                                            T1.A4,\n                                            T1.A5,\n                                            T1.A6,\n                                            T1.UAR,\n                                            T1.IDUC,\n                                            T1.SITCONT,\n                                            T1.DAT_IMO,\n                                            UNT.CONJ,\n                                            COUNT(*) AS Qtd_BDGD\n                                        FROM UNTRAT{suf} UNT\n                                        LEFT JOIN EQTRAT{suf} T1 ON T1.UNI_TR_AT = UNT.COD_ID\n                                        LEFT JOIN SUB{suf} S ON UNT.SUB = S.COD_ID\n                                        WHERE T1.TIP_INST IN {valor}\n                                        AND T1.SITCONT IN ('AT1','SF','RT')\n                                        GROUP BY\n                                            S.COD_ID,\n                                            T1.DESCR,\n                                            T1.TI,\n                                            T1.TUC,\n                                            T1.A1,\n                                            T1.A2,\n                                            T1.A3,\n                                            T1.A4,\n                                            T1.A5,\n                                            T1.A6,\n                                            T1.UAR,\n                                            T1.IDUC,\n                                            T1.SITCONT,\n                                            T1.DAT_IMO,\n                                            UNT.CONJ,\n                                            UNT.COD_ID\n                                    ),\n                                    EQTRMTMT_SUB AS ( \n                                        SELECT \n                                            'TRAFO MT-BT' AS TipoEquipamento, \n                                            S.COD_ID AS Subestacao, \n                                            UNT.COD_ID AS CodigoEquipamento, \n                                            T1.DESCR AS DescricaoEquipamento, \n                                            T1.ODI, T1.TI, T1.TUC, T1.A1, T1.A2, T1.A3, T1.A4, T1.A5, T1.A6, \n                                            T1.UAR, T1.IDUC, T1.SITCONT,\n                                            T1.DAT_IMO, UNT.CONJ, \n                                            COUNT(*) AS Qtd_BDGD \n                                        FROM UNTRMT{suf} UNT \n                                        LEFT JOIN EQTRMT{suf} T1 \n                                        ON T1.UNI_TR_MT = UNT.COD_ID \n                                        LEFT JOIN SUB{suf} S ON UNT.SUB = S.COD_ID \n                                        WHERE T1.TIP_INST IN {valor} AND T1.SITCONT IN ('AT1','SF','RT') \n                                        GROUP BY S.COD_ID, T1.DESCR, T1.TI, T1.TUC, T1.A1, T1.A2, T1.A3, T1.A4, T1.A5, \n                                        T1.A6, T1.UAR, T1.IDUC, T1.SITCONT,\n                                            T1.DAT_IMO, UNT.CONJ, UNT.COD_ID ),\n                                    EQTRM_SUB AS (\n                                        SELECT 'EQTRM_{chave}' AS TipoEquipamento,\n                                            S.COD_ID AS Subestacao,\n                                            UCG.COD_ID AS CodigoEquipamento,\n                                            T1.DESCR AS DescricaoEquipamento,\n                                            T1.ODI,\n                                            T1.TI,\n                                            T1.TUC,\n                                            T1.A1,\n                                            T1.A2,\n                                            T1.A3,\n                                            T1.A4,\n                                            T1.A5,\n                                            T1.A6,\n                                            T1.UAR,\n                                            T1.IDUC,\n                                            T1.SITCONT,\n                                            T1.DAT_IMO,\n                                            COALESCE(UCG.CONJ,'NA') AS CONJ,\n                                            COUNT(*) AS Qtd_BDGD\n                                        FROM EQTRM{suf} T1\n                                        LEFT JOIN SUB{suf} S ON T1.SUB = S.COD_ID\n                                        LEFT JOIN UC_UNIFIC UCG ON T1.UC_UG = UCG.COD_ID\n                                        WHERE T1.TIP_INST IN {valor}\n                                        AND T1.SITCONT IN ('AT1','SF','RT')\n                                        GROUP BY\n                                            S.COD_ID,\n                                            T1.DESCR,\n                                            T1.TI,\n                                            T1.TUC,\n                                            T1.A1,\n                                            T1.A2,\n                                            T1.A3,\n                                            T1.A4,\n                                            T1.A5,\n                                            T1.A6,\n                                            T1.UAR,\n                                            T1.IDUC,\n                                            T1.SITCONT,\n                                            T1.DAT_IMO,\n                                            UCG.COD_ID\n                                    ),\n\n                                    PONNOT_SUB AS (\n                                        SELECT \n                                            CASE\n                                                WHEN T1.TIP_PN = '0' THEN 'NINF_{chave}'\n                                                WHEN T1.TIP_PN = 'PIS' THEN 'Ponto_interno_subestacao_{chave}'\n                                                WHEN T1.TIP_PN = 'PSA' THEN 'Ponto_saida_circuito_media_tensao_{chave}'\n                                                WHEN T1.TIP_PN = 'PSU ' THEN 'Ponto_subterraneo_{chave}'\n                                                WHEN T1.TIP_PN = 'POS' THEN 'POSTE_{chave}'\n                                                WHEN T1.TIP_PN = 'TOR' THEN 'TORRE_{chave}'\n                                                WHEN T1.TIP_PN = 'PSE ' THEN 'Ponto_suporte_equipamento_{chave}'\n                                                WHEN T1.TIP_PN = 'PSB' THEN 'Ponto_suporte_barramento_{chave}'\n                                                WHEN T1.TIP_PN = 'PEC' THEN 'Ponto_entrada_condominio_{chave}'\n                                                WHEN T1.TIP_PN = 'PMF' THEN 'Ponto_medicao_fronteira_{chave}'\n                                                WHEN T1.TIP_PN = 'FLT' THEN 'Fly_tap_{chave}'\n                                                WHEN T1.TIP_PN = 'PFL' THEN 'Ponto_fim_linha_{chave}'\n                                                WHEN T1.TIP_PN = 'CXP' THEN 'Caixa_passagem_{chave}'\n                                                WHEN T1.TIP_PN = 'PON' THEN 'Pontalete_{chave}'\n                                                WHEN T1.TIP_PN = 'DRV' THEN 'Derivacao_{chave}'\n                                                ELSE 'Codigo_invalido_{chave}'\n                                            END AS TipoEquipamento,\n                                            S.SUB AS Subestacao,\n                                            T1.COD_ID AS CodigoEquipamento,\n                                            T1.DESCR AS DescricaoEquipamento,\n                                            T1.ODI,\n                                            T1.TI,\n                                            T1.TUC,\n                                            T1.A1,\n                                            T1.A2,\n                                            T1.A3,\n                                            T1.A4,\n                                            T1.A5,\n                                            T1.A6,\n                                            T1.UAR,\n                                            'NA' AS IDUC,\n                                            T1.SITCONT,\n                                            '' AS DAT_IMO,\n                                            T1.CONJ,\n                                            COUNT(*) AS Qtd_BDGD\n                                        FROM PONNOT{suf} T1\n                                        LEFT JOIN (SELECT DISTINCT ODI, SUB FROM BAR{suf}) S ON T1.ODI = S.ODI\n                                        WHERE T1.TIP_INST IN {valor}\n                                        AND T1.SITCONT IN ('AT1','SF','RT') AND T1.TIP_PN NOT IN ('POS','TOR')\n                                        GROUP BY\n                                            S.SUB,\n                                            T1.DESCR,\n                                            T1.TI,\n                                            T1.TUC,\n                                            T1.A1,\n                                            T1.A2,\n                                            T1.A3,\n                                            T1.A4,\n                                            T1.A5,\n                                            T1.A6,\n                                            T1.UAR,\n                                            T1.SITCONT\n                                    )\n\n                                    {SQLq_ECR}\n                                    {SQLq_RE}\n                                    {SQLq_SE}\n\n                                    SELECT * FROM EQTRM_SUB\n                                    UNION ALL SELECT * FROM EQTRAT_SUB\n                                    UNION ALL SELECT * FROM EQTRMTMT_SUB\n                                    UNION ALL SELECT * FROM PONNOT_SUB\n                                    { \"UNION ALL SELECT * FROM EQCR_UNS\" if SQLq_ECR else \"\" }\n                                    { \"UNION ALL SELECT * FROM EQRE_UNS\" if SQLq_RE else \"\" }\n                                    { \"UNION ALL SELECT * FROM EQSE_UNS\" if SQLq_SE else \"\" }\n                                    ;\n                        \"\"\"\n\n                        df_LD = pd.read_sql(SQLq, bd)\n\n                        if len(df_LD):\n                            df_LD = df_LD.sort_values(\n                                    by=[\"Subestacao\",\"TipoEquipamento\",\"TUC\",\"ODI\"],\n                                    key=lambda col: col.isna(),\n                                    kind=\"stable\"\n                                ).reset_index(drop=True)\n                            df_LD['ODI'] = df_LD['ODI'].ffill()\n                            for n in df_LD.columns.to_list():\n                                if n[:2].upper() == 'QT':\n                                    df_LD[n] = df_LD[n].apply(lambda x: f\"{x:,.2f}\".replace(\",\", \"X\").replace(\".\", \",\").replace(\"X\", \".\"))\n                            st.html(\n                                    f\"\"\"<p style='text-align: justify; text-indent: 40px'>A seguir, temos os equipamentos e estruturas de suporte, \n                                    que não seja poste ou torre, para {chave}, \n                                    para a empresa, conforme modelados na BDGD, agrupando por tipo, localização e características técnicas. \n                                    Os dados são extraídos de entidades que representam equipamentos instalados ao longo dos circuitos ou \n                                    associados por referência geográfica aos seus segmentos (ex.: chaves seccionadoras, religadores, \n                                    transformadores, bancos de capacitores, reguladores de tensão). A coluna Qtd_BDGD representa a \n                                    quantidade consolidada por combinação de atributos técnicos; os itens cujo campo CONJ (derivado de TI, \n                                    TUC e A1–A6) seja distinto de “NA” são tratados como alocações diretas ao conjunto/trecho correspondente. \n                                    Quando CONJ = “NA”, os equipamentos são considerados parte de uma agregação coletiva e serão rateados \n                                    conforme critério a ser explicitado. Essa distinção assegura a granularidade adequada para a modelagem \n                                    patrimonial por circuito e rede, preservando a rastreabilidade físico-contábil.</p><hr/>\"\"\"\n                                )\n                            st.dataframe(df_LD, width='stretch', hide_index=True)\n                            dic_ATIVOS[chave] =  df_LD  \n\n                    SQLest = \"\"\n\n                    for nmLD in [\"SSDAT\", \"SSDMT\", \"SSDBT\"]:\n                        texto, dic_ATIVOS[f'df_RD_{nmLD[-2:]}'] = cnt_bloco_rd(nmLD, suf, bd, tabelas_existentes, st=st)\n                        \n                        label = nmLD[-2:]\n                        if f'df_RD_{nmLD[-2:]}' in dic_ATIVOS.keys() and hasattr(dic_ATIVOS[f'df_RD_{nmLD[-2:]}'], '__len__') and len(dic_ATIVOS[f'df_RD_{nmLD[-2:]}']):\n                            st.html(texto)\n                            st.html(\n                                        f\"\"\"<p style='text-align: justify; text-indent: 40px'>A seguir o resultado para as redes \n                                        de {label} nesta empresa.</p><hr/>\"\"\"\n                                    )\n                            st.dataframe(dic_ATIVOS[f'df_RD_{nmLD[-2:]}'], width='stretch', hide_index=True)\n                        \n                            if f\"{nmLD}{suf}\" in tabelas_existentes:\n                                SQLq = ponnot_filtrados_rd(nmLD, suf)\n                                \n                                if SQLq == \"\":\n                                    continue\n                                df = pd.read_sql(SQLq, bd)\n\n                                df['TIP_PN_DESC']  = _map(df, 'TIP_PN', map_tip_pn)\n                                df['TIP_ESTR']     = _map(df, 'ESTR',   map_estr)\n                                df['TIP_MAT']      = _map(df, 'MAT',    map_mat)\n                                df['TIP_ESF']      = _map(df, 'ESF',    map_esf)\n                                df['TIP_ALT']      = _map(df, 'ALT',    map_alt)\n\n                                df = df.drop(columns=['TIP_PN', 'ESTR','MAT', 'ESF', 'ALT'])\n                                dic_ATIVOS[f'df_RD_ESTR_{nmLD[-2:]}'] = df.copy()\n                                label = nmLD[-2:]\n                                if f\"{nmLD}{suf}\" not in tabelas_existentes:\n                                    st.html(\n                                                f\"\"\"<p style='text-align: justify; text-indent: 40px'>Não há estruturas \n                                                para redes de  {label} nesta empresa.</p><hr/>\"\"\"\n                                            )\n                                else:\n                                    if len(df):\n                                        st.html(texto_exp_postes_rd(nmLD))\n                                        st.dataframe(df.head(10000), width='stretch', hide_index=True)\n                        else:\n                            st.html(\n                                        f\"\"\"<p style='text-align: justify; text-indent: 40px'>Não há redes para {label} \n                                        nesta empresa.</p><hr/>\"\"\"\n                                    )\n                    \n                    \n                    SQLest = \"\"\n                    \n                    for nmLD in [\"RAMLIG\"]:\n                        texto, dic_ATIVOS[f'df_RAMAIS'] = cnt_bloco_rm(nmLD, suf, bd, tabelas_existentes, st)\n                        if len(dic_ATIVOS[f'df_RAMAIS']):\n                            st.html(texto)\n                            st.dataframe(dic_ATIVOS[f'df_RAMAIS'].head(10000), width='stretch', hide_index=True)\n                        else:\n                            st.html(\n                                        f\"\"\"<p style='text-align: justify; text-indent: 40px'>Não há ramal \n                                        nesta empresa.</p><hr/>\"\"\"\n                                    )\n                            continue\n\n                        if f\"{nmLD}{suf}\" in tabelas_existentes:\n                            SQLq =  ponnot_filtrados_rm(nmLD, suf)   \n                            df = pd.read_sql(SQLq, bd)\n                            df['TIP_PN_DESC']  = _map(df, 'TIP_PN', map_tip_pn)\n                            df['TIP_ESTR']     = _map(df, 'ESTR',   map_estr)\n                            df['TIP_MAT']      = _map(df, 'MAT',    map_mat)\n                            df['TIP_ESF']      = _map(df, 'ESF',    map_esf)\n                            df['TIP_ALT']      = _map(df, 'ALT',    map_alt)\n\n                            df = df.drop(columns=['TIP_PN', 'ESTR','MAT', 'ESF', 'ALT'])\n                            dic_ATIVOS[f'df_RAMAIS_EST'] = df.copy()\n                            if f\"{nmLD}{suf}\" not in tabelas_existentes:\n                                st.html(\n                                    f\"<p style='text-align: justify; text-indent: 40px'>Não há estruturas em ramais nesta empresa.</p><hr/>\"\n                                )\n                            else:\n                                if len(df):\n                                    st.html(texto_exp_postes_rm(nmLD))\n                                    st.dataframe(df.head(10000), width='stretch', hide_index=True)\n\n                    SQLq_EQMED = f\"\"\"\n                                            SELECT \n                                                'EQMED_{chave}' AS TipoEquipamento, \n                                                'NA' AS Subestacao, \n                                                UCG.COD_ID AS CodigoEquipamento, \n                                                'ND' AS DescricaoEquipamento,\n                                                CASE\n                                                    WHEN T1.TIPMED IN (0,1) THEN 'Analógico'\n                                                    WHEN T1.TIPMED = 2     THEN 'Digital'\n                                                    ELSE 'Código inválido'\n                                                END AS TP_MED,\n                                                CASE\n                                                    WHEN T1.TIP_UNID = 1  THEN 'Comparador fiscal ou concentrado'\n                                                    WHEN T1.TIP_UNID = 2  THEN 'Medidor eletromecânico'\n                                                    WHEN T1.TIP_UNID = 3  THEN 'Medidor eletrônico'\n                                                    WHEN T1.TIP_UNID = 52 THEN 'Módulos de Display e/ou Corte-Religa separados do medidor'\n                                                    ELSE 'Código inválido'\n                                                END AS TP_UNIDADE,\n                                                T1.FAS_CON,\n                                                T1.ODI,\n                                                T1.TI,\n                                                T1.TUC,\n                                                T1.A1,\n                                                T1.A2,\n                                                T1.A3,\n                                                T1.A4,\n                                                T1.A5,\n                                                T1.A6,\n                                                T1.UAR,\n                                                T1.GRU_TEN,\n                                                T1.SITCONT,\n                                                T1.DAT_IMO,\n                                                COALESCE(UCG.CONJ, 'NA') AS CONJ,\n                                                COUNT(*) AS Qtd_BDGD\n                                            FROM UC_UNIFIC UCG \n                                            LEFT JOIN  EQME{suf} T1\n                                                ON T1.UC_UG = UCG.COD_ID AND T1.GRU_TEN=UCG.GRU_TEN\n                                            WHERE T1.SITCONT IN ('AT1','SF','RT')\n                                            GROUP BY\n                                                T1.TIPMED,\n                                                T1.TIP_UNID,\n                                                T1.FAS_CON,\n                                                T1.ODI,\n                                                T1.TI,\n                                                T1.TUC,\n                                                T1.A1,\n                                                T1.A2,\n                                                T1.A3,\n                                                T1.A4,\n                                                T1.A5,\n                                                T1.A6,\n                                                T1.UAR,\n                                                T1.GRU_TEN,\n                                                T1.SITCONT,\n                                                T1.DAT_IMO,\n                                                UCG.CONJ,\n                                                UCG.COD_ID\n                                        \n                                    \"\"\"\n\n                    df_MED = pd.read_sql(SQLq_EQMED, bd)\n                    if len(df_MED):\n                        # Texto explicativo\n                        st.html(f\"\"\"<p style=\"text-align: justify; text-indent: 40px\">\n                                A consulta a seguir tem como objetivo identificar as quantidades físicas de\n                                <b>equipamentos de medição de energia elétrica</b> modeladas na base BDGD, agrupando por tipo de medição,\n                                unidade do medidor e características técnicas. Os dados são obtidos da entidade de medidores\n                                (EQME), contemplando atributos como <i>TIPMED</i> (analógico/digital), <i>TIP_UNID</i> (comparador fiscal, \n                                eletromecânico, eletrônico, módulos de display/corte-religa), <i>FAS_CON</i> (configuração de fases) e \n                                <i>GRU_TEN</i> (grupo de tensão), além de referências patrimoniais (ODI, TI, TUC, A1–A6, UAR).\n                                A coluna <b>Qtd_BDGD</b> representa a quantidade consolidada por combinação de atributos técnicos; itens cujo\n                                campo <b>CONJ</b> (derivado da junção de TI, TUC e A1–A6) possuam valor distinto de 'NA' são tratados como\n                                <b>alocações diretas</b> — com correspondência física explícita ao conjunto. Nos casos em que <b>CONJ</b> \n                                equivale a 'NA', os medidores são considerados <b>agregações coletivas</b> e, portanto, sujeitos a rateio \n                                por critério específico, oportunamente explicitado. Essa distinção permite analisar, com maior granularidade,\n                                a modelagem patrimonial dos sistemas de medição por conjunto, assegurando rastreabilidade entre o cadastro\n                                técnico e a consolidação quantitativa.\n                            </p>\n                            <hr/>       \n                        \"\"\")\n                        st.dataframe(df_MED.head(10000), width='stretch', hide_index=True)\n                        dic_ATIVOS[f'df_MED'] = df_MED.copy()\n\n                    for tabela, dado in dic_ATIVOS.items():\n                        if dado is not None and not dado.empty:\n                            dado.to_sql(\n                                            f\"ANL_CMU_{tabela}\",\n                                            bd,\n                                            if_exists='replace',\n                                            index=False\n                                        )\n\n                resumo_bdgd = pd.DataFrame()\n                \n                for nm, tbl in dic_ATIVOS.items():  \n                    if len(tbl)==0:\n                        continue   \n                    if nm in [\"SE\", \"RD\"]:\n                        df1 = tbl.copy()\n                        df1.columns = [\"Tipo\",\"Local\",\"Codigo\",\"Descricao\",\"ODI\",\n                                        \"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\n                                        \"UAR\",\"IDUC\",\"SITCONT\",'DAT_IMO',\"CONJ\",\"Qtd_BDGD\"]\n                    elif nm in [\"df_LD_AT\",\"df_RD_MT\", \"df_RD_BT\", \"df_RAMAIS\"]:\n                        df1 = tbl[[\"TipoEquipamento\",\"NomeLinha\",\"CodigoLinha\",\"DescrLinha\",\"ODI\",\n                                \"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\"UAR\",\"TP_CABO\",\"SITCONT\",\n                                \"CONJ\",\"Qtd_BDGD_m\",\"Qtd_BDGD_kg\"]].copy()\n                        df1[\"TP_CABO\"] = \"\"\n                        df1[\"Qtd_BDGD\"] = df1[\"Qtd_BDGD_kg\"]\n                        df1.loc[df1[\"A3\"].isin(['1','01',1]), \"Qtd_BDGD\"] = df1[\"Qtd_BDGD_m\"]\n                        df1 = df1.drop(columns=['Qtd_BDGD_kg','Qtd_BDGD_m'])\n                        df1.columns = [\"Tipo\",\"Local\",\"Codigo\",\"Descricao\",\"ODI\",\n                                        \"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\n                                        \"UAR\",\"IDUC\",\"SITCONT\",\"CONJ\",\"Qtd_BDGD\"]\n                        df1['DAT_IMO'] = None\n                    elif nm in [\"df_LD_ESTR_AT\", \"df_LD_ESTR_MT\", \"df_LD_ESTR_BT\", \"df_RD_ESTR_AT\", \n                                \"df_RD_ESTR_MT\",\"df_RD_ESTR_BT\", \"df_RAMAIS_EST\"]:\n                        df1 = tbl[[\"TIP_PN_DESC\",\"CT_LIST\",\"COD_ID\",\"DESCR\",\"ODI\",\n                                \"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\"UAR\",\"TIP_MAT\",\"SITCONT\",\n                                \"CONJ\",\"Qtd_BDGD\"]].copy()\n                        df1[\"TIP_MAT\"] = \"\"\n                        df1.columns = [\"Tipo\",\"Local\",\"Codigo\",\"Descricao\",\"ODI\",\n                                        \"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\n                                        \"UAR\",\"IDUC\",\"SITCONT\",\"CONJ\",\"Qtd_BDGD\"]\n                        df1['DAT_IMO'] = None\n                    elif nm == 'df_MED':\n                        df1 = tbl[[\"TipoEquipamento\",\"Subestacao\",\"CodigoEquipamento\",\"DescricaoEquipamento\",\n                                \"ODI\",\"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\"UAR\",\"GRU_TEN\",\"SITCONT\",\"DAT_IMO\",\n                                \"CONJ\",\"Qtd_BDGD\"]].copy()\n                        df1[\"GRU_TEN\"] = \"\"\n                        df1.columns = [\"Tipo\",\"Local\",\"Codigo\",\"Descricao\",\"ODI\",\n                                        \"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\n                                        \"UAR\",\"IDUC\",\"SITCONT\",\"DAT_IMO\",\"CONJ\",\"Qtd_BDGD\"]\n                    elif nm == 'df_TD':\n                        continue\n                        df1 = tbl[[\"TipoEquipamento\",\"Subestacao\",\"CodigoEquipamento\",\"DescricaoEquipamento\",\n                                \"ODI\",\"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\"UAR\",\"SITCONT\",\"DAT_IMO\",\n                                \"CONJ\",\"Qtd_BDGD\"]].copy()\n                        df1[\"GRU_TEN\"] = \"MT\"\n                        df1.columns = [\"Tipo\",\"Local\",\"Codigo\",\"Descricao\",\"ODI\",\n                                        \"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\n                                        \"UAR\",\"IDUC\",\"SITCONT\",\"DAT_IMO\",\"CONJ\",\"Qtd_BDGD\"]\n                    elif nm == 'LD':\n                        df1 = tbl[[\"TipoEquipamento\",\"Subestacao\",\"CodigoEquipamento\",\"DescricaoEquipamento\",\n                                \"ODI\",\"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\"UAR\",\"IDUC\",\"SITCONT\",\"DAT_IMO\",\n                                \"CONJ\",\"Qtd_BDGD\"]].copy()\n                        df1.columns = [\"Tipo\",\"Local\",\"Codigo\",\"Descricao\",\"ODI\",\n                                        \"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\n                                        \"UAR\",\"IDUC\",\"SITCONT\",\"DAT_IMO\",\"CONJ\",\"Qtd_BDGD\"]\n                    else:\n                        st.divider()\n                        st.error(f\"{nm} não está feita ainda!\")\n                        st.write(tbl)\n                        st.divider()\n                        raise\n                        \n                    if df1['Qtd_BDGD'].dtype == 'object':\n                        df1['Qtd_BDGD'] = pd.to_numeric(df1['Qtd_BDGD'].str.replace(\".\",\"\").str.replace(\",\",\".\"), errors='coerce')\n                    if not len(resumo_bdgd):\n                        resumo_bdgd = df1[[\"Tipo\",\"Local\",\"Codigo\",\"Descricao\",\"ODI\",\n                                            \"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\"UAR\",\"IDUC\",\"SITCONT\",\"DAT_IMO\",\"CONJ\",\"Qtd_BDGD\",\n                                            ]].copy()\n                    else:\n                        resumo_bdgd = pd.concat([resumo_bdgd, df1[[\"Tipo\",\"Local\",\"Codigo\",\"Descricao\",\"ODI\",\n                                            \"TI\",\"TUC\",\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\"UAR\",\"IDUC\",\"SITCONT\",\"DAT_IMO\",\"CONJ\",\"Qtd_BDGD\",\n                                            ]]], ignore_index=True)\n                resumo_bdgd.to_sql(f\"RESUMO_BDGD{suf}\",\n                            bd,\n                            if_exists='replace',\n                            index=False)\n                return resumo_bdgd"
+    },
+    "documentacao": {
+      "nome": "resumo_bdgd",
+      "tipo": "DataFrame"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "sel_eq",
+      "tipo": "function",
+      "linha_inicio": 164,
+      "linha_fim": 206,
+      "parametros": [
+        {
+          "nome": "tipo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "sub",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "cod",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "descr",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "odi",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "ti",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tuc",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "a1",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "a2",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "a3",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "a4",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "a5",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "a6",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "uar",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "iduc",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "sitcont",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "dat_imo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "conj",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "qtd",
+          "tipo": null,
+          "default": "'COUNT(*)'",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": []
+      },
+      "codigo": "def sel_eq(\n                                    tipo,\n                                    sub,\n                                    cod,\n                                    descr,\n                                    odi,\n                                    ti,\n                                    tuc,\n                                    a1,\n                                    a2,\n                                    a3,\n                                    a4,\n                                    a5,\n                                    a6,\n                                    uar,\n                                    iduc,\n                                    sitcont,\n                                    dat_imo,\n                                    conj,\n                                    qtd=\"COUNT(*)\",\n                                ):\n                        return f\"\"\"\n                                    SELECT\n                                        '{tipo}'  AS TipoEquipamento,\n                                        {sub}     AS Subestacao,\n                                        {cod}     AS CodigoEquipamento,\n                                        {descr}   AS DescricaoEquipamento,\n                                        {odi}     AS ODI,\n                                        {ti}      AS TI,\n                                        {tuc}     AS TUC,\n                                        {a1}      AS A1,\n                                        {a2}      AS A2,\n                                        {a3}      AS A3,\n                                        {a4}      AS A4,\n                                        {a5}      AS A5,\n                                        {a6}      AS A6,\n                                        {uar}     AS UAR,\n                                        {iduc}    AS IDUC,\n                                        {sitcont} AS SITCONT,\n                                        {dat_imo} AS DAT_IMO,\n                                        {conj}    AS CONJ,\n                                        {qtd}     AS Qtd_BDGD\n                                \"\"\""
+    },
+    "documentacao": {
+      "resumo": "Gera uma string SQL para consulta de equipamentos.",
+      "descricao": "A função cria uma consulta SQL SELECT com os parâmetros fornecidos, que representam diferentes campos de um equipamento. O parâmetro 'qtd' define a coluna de contagem retornada na consulta.",
+      "parametros": [
+        {
+          "nome": "tipo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Tipo do equipamento."
+        },
+        {
+          "nome": "sub",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Subestação onde o equipamento está localizado."
+        },
+        {
+          "nome": "cod",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Código do equipamento."
+        },
+        {
+          "nome": "descr",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Descrição detalhada do equipamento."
+        },
+        {
+          "nome": "odi",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "ODI (Operational Data Identifier) do equipamento."
+        },
+        {
+          "nome": "ti",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "TI (Technical Information) do equipamento."
+        },
+        {
+          "nome": "tuc",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "TUC (Technical Unit Code) do equipamento."
+        },
+        {
+          "nome": "a1",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Atributo 1 do equipamento."
+        },
+        {
+          "nome": "a2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Atributo 2 do equipamento."
+        },
+        {
+          "nome": "a3",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Atributo 3 do equipamento."
+        },
+        {
+          "nome": "a4",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Atributo 4 do equipamento."
+        },
+        {
+          "nome": "a5",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Atributo 5 do equipamento."
+        },
+        {
+          "nome": "a6",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Atributo 6 do equipamento."
+        },
+        {
+          "nome": "uar",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "UAR (Unit of Account) do equipamento."
+        },
+        {
+          "nome": "iduc",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "IDUC (Unique Document Code) do equipamento."
+        },
+        {
+          "nome": "sitcont",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Situação contábil do equipamento."
+        },
+        {
+          "nome": "dat_imo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Data de imobilização do equipamento."
+        },
+        {
+          "nome": "conj",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Conjunto ao qual o equipamento pertence."
+        },
+        {
+          "nome": "qtd",
+          "tipo": null,
+          "categoria": "posicional",
+          "valor_padrao": "'COUNT(*)'",
+          "descricao": "Coluna de contagem retornada na consulta. Valor padrão é 'COUNT(*)'."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "String SQL gerada."
+      },
+      "excecoes": [],
+      "dependencias": [],
+      "docstring": "Gera uma string SQL para consulta de equipamentos.\n\nArgs:\n    tipo: Tipo do equipamento.\n    sub: Subestação onde o equipamento está localizado.\n    cod: Código do equipamento.\n    descr: Descrição detalhada do equipamento.\n    odi: ODI (Operational Data Identifier) do equipamento.\n    ti: TI (Technical Information) do equipamento.\n    tuc: TUC (Technical Unit Code) do equipamento.\n    a1: Atributo 1 do equipamento.\n    a2: Atributo 2 do equipamento.\n    a3: Atributo 3 do equipamento.\n    a4: Atributo 4 do equipamento.\n    a5: Atributo 5 do equipamento.\n    a6: Atributo 6 do equipamento.\n    uar: UAR (Unit of Account) do equipamento.\n    iduc: IDUC (Unique Document Code) do equipamento.\n    sitcont: Situação contábil do equipamento.\n    dat_imo: Data de imobilização do equipamento.\n    conj: Conjunto ao qual o equipamento pertence.\n    qtd (str, optional): Coluna de contagem retornada na consulta. Valor padrão é 'COUNT(*)'.\n\nReturns:\n    str: String SQL gerada."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "formatar_grupo",
+      "tipo": "function",
+      "linha_inicio": 208,
+      "linha_fim": 209,
+      "parametros": [
+        {
+          "nome": "cols",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "join"
+        ]
+      },
+      "codigo": "def formatar_grupo(cols):\n                        return \",\\n            \".join(cols)"
+    },
+    "documentacao": {
+      "resumo": "Formata uma lista de colunas em uma única string separada por vírgulas e novas linhas.",
+      "descricao": "Concatena os elementos de uma lista de strings, utilizando uma vírgula seguida por um espaço e uma nova linha como delimitador. Se a lista estiver vazia, retorna uma string vazia.",
+      "parametros": [
+        {
+          "nome": "cols",
+          "tipo": "list[str]",
+          "categoria": "posicional",
+          "descricao": "Lista de strings que serão concatenadas."
+        }
+      ],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "String formatada com os elementos da lista separados por vírgula e nova linha."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "join"
+      ],
+      "docstring": "Formata uma lista de colunas em uma única string separada por vírgulas e novas linhas.\n\nArgs:\n    cols (list[str]): Lista de strings a serem formatadas.\n\nReturns:\n    str: String formatada com os elementos da lista separados por vírgula e nova linha."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "cte_modelo",
+      "tipo": "function",
+      "linha_inicio": 211,
+      "linha_fim": 221,
+      "parametros": [
+        {
+          "nome": "nome",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "select_sql",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "from_sql",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "where_sql",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "grupo_colunas",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "formatar_grupo",
+          "strip"
+        ]
+      },
+      "codigo": "def cte_modelo(nome, select_sql, from_sql, where_sql, grupo_colunas):\n                        grupo_sql = formatar_grupo(grupo_colunas)\n                        return f\"\"\"\n                                    {nome} AS (\n                                        {select_sql}\n                                        {from_sql}\n                                        {where_sql}\n                                        GROUP BY\n                                            {grupo_sql}\n                                    )\n                                    \"\"\".strip()"
+    },
+    "documentacao": {
+      "resumo": "Gera uma consulta SQL para um modelo CTE (Common Table Expression).",
+      "descricao": "Esta função cria uma consulta SQL que define um CTE com base em seleções, fontes e condições específicas. O resultado é uma string formatada que pode ser usada em consultas SQL mais complexas.",
+      "parametros": [
+        {
+          "nome": "nome",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome do CTE a ser gerado."
+        },
+        {
+          "nome": "select_sql",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Parte da consulta SQL que especifica os campos a serem selecionados."
+        },
+        {
+          "nome": "from_sql",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Parte da consulta SQL que especifica a fonte dos dados."
+        },
+        {
+          "nome": "where_sql",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Parte da consulta SQL que define as condições de filtro."
+        },
+        {
+          "nome": "grupo_colunas",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Lista de colunas a serem usadas na cláusula GROUP BY."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "String formatada representando o CTE SQL gerado."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "formatar_grupo",
+          "categoria": "chamada",
+          "descricao": "Função que formata a cláusula GROUP BY com base nas colunas fornecidas."
+        },
+        {
+          "nome": "strip",
+          "categoria": "chamada",
+          "descricao": "Método de string que remove espaços em branco no início e no fim da string resultante."
+        }
+      ],
+      "docstring": "Gera uma consulta SQL para um modelo CTE (Common Table Expression).\n\nArgs:\n    nome: Nome do CTE a ser gerado.\n    select_sql: Parte da consulta SQL que especifica os campos a serem selecionados.\n    from_sql: Parte da consulta SQL que especifica a fonte dos dados.\n    where_sql: Parte da consulta SQL que define as condições de filtro.\n    grupo_colunas: Lista de colunas a serem usadas na cláusula GROUP BY.\n\nReturns:\n    String formatada representando o CTE SQL gerado."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "tabela",
+      "tipo": "function",
+      "linha_inicio": 222,
+      "linha_fim": 223,
+      "parametros": [
+        {
+          "nome": "nome_base",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "suf",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": []
+      },
+      "codigo": "def tabela(nome_base, suf):\n                        return f\"{nome_base}{suf}\""
+    },
+    "documentacao": {
+      "resumo": "Concatena um nome base com um sufixo.",
+      "descricao": "A função concatena dois argumentos, um nome base e um sufixo, retornando a combinação deles como uma única string.",
+      "parametros": [
+        {
+          "nome": "nome_base",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "O nome base que será concatenado."
+        },
+        {
+          "nome": "suf",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "O sufixo que será adicionado ao nome base."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "A string resultante da concatenação de `nome_base` e `suf`."
+      },
+      "excecoes": [],
+      "dependencias": [],
+      "docstring": "Concatena um nome base com um sufixo.\n\nArgs:\n    nome_base: O nome base que será concatenado.\n    suf: O sufixo que será adicionado ao nome base.\n\nReturns:\n    A string resultante da concatenação de `nome_base` e `suf`."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "subquery_uniao",
+      "tipo": "function",
+      "linha_inicio": 225,
+      "linha_fim": 229,
+      "parametros": [
+        {
+          "nome": "tabelas_un",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "join"
+        ]
+      },
+      "codigo": "def subquery_uniao(tabelas_un):\n                        return \"\\n            UNION ALL\\n            \".join(\n                            f\"SELECT COD_ID, SUB, CONJ, GRU_TEN FROM {t}\"\n                            for t in tabelas_un\n                        )"
+    },
+    "documentacao": {
+      "resumo": "Cria uma subquery que une várias tabelas usando UNION ALL.",
+      "descricao": "Concatena consultas SELECT de múltiplas tabelas em uma única consulta utilizando o operador UNION ALL. Cada tabela é selecionada para as colunas COD_ID, SUB, CONJ e GRU_TEN.",
+      "parametros": [
+        {
+          "nome": "tabelas_un",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Lista de nomes das tabelas a serem unidas."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "String contendo a consulta SQL resultante da união das tabelas."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "join"
+      ],
+      "docstring": "Cria uma subquery que une várias tabelas usando UNION ALL.\n\nArgs:\n    tabelas_un (list): Lista de nomes das tabelas a serem unidas.\n\nReturns:\n    str: Consulta SQL resultante da união das tabelas."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "cte_simples",
+      "tipo": "function",
+      "linha_inicio": 231,
+      "linha_fim": 274,
+      "parametros": [
+        {
+          "nome": "nome",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tipo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tabela_base",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "suf",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "join_sql",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "where_sql",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "conj_expr",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "cte_modelo",
+          "sel_eq",
+          "tabela"
+        ]
+      },
+      "codigo": "def cte_simples(\n                                            nome,\n                                            tipo,\n                                            tabela_base,\n                                            suf,\n                                            join_sql,\n                                            where_sql,\n                                            conj_expr,\n                                        ):\n                        select_sql = sel_eq(\n                                            tipo=tipo,\n                                            sub=\"S.COD_ID\",\n                                            cod=\"COALESCE(NULLIF(T1.UC_UG,''), S.COD_ID)\",\n                                            descr=\"T1.DESCR\",\n                                            odi=\"T1.ODI\",\n                                            ti=\"T1.TI\",\n                                            tuc=\"T1.TUC\",\n                                            a1=\"T1.A1\",\n                                            a2=\"T1.A2\",\n                                            a3=\"T1.A3\",\n                                            a4=\"T1.A4\",\n                                            a5=\"T1.A5\",\n                                            a6=\"T1.A6\",\n                                            uar=\"T1.UAR\",\n                                            iduc=\"T1.IDUC\",\n                                            sitcont=\"T1.SITCONT\",\n                                            dat_imo=\"T1.DAT_IMO\",\n                                            conj=conj_expr,\n                                        )\n\n                        from_sql = f\"\"\"\n                                        FROM {tabela(tabela_base, suf)} T1\n                                        {join_sql}\n                                    \"\"\"\n\n                        grupo_cols = [\"S.COD_ID\", \"UCG.COD_ID\", *COLUNAS_T1, conj_expr]\n\n                        return cte_modelo(\n                                            nome=nome,\n                                            select_sql=select_sql,\n                                            from_sql=from_sql,\n                                            where_sql=where_sql,\n                                            grupo_colunas=grupo_cols,\n                                        )"
+    },
+    "documentacao": {
+      "resumo": "Gera uma consulta SQL comum table expression (CTE) simplificada.",
+      "descricao": "Esta função cria uma CTE a partir de uma tabela base, aplicando joins e filtros específicos. Utiliza funções auxiliares para gerar partes da consulta SQL.",
+      "parametros": [
+        {
+          "nome": "nome",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da CTE a ser gerada."
+        },
+        {
+          "nome": "tipo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Tipo de consulta SQL a ser executado."
+        },
+        {
+          "nome": "tabela_base",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da tabela base para a consulta."
+        },
+        {
+          "nome": "suf",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Sufixo opcional para a tabela base."
+        },
+        {
+          "nome": "join_sql",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "SQL adicional para joins na consulta."
+        },
+        {
+          "nome": "where_sql",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Filtro WHERE adicionais para a consulta."
+        },
+        {
+          "nome": "conj_expr",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Expressão de conjunto para adicionar à consulta."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "CTE gerada como resultado da função."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "cte_modelo",
+          "categoria": "chamada",
+          "descricao": "Função que gera a CTE final com os parâmetros fornecidos."
+        },
+        {
+          "nome": "sel_eq",
+          "categoria": "chamada",
+          "descricao": "Função auxiliar para gerar parte da consulta SQL de seleção."
+        },
+        {
+          "nome": "tabela",
+          "categoria": "chamada",
+          "descricao": "Função que retorna o nome completo da tabela, considerando o sufixo opcional."
+        }
+      ],
+      "docstring": "Gera uma consulta SQL comum table expression (CTE) simplificada.\n\nArgs:\n    nome: Nome da CTE a ser gerada.\n    tipo: Tipo de consulta SQL a ser executado.\n    tabela_base: Nome da tabela base para a consulta.\n    suf: Sufixo opcional para a tabela base.\n    join_sql: SQL adicional para joins na consulta.\n    where_sql: Filtro WHERE adicionais para a consulta.\n    conj_expr: Expressão de conjunto para adicionar à consulta.\n\nReturns:\n    CTE gerada como resultado da função."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "sql_na",
+      "tipo": "function",
+      "linha_inicio": 275,
+      "linha_fim": 276,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": []
+      },
+      "codigo": "def sql_na():\n                            return \"'NA'\""
+    },
+    "documentacao": {
+      "resumo": "Retorna a string 'NA'.",
+      "descricao": "A função retorna a string 'NA', que é frequentemente usada para representar valores ausentes ou não aplicáveis em dados tabulares.",
+      "parametros": [],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "String contendo o valor 'NA'."
+      },
+      "excecoes": [],
+      "dependencias": [],
+      "docstring": "Retorna a string 'NA'.\n\nReturns:\n    str: String contendo o valor 'NA'."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "cte_bay",
+      "tipo": "function",
+      "linha_inicio": 278,
+      "linha_fim": 334,
+      "parametros": [
+        {
+          "nome": "suf",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "cte_modelo",
+          "sel_eq",
+          "sql_na",
+          "tabela"
+        ]
+      },
+      "codigo": "def cte_bay(suf):\n                        bar_odi_por_sub = f\"\"\"\n                                            SELECT\n                                                SUB,\n                                                ODI\n                                            FROM {tabela(\"BAR\", suf)}\n                                        \"\"\"\n                        \n                        select_sql = sel_eq(\n                                                tipo=\"BAY\",\n                                                sub=\"S.COD_ID\",\n                                                cod=\"T1.COD_ID\",\n                                                descr=\"T1.DESCR\",\n                                                odi=\"R.ODI\",\n                                                ti=sql_na(),\n                                                tuc=sql_na(),\n                                                a1=sql_na(),\n                                                a2=sql_na(),\n                                                a3=sql_na(),\n                                                a4=sql_na(),\n                                                a5=sql_na(),\n                                                a6=sql_na(),\n                                                uar=sql_na(),\n                                                iduc=sql_na(),\n                                                sitcont=sql_na(),\n                                                dat_imo=sql_na(),\n                                                conj=sql_na(),\n                                            )\n\n                        from_sql = f\"\"\"\n                                        FROM {tabela(\"BAY\", suf)} T1\n                                        LEFT JOIN {tabela(\"SUB\", suf)} S\n                                            ON T1.SUB = S.COD_ID\n                                        LEFT JOIN (\n                                            {bar_odi_por_sub}\n                                        ) R\n                                            ON R.SUB = T1.SUB\n                                    \"\"\"\n\n                        where_sql = \"\"\"\n                                        WHERE T1.POS = 'PD'\n                                    \"\"\"\n\n                        grupo_cols = [\n                                            \"S.COD_ID\",\n                                            \"T1.COD_ID\",\n                                            \"T1.DESCR\",\n                                            \"R.ODI\",\n                                        ]\n\n                        return cte_modelo(\n                                            nome=\"BAY_SUB\",\n                                            select_sql=select_sql,\n                                            from_sql=from_sql,\n                                            where_sql=where_sql,\n                                            grupo_colunas=grupo_cols,\n                                        )"
+    },
+    "documentacao": {
+      "resumo": "Gera uma consulta SQL comum table expression (CTE) para a tabela BAY.",
+      "descricao": "A função cria uma CTE que combina dados da tabela BAY, SUB e BAR_odi_por_sub. Filtra os resultados onde a posição é 'PD'.",
+      "parametros": [
+        {
+          "nome": "suf",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Sufixo utilizado para referenciar tabelas."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Objeto resultante da função cte_modelo com a consulta SQL gerada."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "cte_modelo",
+        "sel_eq",
+        "sql_na",
+        "tabela"
+      ],
+      "docstring": "Gera uma consulta SQL comum table expression (CTE) para a tabela BAY.\n\nArgs:\n    suf: Sufixo utilizado para referenciar tabelas.\n\nReturns:\n    Objeto resultante da função cte_modelo com a consulta SQL gerada."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "cte_bar",
+      "tipo": "function",
+      "linha_inicio": 337,
+      "linha_fim": 380,
+      "parametros": [
+        {
+          "nome": "suf",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "cte_modelo",
+          "sel_eq",
+          "sql_na",
+          "tabela"
+        ]
+      },
+      "codigo": "def cte_bar(suf):\n                        select_sql = sel_eq(\n                                                tipo=\"BARRAMENTO\",\n                                                sub=\"S.COD_ID\",\n                                                cod=\"T1.COD_ID\",\n                                                descr=\"T1.DESCR\",\n                                                odi=\"T1.ODI\",\n                                                ti=\"T1.TI\",\n                                                tuc=\"T1.TUC\",\n                                                a1=\"T1.A1\",\n                                                a2=\"T1.A2\",\n                                                a3=\"T1.A3\",\n                                                a4=\"T1.A4\",\n                                                a5=\"T1.A5\",\n                                                a6=\"T1.A6\",\n                                                uar=\"T1.UAR\",\n                                                iduc=\"T1.IDUC\",\n                                                sitcont=\"T1.SITCONT\",\n                                                dat_imo=\"T1.DAT_IMO\",\n                                                conj=sql_na(),\n                                            )\n\n                        from_sql = f\"\"\"\n                                        FROM {tabela(\"BAR\", suf)} T1\n                                        LEFT JOIN {tabela(\"SUB\", suf)} S\n                                            ON T1.SUB = S.COD_ID\n                                    \"\"\"\n\n                        where_sql = \"\"\"\n                                        WHERE T1.POS = 'PD'\n                                    \"\"\"\n\n                        grupo_cols = [\n                                            \"S.COD_ID\",\n                                            *COLUNAS_T1,\n                                        ]\n\n                        return cte_modelo(\n                                            nome=\"BAR_SUB\",\n                                            select_sql=select_sql,\n                                            from_sql=from_sql,\n                                            where_sql=where_sql,\n                                            grupo_colunas=grupo_cols,\n                                        )"
+    },
+    "documentacao": {
+      "resumo": "Gera uma consulta CTE (Common Table Expression) para barramentos.",
+      "descricao": "A função cria uma consulta CTE que seleciona dados de barramentos, filtrando por posição e realizando junções com outras tabelas. A consulta é personalizada com base em parâmetros específicos.",
+      "parametros": [
+        {
+          "nome": "suf",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Sufixo utilizado para referenciar tabelas e colunas."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "CTE gerada com os dados dos barramentos filtrados."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "cte_modelo",
+        "sel_eq",
+        "sql_na",
+        "tabela"
+      ],
+      "docstring": "Gera uma consulta CTE para barramentos.\n\nArgs:\n    suf: Sufixo utilizado para referenciar tabelas e colunas.\n\nReturns:\n    CTE gerada com os dados dos barramentos filtrados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "cte_eqtrm",
+      "tipo": "function",
+      "linha_inicio": 383,
+      "linha_fim": 405,
+      "parametros": [
+        {
+          "nome": "suf",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "cte_simples",
+          "tabela"
+        ]
+      },
+      "codigo": "def cte_eqtrm(suf):\n                        join_sql = f\"\"\"\n                                        LEFT JOIN {tabela(\"SUB\", suf)} S\n                                            ON T1.SUB = S.COD_ID\n                                        LEFT JOIN UC_UNIFIC UCG\n                                            ON T1.UC_UG = UCG.COD_ID\n                                        AND UCG.GRU_TEN = T1.GRU_TEN\n                                    \"\"\"\n\n                        where_sql = \"\"\"\n                                        WHERE T1.TIP_INST IN ('SE_MT', 'SE_AT')\n                                        AND T1.SITCONT IN ('AT1', 'SF', 'RT')\n                                    \"\"\"\n\n                        return cte_simples(\n                                                nome=\"EQTRM_SUB\",\n                                                tipo=\"EQTRM\",\n                                                tabela_base=\"EQTRM\",\n                                                suf=suf,\n                                                join_sql=join_sql,\n                                                where_sql=where_sql,\n                                                conj_expr=\"UCG.CONJ\",\n                                            )"
+    },
+    "documentacao": {
+      "resumo": "Gera uma consulta SQL comuns table expressions (CTE) para a tabela EQTRM.",
+      "descricao": "A função cria uma CTE chamada 'EQTRM_SUB' que realiza junções e filtra dados da tabela EQTRM com base em certas condições de instalação e situação do contrato. A função utiliza outras funções auxiliares para gerar partes específicas da consulta SQL.",
+      "parametros": [
+        {
+          "nome": "suf",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Sufixo utilizado na referência à tabela 'SUB' e em outras partes da consulta."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "CTE SQL gerada como uma string."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "cte_simples",
+          "categoria": "chamada",
+          "descricao": "Função auxiliar que gera a CTE simples com os parâmetros fornecidos."
+        },
+        {
+          "nome": "tabela",
+          "categoria": "chamada",
+          "descricao": "Função auxiliar que retorna o nome da tabela 'SUB' com o sufixo especificado."
+        }
+      ],
+      "docstring": "Gera uma consulta SQL comuns table expressions (CTE) para a tabela EQTRM.\n\nArgs:\n    suf: Sufixo utilizado na referência à tabela 'SUB' e em outras partes da consulta.\n\nReturns:\n    CTE SQL gerada como uma string."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "cte_eqtrmtmt",
+      "tipo": "function",
+      "linha_inicio": 408,
+      "linha_fim": 456,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "cte_modelo",
+          "sel_eq"
+        ]
+      },
+      "codigo": "def cte_eqtrmtmt():\n                        select_sql = sel_eq(\n                                                tipo=\"TRAFO MT-MT\",\n                                                sub=\"S.COD_ID\",\n                                                cod=\"UNT.COD_ID\",\n                                                descr=\"T1.DESCR\",\n                                                odi=\"T1.ODI\",\n                                                ti=\"T1.TI\",\n                                                tuc=\"T1.TUC\",\n                                                a1=\"T1.A1\",\n                                                a2=\"T1.A2\",\n                                                a3=\"T1.A3\",\n                                                a4=\"T1.A4\",\n                                                a5=\"T1.A5\",\n                                                a6=\"T1.A6\",\n                                                uar=\"T1.UAR\",\n                                                iduc=\"T1.IDUC\",\n                                                sitcont=\"T1.SITCONT\",\n                                                dat_imo=\"T1.DAT_IMO\",\n                                                conj=\"UNT.CONJ\",\n                                            )\n\n                        from_sql = \"\"\"\n                                        FROM EQTRMT_AT T1\n                                        LEFT JOIN UNTRMT_AT UNT\n                                            ON T1.UNI_TR_MT = UNT.COD_ID\n                                        LEFT JOIN SUB_AT S\n                                            ON UNT.SUB = S.COD_ID\n                                    \"\"\"\n\n                        where_sql = \"\"\"\n                                        WHERE T1.TIP_INST IN ('SE_MT', 'SE_AT')\n                                        AND T1.SITCONT IN ('AT1', 'SF', 'RT')\n                                    \"\"\"\n\n                        grupo_cols = [\n                                        \"S.COD_ID\",\n                                        *COLUNAS_T1,\n                                        \"UNT.CONJ\",\n                                        \"UNT.COD_ID\",\n                                    ]\n\n                        return cte_modelo(\n                                            nome=\"EQTRMTMT_SUB\",\n                                            select_sql=select_sql,\n                                            from_sql=from_sql,\n                                            where_sql=where_sql,\n                                            grupo_colunas=grupo_cols,\n                                        )"
+    },
+    "documentacao": {
+      "resumo": "Gera uma consulta SQL comum table expression (CTE) para equipamentos de transformação MT-MT.",
+      "descricao": "A função cria uma CTE que seleciona dados de equipamentos de transformação MT-MT, filtrando por tipos específicos e situações contábeis. A consulta é composta por partes SELECT, FROM e WHERE, e utiliza funções personalizadas para seleção dos dados.",
+      "parametros": [],
+      "retorno": {
+        "tipo": null,
+        "descricao": "CTE gerada como resultado da função."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "cte_modelo",
+        "sel_eq"
+      ],
+      "docstring": "Gera uma consulta SQL comum table expression (CTE) para equipamentos de transformação MT-MT.\n\nReturns:\n    CTE gerada como resultado da função."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "cte_eqtrat",
+      "tipo": "function",
+      "linha_inicio": 458,
+      "linha_fim": 506,
+      "parametros": [
+        {
+          "nome": "suf",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "cte_modelo",
+          "sel_eq",
+          "tabela"
+        ]
+      },
+      "codigo": "def cte_eqtrat(suf):\n                        select_sql = sel_eq(\n                                                tipo=\"TRAFO AT-MT\",\n                                                sub=\"S.COD_ID\",\n                                                cod=\"UNT.COD_ID\",\n                                                descr=\"T1.DESCR\",\n                                                odi=\"T1.ODI\",\n                                                ti=\"T1.TI\",\n                                                tuc=\"T1.TUC\",\n                                                a1=\"T1.A1\",\n                                                a2=\"T1.A2\",\n                                                a3=\"T1.A3\",\n                                                a4=\"T1.A4\",\n                                                a5=\"T1.A5\",\n                                                a6=\"T1.A6\",\n                                                uar=\"T1.UAR\",\n                                                iduc=\"T1.IDUC\",\n                                                sitcont=\"T1.SITCONT\",\n                                                dat_imo=\"T1.DAT_IMO\",\n                                                conj=\"UNT.CONJ\",\n                                            )\n\n                        from_sql = f\"\"\"\n                                        FROM {tabela(\"EQTRAT\", suf)} T1\n                                        LEFT JOIN UNTRAT_AT UNT\n                                            ON T1.UNI_TR_AT = UNT.COD_ID\n                                        LEFT JOIN SUB_AT S\n                                            ON UNT.SUB = S.COD_ID\n                                    \"\"\"\n\n                        where_sql = \"\"\"\n                                        WHERE T1.TIP_INST IN ('SE_MT', 'SE_AT')\n                                        AND T1.SITCONT IN ('AT1', 'SF', 'RT')\n                                    \"\"\"\n\n                        grupo_cols = [\n                                        \"S.COD_ID\",\n                                        *COLUNAS_T1,\n                                        \"UNT.CONJ\",\n                                        \"UNT.COD_ID\",\n                                    ]\n\n                        return cte_modelo(\n                                            nome=\"EQTRAT_SUB\",\n                                            select_sql=select_sql,\n                                            from_sql=from_sql,\n                                            where_sql=where_sql,\n                                            grupo_colunas=grupo_cols,\n                                        )"
+    },
+    "documentacao": {
+      "resumo": "Gera uma consulta SQL comum table expression (CTE) para dados de equipamentos de transformação.",
+      "descricao": "A função cria uma CTE que seleciona e filtra dados de equipamentos de transformação, utilizando tabelas relacionadas e condições específicas. A consulta é personalizada com base em parâmetros como tipo, subcategoria, código, descrição, etc., e retorna os resultados agrupados por várias colunas.",
+      "parametros": [
+        {
+          "nome": "suf",
+          "tipo": null,
+          "descricao": "Sufixo utilizado para referenciar a tabela principal."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "CTE gerada com os dados filtrados e agrupados."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "cte_modelo",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "sel_eq",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "tabela",
+          "categoria": "chamada"
+        }
+      ],
+      "docstring": "Gera uma consulta SQL comum table expression (CTE) para dados de equipamentos de transformação.\n\nArgs:\n    suf: Sufixo utilizado para referenciar a tabela principal.\n\nReturns:\n    CTE gerada com os dados filtrados e agrupados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "cte_unificado",
+      "tipo": "function",
+      "linha_inicio": 508,
+      "linha_fim": 562,
+      "parametros": [
+        {
+          "nome": "nome_cte",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tabela_eq",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "campo_join",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tabelas_un",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "suf",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "cte_modelo",
+          "nome_cte.replace",
+          "sel_eq",
+          "subquery_uniao",
+          "tabela"
+        ]
+      },
+      "codigo": "def cte_unificado(nome_cte, tabela_eq, campo_join, tabelas_un, suf):\n                        if not tabelas_un:\n                            return \"\"\n\n                        select_sql = sel_eq(\n                                            tipo=nome_cte.replace(\"_UNS\", \"\"),\n                                            sub=\"S.COD_ID\",\n                                            cod=\"UNT.COD_ID\",\n                                            descr=\"T1.DESCR\",\n                                            odi=\"T1.ODI\",\n                                            ti=\"T1.TI\",\n                                            tuc=\"T1.TUC\",\n                                            a1=\"T1.A1\",\n                                            a2=\"T1.A2\",\n                                            a3=\"T1.A3\",\n                                            a4=\"T1.A4\",\n                                            a5=\"T1.A5\",\n                                            a6=\"T1.A6\",\n                                            uar=\"T1.UAR\",\n                                            iduc=\"T1.IDUC\",\n                                            sitcont=\"T1.SITCONT\",\n                                            dat_imo=\"T1.DAT_IMO\",\n                                            conj=\"UNT.CONJ\",\n                                        )\n\n                        from_sql = f\"\"\"\n                                        FROM {tabela(tabela_eq, suf)} T1\n                                        LEFT JOIN (\n                                            {subquery_uniao(tabelas_un)}\n                                        ) UNT\n                                            ON T1.{campo_join} = UNT.COD_ID\n                                        AND T1.GRU_TEN = UNT.GRU_TEN\n                                        LEFT JOIN {tabela(\"SUB\", suf)} S\n                                            ON UNT.SUB = S.COD_ID\n                                    \"\"\"\n\n                        where_sql = \"\"\"\n                                        WHERE T1.TIP_INST IN ('SE_MT', 'SE_AT')\n                                        AND T1.SITCONT IN ('AT1', 'SF', 'RT')\n                                    \"\"\"\n\n                        grupo_cols = [\n                                        \"S.COD_ID\",\n                                        *COLUNAS_T1,\n                                        \"UNT.CONJ\",\n                                        \"UNT.COD_ID\",\n                                    ]\n\n                        return cte_modelo(\n                                            nome=nome_cte,\n                                            select_sql=select_sql,\n                                            from_sql=from_sql,\n                                            where_sql=where_sql,\n                                            grupo_colunas=grupo_cols,\n                                        )"
+    },
+    "documentacao": {
+      "resumo": "Gera uma consulta SQL CTE (Common Table Expression) unificada.",
+      "descricao": "A função cria uma consulta SQL CTE com base em várias tabelas e condições específicas. Ela utiliza funções auxiliares para gerar partes da consulta, como a seleção de colunas, o join entre tabelas e as cláusulas WHERE.",
+      "parametros": [
+        {
+          "nome": "nome_cte",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome do CTE que será gerado."
+        },
+        {
+          "nome": "tabela_eq",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Tabela principal utilizada na consulta."
+        },
+        {
+          "nome": "campo_join",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Campo utilizado para o join entre a tabela principal e as tabelas unificadas."
+        },
+        {
+          "nome": "tabelas_un",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Lista de tabelas que serão unidas à consulta principal."
+        },
+        {
+          "nome": "suf",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Sufixo utilizado para referenciar as tabelas."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Consulta SQL CTE gerada como uma string."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "cte_modelo",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "sel_eq",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "subquery_uniao",
+          "categoria": "chamada"
+        },
+        {
+          "nome": "tabela",
+          "categoria": "chamada"
+        }
+      ],
+      "docstring": "Gera uma consulta SQL CTE unificada.\n\nArgs:\n    nome_cte: Nome do CTE que será gerado.\n    tabela_eq: Tabela principal utilizada na consulta.\n    campo_join: Campo utilizado para o join entre a tabela principal e as tabelas unificadas.\n    tabelas_un: Lista de tabelas que serão unidas à consulta principal.\n    suf: Sufixo utilizado para referenciar as tabelas.\n\nReturns:\n    Consulta SQL CTE gerada como uma string."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "sql_final",
+      "tipo": "function",
+      "linha_inicio": 564,
+      "linha_fim": 582,
+      "parametros": [
+        {
+          "nome": "ctes",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "join",
+          "strip"
+        ]
+      },
+      "codigo": "def sql_final(ctes):\n                        cols = \", \".join(ESQUEMA_EQ)\n\n                        union_sql = \"\\nUNION ALL\\n\".join(\n                                                            f\"SELECT {cols} FROM {cte}\"\n                                                            for cte in ctes\n                                                        )\n                        cte_p1 = \",\\n\".join(ctes_sql)\n                        return f\"\"\"\n                                    WITH\n                                    {cte_p1}\n\n                                    SELECT\n                                        {cols}\n                                    FROM (\n                                        {union_sql}\n                                    ) BASE\n                                    ;\n                                \"\"\".strip()"
+    },
+    "documentacao": {
+      "resumo": "Gera uma consulta SQL final a partir de múltiplas CTEs (Common Table Expressions).",
+      "descricao": "A função combina várias CTEs em uma única consulta SQL utilizando UNION ALL, e retorna essa consulta formatada como uma string.",
+      "parametros": [
+        {
+          "nome": "ctes",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Lista de nomes das CTEs que serão combinadas."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "String contendo a consulta SQL final formatada."
+      },
+      "excecoes": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "join",
+          "strip"
+        ]
+      },
+      "docstring": "Gera uma consulta SQL final a partir de múltiplas CTEs (Common Table Expressions).\n\nArgs:\n    ctes: Lista de nomes das CTEs que serão combinadas.\n\nReturns:\n    String contendo a consulta SQL final formatada."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "unidades_existentes",
+      "tipo": "function",
+      "linha_inicio": 760,
+      "linha_fim": 762,
+      "parametros": [
+        {
+          "nome": "prefixos",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "suf",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tabelas_existentes",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": []
+      },
+      "codigo": "def unidades_existentes(prefixos, suf, tabelas_existentes):\n                        tabs = [f\"{p}{suf}\" for p in prefixos]\n                        return [t for t in tabs if t in tabelas_existentes]"
+    },
+    "documentacao": {
+      "resumo": "Filtra tabelas existentes com base em prefixos e sufixo.",
+      "descricao": "Esta função filtra uma lista de tabelas existentes, retornando apenas aquelas que correspondem a um determinado padrão formado por prefixos e sufixo.",
+      "parametros": [
+        {
+          "nome": "prefixos",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Lista de prefixos utilizados para formar o padrão."
+        },
+        {
+          "nome": "suf",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Sufixo utilizado para formar o padrão."
+        },
+        {
+          "nome": "tabelas_existentes",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Lista de tabelas existentes que serão filtradas."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Lista de tabelas existentes que correspondem ao padrão formado por prefixos e sufixo."
+      },
+      "excecoes": [],
+      "dependencias": [],
+      "docstring": "Filtra tabelas existentes com base em prefixos e sufixo.\n\nArgs:\n    prefixos: Lista de prefixos utilizados para formar o padrão.\n    suf (str): Sufixo utilizado para formar o padrão.\n    tabelas_existentes: Lista de tabelas existentes que serão filtradas.\n\nReturns:\n    Filtrado de tabelas existentes que correspondem ao padrão formado por prefixos e sufixo."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "uniao_unidades",
+      "tipo": "function",
+      "linha_inicio": 765,
+      "linha_fim": 769,
+      "parametros": [
+        {
+          "nome": "tabs",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "join"
+        ]
+      },
+      "codigo": "def uniao_unidades(tabs):\n                        return \" UNION ALL \".join(\n                            f\"SELECT COD_ID, SUB, CONJ, GRU_TEN FROM {t}\"\n                            for t in tabs\n                        )"
+    },
+    "documentacao": {
+      "resumo": "Cria uma string SQL que une várias tabelas usando UNION ALL.",
+      "descricao": "Concatena consultas SELECT de múltiplas tabelas em uma única consulta utilizando o operador UNION ALL. Cada tabela é selecionada para as colunas COD_ID, SUB, CONJ e GRU_TEN.",
+      "parametros": [
+        {
+          "nome": "tabs",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Lista de nomes das tabelas a serem unidas."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "String SQL resultante da união das consultas SELECT."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "join"
+      ],
+      "docstring": "Cria uma string SQL que une várias tabelas usando UNION ALL.\n\nArgs:\n    tabs (list): Lista de nomes das tabelas a serem unidas.\n\nReturns:\n    str: String SQL resultante da união das consultas SELECT."
+    },
+    "status": "sucesso"
+  }
+]

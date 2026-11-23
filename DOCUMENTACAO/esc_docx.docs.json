@@ -1,0 +1,97 @@
+[
+  {
+    "funcao": {
+      "nome": "exportar_texto",
+      "tipo": "function",
+      "linha_inicio": 14,
+      "linha_fim": 28,
+      "parametros": [
+        {
+          "nome": "caminho",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "nm",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "texto",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "sobrescrever",
+          "tipo": "bool",
+          "default": "True",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "monitor_completo(st.session_state.LOGGER)"
+      ],
+      "dependencias": {
+        "imports": [
+          "decoradores.monitor_completo",
+          "os"
+        ],
+        "chamadas": [
+          "f.write",
+          "monitor_completo",
+          "open",
+          "os.makedirs",
+          "os.path.exists",
+          "os.path.join"
+        ]
+      },
+      "codigo": "def exportar_texto(caminho: str, nm: str, texto: str, sobrescrever: bool = True):\n\n    if not os.path.exists(caminho):\n        os.makedirs(caminho, exist_ok=True)\n\n    arquivo = os.path.join(caminho, nm)\n    modo = \"w\" if sobrescrever else \"a\"\n\n    if not sobrescrever:\n        texto = \"\\n\" + texto\n\n    with open(arquivo, modo, encoding=\"utf-8\") as f:\n        f.write(texto)\n\n    return \"OK\""
+    },
+    "documentacao": {
+      "resumo": "Exporta um texto para um arquivo especificado.",
+      "descricao": "Cria ou sobrescreve um arquivo em um caminho determinado e escreve o texto fornecido nele. Se 'sobrescrever' for False, adiciona uma nova linha antes do texto existente.",
+      "parametros": [
+        {
+          "nome": "caminho",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Caminho onde o arquivo será salvo."
+        },
+        {
+          "nome": "nm",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome do arquivo a ser criado ou sobrescrito."
+        },
+        {
+          "nome": "texto",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Texto que será escrito no arquivo."
+        },
+        {
+          "nome": "sobrescrever",
+          "tipo": "bool",
+          "categoria": "posicional",
+          "default": "True",
+          "descricao": "Indica se o arquivo deve ser sobrescrito (True) ou adicionado ao final (False)."
+        }
+      ],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "Mensagem de sucesso indicando que a operação foi concluída."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "decoradores.monitor_completo",
+        "os"
+      ],
+      "docstring": "Exporta um texto para um arquivo especificado.\n\nArgs:\n    caminho (str): Caminho onde o arquivo será salvo.\n    nm (str): Nome do arquivo a ser criado ou sobrescrito.\n    texto (str): Texto que será escrito no arquivo.\n    sobrescrever (bool, optional): Indica se o arquivo deve ser sobrescrito (True) ou adicionado ao final (False). Padrão é True.\n\nReturns:\n    str: Mensagem de sucesso indicando que a operação foi concluída."
+    },
+    "status": "sucesso"
+  }
+]

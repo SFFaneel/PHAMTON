@@ -1,0 +1,150 @@
+[
+  {
+    "funcao": {
+      "nome": "imp_CVA",
+      "tipo": "function",
+      "linha_inicio": 20,
+      "linha_fim": 145,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "MANIFESTO.registrar_evento",
+          "UTILS.bsc_cd_aneel",
+          "UTILS.bsc_dados_reg",
+          "UTILS.existe_tabela",
+          "pandas",
+          "pathlib.Path",
+          "pyreadstat",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "Path.cwd",
+          "a.status",
+          "a.update",
+          "a1.update",
+          "bsc_cd_aneel",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "copy",
+          "df_CVA_ARQ.drop",
+          "df_CVA_ARQ.groupby",
+          "df_CVA_ARQ.merge",
+          "df_CVA_ARQ.sort_values",
+          "df_CVA_ARQ.to_sql",
+          "df_PROV.to_sql",
+          "dic_arq.items",
+          "drop_duplicates",
+          "execucao_trilha",
+          "existe_tabela",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "isin",
+          "len",
+          "pasta.is_dir",
+          "pd.read_sql",
+          "pd.to_datetime",
+          "pd.to_numeric",
+          "pyreadstat.read_sas7bdat",
+          "registrar_evento",
+          "sl.connect",
+          "st.button",
+          "st.columns",
+          "st.dataframe",
+          "st.divider",
+          "st.html",
+          "st.status",
+          "st.warning",
+          "str",
+          "to_list",
+          "transform"
+        ]
+      },
+      "codigo": "def imp_CVA():\n    if not 'tra_dir' in st.session_state:\n        st.html(\"\"\"\n                <p style=\"text-align: justify;text-indent: 40px\">Você \n                deve configurar o diretório de trabalho na aba <i>Criar \n                Pasta de Trabalho</i>, barra lateral.</p>\n            \"\"\")\n        return\n\n    pasta = Path.cwd() / \"BD_CVA\"\n    if not pasta.is_dir():\n        st.warning(\"Não é possível rodar CVA nesta máquina.\")\n        return\n\n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    raiz = Path(local)\n    caminho_manifesto = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n    caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n    inicializa_database(str(caminho_manifesto))\n    inicializa_detalhes(str(caminho_manifesto))\n    inicializar_rastreamento(str(caminho_manifesto))\n    database = str(caminho_manifesto)\n    bd_path = f'{local}\\BD_LOCAL\\{empresa}_{ano}.db'\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    st.html(f\"<style>{css}</style>\")\n    col1a = st.columns([1,5,1], gap='small')\n    with col1a[1]:\n        st.html(\"\"\"<h1>Importação dos dados do Banco de Pagamentos da CVA</h1><br><br>\n            <p style=\"text-align: justify;text-indent: 40px\">Nesta etapa do processo, \n            realiza-se o carregamento dos arquivos correspondentes\n            aos dados do banco de pagamentos de CVA.</p><br>\n            \"\"\")\n        st.divider()\n        col2a = st.columns(5, gap='small')\n        with col2a[2]:\n            importar = st.button(\"Importar CVA\", key = \"IMPORTAR_CVA\")\n        if importar:\n            st.divider()\n            a = st.status(\"Iniciando importação de dados do banco de pagamentos...\")\n            with execucao_trilha(\n                                        db_path=database, script_nome=\"Importação de dados do Banco de Pagamentos\",\n                                        parametros={\"empresa\": empresa, \"ano\": ano},\n                                     ) as execucao_id:\n            \n                registrar_evento(database, execucao_id, \"IMPORTACAO_INICIADA_BP_CVA\",\n                                     mensagem=f\"Iniciando importação de dados do banco de pagamentos\")\n                registrar_evento(database, execucao_id, \"IDENTIFICANDO_ARQUIVOS_BP_CVA\",\n                                                     mensagem=f\"Identificando dados do banco de pagamentos\")\n\n                df_CVA_ARQ, metadado_ARQ = pyreadstat.read_sas7bdat(\"BD_CVA/work_query_for_sas_arquivodu_cmp.sas7bdat\", encoding='utf-8') \n                df_CVA_ARQ = df_CVA_ARQ[df_CVA_ARQ['CodAgt']==(bsc_cd_aneel(empresa))]\n                df_CVA_PROC, metadado_PROC = pyreadstat.read_sas7bdat('BD_CVA/controleprocessamentoitem_cmp.sas7bdat', encoding='utf-8')\n                df_CVA_PROC = df_CVA_PROC[['IdeArquivoCVA','DthCargaArquivo','CodRecebimentoArquivo']]\n                df_CVA_PROC.columns = ['IdeArquivoCVA','DthCargaArquivo','CodRecArq']\n                df_CVA_ARQ = df_CVA_ARQ.merge(df_CVA_PROC, how='left', on = 'CodRecArq', suffixes=(\"\",\"_PROC_CVA\"))\n\n                for dt in ['DthCargaArquivo','DatIniRecArq','DatFimRecArq']:\n                    if dt in df_CVA_ARQ:\n                        if df_CVA_ARQ[dt].dtype == 'object':\n                            try:\n                                df_CVA_ARQ[dt] = pd.to_datetime(df_CVA_ARQ[dt], format='%d%b%Y:%H:%M:%S.%f')\n                            except:\n                                df_CVA_ARQ[dt] = pd.to_datetime(df_CVA_ARQ[dt], format='%d%b%Y:%H:%M:%S')\n\n                df_CVA_ARQ['Nr_VERSAO'] = pd.to_numeric(df_CVA_ARQ['NomArqRecArq'].str[34:37], errors='coerce')\n                df_CVA_ARQ['Dt_REF'] = pd.to_datetime(\"01\" + df_CVA_ARQ['NomArqRecArq'].str[26:28] + df_CVA_ARQ['NomArqRecArq'].str[28:32], format = \"%d%m%Y\", errors='coerce')\n                df_CVA_ARQ.sort_values(by = ['Dt_REF','Nr_VERSAO'], ascending = [True, False], inplace=True)\n                df_CVA_ARQ['Nr_VERSAO_MAX'] = df_CVA_ARQ.groupby(\"Dt_REF\", dropna=False)['Nr_VERSAO'].transform('max')\n                df_CVA_ARQ = df_CVA_ARQ[df_CVA_ARQ['Nr_VERSAO'] == df_CVA_ARQ['Nr_VERSAO_MAX']]\n                df_CVA_ARQ.drop(columns = ['Nr_VERSAO_MAX'], inplace=True)\n\n                with  sl.connect(bd_path) as bd:\n                    df_CVA_ARQ.to_sql('tbl_ARQ_BP', bd, if_exists='replace', index=False)\n                \n                dic_arq = {'Energia' : 'consumoenergia_cmp',\n                        'RB' : 'redebasica_cmp',\n                        'PROINFA' : 'proinfa_cmp',\n                        'CDE' : 'cde_cmp',\n                        'CDE_ENERGIA' : 'cdeenergiaRevenda_cmp',\n                        'CFURH' : 'cfurh_cmp',\n                        'Itaipu' : 'itaipu_cmp'\n                        }\n                \n                lst_ARQ = df_CVA_ARQ['IdeArquivoCVA'].drop_duplicates().to_list()\n                z=1\n                for key, value in dic_arq.items():\n                    registrar_evento(database, execucao_id, f\"BUSCANDO_ARQUIVOS_{key}\",\n                                        mensagem=f\"Copiando dados de {key}\")\n                    a.status(f\"Importando {key}...\")\n                    lst_encoding = ['LATIN1','UTF-8','WINDOWS-1252',]\n                    for enc in lst_encoding:\n                        try:\n                            a1 = st.status(f\"     Importando {key}, encoder {enc}...\")\n                            df_PROV, metadado_PROV = pyreadstat.read_sas7bdat(rf\"BD_CVA/{value}.sas7bdat\", encoding=enc) \n                            break\n                        except:\n                            a1.update(label=f\"     Falhou {key}, encoder {enc}!\", state=\"error\")\n                            pass\n                    \n                    if len(df_PROV):\n                        df_PROV = df_PROV[df_PROV['IdeArquivoCVA'].isin(lst_ARQ)].copy()\n                        df_PROV.to_sql(key, bd, if_exists='replace', index=False)\n                        a1.update(label=f\"     Importado {key}, encoder {enc}!\", state=\"complete\")\n                    z += 1\n                    registrar_evento(database, execucao_id, f\"TERMINADO_ARQUIVOS_{key}\",\n                                     mensagem=f\"Copiado dados de {key}\")\n                a.update(label=f\"Finalizado importação de dados do banco de pagamentos para {empresa}!\", state=\"complete\")\n                registrar_evento(database, execucao_id, f\"TERMINADO_COPIA_BP_CVA\",\n                                 mensagem=f\"Terminado cópia de arquivos do banco de pagamentos de CVA\")\n\n        with  sl.connect(bd_path) as bd:\n            if existe_tabela('tbl_ARQ_BP', bd):\n                st.divider()\n                st.html(\"\"\"\n                        <p style=\"text-align: justify;text-indent: 40px\">A seguir apresentamos a \n                        tabela de arquivos empregados na análise:</p>\n                        \"\"\")\n\n                sSQL = f\"\"\"\n                        SELECT *\n                        FROM tbl_ARQ_BP\n                        \"\"\"\n                df_tabela = pd.read_sql(sSQL, bd)\n                st.dataframe(df_tabela, width='content', hide_index=True)"
+    },
+    "documentacao": {
+      "resumo": "Realiza a importação dos dados do Banco de Pagamentos da CVA.",
+      "descricao": "A função verifica se o diretório de trabalho está configurado e, em seguida, realiza a importação dos arquivos correspondentes aos dados do banco de pagamentos de CVA. O processo envolve a leitura de vários arquivos SAS7BDAT, manipulação dos dados e armazenamento no banco de dados SQLite.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.execucao_trilha",
+          "tipo": "função",
+          "descricao": "Função para gerenciar a execução de trilhas."
+        },
+        {
+          "nome": "MANIFESTO.inicializa_database",
+          "tipo": "função",
+          "descricao": "Função para inicializar o banco de dados."
+        },
+        {
+          "nome": "MANIFESTO.inicializa_detalhes",
+          "tipo": "função",
+          "descricao": "Função para inicializar detalhes do processo."
+        },
+        {
+          "nome": "MANIFESTO.inicializar_rastreamento",
+          "tipo": "função",
+          "descricao": "Função para inicializar o rastreamento do processo."
+        },
+        {
+          "nome": "MANIFESTO.registrar_evento",
+          "tipo": "função",
+          "descricao": "Função para registrar eventos durante a execução."
+        },
+        {
+          "nome": "UTILS.bsc_cd_aneel",
+          "tipo": "função",
+          "descricao": "Função para obter o código ANEEL da empresa."
+        },
+        {
+          "nome": "UTILS.bsc_dados_reg",
+          "tipo": "função",
+          "descricao": "Função para obter dados de registro."
+        },
+        {
+          "nome": "UTILS.existe_tabela",
+          "tipo": "função",
+          "descricao": "Função para verificar a existência de uma tabela no banco de dados."
+        },
+        {
+          "nome": "pandas",
+          "tipo": "biblioteca",
+          "descricao": "Biblioteca para manipulação de dados em Python."
+        },
+        {
+          "nome": "pathlib.Path",
+          "tipo": "classe",
+          "descricao": "Classe para manipulação de caminhos de arquivo e diretórios."
+        },
+        {
+          "nome": "pyreadstat",
+          "tipo": "biblioteca",
+          "descricao": "Biblioteca para leitura de arquivos SAS7BDAT."
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": "biblioteca",
+          "descricao": "Biblioteca para manipulação de bancos de dados SQLite."
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca",
+          "descricao": "Biblioteca para criação de aplicativos web em Python."
+        }
+      ],
+      "docstring": "Realiza a importação dos dados do Banco de Pagamentos da CVA.\n\nArgs:\n    Nenhum parâmetro explicitamente definido.\n\nReturns:\n    Nenhum valor retornado explícitamente.\n\nNotes:\n    A função verifica se o diretório de trabalho está configurado e, em seguida, realiza a importação dos arquivos correspondentes aos dados do banco de pagamentos de CVA. O processo envolve a leitura de vários arquivos SAS7BDAT, manipulação dos dados e armazenamento no banco de dados SQLite."
+    },
+    "status": "sucesso"
+  }
+]

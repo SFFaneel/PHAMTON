@@ -1,0 +1,1813 @@
+[
+  {
+    "funcao": {
+      "nome": "pasta_sessao",
+      "tipo": "function",
+      "linha_inicio": 16,
+      "linha_fim": 20,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [
+        "pytest.fixture(scope='session', autouse=True)"
+      ],
+      "dependencias": {
+        "imports": [
+          "pathlib.Path",
+          "pytest",
+          "tempfile"
+        ],
+        "chamadas": [
+          "DIRETORIO_TESTES.mkdir",
+          "DOWNLOADS.mkdir",
+          "Path",
+          "pytest.fixture",
+          "tempfile.mkdtemp"
+        ]
+      },
+      "codigo": "def pasta_sessao():\n    DOWNLOADS.mkdir(parents=True, exist_ok=True)\n    DIRETORIO_TESTES.mkdir(parents=True, exist_ok=True)\n    pasta = Path(tempfile.mkdtemp(prefix='sessao-', dir=DIRETORIO_TESTES))\n    yield pasta"
+    },
+    "documentacao": {
+      "resumo": "Cria uma pasta temporária para sessões de teste.",
+      "descricao": "A função cria duas pastas: DOWNLOADS e DIRETORIO_TESTES, garantindo que elas existam. Em seguida, cria uma pasta temporária única para a sessão de teste com um prefixo específico e retorna seu caminho.",
+      "parametros": [],
+      "retorno": {
+        "tipo": "Path",
+        "descricao": "Caminho da pasta temporária criada para a sessão de teste."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "pathlib.Path",
+        "pytest",
+        "tempfile"
+      ],
+      "docstring": "Cria uma pasta temporária para sessões de teste.\n\nReturns:\n    Path: Caminho da pasta temporária criada para a sessão de teste.\n\nDependencies:\n    pathlib.Path: Usado para manipulação de caminhos de arquivo.\n    pytest: Provavelmente usado para definir um fixture.\n    tempfile: Utilizado para criar pastas temporárias."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "ambiente",
+      "tipo": "function",
+      "linha_inicio": 23,
+      "linha_fim": 36,
+      "parametros": [
+        {
+          "nome": "pasta_sessao",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "pytest.fixture"
+      ],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.criar_manifesto_multi"
+        ],
+        "chamadas": [
+          "arquivo.write_text",
+          "criar_manifesto_multi",
+          "pasta.mkdir"
+        ]
+      },
+      "codigo": "def ambiente(pasta_sessao, tmp_path):\n    pasta = pasta_sessao / tmp_path.name\n    pasta.mkdir(parents=True, exist_ok=False)\n    arquivo = pasta / 'clientes.csv'\n    raiz = pasta / 'auditoria'\n\n    def escrever(texto, *, encoding='utf-8'):\n        arquivo.write_text(texto, encoding=encoding)\n        return arquivo\n\n    def processar(id_arquivo='CLIENTES', **kwargs):\n        return criar_manifesto_multi(arquivo, id_arquivo, raiz, encoding='utf-8', **kwargs)\n\n    return arquivo, raiz, escrever, processar"
+    },
+    "documentacao": {
+      "resumo": "Cria um ambiente de trabalho para processamento de dados.",
+      "descricao": "Esta função cria uma estrutura de diretórios e arquivos necessários para o processamento de dados, incluindo a criação de um arquivo CSV e uma pasta para auditoria. Também define funções auxiliares para escrever texto em um arquivo e processar os dados.",
+      "parametros": [
+        {
+          "nome": "pasta_sessao",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho da pasta onde será criada a estrutura de trabalho."
+        },
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Path do módulo tempfile, contendo informações sobre o caminho temporário."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Não há retorno explícito. A função retorna funções auxiliares para escrever em arquivos e processar dados."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.criar_manifesto_multi",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Cria um ambiente de trabalho para processamento de dados.\n\nArgs:\n    pasta_sessao: Caminho da pasta onde será criada a estrutura de trabalho.\n    tmp_path: Objeto Path do módulo tempfile, contendo informações sobre o caminho temporário.\n\nReturns:\n    Funções auxiliares para escrever em arquivos e processar dados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "indice",
+      "tipo": "function",
+      "linha_inicio": 38,
+      "linha_fim": 39,
+      "parametros": [
+        {
+          "nome": "raiz",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "tipo",
+          "tipo": null,
+          "default": "'CLIENTES'",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "json"
+        ],
+        "chamadas": [
+          "json.loads",
+          "read_text"
+        ]
+      },
+      "codigo": "def indice(raiz, tipo='CLIENTES'):\n    return json.loads((raiz / tipo / 'MANIFESTOS' / 'indice.json').read_text(encoding='utf-8'))"
+    },
+    "documentacao": {
+      "resumo": "Carrega o índice de manifestos a partir de um arquivo JSON.",
+      "descricao": "Lê e retorna o conteúdo do arquivo 'indice.json' localizado em uma estrutura de diretórios específica, dependendo dos parâmetros fornecidos.",
+      "parametros": [
+        {
+          "nome": "raiz",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho base para a estrutura de diretórios."
+        },
+        {
+          "nome": "tipo",
+          "tipo": null,
+          "categoria": "posicional",
+          "default": "'CLIENTES'",
+          "descricao": "Tipo de dados, que determina o subdiretório dentro da raiz."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "Conteúdo do arquivo 'indice.json' carregado como um objeto Python."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "json"
+      ],
+      "docstring": "Carrega o índice de manifestos a partir de um arquivo JSON.\n\nArgs:\n    raiz (pathlib.Path): Caminho base para a estrutura de diretórios.\n    tipo (str, optional): Tipo de dados, que determina o subdiretório dentro da raiz. Valor padrão é 'CLIENTES'.\n\nReturns:\n    Conteúdo do arquivo 'indice.json' carregado como um objeto Python."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "requer_parquet",
+      "tipo": "function",
+      "linha_inicio": 41,
+      "linha_fim": 42,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pytest"
+        ],
+        "chamadas": [
+          "pytest.importorskip"
+        ]
+      },
+      "codigo": "def requer_parquet():\n    pytest.importorskip('pyarrow', reason='Testes de snapshots exigem pyarrow')"
+    },
+    "documentacao": {
+      "resumo": "Verifica se a biblioteca 'pyarrow' está instalada para executar testes de snapshots.",
+      "descricao": "A função verifica a disponibilidade da biblioteca 'pyarrow'. Se não estiver instalada, um aviso é exibido e os testes de snapshots são ignorados.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "pytest"
+      ],
+      "docstring": "Verifica se a biblioteca 'pyarrow' está instalada para executar testes de snapshots.\n\nNotes:\n    Se 'pyarrow' não estiver instalada, um aviso é exibido e os testes de snapshots são ignorados.\n\nDependencies:\n    pytest: Utilizado para verificar a disponibilidade da biblioteca."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_sha256_reflete_bytes",
+      "tipo": "function",
+      "linha_inicio": 44,
+      "linha_fim": 50,
+      "parametros": [
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.sha256",
+          "hashlib"
+        ],
+        "chamadas": [
+          "arquivo.read_bytes",
+          "arquivo.write_bytes",
+          "hashlib.sha256",
+          "hexdigest",
+          "sha256"
+        ]
+      },
+      "codigo": "def teste_sha256_reflete_bytes(tmp_path):\n    arquivo = tmp_path / 'entrada.csv'\n    arquivo.write_bytes(b'ID|NOME\\n1|ANA\\n')\n    assert sha256(arquivo) == hashlib.sha256(arquivo.read_bytes()).hexdigest()\n    anterior = sha256(arquivo)\n    arquivo.write_bytes(b'ID|NOME\\r\\n1|ANA\\r\\n')\n    assert sha256(arquivo) != anterior"
+    },
+    "documentacao": {
+      "resumo": "Testa a função sha256 para verificar se o hash de um arquivo permanece inalterado após uma modificação.",
+      "descricao": "A função escreve dois conteúdos diferentes em um arquivo temporário e verifica se o hash SHA-256 do arquivo é alterado conforme esperado. O primeiro conteúdo contém quebras de linha simples, enquanto o segundo contém quebras de linha Windows (CRLF).",
+      "parametros": [
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Diretório temporário fornecido pelo pytest para criar arquivos."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.sha256",
+          "tipo": null,
+          "categoria": "import"
+        },
+        {
+          "nome": "hashlib",
+          "tipo": null,
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Testa a função sha256 para verificar se o hash de um arquivo permanece inalterado após uma modificação.\n\nArgs:\n    tmp_path (pathlib.Path): Diretório temporário fornecido pelo pytest para criar arquivos.\n\nNotes:\n    - O primeiro conteúdo do arquivo contém quebras de linha simples (\\n).\n    - O segundo conteúdo do arquivo contém quebras de linha Windows (\\r\\n).\n    - A função utiliza a biblioteca hashlib para calcular o hash SHA-256."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_carregar_csv_preserva_zeros_e_vazios",
+      "tipo": "function",
+      "linha_inicio": 52,
+      "linha_fim": 58,
+      "parametros": [
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.carregar_csv"
+        ],
+        "chamadas": [
+          "arquivo.write_text",
+          "carregar_csv",
+          "df.index.tolist"
+        ]
+      },
+      "codigo": "def teste_carregar_csv_preserva_zeros_e_vazios(tmp_path):\n    arquivo = tmp_path / 'dados.csv'\n    arquivo.write_text('ID|NOME|OBS\\n001|ANA|\\n002|JOAO|OK\\n', encoding='utf-8')\n    df, chave = carregar_csv(arquivo, 'ID', '|', 'utf-8')\n    assert chave == 'ID'\n    assert df.index.tolist() == ['001', '002']\n    assert df.loc['001', 'OBS'] == ''"
+    },
+    "documentacao": {
+      "resumo": "Testa a função carregar_csv para garantir que zeros e valores vazios sejam preservados no DataFrame resultante.",
+      "descricao": "A função testa o comportamento da função carregar_csv ao ler um arquivo CSV, verificando se os zeros e valores vazios são mantidos corretamente no DataFrame gerado. O teste cria um arquivo temporário com dados que incluem zeros e valores vazios, lê esses dados usando a função carregar_csv e verifica se o resultado é conforme esperado.",
+      "parametros": [
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho temporário fornecido pelo pytest para criar arquivos de teste."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.carregar_csv"
+        ],
+        "chamadas": [
+          "arquivo.write_text",
+          "carregar_csv",
+          "df.index.tolist"
+        ]
+      },
+      "docstring": "Testa a função carregar_csv para garantir que zeros e valores vazios sejam preservados no DataFrame resultante.\n\nArgs:\n    tmp_path: Caminho temporário fornecido pelo pytest para criar arquivos de teste.\n\nNotes:\n    - O arquivo CSV é criado com dados que incluem zeros e valores vazios.\n    - A função carregar_csv lê o arquivo e retorna um DataFrame.\n    - Os testes verificam se os zeros e valores vazios são mantidos no DataFrame resultante."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_carregar_csv_rejeita_ids_invalidos",
+      "tipo": "function",
+      "linha_inicio": 64,
+      "linha_fim": 68,
+      "parametros": [
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "conteudo",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "erro",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "pytest.mark.parametrize('conteudo,erro', [('ID|NOME\\n1|ANA\\n1|JOAO\\n', 'duplicados'), ('ID|NOME\\n|ANA\\n', 'vazios')])"
+      ],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.carregar_csv",
+          "pytest"
+        ],
+        "chamadas": [
+          "arquivo.write_text",
+          "carregar_csv",
+          "pytest.mark.parametrize",
+          "pytest.raises"
+        ]
+      },
+      "codigo": "def teste_carregar_csv_rejeita_ids_invalidos(tmp_path, conteudo, erro):\n    arquivo = tmp_path / 'dados.csv'\n    arquivo.write_text(conteudo, encoding='utf-8')\n    with pytest.raises(ValueError, match=erro):\n        carregar_csv(arquivo, 'ID', '|', 'utf-8')"
+    },
+    "documentacao": {
+      "resumo": "Testa a função carregar_csv para rejeitar IDs inválidos em um arquivo CSV.",
+      "descricao": "A função verifica se o carregamento de um arquivo CSV rejeita linhas com IDs inválidos, conforme especificado pelo parâmetro 'erro'.",
+      "parametros": [
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho temporário para criar o arquivo CSV."
+        },
+        {
+          "nome": "conteudo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Conteúdo do arquivo CSV a ser carregado, como uma string."
+        },
+        {
+          "nome": "erro",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Mensagem de erro esperada ao rejeitar IDs inválidos."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.carregar_csv",
+          "tipo": "função",
+          "categoria": "importação"
+        },
+        {
+          "nome": "pytest.raises",
+          "tipo": "contexto",
+          "categoria": "importação"
+        }
+      ],
+      "docstring": "Testa a função carregar_csv para rejeitar IDs inválidos em um arquivo CSV.\n\nArgs:\n    tmp_path: Caminho temporário para criar o arquivo CSV.\n    conteudo: Conteúdo do arquivo CSV a ser carregado, como uma string.\n    erro: Mensagem de erro esperada ao rejeitar IDs inválidos.\n\nRaises:\n    ValueError: Quando um ID inválido é encontrado no arquivo."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_comparar_inclusoes_exclusoes_e_campos",
+      "tipo": "function",
+      "linha_inicio": 70,
+      "linha_fim": 78,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.comparar",
+          "pandas"
+        ],
+        "chamadas": [
+          "alterados.to_dict",
+          "comparar",
+          "excluidos.to_dict",
+          "incluidos.to_dict",
+          "pd.DataFrame",
+          "set_index"
+        ]
+      },
+      "codigo": "def teste_comparar_inclusoes_exclusoes_e_campos():\n    antigo = pd.DataFrame({'ID': ['1', '2'], 'NOME': ['ANA', 'JOAO']}).set_index('ID')\n    novo = pd.DataFrame({'ID': ['2', '3'], 'NOME': ['JOSE', 'MARIA']}).set_index('ID')\n    incluidos, excluidos, alterados = comparar(antigo, novo, 'ID')\n    assert incluidos.to_dict('records') == [{'ID': '3', 'NOME': 'MARIA'}]\n    assert excluidos.to_dict('records') == [{'ID': '1', 'NOME': 'ANA'}]\n    assert alterados.to_dict('records') == [\n                                                {'ID': '2', 'coluna': 'NOME', 'valor_anterior': 'JOAO', 'valor_novo': 'JOSE'}\n                                            ]"
+    },
+    "documentacao": {
+      "resumo": "Testa a função comparar para identificar inclusões, exclusões e alterações entre dois DataFrames.",
+      "descricao": "A função compara dois DataFrames (antigo e novo) baseados em uma chave especificada ('ID') e retorna três DataFrames: um com os registros incluídos no novo DataFrame, outro com os registros excluídos do antigo DataFrame e o terceiro com as alterações nos valores dos campos.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "MANIFESTO.comparar",
+        "pandas"
+      ],
+      "docstring": "Testa a função comparar para identificar inclusões, exclusões e alterações entre dois DataFrames.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_dados_equivalentes_ignora_ordem",
+      "tipo": "function",
+      "linha_inicio": 80,
+      "linha_fim": 85,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.dados_equivalentes",
+          "pandas"
+        ],
+        "chamadas": [
+          "dados_equivalentes",
+          "pd.DataFrame",
+          "set_index"
+        ]
+      },
+      "codigo": "def teste_dados_equivalentes_ignora_ordem():\n    antigo = pd.DataFrame({'ID': ['1', '2'], 'NOME': ['ANA', 'JOAO'], 'UF': ['SP', 'RJ']}).set_index('ID')\n    novo = pd.DataFrame({'UF': ['RJ', 'SP'], 'ID': ['2', '1'], 'NOME': ['JOAO', 'ANA']}).set_index('ID')\n    assert dados_equivalentes(antigo, novo)\n    novo.loc['1', 'NOME'] = 'MARIA'\n    assert not dados_equivalentes(antigo, novo)"
+    },
+    "documentacao": {
+      "resumo": "Testa a equivalência entre dois DataFrames, ignorando a ordem das linhas.",
+      "descricao": "A função verifica se dois DataFrames são equivalentes, considerando apenas os valores e ignorando a ordem das linhas. A comparação é realizada usando uma função chamada `dados_equivalentes` que deve estar definida em um módulo chamado `MANIFESTO.dados_equivalentes`. O teste inclui duas verificações: uma onde os DataFrames são equivalentes e outra onde eles não são, devido a uma diferença no valor de uma coluna.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "MANIFESTO.dados_equivalentes",
+        "pandas"
+      ],
+      "docstring": "Testa a equivalência entre dois DataFrames, ignorando a ordem das linhas.\n\nNotes:\n    A função `dados_equivalentes` deve estar definida em um módulo chamado `MANIFESTO.dados_equivalentes`.\n\nDependencies:\n    pandas: Utilizado para criar e manipular os DataFrames."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_primeira_versao_snapshot_e_manifesto",
+      "tipo": "function",
+      "linha_inicio": 87,
+      "linha_fim": 108,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.sha256",
+          "pandas"
+        ],
+        "chamadas": [
+          "caminho.exists",
+          "escrever",
+          "exists",
+          "indice",
+          "len",
+          "pd.read_parquet",
+          "processar",
+          "requer_parquet",
+          "sha256"
+        ]
+      },
+      "codigo": "def teste_primeira_versao_snapshot_e_manifesto(ambiente):\n    requer_parquet()\n    _, raiz, escrever, processar = ambiente\n    escrever('ID|NOME\\n001|ANA\\n002|JOAO\\n')\n    resultado = processar()\n    assert resultado['status'] == 'nova_versao'\n    assert resultado['versao'] == 'v0001'\n    assert resultado['incluidos'] == 2\n    assert resultado['excluidos'] == 0\n    assert resultado['alteracao_dados'] is True\n    pasta = raiz / 'CLIENTES'\n    snapshot = pasta / resultado['snapshot']\n    assert snapshot.suffix == '.parquet'\n    assert sha256(snapshot) == resultado['sha256_snapshot']\n    assert pd.read_parquet(snapshot).loc['001', 'NOME'] == 'ANA'\n    assert (pasta / 'MANIFESTOS' / 'v0001.json').exists()\n    for nome in ('incluidos', 'excluidos', 'alterados'):\n        rel = resultado['relatorios'][nome]\n        caminho = pasta / rel['caminho']\n        assert caminho.exists()\n        assert sha256(caminho) == rel['sha256']\n    assert len(indice(raiz)['ingestoes']) == 1"
+    },
+    "documentacao": {
+      "resumo": "Testa a primeira versão do snapshot e manifesto.",
+      "descricao": "Executa uma série de verificações para garantir que o processo de criação do snapshot e manifestos funcione corretamente. Valida os resultados, hashes SHA-256 e existência dos arquivos gerados.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente de teste contendo funções necessárias para a execução do teste."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.sha256",
+          "tipo": null,
+          "categoria": "import"
+        },
+        {
+          "nome": "pandas",
+          "tipo": null,
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Testa a primeira versão do snapshot e manifesto.\n\nArgs:\n    ambiente: Ambiente de teste contendo funções necessárias para a execução do teste.\n\nReturns:\n    None\n\nNotes:\n    - Verifica se o arquivo parquet foi criado corretamente com os dados esperados.\n    - Valida a existência dos manifestos e arquivos de relatório gerados.\n    - Confirma que as hashes SHA-256 correspondem aos valores esperados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_hash_igual_nao_cria_versao_mas_registra_ingestao",
+      "tipo": "function",
+      "linha_inicio": 110,
+      "linha_fim": 122,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "escrever",
+          "indice",
+          "len",
+          "processar",
+          "requer_parquet"
+        ]
+      },
+      "codigo": "def teste_hash_igual_nao_cria_versao_mas_registra_ingestao(ambiente):\n    requer_parquet()\n    _, raiz, escrever, processar = ambiente\n    escrever('ID|NOME\\n1|ANA\\n')\n    primeira = processar()\n    segunda = processar()\n    assert segunda['status'] == 'sem_alteracao'\n    assert segunda['motivo'] == 'hash_identico'\n    assert segunda['versao'] == primeira['versao']\n    historico = indice(raiz)\n    assert len(historico['versoes']) == 1\n    assert len(historico['ingestoes']) == 2\n    assert historico['ingestoes'][1]['sha256_origem'] == primeira['sha256_origem']"
+    },
+    "documentacao": {
+      "resumo": "Testa o comportamento da função quando um hash é igual, não criando uma nova versão mas registrando a ingestão.",
+      "descricao": "A função verifica se, ao processar dados com o mesmo hash que já foi processado anteriormente, não é criada uma nova versão e se a ingestão é registrada corretamente. É verificado também se o histórico de ingestões contém as informações esperadas.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente de execução que inclui funções para escrever, processar e obter o índice."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "escrever",
+          "indice",
+          "len",
+          "processar",
+          "requer_parquet"
+        ]
+      },
+      "docstring": "Testa o comportamento da função quando um hash é igual, não criando uma nova versão mas registrando a ingestão.\n\nArgs:\n    ambiente: Ambiente de execução que inclui funções para escrever, processar e obter o índice.\n\nNotes:\n    - A função verifica se, ao processar dados com o mesmo hash que já foi processado anteriormente, não é criada uma nova versão.\n    - É verificado também se a ingestão é registrada corretamente no histórico de ingestões."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_hash_diferente_com_dados_iguais_cria_versao",
+      "tipo": "function",
+      "linha_inicio": 124,
+      "linha_fim": 137,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "escrever",
+          "indice",
+          "len",
+          "processar",
+          "requer_parquet"
+        ]
+      },
+      "codigo": "def teste_hash_diferente_com_dados_iguais_cria_versao(ambiente):\n    requer_parquet()\n    _, raiz, escrever, processar = ambiente\n    escrever('ID|NOME\\n1|ANA\\n2|JOAO\\n')\n    primeira = processar()\n    escrever('ID|NOME\\n2|JOAO\\n1|ANA\\n')\n    segunda = processar()\n    assert segunda['status'] == 'nova_versao'\n    assert segunda['versao'] == 'v0002'\n    assert segunda['sha256_origem'] != primeira['sha256_origem']\n    assert segunda['alteracao_dados'] is False\n    assert (segunda['incluidos'], segunda['excluidos'], segunda['campos_alterados']) == (0, 0, 0)\n    assert len(indice(raiz)['versoes']) == 2\n    assert len(indice(raiz)['ingestoes']) == 2"
+    },
+    "documentacao": {
+      "resumo": "Testa a criação de uma nova versão ao processar dados iguais em um ambiente específico.",
+      "descricao": "A função testa se, ao processar dados idênticos duas vezes em um ambiente configurado, é criada uma nova versão com SHA256 diferente e sem alterações nos dados. Verifica também a consistência do índice de versões e ingestões.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente configurado para o teste, contendo funções `escrever`, `indice`, `len`, `processar` e `requer_parquet`."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "escrever",
+          "indice",
+          "len",
+          "processar",
+          "requer_parquet"
+        ]
+      },
+      "docstring": "Testa a criação de uma nova versão ao processar dados iguais em um ambiente específico.\n\nArgs:\n    ambiente: Ambiente configurado para o teste, contendo funções `escrever`, `indice`, `len`, `processar` e `requer_parquet`.\n\nReturns:\n    None\n\nNotes:\n    - A função verifica se a nova versão tem SHA256 diferente da anterior.\n    - Não há alterações nos dados, então `alteracao_dados` deve ser False.\n    - Nenhuma inclusão ou exclusão de registros, nem alteração de campos.\n    - O índice deve refletir duas versões e duas ingestões."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_modificacoes_registradas_no_manifesto",
+      "tipo": "function",
+      "linha_inicio": 139,
+      "linha_fim": 155,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pandas"
+        ],
+        "chamadas": [
+          "escrever",
+          "pd.read_parquet",
+          "processar",
+          "requer_parquet",
+          "to_dict"
+        ]
+      },
+      "codigo": "def teste_modificacoes_registradas_no_manifesto(ambiente):\n    requer_parquet()\n    _, raiz, escrever, processar = ambiente\n    escrever('ID|NOME\\n1|ANA\\n2|JOAO\\n')\n    processar()\n    escrever('ID|NOME\\n2|JOSE\\n3|MARIA\\n')\n    segunda = processar()\n    assert segunda['versao_anterior'] == 'v0001'\n    assert segunda['alteracao_dados'] is True\n    assert segunda['incluidos'] == 1\n    assert segunda['excluidos'] == 1\n    assert segunda['registros_alterados'] == 1\n    assert segunda['campos_alterados'] == 1\n    alterados = pd.read_parquet(raiz / 'CLIENTES' / segunda['relatorios']['alterados']['caminho'])\n    assert alterados.iloc[0].to_dict() == {\n                                                'ID': '2', 'coluna': 'NOME', 'valor_anterior': 'JOAO', 'valor_novo': 'JOSE'\n                                            }"
+    },
+    "documentacao": {
+      "resumo": "Testa as modificações registradas no manifesto de clientes.",
+      "descricao": "A função simula a leitura e processamento de um arquivo Parquet, escreve novos dados, verifica alterações e valida os resultados.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente contendo funções para escrita, processamento e requisição de Parquet."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "pandas"
+      ],
+      "docstring": "Testa as modificações registradas no manifesto de clientes.\n\nArgs:\n    ambiente: Ambiente contendo funções para escrita, processamento e requisição de Parquet.\n\nNotes:\n    A função simula a leitura e processamento de um arquivo Parquet, escreve novos dados, verifica alterações e valida os resultados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_alteracao_de_esquema",
+      "tipo": "function",
+      "linha_inicio": 157,
+      "linha_fim": 170,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "escrever",
+          "processar",
+          "requer_parquet"
+        ]
+      },
+      "codigo": "def teste_alteracao_de_esquema(ambiente):\n    requer_parquet()\n    _, _, escrever, processar = ambiente\n    escrever('ID|NOME\\n1|ANA\\n')\n    processar()\n    escrever('ID|NOME|UF\\n1|ANA|SP\\n')\n    segunda = processar()\n    assert segunda['colunas_adicionadas'] == ['UF']\n    assert segunda['colunas_removidas'] == []\n    assert segunda['alteracao_dados'] is True\n    escrever('ID|UF\\n1|SP\\n')\n    terceira = processar()\n    assert terceira['colunas_removidas'] == ['NOME']\n    assert terceira['alteracao_dados'] is True"
+    },
+    "documentacao": {
+      "resumo": "Testa a alteração de esquema em um ambiente específico.",
+      "descricao": "A função realiza uma série de operações no ambiente fornecido, escrevendo dados e processando-os para verificar as alterações no esquema dos dados. Verifica a adição de novas colunas, remoção de colunas e alteração de dados.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente onde as operações serão realizadas."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "escrever",
+        "processar",
+        "requer_parquet"
+      ],
+      "docstring": "Testa a alteração de esquema em um ambiente específico.\n\nArgs:\n    ambiente: Ambiente onde as operações serão realizadas.\n\nReturns:\n    None\n\nNotes:\n    A função realiza várias operações no ambiente, incluindo escrita de dados e processamento para verificar alterações no esquema dos dados. Verifica a adição de novas colunas, remoção de colunas e alteração de dados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_historicos_independentes_por_tipo",
+      "tipo": "function",
+      "linha_inicio": 172,
+      "linha_fim": 180,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "escrever",
+          "indice",
+          "len",
+          "processar",
+          "requer_parquet"
+        ]
+      },
+      "codigo": "def teste_historicos_independentes_por_tipo(ambiente):\n    requer_parquet()\n    _, raiz, escrever, processar = ambiente\n    escrever('ID|NOME\\n1|ANA\\n')\n    a = processar('CLIENTES')\n    b = processar('PRODUTOS')\n    assert a['versao'] == b['versao'] == 'v0001'\n    assert len(indice(raiz, 'CLIENTES')['versoes']) == 1\n    assert len(indice(raiz, 'PRODUTOS')['versoes']) == 1"
+    },
+    "documentacao": {
+      "resumo": "Testa a independência dos históricos por tipo em um ambiente específico.",
+      "descricao": "A função testa se os históricos de diferentes tipos (CLIENTES e PRODUTOS) são independentes, verificando que possuem a mesma versão e que cada um tem apenas uma versão registrada no índice.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente de teste contendo funções para escrever, processar e verificar índices."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "requer_parquet",
+          "tipo": null,
+          "categoria": "chamada"
+        },
+        {
+          "nome": "escrever",
+          "tipo": null,
+          "categoria": "chamada"
+        },
+        {
+          "nome": "indice",
+          "tipo": null,
+          "categoria": "chamada"
+        },
+        {
+          "nome": "len",
+          "tipo": null,
+          "categoria": "chamada"
+        },
+        {
+          "nome": "processar",
+          "tipo": null,
+          "categoria": "chamada"
+        }
+      ],
+      "docstring": "Testa a independência dos históricos por tipo em um ambiente específico.\n\nArgs:\n    ambiente: Ambiente de teste contendo funções para escrever, processar e verificar índices.\n\nNotes:\n    A função assume que o ambiente já foi configurado corretamente com as funções necessárias."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_snapshot_adulterado_e_detectado",
+      "tipo": "function",
+      "linha_inicio": 182,
+      "linha_fim": 192,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pytest"
+        ],
+        "chamadas": [
+          "escrever",
+          "indice",
+          "len",
+          "processar",
+          "pytest.raises",
+          "requer_parquet",
+          "snapshot.read_bytes",
+          "snapshot.write_bytes"
+        ]
+      },
+      "codigo": "def teste_snapshot_adulterado_e_detectado(ambiente):\n    requer_parquet()\n    _, raiz, escrever, processar = ambiente\n    escrever('ID|NOME\\n1|ANA\\n')\n    primeira = processar()\n    snapshot = raiz / 'CLIENTES' / primeira['snapshot']\n    snapshot.write_bytes(snapshot.read_bytes() + b'alteracao')\n    escrever('ID|NOME\\n1|JOSE\\n')\n    with pytest.raises(ValueError, match='Integridade do snapshot'):\n        processar()\n    assert len(indice(raiz)['versoes']) == 1"
+    },
+    "documentacao": {
+      "resumo": "Testa a detecção de adulteração em um snapshot.",
+      "descricao": "A função simula uma situação onde um arquivo parquet é alterado e verifica se o processo detecta essa modificação, lançando uma exceção `ValueError` com a mensagem 'Integridade do snapshot'.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente de teste contendo funções e objetos necessários para o processo."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando a integridade do snapshot é violada."
+        }
+      ],
+      "dependencias": [
+        "pytest"
+      ],
+      "docstring": "Testa a detecção de adulteração em um snapshot.\n\nArgs:\n    ambiente: Ambiente de teste contendo funções e objetos necessários para o processo.\n\nRaises:\n    ValueError: Quando a integridade do snapshot é violada."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_csv_invalido_nao_publica_versao",
+      "tipo": "function",
+      "linha_inicio": 194,
+      "linha_fim": 204,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pytest"
+        ],
+        "chamadas": [
+          "escrever",
+          "exists",
+          "indice",
+          "len",
+          "processar",
+          "pytest.raises",
+          "requer_parquet"
+        ]
+      },
+      "codigo": "def teste_csv_invalido_nao_publica_versao(ambiente):\n    requer_parquet()\n    _, raiz, escrever, processar = ambiente\n    escrever('ID|NOME\\n1|ANA\\n')\n    processar()\n    escrever('ID|NOME\\n1|ANA\\n1|JOAO\\n')\n    with pytest.raises(ValueError, match='duplicados'):\n        processar()\n    assert len(indice(raiz)['versoes']) == 1\n    assert len(indice(raiz)['ingestoes']) == 1\n    assert not (raiz / 'CLIENTES' / 'VERSOES' / 'v0002.parquet').exists()"
+    },
+    "documentacao": {
+      "resumo": "Testa a não publicação de uma versão CSV inválida.",
+      "descricao": "A função testa o comportamento do sistema ao processar um arquivo CSV com duplicados. Ela verifica se a versão é corretamente rejeitada e se as estruturas de dados internas permanecem consistentes.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente de teste contendo funções para escrever, verificar existência, obter índice e processar dados."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "match": "duplicados",
+          "descricao": "Quando o arquivo CSV contém duplicados."
+        }
+      ],
+      "dependencias": [
+        "pytest"
+      ],
+      "docstring": "Testa a não publicação de uma versão CSV inválida.\n\nArgs:\n    ambiente: Ambiente de teste contendo funções para escrever, verificar existência, obter índice e processar dados.\n\nRaises:\n    ValueError: Quando o arquivo CSV contém duplicados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_arquivo_inexistente",
+      "tipo": "function",
+      "linha_inicio": 206,
+      "linha_fim": 208,
+      "parametros": [
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.criar_manifesto_multi",
+          "pytest"
+        ],
+        "chamadas": [
+          "criar_manifesto_multi",
+          "pytest.raises"
+        ]
+      },
+      "codigo": "def teste_arquivo_inexistente(tmp_path):\n    with pytest.raises(FileNotFoundError):\n        criar_manifesto_multi(tmp_path / 'ausente.csv', 'CLIENTES', tmp_path / 'auditoria')"
+    },
+    "documentacao": {
+      "resumo": "Testa a função `criar_manifesto_multi` ao tentar criar um arquivo que não existe.",
+      "descricao": "A função verifica se a exceção `FileNotFoundError` é lançada quando o arquivo especificado para criação não existe.",
+      "parametros": [
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho temporário fornecido pelo pytest."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "MANIFESTO.criar_manifesto_multi",
+        "pytest"
+      ],
+      "docstring": "Testa a função `criar_manifesto_multi` ao tentar criar um arquivo que não existe.\n\nArgs:\n    tmp_path: Caminho temporário fornecido pelo pytest.\n\nNotes:\n    A função espera que a exceção FileNotFoundError seja lançada quando o arquivo especificado para criação não exista."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_id_arquivo_invalido",
+      "tipo": "function",
+      "linha_inicio": 210,
+      "linha_fim": 214,
+      "parametros": [
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.criar_manifesto_multi",
+          "pytest"
+        ],
+        "chamadas": [
+          "arquivo.write_text",
+          "criar_manifesto_multi",
+          "pytest.raises"
+        ]
+      },
+      "codigo": "def teste_id_arquivo_invalido(tmp_path):\n    arquivo = tmp_path / 'dados.csv'\n    arquivo.write_text('ID|NOME\\n1|ANA\\n', encoding='utf-8')\n    with pytest.raises(ValueError, match='id_arquivo'):\n        criar_manifesto_multi(arquivo, '../CLIENTES', tmp_path / 'auditoria', encoding='utf-8')"
+    },
+    "documentacao": {
+      "resumo": "Testa a função `criar_manifesto_multi` com um arquivo de ID inválido.",
+      "descricao": "Cria um arquivo CSV temporário com dados inválidos e verifica se a função lança uma exceção `ValueError` quando o ID do arquivo é inválido.",
+      "parametros": [
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho temporário fornecido pelo pytest para criar arquivos."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o ID do arquivo é inválido."
+        }
+      ],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.criar_manifesto_multi",
+          "categoria": "importado",
+          "descricao": "Função que será chamada para criar o manifesto."
+        },
+        {
+          "nome": "pytest.raises",
+          "categoria": "importado",
+          "descricao": "Método pytest usado para verificar a exceção lançada."
+        }
+      ],
+      "docstring": "Testa a função `criar_manifesto_multi` com um arquivo de ID inválido.\n\nArgs:\n    tmp_path: Caminho temporário fornecido pelo pytest para criar arquivos.\n\nRaises:\n    ValueError: Quando o ID do arquivo é inválido."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_arquivo_origem_dentro_da_auditoria",
+      "tipo": "function",
+      "linha_inicio": 216,
+      "linha_fim": 222,
+      "parametros": [
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.criar_manifesto_multi",
+          "pytest"
+        ],
+        "chamadas": [
+          "arquivo.write_text",
+          "criar_manifesto_multi",
+          "pytest.raises",
+          "raiz.mkdir"
+        ]
+      },
+      "codigo": "def teste_arquivo_origem_dentro_da_auditoria(tmp_path):\n    raiz = tmp_path / 'auditoria'\n    raiz.mkdir()\n    arquivo = raiz / 'dados.csv'\n    arquivo.write_text('ID|NOME\\n1|ANA\\n', encoding='utf-8')\n    with pytest.raises(ValueError, match='dentro da pasta'):\n        criar_manifesto_multi(arquivo, 'CLIENTES', raiz, encoding='utf-8')"
+    },
+    "documentacao": {
+      "resumo": "Testa a função `criar_manifesto_multi` para verificar se ela lança uma exceção quando o arquivo de origem está dentro da pasta de auditoria.",
+      "descricao": "A função cria um diretório 'auditoria' e um arquivo 'dados.csv' dentro dele. Em seguida, tenta criar um manifesto multi usando a função `criar_manifesto_multi` e espera que uma exceção `ValueError` seja lançada com a mensagem 'dentro da pasta'.",
+      "parametros": [
+        {
+          "nome": "tmp_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho temporário fornecido pelo pytest para criar arquivos e diretórios."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o arquivo de origem está dentro da pasta de auditoria."
+        }
+      ],
+      "dependencias": [
+        "MANIFESTO.criar_manifesto_multi",
+        "pytest"
+      ],
+      "docstring": "Testa a função `criar_manifesto_multi` para verificar se ela lança uma exceção quando o arquivo de origem está dentro da pasta de auditoria.\n\nArgs:\n    tmp_path: Caminho temporário fornecido pelo pytest para criar arquivos e diretórios.\n\nRaises:\n    ValueError: Quando o arquivo de origem está dentro da pasta de auditoria."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_snapshot_completo_preserva_todos_os_valores",
+      "tipo": "function",
+      "linha_inicio": 224,
+      "linha_fim": 236,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pandas"
+        ],
+        "chamadas": [
+          "dados.columns.tolist",
+          "dados.index.tolist",
+          "escrever",
+          "len",
+          "pd.read_parquet",
+          "processar",
+          "requer_parquet",
+          "to_dict"
+        ]
+      },
+      "codigo": "def teste_snapshot_completo_preserva_todos_os_valores(ambiente):\n    requer_parquet()\n    arquivo, raiz, escrever, processar = ambiente\n    escrever('ID|NOME|CEP|OBS\\n001|ANA|01001000|\\n002|JOAO|00000001|OK\\n')\n    resultado = processar()\n    snapshot = raiz / 'CLIENTES' / resultado['snapshot']\n    dados = pd.read_parquet(snapshot, engine='pyarrow')\n    assert dados.index.name == 'ID'\n    assert dados.index.tolist() == ['001', '002']\n    assert dados.columns.tolist() == ['NOME', 'CEP', 'OBS']\n    assert dados.loc['001'].to_dict() == {'NOME': 'ANA', 'CEP': '01001000', 'OBS': ''}\n    assert dados.loc['002'].to_dict() == {'NOME': 'JOAO', 'CEP': '00000001', 'OBS': 'OK'}\n    assert len(dados) == resultado['total_registros'] == 2"
+    },
+    "documentacao": {
+      "resumo": "Testa a função de processamento de snapshot que preserva todos os valores.",
+      "descricao": "A função realiza um teste para garantir que o processo de snapshot preserva corretamente todos os valores dos dados, incluindo IDs, nomes, CEPs e observações. Verifica se os índices, colunas e valores individuais estão conforme esperado.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente de teste contendo funções e objetos necessários para a execução do teste."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "pandas"
+      ],
+      "docstring": "Testa a função de processamento de snapshot que preserva todos os valores.\n\nArgs:\n    ambiente: Ambiente de teste contendo funções e objetos necessários para a execução do teste.\n\nNotes:\n    - A função requer a presença da função `requer_parquet` no ambiente.\n    - O ambiente deve conter as funções `escrever`, `processar`, `pd.read_parquet` e variáveis `raiz`, `snapshot`, `total_registros`.\n    - Os dados de teste são escritos em um arquivo CSV, processados e verificados para garantir a preservação dos valores."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_manifesto_json_hashes_contagens_e_relatorios",
+      "tipo": "function",
+      "linha_inicio": 238,
+      "linha_fim": 260,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.sha256",
+          "hashlib",
+          "json",
+          "pandas"
+        ],
+        "chamadas": [
+          "arquivo.read_bytes",
+          "caminho.is_file",
+          "escrever",
+          "hashlib.sha256",
+          "hexdigest",
+          "indice",
+          "json.loads",
+          "len",
+          "pd.read_parquet",
+          "processar",
+          "read_text",
+          "requer_parquet",
+          "sha256"
+        ]
+      },
+      "codigo": "def teste_manifesto_json_hashes_contagens_e_relatorios(ambiente):\n    requer_parquet()\n    arquivo, raiz, escrever, processar = ambiente\n    escrever('ID|NOME\\n1|ANA\\n2|JOAO\\n')\n    processar()\n    escrever('ID|NOME\\n2|JOSE\\n3|MARIA\\n')\n    resultado = processar()\n    pasta = raiz / 'CLIENTES'\n    manifesto = json.loads((pasta / 'MANIFESTOS' / 'v0002.json').read_text(encoding='utf-8'))\n    assert manifesto['versao'] == 'v0002'\n    assert manifesto['versao_anterior'] == 'v0001'\n    assert manifesto['sha256_origem'] == hashlib.sha256(arquivo.read_bytes()).hexdigest()\n    assert manifesto['sha256_snapshot'] == sha256(pasta / manifesto['snapshot'])\n    assert manifesto['total_registros'] == 2\n    assert (manifesto['incluidos'], manifesto['excluidos']) == (1, 1)\n    assert (manifesto['registros_alterados'], manifesto['campos_alterados']) == (1, 1)\n    for nome, quantidade in [('incluidos', 1), ('excluidos', 1), ('alterados', 1)]:\n        rel = manifesto['relatorios'][nome]\n        caminho = pasta / rel['caminho']\n        assert caminho.is_file()\n        assert sha256(caminho) == rel['sha256']\n        assert len(pd.read_parquet(caminho, engine='pyarrow')) == quantidade\n    assert indice(raiz)['versoes'][-1] == manifesto"
+    },
+    "documentacao": {
+      "resumo": "Testa a geração de manifestos JSON com hashes, contagens e relatórios.",
+      "descricao": "A função realiza uma série de verificações para garantir que o processo de geração de manifestos JSON funcione corretamente. Ela lê arquivos parquet, escreve dados temporários, processa informações e valida os resultados contra expectativas.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente de execução contendo funções para leitura, escrita e processamento."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.sha256",
+          "tipo": null,
+          "categoria": "import"
+        },
+        {
+          "nome": "hashlib",
+          "tipo": null,
+          "categoria": "import"
+        },
+        {
+          "nome": "json",
+          "tipo": null,
+          "categoria": "import"
+        },
+        {
+          "nome": "pandas",
+          "tipo": null,
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Testa a geração de manifestos JSON com hashes, contagens e relatórios.\n\nArgs:\n    ambiente: Ambiente de execução contendo funções para leitura, escrita e processamento.\n\nReturns:\n    None\n\nNotes:\n    A função realiza uma série de verificações para garantir que o processo de geração de manifestos JSON funcione corretamente. Ela lê arquivos parquet, escreve dados temporários, processa informações e valida os resultados contra expectativas."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_tipos_tem_indices_e_snapshots_independentes",
+      "tipo": "function",
+      "linha_inicio": 262,
+      "linha_fim": 275,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pandas"
+        ],
+        "chamadas": [
+          "escrever",
+          "indice",
+          "len",
+          "pd.read_parquet",
+          "processar",
+          "requer_parquet"
+        ]
+      },
+      "codigo": "def teste_tipos_tem_indices_e_snapshots_independentes(ambiente):\n    requer_parquet()\n    arquivo, raiz, escrever, processar = ambiente\n    escrever('ID|NOME\\n1|ANA\\n')\n    clientes = processar('CLIENTES')\n    escrever('ID|NOME\\n1|PRODUTO A\\n')\n    produtos = processar('PRODUTOS')\n    assert clientes['versao'] == produtos['versao'] == 'v0001'\n    assert len(indice(raiz, 'CLIENTES')['versoes']) == 1\n    assert len(indice(raiz, 'PRODUTOS')['versoes']) == 1\n    df_clientes = pd.read_parquet(raiz / 'CLIENTES' / clientes['snapshot'])\n    df_produtos = pd.read_parquet(raiz / 'PRODUTOS' / produtos['snapshot'])\n    assert df_clientes.loc['1', 'NOME'] == 'ANA'\n    assert df_produtos.loc['1', 'NOME'] == 'PRODUTO A'"
+    },
+    "documentacao": {
+      "resumo": "Testa a independência dos índices e snapshots entre diferentes tipos de dados em um ambiente.",
+      "descricao": "A função verifica que os índices e snapshots dos clientes e produtos são independentes, mesmo que ambos sejam processados no mesmo ambiente. Ela também garante que as versões dos dados estejam corretamente atualizadas e que os dados lidos a partir dos snapshots sejam consistentes.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente de teste contendo funções para escrever, processar e requerer parquet."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "pandas"
+      ],
+      "docstring": "Testa a independência dos índices e snapshots entre diferentes tipos de dados em um ambiente.\n\nArgs:\n    ambiente: Ambiente de teste contendo funções para escrever, processar e requerer parquet.\n\nNotes:\n    A função garante que os índices e snapshots dos clientes e produtos sejam independentes.\n    Verifica a consistência das versões dos dados e dos dados lidos a partir dos snapshots."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_esquema_adicao_e_remocao_manifestos_e_snapshots",
+      "tipo": "function",
+      "linha_inicio": 277,
+      "linha_fim": 291,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pandas"
+        ],
+        "chamadas": [
+          "columns.tolist",
+          "escrever",
+          "pd.read_parquet",
+          "processar",
+          "requer_parquet"
+        ]
+      },
+      "codigo": "def teste_esquema_adicao_e_remocao_manifestos_e_snapshots(ambiente):\n    requer_parquet()\n    _, raiz, escrever, processar = ambiente\n    escrever('ID|NOME\\n1|ANA\\n')\n    processar()\n    escrever('ID|NOME|UF\\n1|ANA|SP\\n')\n    segundo = processar()\n    assert segundo['colunas_adicionadas'] == ['UF']\n    assert segundo['colunas_removidas'] == []\n    assert pd.read_parquet(raiz / 'CLIENTES' / segundo['snapshot']).loc['1', 'UF'] == 'SP'\n    escrever('ID|UF\\n1|SP\\n')\n    terceiro = processar()\n    assert terceiro['colunas_adicionadas'] == []\n    assert terceiro['colunas_removidas'] == ['NOME']\n    assert pd.read_parquet(raiz / 'CLIENTES' / terceiro['snapshot']).columns.tolist() == ['UF']"
+    },
+    "documentacao": {
+      "resumo": "Testa a adição e remoção de manifestos e snapshots em um ambiente específico.",
+      "descricao": "A função realiza uma série de operações no ambiente fornecido, escrevendo dados, processando-os e verificando as alterações nos manifestos e snapshots. Utiliza pandas para manipulação de dados e requer a presença do módulo parquet.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente contendo funções necessárias para a execução dos testes."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        "pandas"
+      ],
+      "docstring": "Testa a adição e remoção de manifestos e snapshots em um ambiente específico.\n\nArgs:\n    ambiente: Ambiente contendo funções necessárias para a execução dos testes.\n\nNotes:\n    - A função utiliza pandas para manipulação de dados.\n    - Requer a presença do módulo parquet."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "teste_falha_publicacao_preserva_indice",
+      "tipo": "function",
+      "linha_inicio": 294,
+      "linha_fim": 348,
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "monkeypatch",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "ponto_falha",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "pytest.mark.parametrize('ponto_falha', ['snapshot', 'relatorio', 'indice'])"
+      ],
+      "dependencias": {
+        "imports": [
+          "inspect",
+          "pathlib.Path",
+          "pytest"
+        ],
+        "chamadas": [
+          "OSError",
+          "Path",
+          "escrever",
+          "exists",
+          "indice",
+          "indice_path.read_bytes",
+          "indice_path.resolve",
+          "inspect.getmodule",
+          "len",
+          "monkeypatch.setattr",
+          "original",
+          "processar",
+          "pytest.mark.parametrize",
+          "pytest.raises",
+          "requer_parquet",
+          "resolve"
+        ]
+      },
+      "codigo": "def teste_falha_publicacao_preserva_indice(ambiente, monkeypatch, ponto_falha):\n    requer_parquet()\n    _, raiz, escrever, processar = ambiente\n    escrever('ID|NOME\\n1|ANA\\n')\n    processar()\n    indice_path = raiz / 'CLIENTES' / 'MANIFESTOS' / 'indice.json'\n    indice_antes = indice_path.read_bytes()\n    escrever('ID|NOME\\n1|MARIA\\n')\n\n    if ponto_falha == 'snapshot':\n        original = pd.DataFrame.to_parquet\n        def falhar_snapshot(self, path, *args, **kwargs):\n            if Path(path).name == 'snapshot.parquet':\n                raise OSError('Falha simulada no snapshot')\n            return original(self, path, *args, **kwargs)\n        monkeypatch.setattr(pd.DataFrame, 'to_parquet', falhar_snapshot)\n    elif ponto_falha == 'relatorio':\n        original = pd.DataFrame.to_parquet\n        def falhar_relatorio(self, path, *args, **kwargs):\n            if Path(path).name == 'alterados.parquet':\n                raise OSError('Falha simulada no relatório')\n            return original(self, path, *args, **kwargs)\n        monkeypatch.setattr(pd.DataFrame, 'to_parquet', falhar_relatorio)\n    else:\n        import inspect\n\n        modulo_real = inspect.getmodule(criar_manifesto_multi)\n\n        assert modulo_real is not None\n\n        original = modulo_real.atomic_json\n\n        def falhar_indice(path, dados):\n            if Path(path).resolve() == indice_path.resolve():\n                raise OSError(\n                    'Falha simulada na publicação do índice'\n                )\n\n            return original(path, dados)\n\n        monkeypatch.setattr(\n                                modulo_real,\n                                'atomic_json',\n                                falhar_indice\n                            )\n\n    with pytest.raises(OSError, match='Falha simulada'):\n        processar()\n    assert indice_path.read_bytes() == indice_antes\n    assert len(indice(raiz)['versoes']) == 1\n    assert len(indice(raiz)['ingestoes']) == 1\n    pasta = raiz / 'CLIENTES'\n    assert not (pasta / 'VERSOES' / 'v0002.parquet').exists()\n    assert not (pasta / 'MANIFESTOS' / 'v0002.json').exists()\n    assert not (pasta / 'COMPARACOES' / 'v0001_v0002').exists()"
+    },
+    "documentacao": {
+      "resumo": "Testa a falha na publicação de um índice e verifica se o índice original é preservado.",
+      "descricao": "A função simula uma falha durante a publicação do índice, seja no snapshot ou no relatório, e verifica se o índice original permanece inalterado. Também garante que as versões e ingestões não sejam atualizadas em caso de falha.",
+      "parametros": [
+        {
+          "nome": "ambiente",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ambiente de teste contendo funções para escrever, processar e obter o índice."
+        },
+        {
+          "nome": "monkeypatch",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto usado para modificar comportamentos durante os testes."
+        },
+        {
+          "nome": "ponto_falha",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ponto onde a falha será simulada ('snapshot' ou 'relatorio')."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "OSError",
+          "descricao": "Quando ocorre uma falha simulada durante a publicação do índice."
+        }
+      ],
+      "dependencias": [
+        "inspect",
+        "pathlib.Path",
+        "pytest"
+      ],
+      "docstring": "Testa a falha na publicação de um índice e verifica se o índice original é preservado.\n\nArgs:\n    ambiente: Ambiente de teste contendo funções para escrever, processar e obter o índice.\n    monkeypatch: Objeto usado para modificar comportamentos durante os testes.\n    ponto_falha: Ponto onde a falha será simulada ('snapshot' ou 'relatorio').\n\nRaises:\n    OSError: Quando ocorre uma falha simulada durante a publicação do índice."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "escrever",
+      "tipo": "function",
+      "linha_inicio": 29,
+      "linha_fim": 31,
+      "parametros": [
+        {
+          "nome": "texto",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "encoding",
+          "tipo": null,
+          "default": "'utf-8'",
+          "categoria": "somente_keyword"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "arquivo.write_text"
+        ]
+      },
+      "codigo": "def escrever(texto, *, encoding='utf-8'):\n        arquivo.write_text(texto, encoding=encoding)\n        return arquivo"
+    },
+    "documentacao": {
+      "resumo": "Escreve um texto em um arquivo.",
+      "descricao": "Esta função escreve o conteúdo fornecido em um arquivo, utilizando a codificação especificada. Se a codificação não for fornecida, será usada 'utf-8' por padrão.",
+      "parametros": [
+        {
+          "nome": "texto",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Conteúdo que será escrito no arquivo."
+        },
+        {
+          "nome": "encoding",
+          "tipo": null,
+          "categoria": "somente_keyword",
+          "default": "'utf-8'",
+          "descricao": "Codificação utilizada para escrever o texto no arquivo. O padrão é 'utf-8'."
+        }
+      ],
+      "retorno": {
+        "tipo": null,
+        "descricao": "O objeto do arquivo após a escrita."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "arquivo.write_text"
+      ],
+      "docstring": "Escreve um texto em um arquivo.\n\nArgs:\n    texto: Conteúdo que será escrito no arquivo.\n    encoding (str, optional): Codificação utilizada para escrever o texto. O padrão é 'utf-8'.\n\nReturns:\n    Resultado da operação de escrita no arquivo."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "processar",
+      "tipo": "function",
+      "linha_inicio": 33,
+      "linha_fim": 34,
+      "parametros": [
+        {
+          "nome": "id_arquivo",
+          "tipo": null,
+          "default": "'CLIENTES'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "kwargs",
+          "tipo": null,
+          "default": null,
+          "categoria": "kwargs"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.criar_manifesto_multi"
+        ],
+        "chamadas": [
+          "criar_manifesto_multi"
+        ]
+      },
+      "codigo": "def processar(id_arquivo='CLIENTES', **kwargs):\n        return criar_manifesto_multi(arquivo, id_arquivo, raiz, encoding='utf-8', **kwargs)"
+    },
+    "documentacao": {
+      "resumo": "Processa um arquivo e cria um manifesto múltiplo.",
+      "descricao": "A função processa um arquivo especificado pelo parâmetro `id_arquivo` e utiliza argumentos adicionais (`kwargs`) para configurar a criação do manifesto. O padrão é usar o arquivo 'CLIENTES' e codificação UTF-8.",
+      "parametros": [
+        {
+          "nome": "id_arquivo",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Identificador do arquivo a ser processado. O valor padrão é 'CLIENTES'."
+        },
+        {
+          "nome": "kwargs",
+          "tipo": null,
+          "categoria": "kwargs",
+          "descricao": "Argumentos adicionais para configurar a criação do manifesto."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "imports": [
+            "MANIFESTO.criar_manifesto_multi"
+          ],
+          "chamadas": [
+            "criar_manifesto_multi"
+          ]
+        }
+      ],
+      "docstring": "Processa um arquivo e cria um manifesto múltiplo.\n\nArgs:\n    id_arquivo (str, optional): Identificador do arquivo a ser processado. O valor padrão é 'CLIENTES'.\n    **kwargs: Argumentos adicionais para configurar a criação do manifesto.\n\nReturns:\n    None\n\nDependencies:\n    MANIFESTO.criar_manifesto_multi: Função utilizada para criar o manifesto múltiplo."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "falhar_snapshot",
+      "tipo": "function",
+      "linha_inicio": 305,
+      "linha_fim": 308,
+      "parametros": [
+        {
+          "nome": "self",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "path",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "args",
+          "tipo": null,
+          "default": null,
+          "categoria": "varargs"
+        },
+        {
+          "nome": "kwargs",
+          "tipo": null,
+          "default": null,
+          "categoria": "kwargs"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pathlib.Path"
+        ],
+        "chamadas": [
+          "OSError",
+          "Path",
+          "original"
+        ]
+      },
+      "codigo": "def falhar_snapshot(self, path, *args, **kwargs):\n            if Path(path).name == 'snapshot.parquet':\n                raise OSError('Falha simulada no snapshot')\n            return original(self, path, *args, **kwargs)"
+    },
+    "documentacao": {
+      "resumo": "Simula uma falha ao tentar criar um snapshot parquet.",
+      "descricao": "A função verifica se o nome do arquivo é 'snapshot.parquet' e, em caso afirmativo, lança uma exceção `OSError` para simular uma falha no processo de criação do snapshot. Caso contrário, a função chama o método original com os argumentos fornecidos.",
+      "parametros": [
+        {
+          "nome": "self",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Instância da classe que contém este método."
+        },
+        {
+          "nome": "path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o arquivo onde será criado o snapshot."
+        },
+        {
+          "nome": "args",
+          "tipo": null,
+          "categoria": "varargs",
+          "descricao": "Argumentos adicionais passados ao método original."
+        },
+        {
+          "nome": "kwargs",
+          "tipo": null,
+          "categoria": "kwargs",
+          "descricao": "Palavras-chave adicionais passadas ao método original."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "OSError",
+          "descricao": "Quando o nome do arquivo é 'snapshot.parquet', indicando uma falha simulada no processo de criação do snapshot."
+        }
+      ],
+      "dependencias": [
+        "pathlib.Path"
+      ],
+      "docstring": "Simula uma falha ao tentar criar um snapshot parquet.\n\nArgs:\n    self: Instância da classe que contém este método.\n    path: Caminho para o arquivo onde será criado o snapshot.\n    *args: Argumentos adicionais passados ao método original.\n    **kwargs: Palavras-chave adicionais passadas ao método original.\n\nRaises:\n    OSError: Quando o nome do arquivo é 'snapshot.parquet', indicando uma falha simulada no processo de criação do snapshot."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "falhar_relatorio",
+      "tipo": "function",
+      "linha_inicio": 312,
+      "linha_fim": 315,
+      "parametros": [
+        {
+          "nome": "self",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "path",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "args",
+          "tipo": null,
+          "default": null,
+          "categoria": "varargs"
+        },
+        {
+          "nome": "kwargs",
+          "tipo": null,
+          "default": null,
+          "categoria": "kwargs"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pathlib.Path"
+        ],
+        "chamadas": [
+          "OSError",
+          "Path",
+          "original"
+        ]
+      },
+      "codigo": "def falhar_relatorio(self, path, *args, **kwargs):\n            if Path(path).name == 'alterados.parquet':\n                raise OSError('Falha simulada no relatório')\n            return original(self, path, *args, **kwargs)"
+    },
+    "documentacao": {
+      "resumo": "Simula uma falha ao processar um relatório específico.",
+      "descricao": "A função verifica se o arquivo especificado pelo caminho é 'alterados.parquet'. Se for, lança uma exceção `OSError` simulando uma falha. Caso contrário, chama a função original com os mesmos argumentos.",
+      "parametros": [
+        {
+          "nome": "self",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Instância da classe."
+        },
+        {
+          "nome": "path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho do arquivo a ser processado."
+        },
+        {
+          "nome": "args",
+          "tipo": null,
+          "categoria": "varargs",
+          "descricao": "Argumentos adicionais passados para a função original."
+        },
+        {
+          "nome": "kwargs",
+          "tipo": null,
+          "categoria": "kwargs",
+          "descricao": "Parâmetros nomeados adicionais passados para a função original."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "OSError",
+          "descricao": "Quando o arquivo é 'alterados.parquet', simulando uma falha no processamento."
+        }
+      ],
+      "dependencias": [
+        "pathlib.Path"
+      ],
+      "docstring": "Simula uma falha ao processar um relatório específico.\n\nArgs:\n    self: Instância da classe.\n    path (any): Caminho do arquivo a ser processado.\n    *args: Argumentos adicionais passados para a função original.\n    **kwargs: Parâmetros nomeados adicionais passados para a função original.\n\nRaises:\n    OSError: Quando o arquivo é 'alterados.parquet', simulando uma falha no processamento."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "falhar_indice",
+      "tipo": "function",
+      "linha_inicio": 326,
+      "linha_fim": 332,
+      "parametros": [
+        {
+          "nome": "path",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "dados",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pathlib.Path"
+        ],
+        "chamadas": [
+          "OSError",
+          "Path",
+          "indice_path.resolve",
+          "original",
+          "resolve"
+        ]
+      },
+      "codigo": "def falhar_indice(path, dados):\n            if Path(path).resolve() == indice_path.resolve():\n                raise OSError(\n                    'Falha simulada na publicação do índice'\n                )\n\n            return original(path, dados)"
+    },
+    "documentacao": {
+      "resumo": "Simula uma falha ao tentar publicar um índice.",
+      "descricao": "A função verifica se o caminho fornecido é igual ao caminho do índice. Se for, lança uma exceção `OSError` simulando uma falha na publicação do índice. Caso contrário, chama a função original com os mesmos parâmetros.",
+      "parametros": [
+        {
+          "nome": "path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o arquivo ou diretório."
+        },
+        {
+          "nome": "dados",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Dados associados ao caminho fornecido."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "OSError",
+          "descricao": "Quando o caminho é igual ao caminho do índice, simulando uma falha na publicação."
+        }
+      ],
+      "dependencias": [
+        "pathlib.Path"
+      ],
+      "docstring": "Simula uma falha ao tentar publicar um índice.\n\nArgs:\n    path: Caminho para o arquivo ou diretório.\n    dados: Dados associados ao caminho fornecido.\n\nRaises:\n    OSError: Quando o caminho é igual ao caminho do índice, simulando uma falha na publicação."
+    },
+    "status": "sucesso"
+  }
+]

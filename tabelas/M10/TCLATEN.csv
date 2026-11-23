@@ -1,0 +1,21 @@
+OBJECTID,COD_ID,TEN,DESCR
+1,0,0,Não informado
+2,1,3800,"Classe de tensão em 3,8 kV"
+3,2,13800,"Classe de tensão em 13,8 kV"
+4,3,14400,"Classe de tensão em 14,4 kV"
+5,4,15000,Classe de tensão em 15 kV
+6,5,20000,Classe de tensão em 20 kV
+7,6,23000,Classe de tensão em 23 kV
+8,7,24000,Classe de tensão em 24 kV
+9,8,25000,Classe de tensão em 25 kV
+10,9,34500,"Classe de tensão em 34,5 kV"
+11,10,45400,"Classe de tensão de 45,4 kV"
+12,11,69000,Classe de tensão em 69 kV
+13,12,72500,"Classe de tensão de 72,5 kV"
+14,13,92400,"Classe de tensão de 92,4 kV"
+15,14,138000,Classe de tensão em 138 kV
+16,15,145000,Classe de tensão de 145 kV
+17,16,230000,Classe de tensão em 230 kV
+18,17,242000,Classe de tensão de 242 kV
+19,18,362000,Classe de tensão de 362 kV
+20,19,36200,"Classe de tensão em 36,2 kV"

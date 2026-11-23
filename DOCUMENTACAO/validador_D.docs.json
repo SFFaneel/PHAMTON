@@ -1,0 +1,935 @@
+[
+  {
+    "funcao": {
+      "nome": "_registrar_saida_se_existir",
+      "tipo": "function",
+      "linha_inicio": 53,
+      "linha_fim": 55,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "caminho",
+          "tipo": "Path",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "None",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.registrar_artefato"
+        ],
+        "chamadas": [
+          "caminho.is_file",
+          "registrar_artefato",
+          "str"
+        ]
+      },
+      "codigo": "def _registrar_saida_se_existir(database: str, execucao_id: str, caminho: Path) -> None:\n    if caminho.is_file():\n        registrar_artefato(database, execucao_id, str(caminho), \"SAIDA\")"
+    },
+    "documentacao": {
+      "resumo": "Registra um arquivo de saída no banco de dados se ele existir.",
+      "descricao": "Verifica se o caminho fornecido aponta para um arquivo que existe. Se existir, registra o artefato no banco de dados utilizando a função `registrar_artefato`.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome do banco de dados onde o artefato será registrado."
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Identificador da execução associada ao artefato."
+        },
+        {
+          "nome": "caminho",
+          "tipo": "Path",
+          "categoria": "posicional",
+          "descricao": "Caminho do arquivo que será registrado no banco de dados."
+        }
+      ],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "Nenhum valor é retornado."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.registrar_artefato",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Registra um arquivo de saída no banco de dados se ele existir.\n\nArgs:\n    database (str): Nome do banco de dados onde o artefato será registrado.\n    execucao_id (str): Identificador da execução associada ao artefato.\n    caminho (Path): Caminho do arquivo que será registrado no banco de dados.\n\nReturns:\n    None\n\nNotes:\n    A função verifica se o arquivo existe antes de registrar. Se não existir, nada é feito."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_processar_validacao",
+      "tipo": "function",
+      "linha_inicio": 57,
+      "linha_fim": 498,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "ano",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "csv_dir",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "sai_dir",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "temp",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "LMP_arq",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "lst_arq",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "lst_arq_opc",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.rastrear_funcao",
+          "MANIFESTO.registrar_artefato",
+          "MANIFESTO.registrar_evento",
+          "MANIFESTO.registrar_metrica",
+          "UTILS.busca_ipca",
+          "chardet",
+          "datetime.datetime",
+          "json",
+          "os",
+          "pandas",
+          "pathlib.Path",
+          "re",
+          "sqlite3",
+          "streamlit",
+          "validador_funcoes.analisar_agregados_incr",
+          "validador_funcoes.analisar_vf_agregado_incr",
+          "validador_funcoes.consolidar_agregados_incr",
+          "validador_funcoes.gerar_alertas_incr_agregados",
+          "validador_funcoes.gerar_alertas_incr_vf_agregados",
+          "validador_funcoes.gravar_agregado_incr",
+          "validador_funcoes.validar_duplicidades_global",
+          "validador_funcoes.validar_incr_bloco",
+          "validador_funcoes.validar_vnr_voc_ipca"
+        ],
+        "chamadas": [
+          "FileNotFoundError",
+          "Path",
+          "UserWarning",
+          "_ler_csv_rastreado",
+          "_registrar_saida_se_existir",
+          "_relatorio_erros_rastreado",
+          "_validar_lotes_rastreado",
+          "alertas_agregados.extend",
+          "analisar_agregados_incr",
+          "analisar_vf_agregado_incr",
+          "arq.rfind",
+          "arq.startswith",
+          "bd.close",
+          "busca_ipca",
+          "chardet.detect",
+          "consolidar_agregados_incr",
+          "dados.get",
+          "datetime.strptime",
+          "dc_arq.keys",
+          "df.to_sql",
+          "df1.merge",
+          "df_IMPR.groupby",
+          "df_IMPR.map",
+          "df_IMPR.to_csv",
+          "df_IMPR.to_sql",
+          "df_alertas.to_csv",
+          "df_controle.rename",
+          "df_controle.to_csv",
+          "df_erro.to_csv",
+          "df_formatos.rename",
+          "df_formatos.to_csv",
+          "df_formatos.to_sql",
+          "enumerate",
+          "erros.extend",
+          "f.read",
+          "first",
+          "gerar_alertas_incr_agregados",
+          "gerar_alertas_incr_vf_agregados",
+          "gravar_agregado_incr",
+          "ipca.to_csv",
+          "is_file",
+          "json.dump",
+          "json.load",
+          "len",
+          "list",
+          "locals",
+          "lower",
+          "match.groups",
+          "mkdir",
+          "open",
+          "os.listdir",
+          "os.makedirs",
+          "os.path.exists",
+          "os.path.isdir",
+          "os.path.isfile",
+          "os.path.join",
+          "os.remove",
+          "os.replace",
+          "partes.append",
+          "pd.DataFrame",
+          "pd.DataFrame.from_dict",
+          "pd.DataFrame.from_records",
+          "pd.concat",
+          "pd.read_csv",
+          "progresso.empty",
+          "progresso.progress",
+          "rastrear_funcao",
+          "re.fullmatch",
+          "registrar_artefato",
+          "registrar_evento",
+          "registrar_metrica",
+          "reset_index",
+          "result.get",
+          "set",
+          "sl.connect",
+          "st.error",
+          "st.info",
+          "st.progress",
+          "st.success",
+          "st.warning",
+          "st.write",
+          "str",
+          "sum",
+          "tbl_avl.append",
+          "validar_duplicidades_global",
+          "validar_incr_bloco",
+          "validar_vnr_voc_ipca",
+          "with_name"
+        ]
+      },
+      "codigo": "def _processar_validacao(database, execucao_id, local, empresa, ano,\n                         csv_dir, sai_dir, temp, LMP_arq, lst_arq, lst_arq_opc):\n\n    _ler_csv_rastreado = rastrear_funcao(ler_dados_csv)\n    _validar_lotes_rastreado = rastrear_funcao(validar_tabela_em_lotes)\n    _relatorio_erros_rastreado = rastrear_funcao(gerar_relatorio_erros)\n    ipca = busca_ipca(st)[[\"Dt_REF\", \"VAR_MENSAL\", \"Nr_IPCA\"]]\n    Path(\"tabelas\").mkdir(parents=True, exist_ok=True)\n    ipca.to_csv(Path(\"tabelas\") / \"IPCA.csv\", index=False, sep=\"|\")\n    registrar_metrica(database, execucao_id, \"linhas_ipca\", len(ipca), \"linhas\")\n    os.makedirs(f\"{csv_dir}/CHECKPOINTS\", exist_ok=True)\n\n    registrar_evento(database, execucao_id, \"PREPARACAO\", \"Preparando checkpoints\")\n    if LMP_arq:\n        for arquivo in os.listdir(f\"{csv_dir}/CHECKPOINTS\"):\n            caminho_arquivo = os.path.join(f\"{csv_dir}/CHECKPOINTS\", arquivo)\n            if os.path.isfile(caminho_arquivo):\n                os.remove(caminho_arquivo)\n\n    if os.path.isdir(csv_dir) and os.path.isdir(sai_dir):\n        st.success(\"Validação iniciada com sucesso!\")\n        nm_TBL = \"\"\n        cd_EMP = \"\"\n        dt_DAT = \"\"\n        tbl_avl = []\n        tamanho = 0\n\n        os.makedirs(csv_dir + \"/DEMAIS\", exist_ok=True) \n\n        list_arq = [\n                        arq for arq in os.listdir(csv_dir) \n                        if os.path.isfile(os.path.join(csv_dir, arq)) \n                        and not arq.startswith('.') \n                        and not arq.startswith('IPCA')\n                    ]\n\n        registrar_metrica(database, execucao_id, \"arquivos_encontrados\", len(list_arq), \"arquivos\")\n        nr_arq = len(list_arq) + 1\n\n        if not list_arq:\n            raise FileNotFoundError(f\"Nenhum CSV encontrado em {csv_dir}\")\n        progresso = st.progress(0, text=f\"Analisando arquivo {list_arq[0]}\")\n\n        Nr_LINHAS = 0\n        arquivo = os.path.join(local, \"BD_LOCAL\", \"linhas_analisadas.json\")\n\n        if os.path.exists(arquivo):\n            with open(arquivo, \"r\", encoding=\"utf-8\") as f:\n                dados = json.load(f)\n                Nr_LINHAS = dados.get(\"Nr_LINHAS\", 0)\n\n        p = f\"{csv_dir}/CHECKPOINTS/dados_arq.json\"\n\n        if os.path.exists(p):\n            with open(p) as f:\n                dc_arq = json.load(f)\n        else:\n            dc_arq = {}\n\n        dic_erros_arquivos = {}\n        padrao = r\"^(.+)_(\\d{5})_(\\d{8})\\.csv$\"\n\n        for i, arq in enumerate(list_arq):\n            vistos_duplicidade = {}\n            registrar_evento(database, execucao_id, \"INICIO_ARQUIVO\", f\"Arquivo: {arq}\")\n            registrar_artefato(database, execucao_id, str(Path(csv_dir) / arq), \"ENTRADA\")\n            if arq[:arq.rfind(\"_\")-6] in lst_arq:\n                dc_arq[arq] = \"NO\"\n            else:\n                dc_arq[arq] = f\"Arquivo inesperado, manual de dados ({arq[:arq.rfind('_')-6]})\"\n\n            match = re.fullmatch(padrao, arq, flags=re.IGNORECASE)\n            if match is None:\n                registrar_evento(\n                                    database,\n                                    execucao_id,\n                                    nome_evento=\"ARQUIVO_NOME_INVALIDO\",\n                                    mensagem=f\"Nome fora do padrão: {arq}\",\n                                    nivel=\"ALERTA\",\n                                    detalhes={\n                                        \"arquivo\": arq,\n                                        \"padrao_esperado\": \"NOME_12345_YYYYMMDD.csv\",\n                                    },\n                                )\n\n                dic_erros_arquivos[arq] = {\n                                        \"mensagem\": \"ARQUIVO_NOME_INVALIDO\",\n                                        \"detalhe\": f\"Nome fora do padrão: {arq}\",\n                                        \"acao\": \"Ajuste nome do arquivo. Exemplo: MOP_00000_20250131.\"\n                                    }\n                continue\n            nxt_ARQ = False\n\n            if not match:\n                dic_erros_arquivos['arq'] = {\n                                                \"mensagem\": \"Nome do arquivo inválido.\",\n                                                \"detalhe\": \"O nome do arquivo deve seguir o padrão xxxx_yyyy_YYYYMMDD.csv.\",\n                                                \"acao\": \"Renomeie o arquivo conforme o padrão esperado. Exemplo: AIS_01234_20250131.csv.\"\n                                            }\n                nxt_ARQ = True\n\n            try:\n                nome_tabela, tmp, data_arquivo = match.groups()\n            except Exception as e:\n                st.error(f\"Problema no {arq}, verifique!\")\n                st.write(e)\n                raise UserWarning(f\"Avalie: {e}\")\n\n            if cd_EMP == \"\":\n                cd_EMP = tmp\n            else:\n                if tmp != cd_EMP:\n                    os.replace(os.path.join(csv_dir, arq), os.path.join(f\"{csv_dir}/DEMAIS\",arq))\n                    dic_erros_arquivos[arq] = {\n                                                'mensagem': 'Código da empresa no nome está incorreto.',\n                                                'detalhe': f'Arquivo apresentou código {tmp} ao invés de {cd_EMP}.',\n                                                'acao': 'Reveja o código da empresa no nome do arquivo.'\n                                            }\n                    nxt_ARQ = True\n            \n            try:\n                datetime.strptime(data_arquivo, \"%Y%m%d\")\n            except ValueError:\n                dic_erros_arquivos[arq] = {\n                                                \"mensagem\": \"Data inválida no nome do arquivo.\",\n                                                \"detalhe\": f\"Data encontrada: {data_arquivo}. A data deve estar no formato YYYYMMDD e ser válida.\",\n                                                \"acao\": \"Ajuste a data no nome do arquivo. Exemplo: 20250131.\"\n                                            }\n\n            with open(os.path.join(csv_dir, arq), 'rb') as f:\n                raw_data = f.read(10000)\n                result = chardet.detect(raw_data)\n                if (result.get('encoding') or 'desconhecido').lower() not in ['latin-1', 'iso-8859-1', 'utf-8', 'ascii', 'macroman', 'windows-1252']:\n                    dic_erros_arquivos[arq] = {\n                                                'mensagem': 'Encoding inválido.',\n                                                'detalhe': f\"Encoding detectado: {result['encoding']}. O sistema aceita apenas latin1 ou UTF-8.\",\n                                                'acao': 'Converta o arquivo CSV para latin1 ou UTF-8.'\n                                            }\n\n                    nxt_ARQ = True\n\n                if b'\\r\\n' in raw_data:\n                    fim_linha = 'CRLF (Windows)'\n                elif b'\\n' in raw_data:\n                    fim_linha = 'LF (Unix/Linux)'\n                elif b'\\r' in raw_data:\n                    fim_linha = 'CR (Mac antigo)'\n\n                if fim_linha != 'CRLF (Windows)':\n                    dic_erros_arquivos[arq] = {\n                                                'mensagem': 'Tipo de fim de linha incorreto.',\n                                                'detalhe': f'Tipo de fim de linha detectado: {fim_linha}. O sistema aceita CRLF (Windows).',\n                                                'acao': 'Converta o arquivo CSV para tipo de fim de linha CRLF (Windows).'\n                                            }\n\n            nm_TBL = arq[:arq.rfind(\"_\")-6]\n\n            if nxt_ARQ:\n                st.warning(f\"Pulou tabela: {nm_TBL}, encoding {(result.get('encoding') or 'desconhecido').lower()}. Verifique se é erro!\")\n                continue\n\n            p = f\"{csv_dir}/CHECKPOINTS/{arq}.chk\"\n\n            if os.path.exists(p):\n                with open(p) as f:\n                    arq_c = json.load(f)\n                    etapa = arq_c[\"etapa\"]\n                    if etapa == \"concluido\":\n                        tbl_avl.append(arq)\n                        continue\n                    Nr_LOTE = arq_c[\"fase\"]\n            else:\n                etapa = None\n                Nr_LOTE = 1\n\n            TAM_LOTE = 50000\n            TAM_ARQ = TAM_LOTE\n\n            if etapa is None or etapa == \"iniciado\": \n                while (TAM_ARQ >= TAM_LOTE):\n                    progresso.progress(i  * 100 // nr_arq, text= f\"Analisando arquivo {arq}. Etapa: {Nr_LOTE}, analisando erros.\") \n                    erros = []\n                    dados, TAM_ARQ = _ler_csv_rastreado(os.path.join(csv_dir, arq), TAM_LOTE, Nr_LOTE)\n                    if TAM_ARQ > 0:\n                        lt_ini = 300\n                        deslocamento=(Nr_LOTE - 1) * TAM_LOTE\n                        erros = _validar_lotes_rastreado(dados[0], tamanho_lote_inicial=lt_ini, \n                                                         tipo=nm_TBL, deslocamento=deslocamento)\n                        if nm_TBL == \"INCR\":\n                            df_bloco = pd.DataFrame.from_records(dados[0])\n                            erros1, ipca = (\n                                            validar_incr_bloco(\n                                                df_bloco,\n                                                deslocamento=deslocamento,\n                                                pasta=\"tabelas\",\n                                                dt_fim=st.session_state.dt_fim\n                                            )\n                                        )\n\n                            erros.extend(erros1)\n                            base_agregada = validar_vnr_voc_ipca(\n                                                df_bloco,\n                                                ipca,\n                                                deslocamento=deslocamento,\n                                                \n                                            )\n                            gravar_agregado_incr(\n                                                    base_agregada=base_agregada,\n                                                    nr_lote=Nr_LOTE,\n                                                    pasta=str(\n                                                                    Path(csv_dir) / \"CHECKPOINTS\" / \"agregados_incr\"\n                                                                )\n                                                )\n                            \n                        if nm_TBL in [\"ROS_VAL\", \"ROS\"]:\n                            erros.extend(\n                                            validar_duplicidades_global(\n                                                                            dados=dados[0],\n                                                                            vistos=vistos_duplicidade,\n                                                                            deslocamento=deslocamento,\n                                                                            campo=\"Cd_SubODI\"\n                                                                        )\n                                        )\n                        elif nm_TBL in ['ROServ', 'RServ']:\n                            erros.extend(\n                                            validar_duplicidades_global(\n                                                                            dados=dados[0],\n                                                                            vistos=vistos_duplicidade,\n                                                                            deslocamento=deslocamento,\n                                                                            campo=\"Cd_SubODS\"\n                                                                        )\n                                        )\n                        elif nm_TBL in ['DSC_CLS_CUSTO']:\n                            erros.extend(\n                                            validar_duplicidades_global(\n                                                                            dados=dados[0],\n                                                                            vistos=vistos_duplicidade,\n                                                                            deslocamento=deslocamento,\n                                                                            campo=\"Cd_Cls_Custo\"\n                                                                        )\n                                        )\n                        elif nm_TBL in ['LST_MAT', 'LST_SERV', 'LST_FCUM']:\n                            erros.extend(\n                                            validar_duplicidades_global(\n                                                                            dados=dados[0],\n                                                                            vistos=vistos_duplicidade,\n                                                                            deslocamento=deslocamento,\n                                                                            campo=\"COD_ITEM\"\n                                                                        )\n                                        )\n                        elif nm_TBL in ['DESC_ODI']:\n                            erros.extend(\n                                            validar_duplicidades_global(\n                                                                            dados=dados[0],\n                                                                            vistos=vistos_duplicidade,\n                                                                            deslocamento=deslocamento,\n                                                                            campo=\"Cd_ODI\"\n                                                                        )\n                                        )\n                        if erros:\n                            progresso.progress(i  * 100 // nr_arq, text= f\"Analisando arquivo {arq}. Etapa: {Nr_LOTE}, gerando relatório de erros.\")\n                            df_erro = _relatorio_erros_rastreado(erros, nm_TBL, tam_lote=lt_ini)\n                            existe_temp = os.path.exists(temp)\n                            df_erro.to_csv(\n                                            temp,\n                                            mode=\"a\" if existe_temp else \"w\",\n                                            header=not existe_temp,\n                                            index=False\n                                        )\n\n                        Nr_LOTE += 1\n                        with open(p, \"w\") as f:\n                            json.dump({\"etapa\": \"iniciado\",\n                                    \"fase\": Nr_LOTE}, f)\n\n                        Nr_LINHAS += len(dados[0]) * len(dados[0][0])\n                        x = {\"Nr_LINHAS\": Nr_LINHAS}\n\n                        with open(str(Path(local) / \"BD_LOCAL\" / \"linhas_analisadas.json\"), \"w\", encoding=\"utf-8\") as f:\n                            json.dump(x, f, ensure_ascii=False, indent=2)\n\n                with open(p, \"w\") as f:\n                    json.dump({\"etapa\": \"concluido\"}, f)\n\n                if nm_TBL == \"INCR\":\n                    progresso.progress(\n                                            i * 100 // nr_arq,\n                                            text=f\"Consolidando os agregados da tabela {nm_TBL}.\"\n                                        )\n                    pasta_agregados = str(\n                                                Path(csv_dir) / \"CHECKPOINTS\" / \"agregados_incr\"\n                                            )\n                    consolidado = consolidar_agregados_incr(pasta=pasta_agregados)\n                    divergencias = analisar_agregados_incr(consolidado)\n                    alertas_agregados = gerar_alertas_incr_agregados(divergencias)\n\n                    divergencias_vf = analisar_vf_agregado_incr(consolidado)\n                    alertas_vf = gerar_alertas_incr_vf_agregados(divergencias_vf)\n                    alertas_agregados.extend(alertas_vf)\n\n                    temp_alertas = str(\n                                        Path(temp).with_name(\n                                            Path(temp).stem + \"_alertas_agregados.csv\"\n                                        )\n                                    )\n                    if alertas_agregados:\n                        df_alertas = _relatorio_erros_rastreado(\n                                                                    alertas_agregados,\n                                                                    nm_TBL,\n                                                                    tam_lote=1\n                                                                )\n                    else:\n                        df_alertas = pd.DataFrame(\n                                                    columns=[\n                                                        \"Campo\",\n                                                        \"Severidade\",\n                                                        \"Descrição do Erro\",\n                                                        \"Qtd\",\n                                                        \"Exemplos (Amostra, linha do arquivo)\",\n                                                        \"Nm_TAB\"\n                                                    ]\n                                                )\n                    df_alertas.to_csv(temp_alertas, index=False)\n\n                with open(p, \"w\") as f:\n                    json.dump(\n                                {\"etapa\": \"concluido\"},\n                                f\n                            )\n            tbl_avl.append(arq)\n\n        registrar_metrica(database, execucao_id, \"arquivos_avaliados\", len(tbl_avl), \"arquivos\")\n        lst_arq_lidos = [arq[:arq.rfind(\"_\")-6] for arq in dc_arq.keys() if dc_arq[arq] == 'NO']\n        faltando = list(set(lst_arq) - set(lst_arq_lidos))\n        for nm in faltando:\n            if nm in lst_arq_opc:\n                dc_arq[f'{nm}_xxxxx_YYYYMMDD.csv'] = f'Não foi entregue o arquivo ({nm}), mas é opcional.'\n            else:\n                dc_arq[f'{nm}_xxxxx_YYYYMMDD.csv'] = f'Não foi entregue o arquivo ({nm}).'\n\n        if len(dc_arq) > 0:\n            with open(rf\"{csv_dir}/CHECKPOINTS/dados_arq.json\", \"w\", encoding=\"utf-8\") as f:\n                json.dump(dc_arq, f, ensure_ascii=False, indent=2)\n\n        df_formatos = pd.DataFrame.from_dict(dic_erros_arquivos, orient='index').reset_index()\n        df_formatos = df_formatos.rename(columns={'index': 'arquivo'})\n\n        df_controle = pd.DataFrame.from_dict(dc_arq, orient='index').reset_index()\n        df_controle = df_controle.rename(columns={'index': 'arquivo', 0 : 'OBS_SFF'})\n\n        temp_alertas = str(\n                            Path(temp).with_name(\n                                                    Path(temp).stem + \"_alertas_agregados.csv\"\n                                                )\n                        )\n        colunas = [\n                        \"Campo\",\n                        \"Severidade\",\n                        \"Descrição do Erro\",\n                        \"Qtd\",\n                        \"Exemplos (Amostra, linha do arquivo)\",\n                        \"Nm_TAB\"\n                    ]\n\n        partes = []\n\n        for caminho in [temp, temp_alertas]:\n            if Path(caminho).is_file():\n                parcial = pd.read_csv(caminho)\n\n                if not parcial.empty:\n                    partes.append(parcial)\n        \n        df_IMPR = (\n                        pd.concat(partes, ignore_index=True)\n                        if partes\n                        else pd.DataFrame(columns=colunas)\n                    )\n        df1 = df_IMPR.groupby(by=['Campo',\"Severidade\",'Descrição do Erro','Nm_TAB'], dropna=False)['Qtd'].sum().reset_index()\n\n        if 'Exemplos (Amostra, linha do arquivo)' in df_IMPR.columns:\n            df2 = df_IMPR.groupby(by=['Campo',\"Severidade\",'Descrição do Erro','Nm_TAB'], dropna=False)['Exemplos (Amostra, linha do arquivo)'].first().reset_index()\n            df_IMPR = df1.merge(df2, how = 'left', on = ['Campo',\"Severidade\",'Descrição do Erro','Nm_TAB'])\n\n        local = st.session_state.tra_dir\n        empresa = st.session_state.nm_empr\n        ano = st.session_state.dt_fim.year\n\n        bd = sl.connect(str(Path(local) / \"BD_LOCAL\" / f\"{empresa}_{ano}.db\"))\n\n        if len(df_IMPR)>0:\n            df_IMPR.to_sql('ERROS_SDI', bd, if_exists='replace', index=False)\n            df_formatos.to_sql('ERROS_FORMATOS_SDI', bd, if_exists='replace', index=False)\n            df = pd.DataFrame(tbl_avl, columns=[\"valor\"])\n            df.to_sql('ERROS_tbl_avl', bd, if_exists='replace', index=False)\n            df_IMPR = df_IMPR.map(limpar_texto_latin1)\n            df_IMPR.to_csv(str(Path(local) / \"RELATORIOS\" / f\"{empresa}_{ano}.csv\"), \n                        index=False, \n                        sep=\"|\", \n                        decimal=\",\", \n                        encoding=\"Latin-1\",\n                        quoting=csv.QUOTE_MINIMAL,\n                        doublequote=True)\n\n            df_formatos.to_csv(str(Path(local) / \"RELATORIOS\" / f\"{empresa}_formatos_{ano}.csv\"), \n                        index=False, \n                        sep=\"|\", \n                        decimal=\",\", \n                        encoding=\"Latin-1\",\n                        quoting=csv.QUOTE_MINIMAL,\n                        doublequote=True)\n\n            df_controle.to_csv(str(Path(local) / \"RELATORIOS\" / f\"{empresa}_controle_arquivos_{ano}.csv\"), \n                        index=False, \n                        sep=\"|\", \n                        decimal=\",\", \n                        encoding=\"Latin-1\",\n                        quoting=csv.QUOTE_MINIMAL,\n                        doublequote=True)\n        else:\n            st.info(f\"Finalizado, sem erros!\")\n\n        progresso.empty()\n        st.success(\"Finalizado a validação!\") \n\n        if 'df_IMPR' in locals():\n            del df_IMPR\n\n        if 'df_erro' in locals():\n            del df_erro    \n\n        df_IMPR = \"\"\n        if bd:\n            bd.close()\n    else:\n        raise FileNotFoundError(\"Certifique-se de que ambos os diretórios estão corretos.\")\n    for saida in (\n                        Path(local) / \"RELATORIOS\" / f\"{empresa}_{ano}.csv\",\n                        Path(local) / \"RELATORIOS\" / f\"{empresa}_formatos_{ano}.csv\",\n                        Path(local) / \"RELATORIOS\" / f\"{empresa}_controle_arquivos_{ano}.csv\",\n                    ):\n        _registrar_saida_se_existir(database, execucao_id, saida)"
+    },
+    "documentacao": {
+      "resumo": "Processa a validação dos dados CSV, realizando leitura, validação e geração de relatórios.",
+      "descricao": "A função `_processar_validacao` realiza várias etapas para validar arquivos CSV, incluindo leitura, validação em lotes, geração de relatórios de erros e controle de metadados. Ela também registra eventos, artefatos e métricas durante o processo.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Conexão com o banco de dados onde serão armazenados os resultados."
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "ID da execução atual, usado para rastreamento e registro de eventos."
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho local onde os arquivos estão armazenados."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa associada aos dados."
+        },
+        {
+          "nome": "ano",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ano dos dados a serem validados."
+        },
+        {
+          "nome": "csv_dir",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Diretório onde os arquivos CSV estão localizados."
+        },
+        {
+          "nome": "sai_dir",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Diretório onde os relatórios de saída serão armazenados."
+        },
+        {
+          "nome": "temp",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o arquivo temporário onde serão armazenados dados intermediários."
+        },
+        {
+          "nome": "LMP_arq",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Lista de arquivos que devem ser processados, ou `None` se não houver restrição."
+        },
+        {
+          "nome": "lst_arq",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Lista de arquivos esperados para validação."
+        },
+        {
+          "nome": "lst_arq_opc",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Lista de arquivos opcionais que podem ser processados."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "FileNotFoundError",
+          "descricao": "Quando um dos diretórios especificados não existe."
+        },
+        {
+          "tipo": "UserWarning",
+          "descricao": "Quando ocorre um problema durante a leitura ou validação de arquivos CSV."
+        }
+      ],
+      "dependencias": [
+        "MANIFESTO.rastrear_funcao",
+        "MANIFESTO.registrar_artefato",
+        "MANIFESTO.registrar_evento",
+        "MANIFESTO.registrar_metrica",
+        "UTILS.busca_ipca",
+        "chardet",
+        "datetime.datetime",
+        "json",
+        "os",
+        "pandas",
+        "pathlib.Path",
+        "re",
+        "sqlite3",
+        "streamlit",
+        "validador_funcoes.analisar_agregados_incr",
+        "validador_funcoes.analisar_vf_agregado_incr",
+        "validador_funcoes.consolidar_agregados_incr",
+        "validador_funcoes.gerar_alertas_incr_agregados",
+        "validador_funcoes.gerar_alertas_incr_vf_agregados",
+        "validador_funcoes.gravar_agregado_incr",
+        "validador_funcoes.validar_duplicidades_global",
+        "validador_funcoes.validar_incr_bloco",
+        "validador_funcoes.validar_vnr_voc_ipca"
+      ],
+      "docstring": "Processa a validação dos dados CSV, realizando leitura, validação em lotes, geração de relatórios de erros e controle de metadados.\n\nArgs:\n    database: Conexão com o banco de dados onde serão armazenados os resultados.\n    execucao_id: ID da execução atual, usado para rastreamento e registro de eventos.\n    local: Caminho local onde os arquivos estão armazenados.\n    empresa: Nome da empresa associada aos dados.\n    ano: Ano dos dados a serem validados.\n    csv_dir: Diretório onde os arquivos CSV estão localizados.\n    sai_dir: Diretório onde os relatórios de saída serão armazenados.\n    temp: Caminho para o arquivo temporário onde serão armazenados dados intermediários.\n    LMP_arq: Lista de arquivos que devem ser processados, ou `None` se não houver restrição.\n    lst_arq: Lista de arquivos esperados para validação.\n    lst_arq_opc: Lista de arquivos opcionais que podem ser processados.\n\nRaises:\n    FileNotFoundError: Quando um dos diretórios especificados não existe.\n    UserWarning: Quando ocorre um problema durante a leitura ou validação de arquivos CSV."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "executar_validacao",
+      "tipo": "function",
+      "linha_inicio": 500,
+      "linha_fim": 515,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "ano",
+          "tipo": "int",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "csv_dir",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "sai_dir",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "temp",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "LMP_arq",
+          "tipo": "bool",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "lst_arq",
+          "tipo": "list[str]",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "lst_arq_opc",
+          "tipo": "list[str]",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "str",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.registrar_evento"
+        ],
+        "chamadas": [
+          "_processar_validacao",
+          "execucao_trilha",
+          "registrar_evento",
+          "str"
+        ]
+      },
+      "codigo": "def executar_validacao(\n                            database: str, local: str, empresa: str, ano: int,\n                            csv_dir: str, sai_dir: str, temp: str,\n                            LMP_arq: bool, lst_arq: list[str], lst_arq_opc: list[str],\n                        ) -> str:\n    with execucao_trilha(\n                            db_path=database,\n                            script_nome=\"Validacao Distribuidora\",\n                            script_versao=\"1.0.0\",\n                            parametros={\"empresa\": str(empresa), \"ano\": ano, \"refazer_todos\": LMP_arq},\n                        ) as execucao_id:\n        registrar_evento(database, execucao_id, \"INICIO_VALIDACAO\", \"Validação iniciada\")\n        _processar_validacao(database, execucao_id, local, empresa, ano,\n                            csv_dir, sai_dir, temp, LMP_arq, lst_arq, lst_arq_opc)\n        registrar_evento(database, execucao_id, \"FIM_VALIDACAO\", \"Validação finalizada\")\n        return execucao_id"
+    },
+    "documentacao": {
+      "resumo": "Executa a validação de distribuidora em um banco de dados específico.",
+      "descricao": "Realiza uma série de etapas para validar dados em um banco de dados, incluindo o registro de eventos e o processamento da validação. A função retorna um identificador de execução que pode ser usado para rastrear a operação.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Caminho do banco de dados onde os dados serão validados."
+        },
+        {
+          "nome": "local",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Localização ou contexto em que a validação ocorrerá."
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome da empresa associada aos dados a serem validados."
+        },
+        {
+          "nome": "ano",
+          "tipo": "int",
+          "categoria": "posicional",
+          "descricao": "Ano dos dados que serão validados."
+        },
+        {
+          "nome": "csv_dir",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Diretório onde os arquivos CSV relacionados à validação estão localizados."
+        },
+        {
+          "nome": "sai_dir",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Diretório onde os resultados da validação serão salvos."
+        },
+        {
+          "nome": "temp",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Caminho para o diretório temporário utilizado durante a validação."
+        },
+        {
+          "nome": "LMP_arq",
+          "tipo": "bool",
+          "categoria": "posicional",
+          "descricao": "Indica se todos os arquivos devem ser refazidos na validação."
+        },
+        {
+          "nome": "lst_arq",
+          "tipo": "list[str]",
+          "categoria": "posicional",
+          "descricao": "Lista de arquivos que serão processados durante a validação."
+        },
+        {
+          "nome": "lst_arq_opc",
+          "tipo": "list[str]",
+          "categoria": "posicional",
+          "descricao": "Lista de arquivos opcionais que podem ser processados durante a validação."
+        }
+      ],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "Identificador de execução gerado para rastrear a operação de validação."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.execucao_trilha",
+          "categoria": "import",
+          "descricao": "Módulo que fornece a função `execucao_trilha` para rastreamento de execução."
+        },
+        {
+          "nome": "MANIFESTO.registrar_evento",
+          "categoria": "import",
+          "descricao": "Módulo que fornece a função `registrar_evento` para registro de eventos durante a validação."
+        },
+        {
+          "nome": "_processar_validacao",
+          "categoria": "chamada",
+          "descricao": "Função interna que realiza o processamento detalhado da validação dos dados."
+        },
+        {
+          "nome": "execucao_trilha",
+          "categoria": "chamada",
+          "descricao": "Função utilizada para iniciar a trilha de execução e obter um identificador único."
+        },
+        {
+          "nome": "registrar_evento",
+          "categoria": "chamada",
+          "descricao": "Função que registra eventos importantes durante o processo de validação."
+        },
+        {
+          "nome": "str",
+          "categoria": "chamada",
+          "descricao": "Tipo utilizado para conversão de valores em strings."
+        }
+      ],
+      "docstring": "Executa a validação de distribuidora em um banco de dados específico.\n\nArgs:\n    database (str): Caminho do banco de dados onde os dados serão validados.\n    local (str): Localização ou contexto em que a validação ocorrerá.\n    empresa (str): Nome da empresa associada aos dados a serem validados.\n    ano (int): Ano dos dados que serão validados.\n    csv_dir (str): Diretório onde os arquivos CSV relacionados à validação estão localizados.\n    sai_dir (str): Diretório onde os resultados da validação serão salvos.\n    temp (str): Caminho para o diretório temporário utilizado durante a validação.\n    LMP_arq (bool): Indica se todos os arquivos devem ser refazidos na validação.\n    lst_arq (list[str]): Lista de arquivos que serão processados durante a validação.\n    lst_arq_opc (list[str]): Lista de arquivos opcionais que podem ser processados durante a validação.\n\nReturns:\n    str: Identificador de execução gerado para rastrear a operação de validação."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_processar_pdf",
+      "tipo": "function",
+      "linha_inicio": 517,
+      "linha_fim": 540,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "ano",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "IA_anl",
+          "tipo": null,
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.rastrear_funcao",
+          "UTILS.bsc_cd_aneel",
+          "UTILS.existe_tabela",
+          "json",
+          "pandas",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "_grafico_rastreado",
+          "_imprime_rastreado",
+          "bsc_cd_aneel",
+          "drop_duplicates",
+          "existe_tabela",
+          "json.load",
+          "locals",
+          "open",
+          "pd.read_sql",
+          "rastrear_funcao",
+          "sl.connect",
+          "st.spinner",
+          "str",
+          "to_list"
+        ]
+      },
+      "codigo": "def _processar_pdf(database, execucao_id, local, empresa, ano, IA_anl):\n    _grafico_rastreado = rastrear_funcao(grafico_resultado)\n    _imprime_rastreado = rastrear_funcao(imprime)\n    bd = sl.connect(str(Path(local) / \"BD_LOCAL\" / f\"{empresa}_{ano}.db\"))\n\n    with st.spinner(\"Fazendo o relatório de erros em pdf...\"):\n        if existe_tabela(\"ERROS_SDI\", bd):\n            df_IMPR = pd.read_sql(\"SELECT * FROM ERROS_SDI\", bd)\n\n            if existe_tabela(\"ERROS_tbl_avl\", bd):\n                df = pd.read_sql(\"SELECT * FROM ERROS_tbl_avl\", bd)\n                tbl_avl = df['valor'].drop_duplicates().to_list()\n            else:\n                tbl_avl = []\n            tipo_erro = []\n\n            with open(str(Path(local) / \"BD_LOCAL\" / \"linhas_analisadas.json\"), \"r\", encoding=\"utf-8\") as f:\n                Nr_LINHAS = json.load(f) \n            FATOR = _grafico_rastreado(df_IMPR, Nr_LINHAS['Nr_LINHAS'], str(Path(local) / \"IMAGENS\")) \n            empresa = st.session_state.nm_empr\n            cd_EMP = bsc_cd_aneel(empresa)\n            x = _imprime_rastreado(FATOR, df_IMPR, cd_EMP, tbl_avl, f'{local}', tipo_erro, st, IA=IA_anl)\n            if 'df_IMPR' in locals():\n                del df_IMPR"
+    },
+    "documentacao": {
+      "resumo": "Processa um PDF para gerar um relatório de erros.",
+      "descricao": "A função lê dados de um banco de dados SQLite, processa esses dados e gera um relatório em PDF. O processo envolve a leitura de tabelas específicas, cálculos estatísticos e impressão dos resultados.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Banco de dados SQLite onde os dados estão armazenados."
+        },
+        {
+          "nome": "execucao_id",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "ID da execução atual, embora não seja usado no código fornecido."
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho local onde os arquivos de banco de dados e imagens estão armazenados."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa para a qual o relatório está sendo gerado."
+        },
+        {
+          "nome": "ano",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Ano referente aos dados que estão sendo processados."
+        },
+        {
+          "nome": "IA_anl",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Indicador de análise de IA, embora não seja usado no código fornecido."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.rastrear_funcao",
+          "tipo": "função",
+          "categoria": "importação"
+        },
+        {
+          "nome": "UTILS.bsc_cd_aneel",
+          "tipo": "função",
+          "categoria": "importação"
+        },
+        {
+          "nome": "UTILS.existe_tabela",
+          "tipo": "função",
+          "categoria": "importação"
+        },
+        {
+          "nome": "json",
+          "tipo": "biblioteca",
+          "categoria": "importação"
+        },
+        {
+          "nome": "pandas",
+          "tipo": "biblioteca",
+          "categoria": "importação"
+        },
+        {
+          "nome": "pathlib.Path",
+          "tipo": "classe",
+          "categoria": "importação"
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": "biblioteca",
+          "categoria": "importação"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca",
+          "categoria": "importação"
+        }
+      ],
+      "docstring": "Processa um PDF para gerar um relatório de erros.\n\nArgs:\n    database: Banco de dados SQLite onde os dados estão armazenados.\n    execucao_id: ID da execução atual (não usado).\n    local: Caminho local onde os arquivos de banco de dados e imagens estão armazenados.\n    empresa: Nome da empresa para a qual o relatório está sendo gerado.\n    ano: Ano referente aos dados que estão sendo processados.\n    IA_anl: Indicador de análise de IA (não usado).\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "executar_geracao_pdf",
+      "tipo": "function",
+      "linha_inicio": 542,
+      "linha_fim": 552,
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "ano",
+          "tipo": "int",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "IA_anl",
+          "tipo": "bool",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "str",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.execucao_trilha",
+          "MANIFESTO.registrar_evento"
+        ],
+        "chamadas": [
+          "_processar_pdf",
+          "execucao_trilha",
+          "registrar_evento",
+          "str"
+        ]
+      },
+      "codigo": "def executar_geracao_pdf(database: str, local: str, empresa: str, ano: int, IA_anl: bool) -> str:\n    with execucao_trilha(\n                            db_path=database,\n                            script_nome=\"Gerar PDF validação de Distribuidoras\",\n                            script_versao=\"1.0.0\",\n                            parametros={\"empresa\": str(empresa), \"ano\": ano, \"analise_ia\": IA_anl},\n                        ) as execucao_id:\n        registrar_evento(database, execucao_id, \"INICIO_PDF\", \"Geração de PDF iniciada\")\n        _processar_pdf(database, execucao_id, local, empresa, ano, IA_anl)\n        registrar_evento(database, execucao_id, \"FIM_PDF\", \"Processamento do PDF concluído\")\n        return execucao_id"
+    },
+    "documentacao": {
+      "resumo": "Executa a geração de um PDF para validação de distribuidoras.",
+      "descricao": "Esta função inicia uma trilha de execução, registra o início do processo de geração de PDF e chama outra função para processar o PDF. Após o processamento, registra o fim da execução e retorna a identificação da execução.",
+      "parametros": [
+        {
+          "nome": "database",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Caminho para o banco de dados."
+        },
+        {
+          "nome": "local",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Local onde o PDF será gerado."
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome da empresa para a qual o PDF está sendo gerado."
+        },
+        {
+          "nome": "ano",
+          "tipo": "int",
+          "categoria": "posicional",
+          "descricao": "Ano referente aos dados do PDF."
+        },
+        {
+          "nome": "IA_anl",
+          "tipo": "bool",
+          "categoria": "posicional",
+          "descricao": "Indica se a análise será realizada por IA."
+        }
+      ],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "Identificação da execução gerada para o processo de geração de PDF."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.execucao_trilha",
+          "categoria": "import",
+          "descricao": "Módulo que contém a função `execucao_trilha` para iniciar uma trilha de execução."
+        },
+        {
+          "nome": "MANIFESTO.registrar_evento",
+          "categoria": "import",
+          "descricao": "Módulo que contém a função `registrar_evento` para registrar eventos durante a execução."
+        },
+        {
+          "nome": "_processar_pdf",
+          "categoria": "chamada",
+          "descricao": "Função interna que processa o PDF."
+        },
+        {
+          "nome": "execucao_trilha",
+          "categoria": "chamada",
+          "descricao": "Função para iniciar uma trilha de execução."
+        },
+        {
+          "nome": "registrar_evento",
+          "categoria": "chamada",
+          "descricao": "Função para registrar eventos durante a execução."
+        },
+        {
+          "nome": "str",
+          "categoria": "chamada",
+          "descricao": "Tipo de dado `str` para conversão de valores em strings."
+        }
+      ],
+      "docstring": "Executa a geração de um PDF para validação de distribuidoras.\n\nArgs:\n    database (str): Caminho para o banco de dados.\n    local (str): Local onde o PDF será gerado.\n    empresa (str): Nome da empresa para a qual o PDF está sendo gerado.\n    ano (int): Ano referente aos dados do PDF.\n    IA_anl (bool): Indica se a análise será realizada por IA.\n\nReturns:\n    str: Identificação da execução gerada para o processo de geração de PDF."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "VALIDADOR_D",
+      "tipo": "function",
+      "linha_inicio": 554,
+      "linha_fim": 648,
+      "parametros": [],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "UTILS.bsc_dados_reg",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "UserWarning",
+          "bsc_dados_reg",
+          "executar_geracao_pdf",
+          "executar_validacao",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "pasta_manifesto.mkdir",
+          "st.button",
+          "st.checkbox",
+          "st.columns",
+          "st.html",
+          "st.markdown",
+          "st.spinner",
+          "st.success",
+          "str"
+        ]
+      },
+      "codigo": "def VALIDADOR_D():\n\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    st.html(f\"<style>{css}</style>\")\n\n    if \"tra_dir\" not in st.session_state:\n        st.html('''<div class=\"fade-message pulse\">Você deve configurar o diretório de trabalho na aba <i>Criar Pasta de Trabalho</i>, barra lateral.</div>''')\n        return\n    \n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    pasta_manifesto = Path(local) / \"MANIFESTO\" / \"TRILHA_EXEC\"\n    pasta_manifesto.mkdir(parents=True, exist_ok=True)\n    database = str(pasta_manifesto / \"execucoes.db\")\n\n    inicializa_database(database)\n    inicializa_detalhes(database)\n    inicializar_rastreamento(database)\n\n    col1 = st.columns([1,5,1], gap='small')\n    with col1[1]:\n        st.html(\"\"\"<h1 style=\"text-align: center;\">Validação de Arquivos CSV</h1><br><br>\n            <p style=\"text-align: justify;text-indent: 40px\">\n                    Faz a validação e permite criar relatório de erros de estrutura, \n                    elaborado com base em testes e esquema pré-configurados, visando garantir \n                    a integridade e a qualidade dos dados a serem processados. \n                    A validação é realizada por meio de um validador Pydantic, que\n                    identifica inconsistências nos campos conforme as regras estabelecidas. O\n                    resultado do processo fornece informações sobre falhas estruturais,\n                    permitindo a correção antecipada de erros e a otimização da coleta de dados. \n                    Como o processo é demorado, tem-se um botão Validar que aciona o\n                    processo de validação e produz um relatório no formato CSV. A opção 'Refazer análise de todos os arquivos'\n                    muda o comportamento do botão \"Validar\". Caso esteja ativo, ele refaz todos os arquivos, caso inativo \n                    ele apenas continua do último arquivo avaliado. O botão Gerar\n                    monta um relatório no formato PDF. Se a opção \"Ativar análise por IA\" estiver ativa, o relatório terá \n                    uma análise de cada tabela processada por de IA, caso não, será relatório estático.\n                    \n            </p>\n            \"\"\")\n\n        csv_dir = rf\"{st.session_state.tra_dir}\\DADOS_BRUTOS_MANUAL\"\n        sai_dir = rf\"{st.session_state.tra_dir}\\RELATORIOS\"\n\n        st.markdown(\"### Ações\")\n        col_btn1, col_btn2 = st.columns(2, gap=\"medium\")\n\n        with col_btn1:\n            teste = st.button(\"Validar\", use_container_width=True)\n\n        with col_btn2:\n            gerar_pdf = st.button(\"Gerar PDF\", use_container_width=True)\n\n        st.markdown(\"### Opções\")\n        col_opt1, col_opt2 = st.columns(2, gap=\"medium\")\n\n        lst_arq = ['AIS','AISat','AISant','ROS','ROSaicANT','ROSaicAT','RServ','ROS_VAL','ROS_ABT_AJST',\n                'CD_SUBODI_AIS_ROS','ROS_ABT_CP','ROA','ROAaicANT','ROAaicAT','RAserv','ROD','DSC_CLS_CUSTO',\n                'LST_MAT','LST_SERV','LST_FCUM','LST_OBRAS_EMERG','LST_MAT_OBRAS_EMERG','DT_ENERG','COMERCIAL_MEDIDORES',\n                'NT_COM','NT_CMU','OE_AGR','OE_AJS','BP_EC','BPFP_UAR','BP_UAR','REFORMADOS_INCREMENTAL',\n                'ORIGEM_ATIVOS_INCREMENTAL','BS','BS_ABT','MOP','MOP_RUBRICAS','MOP_SERVICOS','MUDANCA_PATRIMONIO','BAIXAS',\n                'DESC_ODI','PPBB','PCBB','INCR','AO','LD_SALDO','LD_LCMTO','LD_PTD','ECDdepara','TDOMUC']\n        lst_arq_opc = ['CD_SUBODI_AIS_ROS','DSC_CLS_CUSTO','LST_FCUM','DT_ENERG','TDOMUC']\n        \n        with col_opt1:\n            IA_anl = st.checkbox(\n                                    \"Ativar análise por IA\",\n                                    value=False,\n                                    disabled=True\n                                )\n\n        with col_opt2:\n            LMP_arq = st.checkbox(\n                                    \"Refazer análise de todos os arquivos\",\n                                    value=False\n                                )\n\n        temp = str(Path(csv_dir) / \"CHECKPOINTS\" / \"erros_parciais.csv\")\n        if teste:\n            #try:\n            with st.spinner(\"Validando arquivos...\"):\n                execucao_id = executar_validacao(\n                                                    database, local, empresa, ano, csv_dir, sai_dir, temp,\n                                                    LMP_arq, lst_arq, lst_arq_opc,\n                                                )\n            st.success(f\"Execução registrada: {execucao_id}\")\n            #except Exception as exc:\n            #    raise UserWarning(f\"Falha na validação: {exc}\")\n\n        if gerar_pdf:\n            try:\n                execucao_id = executar_geracao_pdf(database, local, empresa, ano, IA_anl)\n                st.success(f\"Execução registrada: {execucao_id}\")\n            except Exception as exc:\n                raise UserWarning(f\"Falha na geração do PDF: {exc}\")"
+    },
+    "documentacao": {
+      "resumo": "Realiza a validação de arquivos CSV e gera relatórios.",
+      "descricao": "A função `VALIDADOR_D` é responsável por configurar o ambiente, inicializar bancos de dados, exibir instruções ao usuário e permitir a execução de processos de validação e geração de relatórios. Ela utiliza componentes do Streamlit para interação com o usuário e funções auxiliares para manipulação de dados e banco de dados.",
+      "parametros": [],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "UserWarning",
+          "descricao": "Quando ocorre uma falha na validação ou geração do PDF."
+        }
+      ],
+      "dependencias": [
+        "MANIFESTO.inicializa_database",
+        "MANIFESTO.inicializa_detalhes",
+        "MANIFESTO.inicializar_rastreamento",
+        "UTILS.bsc_dados_reg",
+        "pathlib.Path",
+        "streamlit"
+      ],
+      "docstring": "Realiza a validação de arquivos CSV e gera relatórios.\n\nReturns:\n    None\n\nRaises:\n    UserWarning: Quando ocorre uma falha na validação ou geração do PDF."
+    },
+    "status": "sucesso"
+  }
+]

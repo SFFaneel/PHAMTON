@@ -1,0 +1,19 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,1,Blindagem metálica
+3,2,Coberto
+4,3,Com alma
+5,4,Encapado
+6,5,EPR/PVC
+7,6,EPR/XLPE
+8,7,Isolado - EPR
+9,8,Isolado - Papel impregnado
+10,9,Isolado - PVC
+11,10,Isolado - XLPE
+12,11,Misto OPGW
+13,12,Nu
+14,13,Isolado - PE
+15,14,Protegido - PVC
+16,15,Protegido - EPR
+17,16,Sem blindagem
+18,17,Protegido - XLPE

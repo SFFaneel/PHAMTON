@@ -1,0 +1,12 @@
+OBJECTID,COD_ID,DESCR
+1,0,Não informado
+2,1,Aérea Compacta
+3,2,Aérea Concêntrica
+4,3,Aérea Horizontal
+5,4,Aérea Multiplex
+6,5,Subterrânea
+7,6,Aérea Triangular
+8,7,Aérea Vertical
+9,8,Submersa
+10,9,Interna
+11,10,Em Subestação

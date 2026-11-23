@@ -1,0 +1,328 @@
+[
+  {
+    "funcao": {
+      "nome": "listar_arquivos_auditados",
+      "tipo": "function",
+      "linha_inicio": 6,
+      "linha_fim": 15,
+      "parametros": [
+        {
+          "nome": "raiz",
+          "tipo": "Path",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "list[str]",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "is_file",
+          "pasta.is_dir",
+          "raiz.is_dir",
+          "raiz.iterdir",
+          "sorted"
+        ]
+      },
+      "codigo": "def listar_arquivos_auditados(raiz: Path) -> list[str]:\n    if not raiz.is_dir():\n        return []\n\n    return sorted(\n                        pasta.name\n                        for pasta in raiz.iterdir()\n                        if pasta.is_dir()\n                        and (pasta / \"MANIFESTOS\" / \"indice.json\").is_file()\n                    )"
+    },
+    "documentacao": {
+      "resumo": "Lista os nomes de pastas que contêm o arquivo 'indice.json' dentro da pasta 'MANIFESTOS'.",
+      "descricao": "A função percorre recursivamente a estrutura de diretórios a partir do caminho fornecido e retorna uma lista ordenada dos nomes das pastas que possuem um arquivo chamado 'indice.json' na subpasta 'MANIFESTOS'. Se o caminho fornecido não for um diretório, a função retorna uma lista vazia.",
+      "parametros": [
+        {
+          "nome": "raiz",
+          "tipo": "Path",
+          "categoria": "posicional",
+          "descricao": "Caminho do diretório raiz para iniciar a busca."
+        }
+      ],
+      "retorno": {
+        "tipo": "list[str]",
+        "descricao": "Lista ordenada dos nomes das pastas que contêm o arquivo 'indice.json' na subpasta 'MANIFESTOS'."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "os.path"
+      ],
+      "docstring": "Lista os nomes de pastas que contêm o arquivo 'indice.json' dentro da pasta 'MANIFESTOS'.\n\nArgs:\n    raiz (Path): Caminho do diretório raiz para iniciar a busca.\n\nReturns:\n    list[str]: Lista ordenada dos nomes das pastas que contêm o arquivo 'indice.json' na subpasta 'MANIFESTOS'.\n\nNotes:\n    A função retorna uma lista vazia se o caminho fornecido não for um diretório."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "carregar_indice",
+      "tipo": "function",
+      "linha_inicio": 17,
+      "linha_fim": 21,
+      "parametros": [
+        {
+          "nome": "raiz",
+          "tipo": "Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "id_arquivo",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "dict",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "json"
+        ],
+        "chamadas": [
+          "caminho.open",
+          "json.load"
+        ]
+      },
+      "codigo": "def carregar_indice(raiz: Path, id_arquivo: str) -> dict:\n    caminho = raiz / id_arquivo / \"MANIFESTOS\" / \"indice.json\"\n\n    with caminho.open(\"r\", encoding=\"utf-8\") as f:\n        return json.load(f)"
+    },
+    "documentacao": {
+      "resumo": "Carrega o índice JSON a partir de um caminho especificado.",
+      "descricao": "Abre e lê um arquivo JSON localizado em um diretório específico, retornando seu conteúdo como um dicionário Python.",
+      "parametros": [
+        {
+          "nome": "raiz",
+          "tipo": "Path",
+          "categoria": "posicional",
+          "descricao": "Caminho raiz onde os arquivos estão localizados."
+        },
+        {
+          "nome": "id_arquivo",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Identificador do arquivo que contém o índice JSON."
+        }
+      ],
+      "retorno": {
+        "tipo": "dict",
+        "descricao": "Conteúdo do arquivo JSON carregado como um dicionário Python."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "json"
+      ],
+      "docstring": "Carrega o índice JSON a partir de um caminho especificado.\n\nArgs:\n    raiz (Path): Caminho raiz onde os arquivos estão localizados.\n    id_arquivo (str): Identificador do arquivo que contém o índice JSON.\n\nReturns:\n    dict: Conteúdo do arquivo JSON carregado como um dicionário Python."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_ind_visual_manifesto",
+      "tipo": "function",
+      "linha_inicio": 23,
+      "linha_fim": 87,
+      "parametros": [
+        {
+          "nome": "resultado",
+          "tipo": "dict",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "raiz_auditoria",
+          "tipo": "str | Path",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pandas",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "c1.metric",
+          "c2.metric",
+          "c3.metric",
+          "c4.metric",
+          "pd.read_parquet",
+          "st.caption",
+          "st.code",
+          "st.columns",
+          "st.dataframe",
+          "st.expander",
+          "st.info",
+          "st.json",
+          "st.subheader",
+          "st.success",
+          "st.tabs",
+          "st.write"
+        ]
+      },
+      "codigo": "def _ind_visual_manifesto(resultado: dict, raiz_auditoria: str | Path):\n    if resultado[\"status\"] == \"sem_alteracao\":\n        st.info(\n                    f\"Arquivo já versionado: {resultado['versao']}. \"\n                    \"SHA-256 idêntico ao da última versão.\"\n                )\n        return\n\n    raiz = Path(raiz_auditoria) / resultado[\"tipo\"]\n\n    st.subheader(\"Manifesto de Dados\")\n\n    st.caption(\n                    f\"{resultado['tipo']} · {resultado['arquivo_origem']} · \"\n                    f\"{resultado['versao']}\"\n                )\n\n    if resultado[\"alteracao_dados\"]:\n        st.success(\"Nova versão com alterações de dados\")\n    else:\n        st.info(\"Nova versão sem alterações de dados\")\n\n    resumo, alteracoes, metadados = st.tabs(\n                                                [\"Resumo\", \"Alterações\", \"Metadados\"]\n                                            )\n\n    with resumo:\n        c1, c2, c3, c4 = st.columns(4)\n\n        c1.metric(\"Total de registros\", resultado[\"total_registros\"])\n        c2.metric(\"Incluídos\", resultado[\"incluidos\"])\n        c3.metric(\"Excluídos\", resultado[\"excluidos\"])\n        c4.metric(\"Alterados\", resultado[\"registros_alterados\"])\n\n        st.write(\"Versão anterior:\", resultado[\"versao_anterior\"])\n        st.write(\"Campos alterados:\", resultado[\"campos_alterados\"])\n\n        st.write(\"Colunas adicionadas:\", resultado[\"colunas_adicionadas\"])\n        st.write(\"Colunas removidas:\", resultado[\"colunas_removidas\"])\n\n    with alteracoes:\n        relatorios = resultado[\"relatorios\"]\n\n        for titulo, nome in (\n                                (\"Registros incluídos\", \"incluidos\"),\n                                (\"Registros excluídos\", \"excluidos\"),\n                                (\"Campos alterados\", \"alterados\"),\n                            ):\n            with st.expander(titulo):\n                caminho = raiz / relatorios[nome][\"caminho\"]\n                df = pd.read_parquet(caminho)\n\n                st.dataframe(\n                    df,\n                    use_container_width=True,\n                    hide_index=True,\n                )\n\n    with metadados:\n        st.json(resultado)\n\n        st.code(\n                    resultado[\"sha256_origem\"],\n                    language=None,\n                )"
+    },
+    "documentacao": {
+      "resumo": "Gera um manifesto de dados com base em um resultado de auditoria.",
+      "descricao": "Esta função cria uma interface interativa utilizando a biblioteca Streamlit para exibir detalhes sobre alterações em um conjunto de dados. Ela verifica o status do resultado e, se houver alterações, apresenta informações sobre os registros incluídos, excluídos e alterados, além dos metadados.",
+      "parametros": [
+        {
+          "nome": "resultado",
+          "tipo": "dict",
+          "descricao": "Um dicionário contendo detalhes do resultado da auditoria, como status, versão, alterações de dados, etc."
+        },
+        {
+          "nome": "raiz_auditoria",
+          "tipo": "str | Path",
+          "descricao": "O caminho para a raiz onde os arquivos de relatório estão armazenados."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "pandas",
+          "categoria": "import"
+        },
+        {
+          "nome": "pathlib.Path",
+          "categoria": "import"
+        },
+        {
+          "nome": "streamlit",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Gera um manifesto de dados com base em um resultado de auditoria.\n\nArgs:\n    resultado (dict): Um dicionário contendo detalhes do resultado da auditoria, como status, versão, alterações de dados, etc.\n    raiz_auditoria (str | Path): O caminho para a raiz onde os arquivos de relatório estão armazenados.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "visual_manifesto",
+      "tipo": "function",
+      "linha_inicio": 90,
+      "linha_fim": 497,
+      "parametros": [
+        {
+          "nome": "raiz_auditoria",
+          "tipo": "str | Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment"
+      ],
+      "dependencias": {
+        "imports": [
+          "pandas",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "c2.metric",
+          "c3.metric",
+          "c4.metric",
+          "c5.metric",
+          "caminho.is_file",
+          "carregar_indice",
+          "f.read",
+          "indice.get",
+          "list",
+          "listar_arquivos_auditados",
+          "manifesto.get",
+          "next",
+          "nome.capitalize",
+          "open",
+          "pd.read_parquet",
+          "relatorios.get",
+          "resolve",
+          "reversed",
+          "st.code",
+          "st.columns",
+          "st.container",
+          "st.dataframe",
+          "st.divider",
+          "st.expander",
+          "st.html",
+          "st.info",
+          "st.json",
+          "st.selectbox",
+          "st.tabs",
+          "st.warning"
+        ]
+      },
+      "codigo": "def visual_manifesto(raiz_auditoria: str | Path, st = None):\n\n    if not st:\n        return\n\n    # Estilo CSS consolidado\n    RAIZ = Path(__file__).resolve().parent.parent\n    with open(RAIZ / \"tabelas/estilo_001.css\") as f:\n        css = f.read()\n    st.html(f\"<style>{css}</style>\")\n\n    with st.container():\n        col1 = st.columns([1,5,1], gap='small')\n        with col1[1]:\n            st.html(\"\"\"\n                        <style>\n                        .manifesto-ajuda {\n                            font-family: inherit;\n                            line-height: 1.65;\n                            color: var(--text-color);\n                        }\n\n                        .manifesto-ajuda h3 {\n                            font-size: 1.15rem;\n                            font-weight: 650;\n                            margin: 0 0 12px;\n                        }\n\n                        .manifesto-ajuda h4 {\n                            font-size: 0.95rem;\n                            font-weight: 650;\n                            margin: 20px 0 8px;\n                        }\n\n                        .manifesto-ajuda p {\n                            margin: 8px 0;\n                            font-size: 0.92rem;\n                        }\n\n                        .manifesto-ajuda .destaque {\n                            background: var(--secondary-background-color);\n                            border-left: 3px solid #4F8DBD;\n                            padding: 12px 16px;\n                            border-radius: 5px;\n                            margin: 14px 0;\n                        }\n\n                        .manifesto-ajuda table {\n                            width: 100%;\n                            border-collapse: collapse;\n                            font-size: 0.88rem;\n                            margin-top: 10px;\n                        }\n\n                        .manifesto-ajuda th,\n                        .manifesto-ajuda td {\n                            padding: 9px 12px;\n                            text-align: left;\n                            border-bottom: 1px solid rgba(128,128,128,0.25);\n                        }\n\n                        .manifesto-ajuda th {\n                            background: var(--secondary-background-color);\n                            font-weight: 600;\n                        }\n\n                        .manifesto-ajuda .observacao {\n                            font-size: 0.85rem;\n                            opacity: 0.8;\n                            margin-top: 15px;\n                        }\n                        </style>\n\n                        \n                        <section>\n                            <h1 style=\"text-align: center;\">Visualização do Manifesto Eletrônico de Dados</h1>\n\n                            <h2>O que é o Manifesto Eletrônico?</h2>\n\n                            <p  style=\"text-align: justify;text-indent: 40px\">\n                                O <strong>Manifesto Eletrônico de Dados</strong> é um registro digital\n                                que documenta o recebimento, a identificação, o versionamento e as\n                                alterações dos arquivos utilizados no processo de fiscalização.\n                                Sua finalidade é estabelecer um histórico dos dados\n                                recebidos, permitindo identificar qual arquivo foi processado,\n                                quando foi recebido, qual versão representa e quais alterações\n                                ocorreram em relação à versão anterior.\n                                Cada arquivo CSV é identificado por uma assinatura de integridade\n                                denominada <strong>hash SHA-256</strong>. Quando essa assinatura\n                                difere da última versão registrada, o sistema cria uma nova versão,\n                                preservando uma cópia integral dos dados em formato Parquet,\n                                acompanhada de um manifesto JSON e relatórios de comparação.\n                            </p>\n\n                            <h2>Importância para o processo de auditoria do processo de fiscalização</h2>\n\n                            <p  style=\"text-align: justify;text-indent: 40px\">\n                                O manifesto eletrônico fortalece a confiabilidade dos procedimentos\n                                de auditoria do processo de fiscalização por meio de cinco princípios:\n                            </p>\n\n                            <ul>\n                                <li>\n                                    <strong>Rastreabilidade:</strong> permite reconstruir o histórico\n                                    dos arquivos recebidos e identificar as versões utilizadas\n                                    em cada etapa do processamento.\n                                </li>\n                                <li>\n                                    <strong>Integridade:</strong> utiliza hashes SHA-256 para detectar\n                                    alterações nos arquivos e verificar a integridade das cópias\n                                    armazenadas.\n                                </li>\n                                <li>\n                                    <strong>Transparência:</strong> documenta inclusões, exclusões,\n                                    modificações de registros e alterações na estrutura dos dados.\n                                </li>\n                                <li>\n                                    <strong>Reprodutibilidade:</strong> preserva versões completas,\n                                    permitindo repetir análises e investigar divergências.\n                                </li>\n                                <li>\n                                    <strong>Evidência de fiscalização:</strong> produz registros\n                                    estruturados que apoiam a documentação dos procedimentos\n                                    e a fundamentação das conclusões do fiscal.\n                                </li>\n                            </ul>\n\n                            <h2>O manifesto no fluxo de processamento</h2>\n\n                            <p  style=\"text-align: justify;text-indent: 40px\">\n                                O manifesto é gerado <strong>antes da importação</strong>.\n                                Essa sequência permite registrar as características do arquivo\n                                recebido antes da execução das etapas seguintes.\n                            </p>\n\n                            <ol style=\"padding-left: 80px;padding-right: 50px;\">\n                                <li  style=\"text-align: justify;text-indent: 40px\">\n                                    <strong>Manifesto eletrônico:</strong> identifica o arquivo,\n                                    verifica seu histórico, registra uma nova versão quando\n                                    necessário e documenta as diferenças em relação à anterior.<br>\n                                </li>\n                                <li   style=\"text-align: justify;text-indent: 40px\">\n                                    <strong>Validação:</strong> verifica a conformidade dos dados\n                                    com as regras de qualidade, consistência e estrutura estabelecidas.<br>\n                                </li>\n                                <li   style=\"text-align: justify;text-indent: 40px\">\n                                    <strong>Importação:</strong> incorpora os dados ao ambiente\n                                    de destino conforme os critérios definidos no processo.<br>\n                                </li>\n                            </ol>\n\n                            <h2>Como interpretar os resultados</h2>\n\n                            <p  style=\"text-align: justify;text-indent: 40px\">\n                                Relevante distinguir <strong>alteração do arquivo</strong>\n                                de <strong>alteração dos dados</strong>.\n                                Uma nova versão é criada quando o hash SHA-256 do arquivo CSV\n                                é diferente do registrado na última versão. Entretanto, essa\n                                diferença pode resultar apenas de mudanças na representação\n                                do arquivo, sem modificações efetivas nos registros.\n                                Por isso, o manifesto apresenta separadamente os registros\n                                incluídos, excluídos e alterados, a quantidade de campos\n                                modificados e as mudanças na estrutura das colunas.\n                                <strong>Uma nova versão não significa necessariamente que os dados\n                                foram modificados ou aprovados.</strong> O manifesto documenta\n                                o recebimento e o histórico do arquivo. A aprovação depende\n                                da etapa de validação e dos resultados de processamento.\n                            </p>\n\n                            <h2>Contribuição para a confiabilidade da fiscalização</h2>\n\n                            <p  style=\"text-align: justify;text-indent: 40px\">\n                                O Manifesto Eletrônico de Dados constitui um mecanismo de\n                                <strong>controle, rastreabilidade e preservação de evidências\n                                digitais</strong>.\n                                Ao manter um histórico verificável das versões recebidas,\n                                reduz o risco de utilização inadvertida de arquivos incorretos,\n                                facilita a identificação de divergências e oferece suporte\n                                para revisões, inspeções e reexecução dos procedimentos de auditoria do\n                                processo de fiscalização.\n                                Seu principal benefício é permitir que o fiscal não apenas\n                                analise os dados disponíveis, mas também compreenda\n                                <strong>sua origem, sua evolução e as evidências que sustentam\n                                sua utilização</strong>.\n                            </p>\n                        </section>\n\n\n\n                            <h2>Como interpretar o Manifesto de Dados</h2>\n\n                            <p  style=\"text-align: justify;text-indent: 40px\">\n                                O manifesto registra o histórico das versões de um arquivo,\n                                permitindo identificar quando uma nova versão foi recebida\n                                e quais alterações ocorreram em seus dados.\n                                O processamento acontece antes da etapa de importação, \n                                preservando uma cópia completa dos dados\n                                recebidos em formato <strong>Parquet</strong>.\n                            </p>\n\n                            <h3 style=\"padding-left: 40px;\">a) Regra de versionamento</h3>\n                            <div class=\"destaque\">\n                                <p  style=\"text-align: justify;text-indent: 40px\">\n                                    Cada arquivo recebido é identificado por seu hash\n                                    <strong>SHA-256</strong>. Se o hash for diferente do\n                                    registrado na última versão, uma nova versão será criada,\n                                    mesmo que os registros permaneçam iguais.\n                                    Se o hash for idêntico, o arquivo será reconhecido\n                                    como sem alteração e nenhuma nova versão será gerada.\n                                </p>\n                            </div>\n\n                            <h3 style=\"padding-left: 40px;\">b) Como ler os indicadores</h3>\n\n                            <table>\n                                <thead>\n                                    <tr>\n                                        <th>Indicador</th>\n                                        <th>Significado</th>\n                                    </tr>\n                                </thead>\n                                <tbody>\n                                    <tr>\n                                        <td>Versão</td>\n                                        <td>\n                                            Identificador sequencial do arquivo recebido,\n                                            como v0001, v0002 e v0003.\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td>Total de registros</td>\n                                        <td>\n                                            Quantidade de registros existentes na versão atual.\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td>Incluídos</td>\n                                        <td>\n                                            Registros cujos identificadores não existiam\n                                            na versão anterior.\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td>Excluídos</td>\n                                        <td>\n                                            Registros existentes na versão anterior que\n                                            não aparecem na versão atual.\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td>Registros alterados</td>\n                                        <td>\n                                            Quantidade de registros que tiveram pelo menos\n                                            um campo modificado.\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td>Campos alterados</td>\n                                        <td>\n                                            Quantidade total de valores modificados.\n                                            Um mesmo registro pode apresentar várias alterações.\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td>Colunas adicionadas ou removidas</td>\n                                        <td>\n                                            Mudanças na estrutura do arquivo em relação\n                                            à versão anterior.\n                                        </td>\n                                    </tr>\n                                </tbody>\n                            </table>\n\n                            <h3 style=\"padding-left: 40px;\">c) Como interpretar os relatórios</h3>\n\n                            <p  style=\"text-align: justify;text-indent: 40px\">\n                                <strong>Incluídos:</strong> apresenta os registros completos\n                                encontrados apenas na versão atual.\n                            </p>\n\n                            <p  style=\"text-align: justify;text-indent: 40px\">\n                                <strong>Excluídos:</strong> apresenta os registros completos\n                                que existiam apenas na versão anterior.\n                            </p>\n\n                            <p  style=\"text-align: justify;text-indent: 40px\">\n                                <strong>Alterados:</strong> apresenta o identificador do registro,\n                                a coluna modificada, o valor anterior e o novo valor.\n                                Cada linha representa a alteração de um campo.\n                            </p>\n\n                            <div class=\"destaque\">\n                                <p   style=\"text-align: justify;text-indent: 40px;margin-bottom: 2rem;\"><strong>Importante: \n                                nova versão não significa alteração dos dados.</strong></p>\n                                <p  style=\"text-align: justify;text-indent: 40px\">\n                                    Diferenças na ordem das linhas, na codificação ou na\n                                    representação do CSV podem modificar seu SHA-256\n                                    sem alterar os valores dos registros.\n                                    Nesses casos, uma nova versão é criada, mas os indicadores\n                                    de alteração podem permanecer zerados.\n                                </p>\n                            </div>\n\n                            <h3 style=\"padding-left: 40px;\">d) Rastreabilidade e integridade</h3>\n\n                            <p  style=\"text-align: justify;text-indent: 40px\">\n                                Cada versão possui um snapshot completo em Parquet,\n                                um manifesto JSON e relatórios de comparação.\n                                Os hashes SHA-256 permitem verificar a integridade\n                                dos arquivos registrados.\n                                O manifesto documenta o recebimento e as diferenças entre versões.\n                                Ele não representa a aprovação dos dados. A verificação de qualidade\n                                e a autorização para importação são realizadas nas etapas seguintes\n                                do processamento.\n                            </p>\n\n\n                        \"\"\")\n\n            raiz = Path(raiz_auditoria).resolve()\n            diretorios = listar_arquivos_auditados(raiz)\n            col2 = st.columns([1,6,1], gap='small')\n            with col2[1]:\n                with st.container(border=True):\n                    st.html(\"<h2>Consulta de Manifestos</h2>\")\n                    if not diretorios:\n                        st.info(\"Nenhum manifesto foi encontrado.\")\n                        return\n                    st.divider()\n                    col3 = st.columns([1,6,1,6,1], gap='small')\n                    with col3[1]:\n                        id_arquivo = st.selectbox(\n                                                    \"Arquivo auditado\",\n                                                    options=diretorios,\n                                                    key=\"manifesto_arquivo\",\n                                                )\n                    indice = carregar_indice(raiz, id_arquivo)\n                    versoes = indice.get(\"versoes\", [])\n                    if not versoes:\n                        st.info(\"Este arquivo ainda não possui versões registradas.\")\n                        return\n                    versoes = list(reversed(versoes))\n\n                    with col3[3]:\n                        versao_selecionada = st.selectbox(\n                                                            \"Versão do manifesto\",\n                                                            options=[item[\"versao\"] for item in versoes],\n                                                            key=\"manifesto_versao\",\n                                                        )\n\n                    manifesto = next(\n                                        item\n                                        for item in versoes\n                                        if item[\"versao\"] == versao_selecionada\n                                    )\n                    \n                    texto = f\"\"\"<p  style=\"text-align: justify;text-indent: 40px\">Arquivo <b>{manifesto[\"arquivo_origem\"]}</b>,\"\"\"\n                    st.divider()\n                    if manifesto[\"alteracao_dados\"]:\n                        st.html(texto + f\"\"\" <b>versão com alterações de dados</b> em relação ao anterior.</p>\"\"\")\n                    else:\n                        st.html(texto + f\"\"\" <b>versão sem alterações de dados</b> em relação ao anterior.</p>\"\"\")\n\n                    c1, c2, c3, c4, c5, c6 = st.columns(6)\n\n                    c2.metric(\"Total de registros\", manifesto[\"total_registros\"])\n                    c3.metric(\"Incluídos\", manifesto[\"incluidos\"])\n                    c4.metric(\"Excluídos\", manifesto[\"excluidos\"])\n                    c5.metric(\"Alterados\", manifesto[\"registros_alterados\"])\n\n                    st.divider()\n                    aba_resumo, aba_comparacao, aba_json = st.tabs(\n                                                                        [\"Resumo\", \"Comparações\", \"Manifesto JSON\"]\n                                                                    )\n\n                    with aba_resumo:\n                        st.html(f\"\"\"<p  style=\"text-align: justify;text-indent: 40px\">Versão anterior: {manifesto[\"versao_anterior\"]}\"\"\")\n                        st.html(f\"\"\"<p  style=\"text-align: justify;text-indent: 40px\">Campos alterados: {manifesto[\"campos_alterados\"]}\"\"\")\n                        st.html(f\"\"\"<p  style=\"text-align: justify;text-indent: 40px\">Colunas adicionadas: {manifesto[\"colunas_adicionadas\"]}\"\"\")\n                        st.html(f\"\"\"<p  style=\"text-align: justify;text-indent: 40px\">Colunas removidas: {manifesto[\"colunas_removidas\"]}\"\"\")\n\n                    with aba_comparacao:\n                        \n\n                        relatorios = manifesto.get(\"relatorios\", {})\n\n                        for nome in (\"incluidos\", \"excluidos\", \"alterados\"):\n                            relatorio = relatorios.get(nome)\n\n                            if relatorio is None:\n                                continue\n\n                            caminho = raiz / id_arquivo / relatorio[\"caminho\"]\n\n                            with st.expander(nome.capitalize()):\n                                if caminho.is_file():\n                                    df = pd.read_parquet(caminho)\n                                    st.dataframe(df, use_container_width=True)\n                                else:\n                                    st.warning(f\"Relatório não encontrado: {nome}\")\n\n                    with aba_json:\n                        st.json(manifesto)\n                        st.html(\"Segue o HASH:\")\n                        st.code(\n                                    manifesto.get(\"sha256_origem\", {}),\n                                    language=None,\n                                )"
+    },
+    "documentacao": {
+      "resumo": "Visualiza o Manifesto Eletrônico de Dados em uma interface Streamlit.",
+      "descricao": "Esta função carrega e exibe detalhes sobre o Manifesto Eletrônico de Dados, permitindo a consulta de versões específicas dos arquivos auditados. Utiliza um layout Streamlit para apresentar informações de forma organizada e interativa.",
+      "parametros": [
+        {
+          "nome": "raiz_auditoria",
+          "tipo": "str | Path",
+          "descricao": "Caminho para a raiz do diretório onde os arquivos auditados estão armazenados."
+        },
+        {
+          "nome": "st",
+          "tipo": "Streamlit",
+          "categoria": "opcional",
+          "descricao": "Objeto Streamlit usado para criar a interface da web. Se não for fornecido, a função não realizará nenhuma operação de visualização."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": {
+        "imports": [
+          "pandas",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "c2.metric",
+          "c3.metric",
+          "c4.metric",
+          "c5.metric",
+          "caminho.is_file",
+          "carregar_indice",
+          "f.read",
+          "indice.get",
+          "list",
+          "listar_arquivos_auditados",
+          "manifesto.get",
+          "next",
+          "nome.capitalize",
+          "open",
+          "pd.read_parquet",
+          "relatorios.get",
+          "resolve",
+          "reversed",
+          "st.code",
+          "st.columns",
+          "st.container",
+          "st.dataframe",
+          "st.divider",
+          "st.expander",
+          "st.html",
+          "st.info",
+          "st.json",
+          "st.selectbox",
+          "st.tabs",
+          "st.warning"
+        ]
+      },
+      "docstring": "Visualiza o Manifesto Eletrônico de Dados em uma interface Streamlit.\n\nArgs:\n    raiz_auditoria (str | Path): Caminho para a raiz do diretório onde os arquivos auditados estão armazenados.\n    st (Streamlit, optional): Objeto Streamlit usado para criar a interface da web. Se não for fornecido, a função não realizará nenhuma operação de visualização."
+    },
+    "status": "sucesso"
+  }
+]

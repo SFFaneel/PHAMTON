@@ -1,0 +1,623 @@
+[
+  {
+    "funcao": {
+      "nome": "sha256",
+      "tipo": "function",
+      "linha_inicio": 16,
+      "linha_fim": 21,
+      "parametros": [
+        {
+          "nome": "path",
+          "tipo": "Path",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "str",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "hashlib"
+        ],
+        "chamadas": [
+          "f.read",
+          "h.hexdigest",
+          "h.update",
+          "hashlib.sha256",
+          "iter",
+          "path.open"
+        ]
+      },
+      "codigo": "def sha256(path: Path) -> str:\n    h = hashlib.sha256()\n    with path.open('rb') as f:\n        for block in iter(lambda: f.read(1024 * 1024), b''):\n            h.update(block)\n    return h.hexdigest()"
+    },
+    "documentacao": {
+      "resumo": "Calcula o hash SHA-256 de um arquivo.",
+      "descricao": "Gera um hash SHA-256 para o conteúdo de um arquivo especificado, lendo-o em blocos de 1MB por vez para evitar uso excessivo de memória com arquivos grandes.",
+      "parametros": [
+        {
+          "nome": "path",
+          "tipo": "Path",
+          "categoria": "posicional",
+          "descricao": "Caminho do arquivo cujo hash SHA-256 será calculado."
+        }
+      ],
+      "retorno": {
+        "tipo": "str",
+        "descricao": "Hash SHA-256 gerado para o conteúdo do arquivo, representado como uma string hexadecimal de 64 caracteres."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "hashlib"
+      ],
+      "docstring": "Calcula o hash SHA-256 de um arquivo.\n\nArgs:\n    path (Path): Caminho do arquivo cujo hash SHA-256 será calculado.\n\nReturns:\n    str: Hash SHA-256 gerado para o conteúdo do arquivo, representado como uma string hexadecimal de 64 caracteres."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "atomic_json",
+      "tipo": "function",
+      "linha_inicio": 24,
+      "linha_fim": 36,
+      "parametros": [
+        {
+          "nome": "path",
+          "tipo": "Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "obj",
+          "tipo": "dict",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "None",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "json",
+          "os",
+          "tempfile"
+        ],
+        "chamadas": [
+          "f.fileno",
+          "f.flush",
+          "f.write",
+          "json.dump",
+          "os.fdopen",
+          "os.fsync",
+          "os.path.exists",
+          "os.replace",
+          "os.unlink",
+          "path.parent.mkdir",
+          "tempfile.mkstemp"
+        ]
+      },
+      "codigo": "def atomic_json(path: Path, obj: dict) -> None:\n    path.parent.mkdir(parents=True, exist_ok=True)\n    fd, name = tempfile.mkstemp(dir=path.parent, prefix='.tmp-', suffix='.json')\n    try:\n        with os.fdopen(fd, 'w', encoding='utf-8') as f:\n            json.dump(obj, f, ensure_ascii=False, indent=2)\n            f.write('\\n')\n            f.flush()\n            os.fsync(f.fileno())\n        os.replace(name, path)\n    finally:\n        if os.path.exists(name):\n            os.unlink(name)"
+    },
+    "documentacao": {
+      "resumo": "Salva um objeto Python como um arquivo JSON de forma atômica.",
+      "descricao": "Cria um arquivo temporário, escreve o objeto em formato JSON nele e então renomeia para o caminho final. Isso garante que a operação seja atômica, evitando problemas com leituras parciais ou corrompimentos de arquivos.",
+      "parametros": [
+        {
+          "nome": "path",
+          "tipo": "Path",
+          "categoria": "posicional",
+          "descricao": "Caminho completo onde o arquivo JSON será salvo."
+        },
+        {
+          "nome": "obj",
+          "tipo": "dict",
+          "categoria": "posicional",
+          "descricao": "Objeto Python que será convertido em formato JSON e salvo no arquivo."
+        }
+      ],
+      "retorno": {
+        "tipo": "None",
+        "descricao": "Nenhum valor é retornado."
+      },
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "json",
+          "categoria": "import"
+        },
+        {
+          "nome": "os",
+          "categoria": "import"
+        },
+        {
+          "nome": "tempfile",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Salva um objeto Python como um arquivo JSON de forma atômica.\n\nArgs:\n    path (Path): Caminho completo onde o arquivo JSON será salvo.\n    obj (dict): Objeto Python que será convertido em formato JSON e salvo no arquivo.\n\nReturns:\n    None\n\nNotes:\n    A operação é realizada de forma atômica, garantindo que não haja problemas com leituras parciais ou corrompimentos de arquivos."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "carregar_csv",
+      "tipo": "function",
+      "linha_inicio": 38,
+      "linha_fim": 52,
+      "parametros": [
+        {
+          "nome": "path",
+          "tipo": "Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "chave",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "sep",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "encoding",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "pd.DataFrame",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pandas"
+        ],
+        "chamadas": [
+          "ValueError",
+          "any",
+          "df.columns.duplicated",
+          "df.set_index",
+          "duplicated",
+          "eq",
+          "isna",
+          "len",
+          "next",
+          "nome.upper",
+          "pd.read_csv",
+          "startswith"
+        ]
+      },
+      "codigo": "def carregar_csv(path: Path, chave: str, sep: str, encoding: str) -> pd.DataFrame:\n    df = pd.read_csv(path, sep=sep, encoding=encoding, dtype=str, keep_default_na=False)\n    if df.columns.duplicated().any():\n        raise ValueError('Cabeçalhos duplicados')\n    if df.empty and len(df.columns) == 0:\n        raise ValueError('CSV sem colunas')\n    if chave == 'ID' and chave not in df.columns:\n        chave = next((nome for nome in df.columns if nome.upper().startswith('ID')), df.columns[0])\n    if chave not in df.columns:\n        raise ValueError(f'Coluna-chave ausente: {chave}')\n    if df[chave].eq('').any() or df[chave].isna().any():\n        raise ValueError('IDs vazios')\n    if df[chave].duplicated().any():\n        raise ValueError('IDs duplicados')\n    return df.set_index(chave), chave"
+    },
+    "documentacao": {
+      "resumo": "Carrega um arquivo CSV e retorna um DataFrame com o índice definido pela coluna-chave.",
+      "descricao": "A função carrega um arquivo CSV utilizando as opções de separador, codificação e tipo de dado. Verifica a integridade dos dados, incluindo cabeçalhos duplicados, ausência de colunas-chave, IDs vazios e IDs duplicados. Se a coluna-chave for 'ID', ela tenta encontrar uma alternativa no formato 'ID' (case-insensitive).",
+      "parametros": [
+        {
+          "nome": "path",
+          "tipo": "Path",
+          "categoria": "posicional",
+          "descricao": "Caminho para o arquivo CSV a ser carregado."
+        },
+        {
+          "nome": "chave",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome da coluna que será usada como índice do DataFrame."
+        },
+        {
+          "nome": "sep",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Separador utilizado no arquivo CSV (por exemplo, ',' ou '\t')."
+        },
+        {
+          "nome": "encoding",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Codificação do arquivo CSV."
+        }
+      ],
+      "retorno": {
+        "tipo": "pd.DataFrame",
+        "descricao": "DataFrame carregado a partir do arquivo CSV, com o índice definido pela coluna-chave."
+      },
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando há cabeçalhos duplicados no arquivo CSV."
+        },
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o arquivo CSV está vazio e não possui colunas."
+        },
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando a coluna-chave 'ID' não é encontrada no DataFrame."
+        },
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando há IDs vazios no arquivo CSV."
+        },
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando há IDs duplicados no arquivo CSV."
+        }
+      ],
+      "dependencias": [
+        "pandas"
+      ],
+      "docstring": "Carrega um arquivo CSV e retorna um DataFrame com o índice definido pela coluna-chave.\n\nArgs:\n    path (Path): Caminho para o arquivo CSV a ser carregado.\n    chave (str): Nome da coluna que será usada como índice do DataFrame.\n    sep (str): Separador utilizado no arquivo CSV.\n    encoding (str): Codificação do arquivo CSV.\n\nReturns:\n    pd.DataFrame: DataFrame carregado a partir do arquivo CSV, com o índice definido pela coluna-chave.\n\nRaises:\n    ValueError: Quando há cabeçalhos duplicados, o arquivo CSV está vazio e não possui colunas, a coluna-chave 'ID' não é encontrada no DataFrame, há IDs vazios ou há IDs duplicados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "comparar",
+      "tipo": "function",
+      "linha_inicio": 54,
+      "linha_fim": 72,
+      "parametros": [
+        {
+          "nome": "antigo",
+          "tipo": "pd.DataFrame | None",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "novo",
+          "tipo": "pd.DataFrame",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "chave",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "pandas"
+        ],
+        "chamadas": [
+          "ValueError",
+          "antigo.index.difference",
+          "linhas.append",
+          "novo.index.difference",
+          "novo.index.intersection",
+          "novo.reset_index",
+          "pd.DataFrame",
+          "pd.Series",
+          "reindex",
+          "reset_index",
+          "set",
+          "sorted",
+          "zip"
+        ]
+      },
+      "codigo": "def comparar(antigo: pd.DataFrame | None, novo: pd.DataFrame, chave: str):\n    if antigo is None:\n        return (novo.reset_index(), pd.DataFrame(columns=[chave, *novo.columns]),\n                pd.DataFrame(columns=[chave, 'coluna', 'valor_anterior', 'valor_novo']))\n    if antigo.index.name != chave:\n        raise ValueError(f'Chave histórica incompatível: {antigo.index.name} != {chave}')\n    adicionados = novo.index.difference(antigo.index, sort=False)\n    removidos = antigo.index.difference(novo.index, sort=False)\n    comuns = novo.index.intersection(antigo.index, sort=False)\n    linhas = []\n    for coluna in sorted(set(antigo.columns) | set(novo.columns)):\n        a = antigo[coluna].reindex(comuns) if coluna in antigo else pd.Series('', index=comuns)\n        b = novo[coluna].reindex(comuns) if coluna in novo else pd.Series('', index=comuns)\n        for identificador, anterior, atual in zip(comuns, a, b):\n            if anterior != atual:\n                linhas.append({chave: identificador, 'coluna': coluna,\n                               'valor_anterior': anterior, 'valor_novo': atual})\n    return (novo.loc[adicionados].reset_index(), antigo.loc[removidos].reset_index(),\n            pd.DataFrame(linhas, columns=[chave, 'coluna', 'valor_anterior', 'valor_novo']))"
+    },
+    "documentacao": {
+      "resumo": "Compara dois DataFrames e retorna informações sobre as linhas adicionadas, removidas e alteradas.",
+      "descricao": "A função compara dois DataFrames (`antigo` e `novo`) baseados em uma chave comum. Retorna três DataFrames: um com as linhas adicionadas no novo DataFrame, outro com as linhas removidas do antigo DataFrame e um terceiro com as alterações nas colunas.",
+      "parametros": [
+        {
+          "nome": "antigo",
+          "tipo": "pd.DataFrame | None",
+          "categoria": "posicional",
+          "descricao": "DataFrame anterior para comparação. Se `None`, considera-se que não há dados anteriores."
+        },
+        {
+          "nome": "novo",
+          "tipo": "pd.DataFrame",
+          "categoria": "posicional",
+          "descricao": "DataFrame atual para comparação."
+        },
+        {
+          "nome": "chave",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome da coluna usada como chave para a comparação."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o nome da chave do DataFrame antigo não corresponde à chave fornecida."
+        }
+      ],
+      "dependencias": [
+        "pandas"
+      ],
+      "docstring": "Compara dois DataFrames e retorna informações sobre as linhas adicionadas, removidas e alteradas.\n\nArgs:\n    antigo (pd.DataFrame | None): DataFrame anterior para comparação. Se `None`, considera-se que não há dados anteriores.\n    novo (pd.DataFrame): DataFrame atual para comparação.\n    chave (str): Nome da coluna usada como chave para a comparação.\n\nReturns:\n    tuple: Três DataFrames - um com as linhas adicionadas, outro com as linhas removidas e um terceiro com as alterações nas colunas.\n\nRaises:\n    ValueError: Quando o nome da chave do DataFrame antigo não corresponde à chave fornecida."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "dados_equivalentes",
+      "tipo": "function",
+      "linha_inicio": 76,
+      "linha_fim": 82,
+      "parametros": [
+        {
+          "nome": "antigo",
+          "tipo": "pd.DataFrame",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "novo",
+          "tipo": "pd.DataFrame",
+          "default": null,
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "bool",
+      "decorators": [],
+      "dependencias": {
+        "imports": [],
+        "chamadas": [
+          "antigo.reindex",
+          "equals",
+          "len",
+          "set",
+          "sorted"
+        ]
+      },
+      "codigo": "def dados_equivalentes(antigo: pd.DataFrame, novo: pd.DataFrame) -> bool:\n    if set(antigo.columns) != set(novo.columns):\n        return False\n    if len(antigo) != len(novo) or set(antigo.index) != set(novo.index):\n        return False\n    colunas = sorted(novo.columns)\n    return antigo.reindex(index=novo.index, columns=colunas).equals(novo[colunas])"
+    },
+    "documentacao": {
+      "resumo": "Verifica se dois DataFrames são equivalentes em termos de estrutura e conteúdo.",
+      "descricao": "Compara dois DataFrames para determinar se eles têm as mesmas colunas, o mesmo número de linhas e os mesmos índices. Além disso, verifica se os valores correspondentes nas duas estruturas são iguais.",
+      "parametros": [
+        {
+          "nome": "antigo",
+          "tipo": "pd.DataFrame",
+          "categoria": "posicional",
+          "descricao": "O DataFrame original a ser comparado."
+        },
+        {
+          "nome": "novo",
+          "tipo": "pd.DataFrame",
+          "categoria": "posicional",
+          "descricao": "O DataFrame que será comparado com o original."
+        }
+      ],
+      "retorno": {
+        "tipo": "bool",
+        "descricao": "True se os DataFrames são equivalentes, False caso contrário."
+      },
+      "excecoes": [],
+      "dependencias": [
+        "pandas"
+      ],
+      "docstring": "Verifica se dois DataFrames são equivalentes em termos de estrutura e conteúdo.\n\nArgs:\n    antigo (pd.DataFrame): O DataFrame original a ser comparado.\n    novo (pd.DataFrame): O DataFrame que será comparado com o original.\n\nReturns:\n    bool: True se os DataFrames são equivalentes, False caso contrário."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "criar_manifesto_multi",
+      "tipo": "function",
+      "linha_inicio": 85,
+      "linha_fim": 208,
+      "parametros": [
+        {
+          "nome": "arquivo",
+          "tipo": "str | Path",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "id_arquivo",
+          "tipo": "str",
+          "default": null,
+          "categoria": "posicional"
+        },
+        {
+          "nome": "diretorio_auditoria",
+          "tipo": "str | Path",
+          "default": "'auditoria'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "chave",
+          "tipo": "str",
+          "default": "'ID'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "sep",
+          "tipo": "str",
+          "default": "'|'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "encoding",
+          "tipo": "str",
+          "default": "'latin-1'",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "timeout_lock",
+          "tipo": "float",
+          "default": "60.0",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": "dict",
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "datetime.datetime",
+          "json",
+          "os",
+          "pandas",
+          "pathlib.Path",
+          "re",
+          "shutil",
+          "tempfile",
+          "uuid"
+        ],
+        "chamadas": [
+          "FileExistsError",
+          "FileNotFoundError",
+          "Path",
+          "RuntimeError",
+          "ValueError",
+          "any",
+          "atomic_json",
+          "bool",
+          "carregar_csv",
+          "comparar",
+          "copia_csv.stat",
+          "dados_equivalentes",
+          "datetime.now",
+          "destino.relative_to",
+          "df.to_parquet",
+          "indice.get",
+          "indice_path.exists",
+          "indice_path.read_text",
+          "int",
+          "isoformat",
+          "json.loads",
+          "len",
+          "list",
+          "match.group",
+          "novo.columns.tolist",
+          "novo.to_parquet",
+          "nunique",
+          "origem.is_file",
+          "os.replace",
+          "p.exists",
+          "p.is_dir",
+          "p.unlink",
+          "pasta.mkdir",
+          "pd.read_parquet",
+          "publicados.append",
+          "raiz.mkdir",
+          "re.fullmatch",
+          "re.search",
+          "registro_ingestao.update",
+          "rel_stage.mkdir",
+          "relative_to",
+          "resolve",
+          "reversed",
+          "set",
+          "sha256",
+          "shutil.copyfile",
+          "shutil.rmtree",
+          "sorted",
+          "str",
+          "tempfile.mkdtemp",
+          "uuid.uuid4"
+        ]
+      },
+      "codigo": "def criar_manifesto_multi(\n                            arquivo: str | Path, id_arquivo: str,\n                            diretorio_auditoria: str | Path = 'auditoria', chave: str = 'ID',\n                            sep: str = '|', encoding: str = 'latin-1', st=None,\n                            timeout_lock: float = 60.0,\n                        ) -> dict:\n    origem = Path(arquivo).resolve()\n    raiz_geral = Path(diretorio_auditoria).resolve()\n    if not origem.is_file():\n        raise FileNotFoundError(origem)\n    if raiz_geral == origem or raiz_geral in origem.parents:\n        raise ValueError('Arquivo operacional dentro da pasta de auditoria')\n    if not re.fullmatch(r'[A-Za-z0-9_-]+', id_arquivo):\n        raise ValueError('id_arquivo deve conter apenas letras, números, _ ou -')\n    raiz = raiz_geral / id_arquivo\n    raiz.mkdir(parents=True, exist_ok=True)\n\n    manifestos, versoes, comparacoes = (raiz / nome for nome in ('MANIFESTOS', 'VERSOES', 'COMPARACOES'))\n    indice_path = manifestos / 'indice.json'\n    indice = json.loads(indice_path.read_text(encoding='utf-8')) if indice_path.exists() else {'schema': 5, 'versoes': [], 'ingestoes': []}\n    historico = indice['versoes']\n    ingestoes = indice.get('ingestoes', [])\n    anterior = historico[-1] if historico else None\n\n    stage = Path(tempfile.mkdtemp(prefix='.stage-', dir=raiz))\n    publicados = []\n    try:\n        copia_csv = stage / 'entrada.csv'\n        hash_antes = sha256(origem)\n        shutil.copyfile(origem, copia_csv)\n        hash_entrada = sha256(copia_csv)\n        if hash_entrada != hash_antes or sha256(origem) != hash_antes:\n            raise RuntimeError('Arquivo de origem alterado durante a leitura')\n        novo, chave_resolvida = carregar_csv(copia_csv, chave, sep, encoding)\n        registro_ingestao = {\n            'id': f'ing-{uuid.uuid4().hex}',\n            'recebido_em_utc': datetime.now(timezone.utc).isoformat(),\n            'arquivo_origem': origem.name,\n            'sha256_origem': hash_entrada,\n            'tamanho_origem_bytes': copia_csv.stat().st_size,\n        }\n        if anterior and anterior['sha256_origem'] == hash_entrada:\n            registro_ingestao.update(versao=anterior['versao'], status='sem_alteracao')\n            atomic_json(indice_path, {**indice, 'schema': 5, 'ingestoes': [*ingestoes, registro_ingestao]})\n            return {\n                'status': 'sem_alteracao', 'versao': anterior['versao'],\n                'sha256_origem': hash_entrada, 'motivo': 'hash_identico',\n                'id_ingestao': registro_ingestao['id'],\n            }\n        antigo = None\n        if anterior:\n            if anterior['chave'] != chave_resolvida:\n                raise ValueError('A chave primária mudou entre versões')\n            snapshot = raiz / anterior['snapshot']\n            if sha256(snapshot) != anterior['sha256_snapshot']:\n                raise ValueError('Integridade do snapshot anterior comprometida')\n            antigo = pd.read_parquet(snapshot, engine='pyarrow')\n            antigo.index.name = chave_resolvida\n\n        incluidos, excluidos, alterados = comparar(antigo, novo, chave_resolvida)\n        numero = int(anterior['versao'][1:]) + 1 if anterior else 1\n        versao = f'v{numero:04d}'\n        destino = versoes / f'{versao}.parquet'\n        rel_dir = comparacoes / (f\"{anterior['versao']}_{versao}\" if anterior else f'inicial_{versao}')\n        manifesto_path = manifestos / f'{versao}.json'\n        if any(p.exists() for p in (destino, rel_dir, manifesto_path)):\n            raise FileExistsError('Artefatos da próxima versão já existem; verificar publicação interrompida')\n\n        snapshot_stage = stage / 'snapshot.parquet'\n        novo.to_parquet(snapshot_stage, engine='pyarrow', compression='snappy', index=True)\n        rel_stage = stage / 'comparacao'\n        rel_stage.mkdir()\n        relatorios = {}\n        for nome, df in (('incluidos', incluidos), ('excluidos', excluidos), ('alterados', alterados)):\n            p = rel_stage / f'{nome}.parquet'\n            df.to_parquet(p, engine='pyarrow', compression='snappy', index=False)\n            relatorios[nome] = {'caminho': str((rel_dir / p.name).relative_to(raiz)), 'sha256': sha256(p)}\n\n        match = re.search(r'_(\\d{8})\\.csv$', origem.name, flags=re.I)\n        info = {\n            'tipo': id_arquivo, 'versao': versao,\n            'criado_em_utc': datetime.now(timezone.utc).isoformat(),\n            'arquivo_origem': origem.name,\n            'data_nome_yyyymmdd': match.group(1) if match else None,\n            'sha256_origem': hash_entrada,\n            'sha256_snapshot': sha256(snapshot_stage),\n            'tamanho_origem_bytes': copia_csv.stat().st_size,\n            'snapshot': str(destino.relative_to(raiz)),\n            'versao_anterior': anterior['versao'] if anterior else None,\n            'chave': chave_resolvida, 'separador': sep, 'encoding': encoding,\n            'colunas': [chave_resolvida, *novo.columns.tolist()],\n            'colunas_adicionadas': sorted(set(novo.columns) - set(antigo.columns)) if antigo is not None else list(novo.columns),\n            'colunas_removidas': sorted(set(antigo.columns) - set(novo.columns)) if antigo is not None else [],\n            'alteracao_dados': bool(antigo is None or not dados_equivalentes(antigo, novo)),\n            'total_registros': len(novo), 'incluidos': len(incluidos),\n            'excluidos': len(excluidos),\n            'registros_alterados': int(alterados[chave_resolvida].nunique()) if not alterados.empty else 0,\n            'campos_alterados': len(alterados), 'relatorios': relatorios,\n        }\n        atomic_json(stage / 'manifesto.json', info)\n        for pasta in (versoes, manifestos, comparacoes):\n            pasta.mkdir(parents=True, exist_ok=True)\n        os.replace(snapshot_stage, destino)\n        publicados.append(destino)\n        os.replace(rel_stage, rel_dir)\n        publicados.append(rel_dir)\n        os.replace(stage / 'manifesto.json', manifesto_path)\n        publicados.append(manifesto_path)\n\n        registro_ingestao.update(versao=versao, status='nova_versao')\n        atomic_json(indice_path, {\n            **indice, 'schema': 5, 'versoes': [*historico, info],\n            'ingestoes': [*ingestoes, registro_ingestao],\n        })\n        return {'status': 'nova_versao', 'id_ingestao': registro_ingestao['id'], **info}\n    except Exception:\n        for p in reversed(publicados):\n            if p.is_dir():\n                shutil.rmtree(p)\n            elif p.exists():\n                p.unlink()\n        raise\n    finally:\n        shutil.rmtree(stage, ignore_errors=True)"
+    },
+    "documentacao": {
+      "resumo": "Cria um manifesto para um arquivo de dados, realizando uma auditoria e comparando com versões anteriores.",
+      "descricao": "A função cria um novo manifesto para um arquivo de dados, realizando uma auditoria e comparando com versões anteriores. Ela verifica a integridade do arquivo, gera relatórios de inclusões, exclusões e alterações, e atualiza o índice de versões.",
+      "parametros": [
+        {
+          "nome": "arquivo",
+          "tipo": "str | Path",
+          "descricao": "Caminho para o arquivo de dados a ser auditado."
+        },
+        {
+          "nome": "id_arquivo",
+          "tipo": "str",
+          "descricao": "Identificador único do arquivo, usado para organizar os arquivos de auditoria."
+        },
+        {
+          "nome": "diretorio_auditoria",
+          "tipo": "str | Path",
+          "default": "'auditoria'",
+          "descricao": "Diretório onde os arquivos de auditoria serão armazenados."
+        },
+        {
+          "nome": "chave",
+          "tipo": "str",
+          "default": "'ID'",
+          "descricao": "Chave primária usada para identificar registros no arquivo."
+        },
+        {
+          "nome": "sep",
+          "tipo": "str",
+          "default": "'|'",
+          "descricao": "Separador usado no arquivo de dados."
+        },
+        {
+          "nome": "encoding",
+          "tipo": "str",
+          "default": "'latin-1'",
+          "descricao": "Codificação do arquivo de dados."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional",
+          "descricao": "Parâmetro não utilizado no código fornecido."
+        },
+        {
+          "nome": "timeout_lock",
+          "tipo": "float",
+          "default": "60.0",
+          "categoria": "posicional",
+          "descricao": "Tempo limite para bloqueio, não utilizado no código fornecido."
+        }
+      ],
+      "retorno": {
+        "tipo": "dict",
+        "descricao": "Dicionário contendo informações sobre a ingestão e o resultado da auditoria."
+      },
+      "excecoes": [
+        {
+          "tipo": "FileNotFoundError",
+          "descricao": "Quando o arquivo de origem não é encontrado."
+        },
+        {
+          "tipo": "ValueError",
+          "descricao": "Quando o `id_arquivo` contém caracteres inválidos ou quando a chave primária muda entre versões."
+        },
+        {
+          "tipo": "RuntimeError",
+          "descricao": "Quando o arquivo de origem é alterado durante a leitura."
+        },
+        {
+          "tipo": "FileExistsError",
+          "descricao": "Quando os artefatos da próxima versão já existem, indicando uma publicação interrompida."
+        }
+      ],
+      "dependencias": [
+        "datetime.datetime",
+        "json",
+        "os",
+        "pandas",
+        "pathlib.Path",
+        "re",
+        "shutil",
+        "tempfile",
+        "uuid"
+      ],
+      "docstring": "Cria um manifesto para um arquivo de dados, realizando uma auditoria e comparando com versões anteriores.\n\nArgs:\n    arquivo (str | Path): Caminho para o arquivo de dados a ser auditado.\n    id_arquivo (str): Identificador único do arquivo, usado para organizar os arquivos de auditoria.\n    diretorio_auditoria (str | Path, optional): Diretório onde os arquivos de auditoria serão armazenados. Padrão é 'auditoria'.\n    chave (str, optional): Chave primária usada para identificar registros no arquivo. Padrão é 'ID'.\n    sep (str, optional): Separador usado no arquivo de dados. Padrão é '|'.\n    encoding (str, optional): Codificação do arquivo de dados. Padrão é 'latin-1'.\n    st: Parâmetro não utilizado no código fornecido.\n    timeout_lock (float, optional): Tempo limite para bloqueio, não utilizado no código fornecido.\n\nReturns:\n    dict: Dicionário contendo informações sobre a ingestão e o resultado da auditoria.\n\nRaises:\n    FileNotFoundError: Quando o arquivo de origem não é encontrado.\n    ValueError: Quando o `id_arquivo` contém caracteres inválidos ou quando a chave primária muda entre versões.\n    RuntimeError: Quando o arquivo de origem é alterado durante a leitura.\n    FileExistsError: Quando os artefatos da próxima versão já existem, indicando uma publicação interrompida."
+    },
+    "status": "sucesso"
+  }
+]

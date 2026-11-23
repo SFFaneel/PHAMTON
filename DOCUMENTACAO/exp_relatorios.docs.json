@@ -1,0 +1,719 @@
+[
+  {
+    "funcao": {
+      "nome": "imprimir_BC",
+      "tipo": "function",
+      "linha_inicio": 48,
+      "linha_fim": 67,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_EFD_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "imprimir_xlsx.imprimi_F0_BP",
+          "imprimir_xlsx.imprimi_F1_BP",
+          "imprimir_xlsx.imprimi_F2_BP",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "imprimi_F0_BP",
+          "imprimi_F1_BP",
+          "imprimi_F2_BP",
+          "sl.connect",
+          "st.button",
+          "st.checkbox",
+          "st.columns",
+          "st.divider",
+          "st.fragment"
+        ]
+      },
+      "codigo": "def imprimir_BC(bd_path = \"\", bd_EFD_path = \"\", st = None, local = \"\", empresa = \"\"):\n    with sl.connect(bd_path) as bd:\n        FLG_ARQ = st.checkbox(\"Fluxo de pagamento: arquivo (ativo), se projeção (inativo)\",\n                                              value = True, width='stretch')\n        colas = st.columns([1, 2, 1, 2, 1, 2, 1, 2, 1], gap='small')\n        with colas[1]:\n            F0 = st.button(\"F0 COMPRAS\", width='stretch', key = \"imprime_F0_COMPRAS\")\n        with colas[3]:\n            F1 = st.button(\"F1 COMPRAS\", width='stretch', key = \"imprime_F1_COMPRAS\")\n        with colas[5]:\n            F2 = st.button(\"F2 COMPRAS\", width='stretch', key = \"imprime_F2_COMPRAS\")\n        st.divider()\n        \n        with sl.connect(bd_EFD_path) as bd_EFD:\n            if F0:\n                n1 = imprimi_F0_BP(f'{local}\\BP_ANLS', bd, empresa, st)\n            if F1:\n                n2 = imprimi_F1_BP(f'{local}\\BP_ANLS', bd, bd_EFD, empresa, st.session_state.dt_ini, st.session_state.dt_fim, FLG_ARQ, st)\n            if F2:\n                n3 = imprimi_F2_BP(f'{local}\\BP_ANLS', bd, empresa, st.session_state.dt_ini, st.session_state.dt_fim, FLG_ARQ, st)"
+    },
+    "documentacao": {
+      "resumo": "Imprime relatórios de compras (F0, F1 e F2) a partir dos bancos de dados fornecidos.",
+      "descricao": "Esta função conecta-se a dois bancos de dados SQLite (`bd_path` e `bd_EFD_path`) e imprime relatórios de compras (F0, F1 e F2) com base nas interações do usuário através de botões em uma interface Streamlit. Os parâmetros `st`, `local` e `empresa` são utilizados para configurar a interface e o contexto da impressão.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho do banco de dados principal."
+        },
+        {
+          "nome": "bd_EFD_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho do banco de dados EFD."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para a interface da aplicação."
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Local onde os arquivos serão salvos."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa para o relatório."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "imprimir_xlsx.imprimi_F0_BP",
+          "tipo": "função"
+        },
+        {
+          "nome": "imprimir_xlsx.imprimi_F1_BP",
+          "tipo": "função"
+        },
+        {
+          "nome": "imprimir_xlsx.imprimi_F2_BP",
+          "tipo": "função"
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": "biblioteca"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca"
+        }
+      ],
+      "docstring": "Imprime relatórios de compras (F0, F1 e F2) a partir dos bancos de dados fornecidos.\n\nArgs:\n    bd_path (str): Caminho do banco de dados principal.\n    bd_EFD_path (str): Caminho do banco de dados EFD.\n    st (streamlit.ScriptRunner.ScriptContext): Objeto Streamlit para a interface da aplicação.\n    local (str): Local onde os arquivos serão salvos.\n    empresa (str): Nome da empresa para o relatório.\n\nReturns:\n    None\n\nNotes:\n    A função conecta-se a dois bancos de dados SQLite e imprime relatórios de compras com base nas interações do usuário através de botões em uma interface Streamlit."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "imprimir_ABT",
+      "tipo": "function",
+      "linha_inicio": 70,
+      "linha_fim": 84,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_EFD_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "imprimir_xlsx.imprimi_F0_ABT",
+          "imprimir_xlsx.imprimi_F1_ABT",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "imprimi_F0_ABT",
+          "imprimi_F1_ABT",
+          "sl.connect",
+          "st.button",
+          "st.columns",
+          "st.divider",
+          "st.fragment"
+        ]
+      },
+      "codigo": "def imprimir_ABT(bd_path = \"\", bd_EFD_path = \"\", st = None, local = \"\", empresa = \"\"):\n    with sl.connect(bd_path) as bd:\n\n        colas = st.columns([1, 2, 1, 2, 1, 2, 1, 2, 1], gap='small')\n        with colas[3]:\n            F0 = st.button(\"F0 ABERTURA\", width='stretch', key = \"imprime_F0_ABERTURA\")\n        with colas[5]:\n            F1 = st.button(\"F1 ABERTURA\", width='stretch', key = \"imprime_F1_ABERTURA\")\n        st.divider()\n        \n        with sl.connect(bd_EFD_path) as bd_EFD:\n            if F0:\n                n1 = imprimi_F0_ABT(f'{local}\\AIS_ANLS',bd, empresa, st)        \n            if F1:\n                n2 = imprimi_F1_ABT(f'{local}\\AIS_ANLS',bd, empresa, st)"
+    },
+    "documentacao": {
+      "resumo": "Imprime relatórios ABT (Anotações de Balanço e Demonstração) utilizando bancos de dados SQLite.",
+      "descricao": "Esta função cria uma interface interativa usando Streamlit para selecionar entre dois tipos de relatórios ABT: F0 ABERTURA e F1 ABERTURA. Cada tipo de relatório é gerado a partir de um banco de dados SQLite especificado pelo usuário.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o banco de dados SQLite principal."
+        },
+        {
+          "nome": "bd_EFD_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o banco de dados SQLite da EFD (Eletrônica Fiscal Digital)."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit usado para criar a interface interativa."
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho local onde os arquivos de relatório serão salvos."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa para o qual os relatórios estão sendo gerados."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "imprimir_xlsx.imprimi_F0_ABT",
+          "categoria": "importado"
+        },
+        {
+          "nome": "imprimir_xlsx.imprimi_F1_ABT",
+          "categoria": "importado"
+        },
+        {
+          "nome": "sqlite3",
+          "categoria": "importado"
+        },
+        {
+          "nome": "streamlit",
+          "categoria": "importado"
+        }
+      ],
+      "docstring": "Imprime relatórios ABT (Anotações de Balanço e Demonstração) utilizando bancos de dados SQLite.\n\nArgs:\n    bd_path (str): Caminho para o banco de dados SQLite principal.\n    bd_EFD_path (str): Caminho para o banco de dados SQLite da EFD (Eletrônica Fiscal Digital).\n    st (streamlit.ScriptRunner.ScriptContext): Objeto Streamlit usado para criar a interface interativa.\n    local (str): Caminho local onde os arquivos de relatório serão salvos.\n    empresa (str): Nome da empresa para o qual os relatórios estão sendo gerados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "imprimir_INCR",
+      "tipo": "function",
+      "linha_inicio": 87,
+      "linha_fim": 101,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_EFD_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "imprimir_xlsx.imprimi_F0_INCR",
+          "imprimir_xlsx.imprimi_F1_INCR",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "imprimi_F0_INCR",
+          "imprimi_F1_INCR",
+          "sl.connect",
+          "st.button",
+          "st.columns",
+          "st.divider",
+          "st.fragment"
+        ]
+      },
+      "codigo": "def imprimir_INCR(bd_path = \"\", bd_EFD_path = \"\", st = None, local = \"\", empresa = \"\"):\n    with sl.connect(bd_path) as bd:\n\n        colas = st.columns([1, 2, 1, 2, 1, 2, 1, 2, 1], gap='small')\n        with colas[3]:\n            F0 = st.button(\"F0 INCREMENTAL\", width='stretch', key = \"imprime_F0_INCREMENTAL\")\n        with colas[5]:\n            F1 = st.button(\"F1 INCREMENTAL\", width='stretch', key = \"imprime_F1_INCREMENTAL\")\n        st.divider()\n        \n        with sl.connect(bd_EFD_path) as bd_EFD:\n            if F0:\n                n1 = imprimi_F0_INCR(f'{local}\\INC_ANLS',bd, empresa, st)        \n            if F1:\n                n2 = imprimi_F1_INCR(f'{local}\\INC_ANLS',bd, empresa, st)"
+    },
+    "documentacao": {
+      "resumo": "Imprime dados incrementais de um banco de dados EFD e BD.",
+      "descricao": "Esta função cria uma interface interativa utilizando Streamlit para permitir o usuário selecionar entre dois botões ('F0 INCREMENTAL' e 'F1 INCREMENTAL'). Cada botão, quando pressionado, chama uma função específica para imprimir dados incrementais de um banco de dados EFD e BD. A função também utiliza SQLite3 para conexão com os bancos de dados.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho do arquivo do banco de dados principal."
+        },
+        {
+          "nome": "bd_EFD_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho do arquivo do banco de dados EFD."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para criar a interface interativa."
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Local onde os arquivos incrementais estão armazenados."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa associada aos dados."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "imprimir_xlsx.imprimi_F0_INCR",
+          "tipo": "função",
+          "categoria": "importado"
+        },
+        {
+          "nome": "imprimir_xlsx.imprimi_F1_INCR",
+          "tipo": "função",
+          "categoria": "importado"
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": "biblioteca",
+          "categoria": "importado"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca",
+          "categoria": "importado"
+        }
+      ],
+      "docstring": "Imprime dados incrementais de um banco de dados EFD e BD.\n\nArgs:\n    bd_path (str): Caminho do arquivo do banco de dados principal.\n    bd_EFD_path (str): Caminho do arquivo do banco de dados EFD.\n    st (streamlit.ScriptRunner.ScriptContext): Objeto Streamlit para criar a interface interativa.\n    local (str): Local onde os arquivos incrementais estão armazenados.\n    empresa (str): Nome da empresa associada aos dados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "imprimir_OE",
+      "tipo": "function",
+      "linha_inicio": 104,
+      "linha_fim": 118,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_EFD_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "imprimir_xlsx.imprimi_F0_OE",
+          "imprimir_xlsx.imprimi_F1_OE",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "imprimi_F0_OE",
+          "imprimi_F1_OE",
+          "sl.connect",
+          "st.button",
+          "st.columns",
+          "st.divider",
+          "st.fragment"
+        ]
+      },
+      "codigo": "def imprimir_OE(bd_path = \"\", bd_EFD_path = \"\", st = None, local = \"\", empresa = \"\"):\n    with sl.connect(bd_path) as bd:\n\n        colas = st.columns([1, 2, 1, 2, 1, 2, 1, 2, 1], gap='small')\n        with colas[3]:\n            F0 = st.button(\"F0 OE\", width='stretch', key = \"imprime_F0_OE\")\n        with colas[5]:\n            F1 = st.button(\"F1 OE\", width='stretch', key = \"imprime_F1_OE\")\n        st.divider()\n        \n        with sl.connect(bd_EFD_path) as bd_EFD:\n            if F0:\n                n1 = imprimi_F0_OE(f'{local}\\OE_ANLS',bd, empresa, st)        \n            if F1:\n                n2 = imprimi_F1_OE(f'{local}\\OE_ANLS',bd, empresa, st)"
+    },
+    "documentacao": {
+      "resumo": "Imprime relatórios OE (Operações e Estoque) utilizando bancos de dados SQLite.",
+      "descricao": "Esta função cria uma interface Streamlit para selecionar entre dois tipos de relatórios OE (F0 e F1) e imprime esses relatórios usando funções específicas. Os bancos de dados SQLite são utilizados para obter os dados necessários.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho do banco de dados principal."
+        },
+        {
+          "nome": "bd_EFD_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho do banco de dados EFD (Eletrônico Fiscal Digital)."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para criar a interface."
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Local onde os arquivos de relatório serão salvos."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa para o qual os relatórios serão gerados."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "imprimir_xlsx.imprimi_F0_OE",
+          "tipo": "função",
+          "categoria": "externa"
+        },
+        {
+          "nome": "imprimir_xlsx.imprimi_F1_OE",
+          "tipo": "função",
+          "categoria": "externa"
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": "biblioteca",
+          "categoria": "externa"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca",
+          "categoria": "externa"
+        }
+      ],
+      "docstring": "Imprime relatórios OE (Operações e Estoque) utilizando bancos de dados SQLite.\n\nArgs:\n    bd_path (str): Caminho do banco de dados principal.\n    bd_EFD_path (str): Caminho do banco de dados EFD (Eletrônico Fiscal Digital).\n    st (streamlit.ScriptRunner.ScriptContext): Objeto Streamlit para criar a interface.\n    local (str): Local onde os arquivos de relatório serão salvos.\n    empresa (str): Nome da empresa para o qual os relatórios serão gerados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "imprimir_BB",
+      "tipo": "function",
+      "linha_inicio": 121,
+      "linha_fim": 132,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_EFD_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "imprimir_xlsx.imprimi_F0_BB",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "imprimi_F0_BB",
+          "sl.connect",
+          "st.button",
+          "st.columns",
+          "st.divider",
+          "st.fragment"
+        ]
+      },
+      "codigo": "def imprimir_BB(bd_path = \"\", bd_EFD_path = \"\", st = None, local = \"\", empresa = \"\"):\n    with sl.connect(bd_path) as bd:\n\n        colas = st.columns([1, 2, 1, 2, 1, 2, 1, 2, 1], gap='small')\n        with colas[3]:\n            F0 = st.button(\"F0 BB\", width='stretch', key = \"imprime_F0_BB\")\n\n        st.divider()\n        \n        with sl.connect(bd_EFD_path) as bd_EFD:\n            if F0:\n                n1 = imprimi_F0_BB(f'{local}\\BB_ANLS',bd, empresa, st)"
+    },
+    "documentacao": {
+      "resumo": "Imprime dados de um banco de dados EFD (Eletrônico Fiscal Digital) em uma interface Streamlit.",
+      "descricao": "A função conecta a um banco de dados SQLite e, se o botão 'F0 BB' for pressionado, imprime dados específicos no formato XLSX usando outra função chamada `imprimi_F0_BB`. A interface é construída com componentes do Streamlit.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o banco de dados SQLite."
+        },
+        {
+          "nome": "bd_EFD_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o banco de dados EFD."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit usado para criar a interface da aplicação."
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Local onde os dados serão salvos ou exibidos."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa associada aos dados."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "imprimir_xlsx.imprimi_F0_BB",
+          "tipo": "função",
+          "categoria": "externa"
+        },
+        {
+          "nome": "sqlite3",
+          "tipo": "biblioteca",
+          "categoria": "externa"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca",
+          "categoria": "externa"
+        }
+      ],
+      "docstring": "Imprime dados de um banco de dados EFD (Eletrônico Fiscal Digital) em uma interface Streamlit.\n\nArgs:\n    bd_path (str): Caminho para o banco de dados SQLite.\n    bd_EFD_path (str): Caminho para o banco de dados EFD.\n    st (streamlit.ScriptRunner.ScriptContext): Objeto Streamlit usado para criar a interface da aplicação.\n    local (str): Local onde os dados serão salvos ou exibidos.\n    empresa (str): Nome da empresa associada aos dados."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "exportar",
+      "tipo": "function",
+      "linha_inicio": 135,
+      "linha_fim": 362,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "UTILS.bsc_dados_reg",
+          "UTILS.existe_tabela",
+          "pandas",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "existe_tabela",
+          "imprimir_ABT",
+          "imprimir_BB",
+          "imprimir_BC",
+          "imprimir_INCR",
+          "imprimir_OE",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "pd.read_sql",
+          "sl.connect",
+          "st.columns",
+          "st.container",
+          "st.error",
+          "st.html",
+          "st.warning",
+          "str"
+        ]
+      },
+      "codigo": "def exportar(st=None):\n    if st is None:\n        import streamlit as st\n\n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    st.html(f\"<style>{css}</style>\")\n    raiz = Path(local)\n    caminho_manifesto = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n    caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n    inicializa_database(str(caminho_manifesto))\n    inicializa_detalhes(str(caminho_manifesto))\n    inicializar_rastreamento(str(caminho_manifesto))\n    database = str(caminho_manifesto)\n    bd_path = f'{local}/BD_LOCAL/{empresa}_{ano}.db'\n    bd_BDGDAT_path = f'{local}/BD_LOCAL/BDGD_AT_{empresa}_{ano}.db'\n    bd_BDGDANT_path = f'{local}/BD_LOCAL/BDGD_ANT_{empresa}_{ano}.db'\n    bd_EFD_path = f'{local}\\BD_LOCAL\\EFD_ICMS_{empresa}_{ano}.db'\n    st.html(f\"\"\"<h1 style=\"text-align: center;\">Trilha de Exportação de Resultados</h1><br><br>\n                <p  style=\"text-align: justify;text-indent: 40px\">Nesta aba temos as exportações \n                de resultados.</p>  \n                <hr></hr>\n                        \n            \"\"\")\n\n    with sl.connect(bd_path) as bd:\n        if (existe_tabela('tbl_PLANEJAMENTO', bd)):\n            tbl_PLAN = pd.read_sql('SELECT * FROM tbl_PLANEJAMENTO WHERE TP_FISC IS NOT NULL ORDER BY TP_FISC ASC', bd)\n            if not tbl_PLAN.empty:\n                processo = tbl_PLAN['TP_FISC'].values[0]\n            else:\n                st.error(\"Tem de ser feito o planejamento\")\n                return\n        else:\n            st.error(\"Tem de ser feito o planejamento\")\n            return\n\n    cols = st.columns([1,10,1], gap='small')\n    with cols[1]:\n        with st.container(border=True):\n            if processo == 'DISTRIBUIDORA PERIÓDICA':\n                with st.container(border=True, vertical_alignment='center'):\n                    st.html(f\"\"\" <h1>DISTRIBUIDORA EM REVISÃO {empresa}</h1>\n                                <br><br><br>\n                                <h2>BANCO DE COMPRAS</h2>\n                \n                                <hr></hr>\n                                                \n                                <div style=\"text-align: justify;text-indent: 40px; padding-top: 10px\"><p>Exportar resultados \n                                            para o Excel é feita devido à sua difusão como ferramenta de análise \n                                            neste tipo de trabalho. Entendemos, nesse momento, que facilita a adoção, \n                                            reduzindo a necessidade de treinamento adicional. Além disso, sua \n                                            compatibilidade com diversos formatos e integração com outras aplicações \n                                            garantem que os dados possam ser compartilhados e analisados. A seguir,\n                                            resumimos os tipos de exportação.</p><br></div>\n                                <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                            <p><b>F0</b>: foi executada a conciliação entre EFD ICMS e ERP (arquivo F0). Verifique\n                                            a consistência agregada e desagregada com a empresa.</p>\n                                            </div>\n                                <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                            <p><b>F1</b>: apresenta-se os resultados da análise do extrato de compras. \n                                            Na primeira aba tem-se o cruzamento do extrato de compras com os dados do SPED \n                                            e do INC (indicando dados do SPED como CFOP e outras informações; adicionalmente \n                                            se inclui os dados de fluxo de pagamento, fórmula COGE, rateio do financeiro de \n                                            ICMS (existe um tratamento específico entre as parcelas recuperavel e não \n                                            recuperável no que se refere a atualização) e de ODC, e classificação contábil \n                                            do item (que é a empregada no INC)). A segunda aba, EC_UC_UAR_BASE, consolida \n                                            os itens que são UAR. Notar que somente não se emprega as notas complementares \n                                            e também não se emprega os bens reformados. A aba VF_DESCR_ITEM, apresenta as \n                                            estatísticas descritivas dos itens, salientando os de maior variação no \n                                            período. A aba BC_VF_UC, apresenta a consolidação por TUCAGEM, aba BC_VF_ITEM, \n                                            apresenta a consolidação por COD_ITEM.</p>\n                                            </div>\n                                <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                            <p><b>F2</b>: é efetuada uma comparação entre o BP_UAR apresentado e os dados \n                                            calculados. Verifica-se a fórmula COGE, se o item foi empregado no ROA, e a \n                                            variação nos resultados.</p>\n                                            </div>\n                \n                            \"\"\")\n                    \n                    imprimir_BC(bd_path, bd_EFD_path, st, local, empresa)\n\n                    st.html(\"\"\"\n                                                    <h2>ABERTURA DO AIS</h2>\n                                    \n                                                    <hr></hr>\n                                                                    \n                                                    <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                                                <p><b>F0</b>: foi feita a análise da distribuição dos custos por projeto e TI, considerando\n                                                                 natureza de gasto e tipo de atividade (arquivo F0). Discuta\n                                                                a consistência desagregada com a empresa, isto é, os critérios alocativos para projetos.</p>\n                                                                </div>\n                                                    <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                                                <p><b>F1</b>: apresenta-se os resultados da análise do valor de fábrica do ROA e o resultante\n                                                                do processo de abertura fornecido pela empresa. Adicionalmente, também, se discute a abertura\n                                                                do JOA.</p>\n                                                                </div>\n                                                    \n                                                \"\"\")\n                    imprimir_ABT(bd_path, bd_EFD_path, st, local, empresa)\n                    st.html(\"\"\"\n                                <h2>ANÁLISE DO LAUDO INCREMENTAL</h2>\n                \n                                <hr></hr>\n                                                \n                                <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                            <p><b>F0</b>: foi feita a análise do VOC informado no arquivo incremental,\n                                            comparando-o com os resultados da avaliação do AIS.</p>\n                                            </div>\n                                <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                            <p><b>F1</b>: apresenta-se os resultados da emulação do laudo, confrontando\n                                            com o entregue.</p>\n                                            </div>\n                                \n                            \"\"\")\n                    imprimir_INCR(bd_path, bd_EFD_path, st, local, empresa)\n\n                    st.html(\"\"\"\n                                <h2>ANÁLISE DA MOVIMENTAÇÃO DE OE</h2>\n                \n                                <hr></hr>\n                                                \n                                <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                            <p><b>F0</b>: é elaborado o demonstrativo das obrigações, tanto do \n                                            incremental quando da blindada. O arquivo de saída SAIDA_F0_OE_xxxx, \n                                            sintetiza os resultados. Temos: relatório do BMP, \n                                            demonstrativo de Obrigações Especiais, \n                                            <b>aba OE5a</b>; demonstrativo da consolidação por atividade, <b>aba OE5b</b>;\n                                            teste das taxas de amortização empregadas, <b>aba TSTE_TX_AMT_CNTB</b>;\n                                            descrição dos ajustes efetuados na incremental e blindada, <b>aba LISTA_AJUSTES</b>;\n                                            dados de IPCA, <b>aba TABELA_IPCA</b>.</p>\n                                            </div>\n                                <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                            <p><b>F1</b>: sintetiza os resultados de cálculo da taxa média de depreciação, \n                                            <b>aba Resumo_UC</b>; demonstrativo de consolidação por atividade, \n                                            <b>aba Tx_MED_ATIVD</b>.</p>\n                                            </div>\n                                \n                            \"\"\")\n                    imprimir_OE(bd_path, bd_EFD_path, st, local, empresa)\n                    st.html(\"\"\"\n                                <h2>ANÁLISE DA MOVIMENTAÇÃO DA BB</h2>\n                \n                                <hr></hr>\n                                                \n                                <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                            <p><b>F0</b>: O arquivo de saída SAIDA_F0_BB, \n                                            sintetiza os resultados. Temos: o comparativo entre MEMO, encaminhado para \n                                            a área de tarifas, e o arquivo de PPBB, <b>ABA TESTE_PP</b>;\n                                            teste de quantidade de baixas por UC e unidade, <b>ABA TESTE_BAIXAS</b>;\n                                            teste de quantidade de baixas por UC, <b>ABA TESTE_BAIXAS_UC</b>;\n                                            resumo dos dados, <b>ABA RESUMO</b>; e \n                                            memorial dos cálculos, <b>DIVERSAS ABAS NOMEADAS como <i>TESTE_VNRx</i></b></b>.</p>\n                                            </div>\n                                \n                            \"\"\")\n                    imprimir_BB(bd_path, bd_EFD_path, st, local, empresa)\n            elif processo == 'DISTRIBUIDORA ANUAL':\n                            with st.container(border=True, vertical_alignment='center'):\n                                st.html(f\"\"\" <h1>DISTRIBUIDORA {empresa}</h1>\n                                            <br><br><br>\n                                            <h2>BANCO DE COMPRAS</h2>\n                            \n                                            <hr></hr>\n                                                            \n                                            <div style=\"text-align: justify;text-indent: 40px; padding-top: 10px\"><p>Exportar resultados \n                                                        para o Excel é feita devido à sua difusão como ferramenta de análise \n                                                        neste tipo de trabalho. Entendemos, nesse momento, que facilita a adoção, \n                                                        reduzindo a necessidade de treinamento adicional. Além disso, sua \n                                                        compatibilidade com diversos formatos e integração com outras aplicações \n                                                        garantem que os dados possam ser compartilhados e analisados. A seguir,\n                                                        resumimos os tipos de exportação.</p><br></div>\n                                            <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                                        <p><b>F0</b>: foi executada a conciliação entre EFD ICMS e ERP (arquivo F0). Verifique\n                                                        a consistência agregada e desagregada com a empresa.</p>\n                                                        </div>\n                                            <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                                        <p><b>F1</b>: apresenta-se os resultados da análise do extrato de compras. \n                                                        Na primeira aba tem-se o cruzamento do extrato de compras com os dados do SPED \n                                                        e do INC (indicando dados do SPED como CFOP e outras informações; adicionalmente \n                                                        se inclui os dados de fluxo de pagamento, fórmula COGE, rateio do financeiro de \n                                                        ICMS (existe um tratamento específico entre as parcelas recuperavel e não \n                                                        recuperável no que se refere a atualização) e de ODC, e classificação contábil \n                                                        do item (que é a empregada no INC)). A segunda aba, EC_UC_UAR_BASE, consolida \n                                                        os itens que são UAR. Notar que somente não se emprega as notas complementares \n                                                        e também não se emprega os bens reformados. A aba VF_DESCR_ITEM, apresenta as \n                                                        estatísticas descritivas dos itens, salientando os de maior variação no \n                                                        período. A aba BC_VF_UC, apresenta a consolidação por TUCAGEM, aba BC_VF_ITEM, \n                                                        apresenta a consolidação por COD_ITEM.</p>\n                                                        </div>\n                                            <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                                        <p><b>F2</b>: é efetuada uma comparação entre o BP_UAR apresentado e os dados \n                                                        calculados. Verifica-se a fórmula COGE, se o item foi empregado no ROA, e a \n                                                        variação nos resultados.</p>\n                                                        </div>\n                                            <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                                        <p><b>F3</b>: são testes de quantidades entre o ROA e o EC e o SPED. O que não \n                                                        for do EC deve ter origem ou do estoque inicial, obras em curso ou \n                                                        reutilizações.</p>\n                                                        </div>\n                            \n                                        \"\"\")\n                                \n                                imprimir_BC(bd_path, bd_EFD_path, st, local, empresa)\n            \n                                st.html(\"\"\"\n                                                                <h2>ABERTURA DO AIS</h2>\n                                                \n                                                                <hr></hr>\n                                                                                \n                                                                <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                                                            <p><b>F0</b>: foi feita a análise da distribuição dos custos por projeto e TI, considerando\n                                                                             natureza de gasto e tipo de atividade (arquivo F0). Discuta\n                                                                            a consistência desagregada com a empresa, isto é, os critérios alocativos para projetos.</p>\n                                                                            </div>\n                                                                <div style=\"text-align: justify;padding-left: 60px; padding-top: 10px\">            \n                                                                            <p><b>F1</b>: apresenta-se os resultados da análise do valor de fábrica do ROA e o resultante\n                                                                            do processo de abertura fornecido pela empresa. Adicionalmente, também, se discute a abertura\n                                                                            do JOA.</p>\n                                                                            </div>\n                                                                \n                                                            \"\"\")\n                                imprimir_ABT(bd_path, bd_EFD_path, st, local, empresa)\n            else:\n                st.warning(f\"Não implantado para {processo}\")"
+    },
+    "documentacao": {
+      "resumo": "Exporta dados para o Streamlit, incluindo a geração de HTML e manipulação de bancos de dados.",
+      "descricao": "A função exporta dados para o Streamlit, utilizando informações armazenadas em sessões do Streamlit. Ela cria um arquivo de banco de dados SQLite e inicializa detalhes e rastreamento. A função também imprime diferentes tipos de relatórios dependendo do processo selecionado.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": "object",
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para interação com a interface web."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "UTILS.bsc_dados_reg",
+          "UTILS.existe_tabela",
+          "pandas",
+          "pathlib.Path",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "existe_tabela",
+          "imprimir_ABT",
+          "imprimir_BB",
+          "imprimir_BC",
+          "imprimir_INCR",
+          "imprimir_OE",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "pd.read_sql",
+          "sl.connect",
+          "st.columns",
+          "st.container",
+          "st.error",
+          "st.html",
+          "st.warning",
+          "str"
+        ]
+      },
+      "docstring": "Exporta dados para o Streamlit, incluindo a geração de HTML e manipulação de bancos de dados.\n\nArgs:\n    st (object): Objeto Streamlit para interação com a interface web.\n\nReturns:\n    None\n\nNotes:\n    A função cria um arquivo de banco de dados SQLite e inicializa detalhes e rastreamento. Imprime diferentes tipos de relatórios dependendo do processo selecionado."
+    },
+    "status": "sucesso"
+  }
+]

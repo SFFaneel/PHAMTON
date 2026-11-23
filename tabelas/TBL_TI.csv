@@ -1,0 +1,86 @@
+Id_TI|Txt_Class|Txt_Desc|TP_JOA
+10|GER|Hidroelétrica|
+11|GER|Térmica a Combustão – Óleo/Gás/Diesel|
+12|GER|Térmica a Vapor – Carvão|
+13|GER|Térmica a Vapor – Gás|
+14|GER|Térmica a Vapor – Diesel/Querosene/Óleo|
+15|GER|Térmica a Vapor – Biomassa|
+16|GER|Térmica a Vapor – Nuclear|
+17|GER|Solar|
+18|GER|Eólica|
+19|GER|Outras|
+20|SRB|Subestações em tensão menor que 230kV (DIT)|
+21|SRB|Subestações em tensão maior ou igual a 230kV e menor que 345kV|
+22|SRB|Subestações em tensão maior ou igual a 345kV e menor que 500kV|
+23|SRB|Subestações em tensão maior ou igual a 500kV|
+24|DIT|Linha de Transmissão em tensão menor que 138kV (DIT)|
+25|DIT|Linha de Transmissão em tensão maior ou igual a 138kV e menor que 230kV (DIT)|
+26|LRB|Linha de Transmissão em tensão maior ou igual a 230kV e menor que 345kV|
+27|LRB|Linha de Transmissão em tensão maior ou igual a 345kV e menor que 500kV|
+28|LRB|Linha de Transmissão em tensão maior ou igual a 500kV|
+29|IIR|Instalação de Transmissão de Interesse Restrito (Subestação ou Linha)|
+30|SDU|Subestações em tensão menor ou igual que 13,8kV|SE
+31|SDU|Subestações em tensão maior que 13,8kV e menor ou igual a 34,5kV|SE
+32|SDU|Subestações em tensão maior que 34,5kV e menor ou igual a 69kV|SE
+33|SDU|Subestações em tensão maior que 69kV e menor ou igual a 138kV|SE
+34|SDU|Subestações em tensão maior que 138kV e menor ou igual a 230kV|SE
+35|LAU|Linha de Distribuição em tensão menor ou igual que 13,8kV|LD
+36|LAU|Linha de Distribuição em tensão maior que 13,8kV e menor ou igual a 34,5kV|LD
+37|LAU|Linha de Distribuição em tensão maior que 34,5kV e menor ou igual a 69kV|LD
+38|LAU|Linha de Distribuição em tensão maior que 69kV e menor ou igual a 138 kV|LD
+39|LAU|Linha de Distribuição em tensão maior que 138kV e menor ou igual a 230kV|LD
+40|RAU|Redes de Distribuição Aérea Urbana|RDA
+41|RAR|Redes de Distribuição Aérea Rural|RDA
+42|RDS|Redes de Distribuição Subterrânea Urbana|RDS
+43|RDS|Redes de Distribuição Subterrânea Rural|RDS
+44|RDS|Redes de Distribuição Submersa|RDS
+50|SDR|Subestações em tensão menor ou igual que 13,8kV|SE
+51|SDR|Subestações em tensão maior que 13,8kV e menor ou igual a 34,5kV|SE
+52|SDR|Subestações em tensão maior que 34,5kV e menor ou igual a 69kV|SE
+53|SDR|Subestações em tensão maior que 69kV e menor ou igual a 138kV|SE
+54|SDR|Subestações em tensão maior que 138kV e menor ou igual a 230kV|SE
+55|LAR|Linha de Distribuição em tensão menor ou igual que 13,8kV|LD
+56|LAR|Linha de Distribuição em tensão maior que 13,8kV e menor ou igual a 34,5kV|LD
+57|LAR|Linha de Distribuição em tensão maior que 34,5kV e menor ou igual a 69kV|LD
+58|LAR|Linha de Distribuição em tensão maior que 69kV e menor ou igual a 138 kV|LD
+59|LAR|Linha de Distribuição em tensão maior que 138kV e menor ou igual a 230kV|LD
+60|LDS|Linha de Transmissão em tensão menor que 138kV (DIT)|
+61|LDS|Linha de Transmissão em tensão maior ou igual a 138kV e menor que 230kV (DIT)|
+62|LDS|Linha de Transmissão em tensão maior ou igual a 230kV e menor que 345kV|
+63|LDS|Linha de Transmissão em tensão maior ou igual a 345kV e menor que 500kV|
+64|LDS|Linha de Transmissão em tensão maior ou igual a 500kV|
+65|LDS|Linha de Distribuição em tensão menor ou igual que 13,8kV|LD
+66|LDS|Linha de Distribuição em tensão maior que 13,8kV e menor ou igual a 34,5kV|LD
+67|LDS|Linha de Distribuição em tensão maior que 34,5kV e menor ou igual a 69kV|LD
+68|LDS|Linha de Distribuição em tensão maior que 69kV e menor ou igual a 138 kV|LD
+69|LDS|Linha de Distribuição em tensão maior que 138kV e menor ou igual a 230kV|LD
+70|ANE|Terrenos, edificações, obras civis e benfeitorias da Administração Central|
+71|ANE|Equipamento geral, o equipamento geral de informática e veículos da Administração Central|
+72|ANE|Sistema de Comunicação da Administração Central|
+73|ANE||
+74|ANE||
+75|ANE||
+76|ANE||
+77|ANE||
+78|ANE||
+79|ANE||
+80|ANE|Terrenos, edificações, obras civis e benfeitorias da Administração Específica|
+81|ANE|Equipamento geral, o equipamento geral de informática e veículos da Administração Específica|
+82|ANE|Sistema de Comunicação da Administração Específica|
+83|ANE||
+84|ANE||
+85|ANE||
+86|ANE||
+87|ANE||
+88|ANE||
+89|ANE||
+90|ANE|Terrenos, edificações, obras civis e benfeitorias que não integram outras ODI|
+91|ANE|Equipamento geral, o equipamento geral de informática e veículos que não integram ODI específicas|
+92|ANE|Sistemas de telecomunicação, telecontrole, teleprocessamento, proteção, controle e supervisão - Automação; Cada sistema de comunicação (exceto o sistema de ondas portadoras “Carrier” que integra as ODI de Subestações e os sistemas de comunicação que integram as ODI Adm. Central e Adm. Específica)|
+93|SMU|Sistema de medição (que não integram as ODI de Usinas e de SE) área urbana|SM
+94|ANE|Serviços Auxiliares gerais, inclusive Oficinas Eletromecânicas, Laboratórios e seus equipamentos;|
+95|ANE|Apoio Operacional (exclusivo para ODI específicas de Usina e Subestação)|
+96|SMR|Sistema de medição (que não integram as ODI de Usinas e de SE) – área rural|SM
+97|ANE|Sistema de despacho de carga|
+98|RIM|Reserva imobilizada (exceto equipamentos reservas exclusivos de usinas e subestações que integram ODI específicas)|
+99|ANE|Intangível (exceto servidões, que integram a ODI específica a que pertence)|

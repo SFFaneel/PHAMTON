@@ -1,0 +1,1165 @@
+[
+  {
+    "funcao": {
+      "nome": "_vis_001",
+      "tipo": "function",
+      "linha_inicio": 38,
+      "linha_fim": 379,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.carga_sqlite_cache",
+          "UTILS.existe_tabela",
+          "UTILS.imp_tbl_forma_001",
+          "UTILS.importar_dados_duckdb",
+          "numpy",
+          "os",
+          "pandas",
+          "plotly.graph_objects",
+          "plotly.subplots.make_subplots",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "UserWarning",
+          "abs",
+          "astype",
+          "carga_sqlite_cache",
+          "cumsum",
+          "df_ANLS_01.merge",
+          "df_ANLS_01.sort_values",
+          "df_INCR.copy",
+          "df_P.groupby",
+          "df_ROA.groupby",
+          "df_ROA.to_sql",
+          "df_pareto.sort_values",
+          "dict",
+          "eq",
+          "existe_tabela",
+          "fig.add_annotation",
+          "fig.add_hline",
+          "fig.add_trace",
+          "fig.update_layout",
+          "fig.update_xaxes",
+          "fig.update_yaxes",
+          "fig.write_image",
+          "fillna",
+          "go.Bar",
+          "go.Scatter",
+          "groupby",
+          "imp_tbl_forma_001",
+          "importar_dados_duckdb",
+          "isin",
+          "len",
+          "make_subplots",
+          "map",
+          "max",
+          "ne",
+          "np.select",
+          "os.makedirs",
+          "pd.Timestamp",
+          "pd.concat",
+          "pd.read_sql",
+          "pd.to_datetime",
+          "pd.to_numeric",
+          "replace",
+          "reset_index",
+          "round",
+          "sl.connect",
+          "sort_values",
+          "st.erro",
+          "st.fragment",
+          "st.html",
+          "st.plotly_chart",
+          "st.write",
+          "str.replace",
+          "sum"
+        ]
+      },
+      "codigo": "def _vis_001(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\", local = \"\"):\n    with sl.connect(bd_path) as bd:\n        if not existe_tabela(\"BASE_INCR_COMP_A1\", bd):\n            return\n        df = carga_sqlite_cache(\"SELECT * FROM BASE_INCR_COMP_A1\", bd)\n        df_BPUAR = imp_tbl_forma_001(\"BP_UAR\", SQLq=None, con=bd, st=st, Empresa=empresa)\n        df_BAIXAS = imp_tbl_forma_001(\"BAIXAS\", SQLq=None, con=bd, st=st, Empresa=empresa)\n        df_BAIXAS['Dt_Imob'] = pd.to_datetime(df_BAIXAS['Dt_Imob'], errors='coerce')\n        df_BAIXAS = df_BAIXAS[(df_BAIXAS['FLG_AJST_CTB'].astype(str)=='0') & (df_BAIXAS['Dt_Imob'] < pd.Timestamp(st.session_state.dt_ini))]\n        df_BAIXAS['Qtd_INI'] = pd.to_numeric(df_BAIXAS['Qtd_INI'].astype(str).str.replace(\",\",\".\"), errors='coerce')\n        df_BAIXAS['Qtd_FIN'] = pd.to_numeric(df_BAIXAS['Qtd_FIN'].astype(str).str.replace(\",\",\".\"), errors='coerce')\n    \n        df_INCR = df[['Id_SEQ_INC', 'Id_AIS', 'Cd_CC', 'Cd_ODI', 'Cd_SubODI', 'Nr_TI', 'Nr_CM', 'Nr_TUC', 'Nr_A1', 'Nr_A2', 'Nr_A3', \n                    'Nr_A4', 'Nr_A5', 'Nr_A6', 'Cd_UAR', 'Cd_UC', 'Cd_Patrim', 'Cd_DIG_INC', 'COD_ITEM', 'Qtd_AIS', 'Cd_UND_AIS', \n                    'VL_VOC', 'Dt_Imob', 'Dt_CNTB_AJST', 'VL_DEP_ACUM', 'VL_VOC_VF', 'VL_VOC_COM', 'VL_VOC_CA', 'VL_VOC_JOA', \n                    'VL_VOC_VF_AVAL', 'VL_VOC_COM_AVAL', 'VL_VOC_CA_AVAL', 'VL_VOC_JOA_AVAL', 'Cd_ODD', 'Dt_BX', 'Txt_DESC_TECN', \n                    'Txt_CLS_TNS', 'FLG_RSV', 'Cd_ODI_ENG', 'Cd_TP_AVAL', 'Cd_SISBASE', 'Cd_SISBASE_SFF', 'Id_BP', 'TP_BEM', 'VL_VNR_UC', 'VL_IAI_UC', \n                    'VL_DAC_UC', 'VL_VMU_UC', 'VL_IAD_UC', 'VL_VBR_UC', 'VL_100DEP_UC', 'Pct_IA', 'VL_VNR_VF_UNIT', 'VL_VNR_COM_UNIT', \n                    'VL_VNR_CA_UNIT', 'VL_VNR_JOA', 'FLG_DOA_OE', 'FLG_INCOR_OE', 'FLG_PLPT_OE', 'FLG_OAT', 'FLG_REG', 'FLG_ELIG', \n                    'Cd_CONC', 'Cd_ABCC', 'Cd_NumFIS', 'Dt_REF_DADOS', 'FA_IPCA', 'FA_COGE', 'Cd_Q1A', 'VL_COM_AT']]\n    \n        df_INCR['VL_VOC_VFa'] = df_INCR['VL_VOC_VF'].fillna(0) * df_INCR['FA_COGE'].fillna(1)\n        df_INCR['VL_VOCa'] = (df_INCR['VL_VOC'] - df_INCR['VL_VOC_VF'].fillna(0)) * df_INCR['FA_IPCA'] + df_INCR['VL_VOC_VFa']\n    \n        df_INCR['Id_BP'] = df_INCR['Id_BP'].fillna(0)\n        df_INCR['Id_BP'] = df_INCR['Id_BP'].astype(str)\n    \n        df_ANLS_01 = (df_INCR[(df_INCR['FLG_ELIG'].astype(str)=='1') & (df_INCR['Cd_CONC'].astype(str).isin(['1','3']))]\n                    .groupby(['Cd_TP_AVAL','Nr_TI', 'Nr_TUC', 'Nr_A1', 'Nr_A2', 'Nr_A3', \n                    'Nr_A4', 'Nr_A5', 'Nr_A6', 'Cd_SISBASE','Id_BP', 'Cd_UAR', 'Cd_UND_AIS'], dropna=False)[['Qtd_AIS','VL_VOC_VFa','VL_VOCa','VL_VNR_UC']]\n                    .sum()\n                    .reset_index()\n                    .sort_values(by=['Cd_TP_AVAL','VL_VOCa'], ascending=False))\n    \n        df_ANLS_01['VAR_ABS'] = df_ANLS_01['VL_VNR_UC'].fillna(0) - df_ANLS_01['VL_VOCa'].fillna(0)\n        df_ANLS_01['Pct_TOT'] = df_ANLS_01['VL_VNR_UC'].fillna(0) / df_ANLS_01['VL_VNR_UC'].fillna(0).sum()\n        df_ANLS_01['IMPACTO'] = df_ANLS_01['VAR_ABS'].abs() * df_ANLS_01['Pct_TOT']\n        df_ANLS_01 = df_ANLS_01.sort_values(by=['IMPACTO'], ascending=False)\n        df_BPUAR['Qtd'] = pd.to_numeric(df_BPUAR['Qtd'].astype(str).str.replace(\"-\",\"0\"), errors='coerce')\n        df_BPUAR['Id_BP'] = df_BPUAR['Id_BP'].astype(str)\n    \n        df_ANLS_01 = df_ANLS_01.merge(df_BPUAR[['Id_BP','Qtd','VL_VF','VL_ICMS','VL_ODC','VL_VF_UNIT_AT']], how = 'left', on = 'Id_BP')\n        df_ANLS_01['VAR_ABS_FIS'] = df_ANLS_01['Qtd_AIS'].fillna(0) - df_ANLS_01['Qtd'].fillna(0)\n        df_ANLS_01['VL_VF_UNIT_AT'] = pd.to_numeric(\n                                                        df_ANLS_01['VL_VF_UNIT_AT'],\n                                                        errors='coerce'\n                                                    )\n        df_ANLS_01['VAR_ABS_CTB'] = df_ANLS_01['VL_VOC_VFa'].fillna(0)/df_ANLS_01['Qtd_AIS'].fillna(1) - df_ANLS_01['VL_VF_UNIT_AT'].fillna(0)\n    \n        df_ANLS_01['FLG_QTD'] = 0\n        df_ANLS_01.loc[(df_ANLS_01['Cd_TP_AVAL'].astype(str)=='2') &\n                    (df_ANLS_01['VAR_ABS_FIS']>1), 'FLG_QTD'] = 1\n    \n        df_sorted = df_ANLS_01.sort_values(by=\"VL_VOCa\", ascending=True)\n        total_voca = df_sorted[\"VL_VOCa\"].sum()\n        total_vnr = df_sorted[\"VL_VNR_UC\"].sum()\n    \n        fig = make_subplots(\n                                rows=1,\n                                cols=2,\n                                column_widths=[0.75, 0.25], \n                                horizontal_spacing=0.08, \n                                subplot_titles=(\n                                    \"Comparação por NR_TI\",\n                                    \"Total Global\",\n                                ),\n                            )\n    \n        fig.add_trace(\n                            go.Bar(\n                                y=df_sorted[\"Nr_TI\"].astype(str),\n                                x=df_sorted[\"VL_VOCa\"],\n                                name=\"VOCa\",\n                                orientation=\"h\",\n                                marker_color=\"#2b5c8f\",\n                                hovertemplate=\"<b>TI %{y}</b><br>VOCa: %{x:,.2f}<extra></extra>\",\n                            ),\n                            row=1,\n                            col=1,\n                        )\n    \n        fig.add_trace(\n                        go.Bar(\n                            y=df_sorted[\"Nr_TI\"].astype(str),\n                            x=df_sorted[\"VL_VNR_UC\"],\n                            name=\"VNR\",\n                            orientation=\"h\",\n                            marker_color=\"#e06d53\",\n                            hovertemplate=\"<b>TI %{y}</b><br>VNR: %{x:,.2f}<extra></extra>\",\n                        ),\n                        row=1,\n                        col=1,\n                    )\n    \n        fig.add_trace(\n                            go.Bar(\n                                x=[\"VOCa Total\", \"VNR Total\"],\n                                y=[total_voca, total_vnr],\n                                name=\"Total Global\",\n                                marker_color=[\"#2b5c8f\", \"#e06d53\"],\n                                text=[f\"{total_voca:,.0f}\".replace(\",\",\".\"), f\"{total_vnr:,.0f}\".replace(\",\",\".\")],\n                                textposition=\"auto\",\n                                hovertemplate=\"<b>%{x}</b><br>Total: %{y:,.2f}<extra></extra>\",\n                                showlegend=False,\n                            ),\n                            row=1,\n                            col=2,\n                        )\n    \n        relacao = total_vnr / total_voca if total_voca != 0 else 0\n        texto_relacao = f\"VNR/VOCa = {relacao:,.2%}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n        fig.add_annotation(\n                                x=0.5,\n                                y=max(total_voca, total_vnr) * 1.10,\n                                text=texto_relacao,\n                                showarrow=False,\n                                font=dict(\n                                    size=14,\n                                    color=\"#222222\"\n                                ),\n                                bgcolor=\"rgba(255,255,255,0.85)\",\n                                bordercolor=\"#999999\",\n                                borderwidth=1,\n                                row=1,\n                                col=2,\n                            )\n    \n        fig.update_layout(\n                            barmode=\"group\",\n                            bargap=0.3,\n                            paper_bgcolor=\"rgba(0,0,0,0)\",\n                            plot_bgcolor=\"rgba(0,0,0,0)\",\n                            legend=dict(\n                                orientation=\"h\", yanchor=\"bottom\", y=1.05, xanchor=\"right\", x=0.75\n                            ),\n                            margin=dict(l=60, r=20, t=100, b=40),\n                            height=600,\n                        )\n    \n    \n        fig.update_xaxes(\n                            title_text=\"Valores\", showgrid=True, gridcolor=\"#eeeeee\", row=1, col=1\n                        )\n        fig.update_yaxes(title_text=\"Número NR_TI\", type=\"category\", row=1, col=1)\n        fig.update_xaxes(showgrid=False, row=1, col=2)\n        fig.update_yaxes(\n                            title_text=\"Valores Totais\", showgrid=True, gridcolor=\"#eeeeee\", row=1, col=2\n                        )\n    \n        \n        st.html(\n                    \"\"\"\n                        <h2>\n                            VOCa versus VNR\n                        </h2>\n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            O painel apresenta uma visão bidimensional dos indicadores. À <b>esquerda (Proporção 3x1)</b>, \n                            está detalhado o comportamento individual por <b>Nr_TI</b>. À <b>direita</b>, a barra vertical consolida o <b>Total Global</b> acumulado, \n                            facilitando a comparação imediata do volume financeiro total entre as duas métricas.\n                        </p>\n                    \"\"\", width='stretch'\n                )\n        st.plotly_chart(fig, width='stretch')\n        dir_FIG = rf\"{local}/RELATORIOS/figuras\"\n        os.makedirs(dir_FIG, exist_ok=True)\n\n        fig.write_image(\n                            f\"{dir_FIG}/VNR_VOCa.png\",\n                            width=1920,\n                            height=1080,\n                            scale=2\n                        )\n        if not existe_tabela('tbl_ATIPICIDADE',bd):\n            df_ROA, erro = importar_dados_duckdb('ROA', bd, empresa, colunas=[\"VL_tot\"], itens=\"Cd_SubODI, Cd_ATIP, VL_tot\", st=st)\n            df_ROA['Cd_ATIP'] = df_ROA['Cd_ATIP'].fillna(\"0\")\n            df_ROA['VL_tot'] = pd.to_numeric(df_ROA['VL_tot'].str.replace(\",\",\".\"), errors=\"coerce\").fillna(0)\n            df_ROA = df_ROA.groupby([\"Cd_SubODI\", \"Cd_ATIP\"], dropna=False)['VL_tot'].sum().reset_index()\n            dic_atip = {\n                            '0': 'Sem atipicidade',\n                            '1': 'Expansão em linha viva',\n                            '2': 'Recondutoramento de circuitos',\n                            '3': 'Recapacitação de linhas',\n                            '4': 'Instalação ou substituição de UAR que não seja a própria UC',\n                            '5': 'Redes e linhas de distribuição subterrâneas ou submersas (todas as TUC associadas)',\n                            '6': 'Estruturas tipo torre (TUC 255.02)',\n                            '7': 'Estruturas tipo poste em Linhas de Distribuição (TUC 255.01)',\n                            '8': 'Sistemas especiais de medição',\n                            '9': 'Novas tecnologias, ainda não modularizadas',\n                            '10': 'Outros'\n                        }\n            df_ROA['Cd_ATIP'] = df_ROA['Cd_ATIP'].map(dic_atip)\n            if len(erro)==0:\n                df_ROA.to_sql(\"tbl_ATIPICIDADE\", bd, if_exists=\"replace\", index=False)\n            else:\n                st.erro(\"Verifique os erros a seguir\")\n                st.write(erro)\n                raise UserWarning(\"Não se pode continuar até arrumar o arquivo.\")\n        else:\n            df_ROA = pd.read_sql(\"SELECT * FROM tbl_ATIPICIDADE\", bd)\n    \n    \n        df_ANLS_01voc = df_INCR.copy()\n        df_ANLS_01voc[\"VL_COM_AT\"] = df_ANLS_01voc[\"VL_COM_AT\"].fillna(0)\n    \n        condicoes = [\n                        df_ANLS_01voc[\"FLG_DOA_OE\"].astype(str).eq(\"1\") & df_ANLS_01voc[\"Cd_TP_AVAL\"].eq(\"1\"),\n                        df_ANLS_01voc[\"FLG_INCOR_OE\"].astype(str).eq(\"1\") & df_ANLS_01voc[\"Cd_TP_AVAL\"].eq(\"1\"),\n                        df_ANLS_01voc[\"FLG_OAT\"].astype(str).eq(\"1\") & df_ANLS_01voc[\"Cd_TP_AVAL\"].eq(\"1\"),\n                        df_ANLS_01voc[\"Cd_SISBASE_SFF\"].eq(\"ND\") & df_ANLS_01voc[\"Cd_TP_AVAL\"].eq(\"1\"),\n                        df_ANLS_01voc[\"VL_COM_AT\"].astype(str).eq('0') & df_ANLS_01voc[\"Cd_TP_AVAL\"].eq(\"1\"),\n                        df_ANLS_01voc[\"Id_BP\"].astype(str).eq('0') & df_ANLS_01voc[\"Cd_TP_AVAL\"].eq(\"1\"),\n                        df_ANLS_01voc[\"Cd_SISBASE\"].ne(df_ANLS_01voc[\"Cd_SISBASE_SFF\"]) & df_ANLS_01voc[\"Cd_TP_AVAL\"].eq(\"1\"),\n                        df_ANLS_01voc[\"Cd_TP_AVAL\"].ne(\"1\")\n                    ]\n    \n        valores = [\n                        \"VOC - Doação\",\n                        \"VOC - Incorporação\",\n                        \"VOC - Obra atípica\",\n                        \"VOC - Sem SISBASE\",\n                        \"VOC - Sem COM/CA no BPR\",\n                        \"VOC - Sem valor de fábrica no banco\",\n                        \"Avaliar - Diverge na classificação SISBASE\",\n                        \"BPR ou ORC\"\n                    ]\n    \n        df_ANLS_01voc[\"JST_VOC\"] = np.select(\n                                                condicoes,\n                                                valores,\n                                                default=\"NO\"\n                                            )\n        df_P1 = df_ANLS_01voc[df_ANLS_01voc[\"Cd_TP_AVAL\"].eq(\"1\")].groupby(\"JST_VOC\", dropna=False)['VL_VNR_UC'].sum().reset_index()\n        \n        df_P2 = df_ANLS_01voc[df_ANLS_01voc[\"Cd_TP_AVAL\"].eq(\"2\")].groupby(\"JST_VOC\", dropna=False)['VL_VNR_UC'].sum().reset_index()\n        df_P3 = df_ANLS_01voc[~df_ANLS_01voc[\"Cd_TP_AVAL\"].isin([\"1\",\"2\"])].groupby(\"JST_VOC\", dropna=False)['VL_VNR_UC'].sum().reset_index()\n        df_P1['TP_AVAL'] = \"Atualizado\"\n        df_P2['TP_AVAL'] = \"BPR\"\n        df_P2['JST_VOC'] = \"BPR\"\n        df_P3['TP_AVAL'] = \"Demais\"\n        df_P3['JST_VOC'] = \"Demais\"\n        df_P = pd.concat([df_P1,df_P2,df_P3], ignore_index=True)\n    \n        df_pareto = (\n                        df_P\n                        .groupby([\"JST_VOC\", \"TP_AVAL\"], as_index=False)[\"VL_VNR_UC\"]\n                        .sum()\n                    )\n        df_pareto = df_pareto.sort_values(\n                                            [\"TP_AVAL\",\"JST_VOC\"],\n                                            ascending=False\n                                        )\n        df_pareto[\"VNR_MM\"] = df_pareto[\"VL_VNR_UC\"] / 1_000_000\n        df_pareto[\"PERC_ACUM\"] = (\n                                        df_pareto[\"VL_VNR_UC\"].cumsum()\n                                        / df_pareto[\"VL_VNR_UC\"].sum()\n                                        * 100\n                                    )\n        fig = make_subplots(specs=[[{\"secondary_y\": True}]])\n        fig.add_trace(\n                        go.Bar(\n                            x=df_pareto[\"JST_VOC\"],\n                            y=df_pareto[\"VNR_MM\"],\n                            text=df_pareto[\"VNR_MM\"].round(1),\n                            textposition=\"outside\",\n                            name=\"VNR (R$ MM)\",\n                        ),\n                        secondary_y=False,\n                    )\n        fig.add_trace(\n                        go.Scatter(\n                            x=df_pareto[\"JST_VOC\"],\n                            y=df_pareto[\"PERC_ACUM\"],\n                            mode=\"lines+markers\",\n                            name=\"% Acumulado\",\n                            text=[f\"{v:.1f}%\" for v in df_pareto[\"PERC_ACUM\"]],\n                            textposition=\"top center\",\n                            textfont=dict(size=11),\n                            hovertemplate=\n                                \"<b>%{x}</b><br>\" +\n                                \"% Acumulado: %{y:.1f}%<extra></extra>\",\n                        ),\n                        secondary_y=True,\n                    )\n        fig.update_yaxes(\n                            title_text=\"VNR (R$ milhões)\",\n                            secondary_y=False\n                        )\n    \n        max_vnr = df_pareto[\"VNR_MM\"].max()\n        fig.update_yaxes(\n                            title_text=\"% acumulado\",\n                            range=[0, max_vnr * 1.18],\n                            secondary_y=False\n                        )\n        fig.add_hline(\n                        y=80,\n                        line_dash=\"dash\",\n                        line_color=\"red\",\n                        secondary_y=True\n                    )\n        fig.update_layout(\n                            title={\n                                \"text\": \"Decomposição do VNR por motivo de avaliação\",\n                                \"x\": 0.5,\n                                \"xanchor\": \"center\",\n                                \"font\": {\n                                    \"size\": 18,\n                                    \"color\": \"#111111\"\n                                }\n                            }\n                        )\n        st.html(\"\"\"\n\n                        <h3>Decomposição do VNR por motivo de avaliação</h3>\n    \n                        <p style=\"text-align: justify;text-indent: 40px\">\n                        Espera-se que o <b>BPR</b> seja preponderante na composição do VNR,\n                        representando, em regra, mais de <b>50%</b> do valor analisado.\n                        Quando a participação do BPR é elevada, especialmente acima de <b>70%</b>,\n                        isso pode indicar que a empresa não apresentou volume relevante de\n                        <b>obras atípicas</b> ou uso de SisBASE que favorece o VNR. Nesses casos, \n                        o enquadramento pelo BPR pode ser vantajoso para a concessionária, pois a \n                        análise tende a não refletir situações atípicas que poderiam justificar \n                        valores inferiores ao BPR.\n                        <br><br>\n    \n                        Por outro lado, uma participação do BPR inferior a <b>50%</b> é um sinal\n                        de atenção. Nessa hipótese, recomenda-se verificar se há concentração\n                        relevante de <b>obras atípicas</b>, ausência ou baixa representatividade\n                        de compras enquadradas no BPR, possíveis erros de classificação na\n                        avaliação, ou ainda efeitos expressivos decorrentes de <b>doações</b> e\n                        <b>incorporações</b>.</p>\n\n                    \"\"\")\n        st.plotly_chart(fig, width='stretch')\n        fig.write_image(\n                            f\"{dir_FIG}/Distribuicao_MTD_VL.png\",\n                            width=1920,\n                            height=1080,\n                            scale=2\n                        )\n    return df_INCR, dir_FIG, df_ROA, df_ANLS_01, df_BPUAR, df_BAIXAS"
+    },
+    "documentacao": {
+      "resumo": "Processa dados de um banco de dados SQLite e gera relatórios visuais e tabelares.",
+      "descricao": "A função `_vis_001` realiza várias operações em um banco de dados SQLite, incluindo a carga de dados, processamento dos mesmos e a geração de gráficos e tabelas para análise. Ela utiliza várias funções auxiliares e bibliotecas como pandas, plotly e streamlit.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Caminho do arquivo SQLite."
+        },
+        {
+          "nome": "st",
+          "tipo": "objeto",
+          "categoria": "posicional",
+          "descricao": "Objeto streamlit para renderização de componentes interativos."
+        },
+        {
+          "nome": "empresa",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Nome da empresa."
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Caminho do segundo arquivo SQLite (opcional)."
+        },
+        {
+          "nome": "local",
+          "tipo": "str",
+          "categoria": "posicional",
+          "descricao": "Local onde os relatórios serão salvos."
+        }
+      ],
+      "retorno": {
+        "tipo": "tuple",
+        "itens": [
+          {
+            "nome": "df_INCR",
+            "tipo": "DataFrame",
+            "descricao": "DataFrame contendo dados incrementados."
+          },
+          {
+            "nome": "dir_FIG",
+            "tipo": "str",
+            "descricao": "Diretório onde os gráficos foram salvos."
+          },
+          {
+            "nome": "df_ROA",
+            "tipo": "DataFrame",
+            "descricao": "DataFrame contendo dados de ROA."
+          },
+          {
+            "nome": "df_ANLS_01",
+            "tipo": "DataFrame",
+            "descricao": "DataFrame com análise detalhada dos dados."
+          },
+          {
+            "nome": "df_BPUAR",
+            "tipo": "DataFrame",
+            "descricao": "DataFrame contendo dados de BPUAR."
+          },
+          {
+            "nome": "df_BAIXAS",
+            "tipo": "DataFrame",
+            "descricao": "DataFrame contendo dados de baixas."
+          }
+        ],
+        "descricao": "Retorna vários DataFrames e um diretório com os gráficos gerados."
+      },
+      "excecoes": [
+        {
+          "tipo": "UserWarning",
+          "descricao": "Lancado quando há erros na importação de dados do DuckDB."
+        }
+      ],
+      "dependencias": [
+        {
+          "nome": "UTILS.carga_sqlite_cache",
+          "categoria": "import"
+        },
+        {
+          "nome": "UTILS.existe_tabela",
+          "categoria": "import"
+        },
+        {
+          "nome": "UTILS.imp_tbl_forma_001",
+          "categoria": "import"
+        },
+        {
+          "nome": "UTILS.importar_dados_duckdb",
+          "categoria": "import"
+        },
+        {
+          "nome": "numpy",
+          "categoria": "import"
+        },
+        {
+          "nome": "os",
+          "categoria": "import"
+        },
+        {
+          "nome": "pandas",
+          "categoria": "import"
+        },
+        {
+          "nome": "plotly.graph_objects",
+          "categoria": "import"
+        },
+        {
+          "nome": "plotly.subplots.make_subplots",
+          "categoria": "import"
+        },
+        {
+          "nome": "sqlite3",
+          "categoria": "import"
+        },
+        {
+          "nome": "streamlit",
+          "categoria": "import"
+        }
+      ],
+      "docstring": "Processa dados de um banco de dados SQLite e gera relatórios visuais e tabelares.\n\nArgs:\n    bd_path (str): Caminho do arquivo SQLite.\n    st (objeto): Objeto streamlit para renderização de componentes interativos.\n    empresa (str): Nome da empresa.\n    bd_path2 (str): Caminho do segundo arquivo SQLite (opcional).\n    local (str): Local onde os relatórios serão salvos.\n\nReturns:\n    tuple: Retorna vários DataFrames e um diretório com os gráficos gerados.\n\nRaises:\n    UserWarning: Lancado quando há erros na importação de dados do DuckDB."
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_002",
+      "tipo": "function",
+      "linha_inicio": 382,
+      "linha_fim": 474,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_INCR",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "dir_FIG",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_ROA",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "pandas",
+          "plotly.express",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "agg",
+          "apply",
+          "df_ROA.groupby",
+          "fig.update_layout",
+          "fig.update_traces",
+          "fig.update_xaxes",
+          "fig.update_yaxes",
+          "fig.write_image",
+          "graf_atip.sort_values",
+          "map",
+          "max",
+          "pd.DataFrame",
+          "px.bar",
+          "replace",
+          "sl.connect",
+          "st.fragment",
+          "st.html",
+          "st.plotly_chart",
+          "sum"
+        ]
+      },
+      "codigo": "def _vis_002(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\", local = \"\", \n             df_INCR = pd.DataFrame(), dir_FIG = \"\", df_ROA = pd.DataFrame()):\n    if df_INCR.empty:\n        return\n    with sl.connect(bd_path) as bd:\n        graf_atip = (\n                        df_ROA.groupby(['Cd_ATIP'], as_index=False)\n                        .agg(VL_tot=('VL_tot', 'sum'))\n                    )\n        graf_atip['Perc'] = graf_atip['VL_tot'] / graf_atip['VL_tot'].sum()\n        graf_atip['VL_milhoes'] = graf_atip['VL_tot'] / 1_000_000\n        graf_atip = graf_atip.sort_values('VL_tot', ascending=True)\n        graf_atip['Label'] = (\n                                graf_atip['Cd_ATIP']\n                            )\n        graf_atip['Texto'] = (\n                                'R$ ' + graf_atip['VL_milhoes'].map(lambda x: f'{x:,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.')) +\n                                ' mi | ' +\n                                graf_atip['Perc'].map(lambda x: f'{x:.2%}'.replace('.', ','))\n                            )\n        graf_atip['Cor'] = graf_atip['Cd_ATIP'].apply(\n                                                        lambda x: 'Sem atipicidade' if x == 'Sem atipicidade' else 'Com atipicidade'\n                                                    )\n        fig = px.bar(\n                        graf_atip,\n                        x='VL_milhoes',\n                        y='Label',\n                        orientation='h',\n                        text='Texto',\n                        color='Cor',\n                        color_discrete_map={\n                            'Sem atipicidade': '#BDBDBD',\n                            'Com atipicidade': '#2F6DB3'\n                        },\n                        hover_data={\n                            'VL_tot': ':,.2f',\n                            'VL_milhoes': False,\n                            'Perc': ':.2%',\n                            'Cd_ATIP': True,\n                            'Label': False,\n                            'Cor': False,\n                            'Texto': False\n                        }\n                    )\n    \n        fig.update_traces(\n                            textposition='outside',\n                            marker_line_width=0,\n                            opacity=0.9\n                        )\n        \n        fig.update_layout(\n                            title={\n                                'text': 'Impacto das Atipicidades, usando ROA como referência',\n                                'x': 0.01,\n                                'xanchor': 'left'\n                            },\n                            xaxis_title='Valor total — R$ milhões',\n                            yaxis_title=None,\n                            template='plotly_white',\n                            height=550,\n                            showlegend=False\n                        )\n        xmax = graf_atip['VL_milhoes'].max() * 1.18\n        fig.update_xaxes(\n                            showgrid=True,\n                            range=[0, xmax],\n                            gridcolor='rgba(0,0,0,0.08)',\n                            zeroline=False\n                        )\n    \n        fig.update_yaxes(\n                                automargin=True\n                            )\n    \n        st.html(\n                    \"\"\"\n                    \n                        <h2\n                            Análise de impacto da atipicidade pelo ROA\n                        </h2>\n                        <p sstyle=\"text-align: justify;text-indent: 40px\">\n                            O gráfico abaixo apresenta o comportamento consolidado para as avaliações da atipicidade.\n                        </p>\n                    \"\"\", width='stretch'\n                )\n        st.plotly_chart(fig, width=\"stretch\")\n        fig.write_image(\n                            f\"{dir_FIG}/VL_ATIP_ROA.png\",\n                            width=1920,\n                            height=1080,\n                            scale=2\n                        )"
+    },
+    "documentacao": {
+      "resumo": "Gera um gráfico de barras mostrando o impacto das atipicidades usando ROA como referência.",
+      "descricao": "A função processa os dados fornecidos em `df_INCR` e `df_ROA`, calcula a porcentagem e valor total dos atipicidades, gera um gráfico de barras e exibe ele em uma interface Streamlit. Se `df_INCR` estiver vazio, a função retorna sem fazer nada.",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o banco de dados SQLite."
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit para renderizar a interface gráfica."
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Nome da empresa (não utilizado no código)."
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Caminho para o segundo banco de dados SQLite (não utilizado no código)."
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Localização (não utilizado no código)."
+        },
+        {
+          "nome": "df_INCR",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo os dados de atipicidade."
+        },
+        {
+          "nome": "dir_FIG",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "Diretório onde o gráfico será salvo como imagem."
+        },
+        {
+          "nome": "df_ROA",
+          "tipo": null,
+          "categoria": "posicional",
+          "descricao": "DataFrame contendo os dados de ROA."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "imports": [
+            "pandas",
+            "plotly.express",
+            "sqlite3",
+            "streamlit"
+          ],
+          "chamadas": [
+            "agg",
+            "apply",
+            "df_ROA.groupby",
+            "fig.update_layout",
+            "fig.update_traces",
+            "fig.update_xaxes",
+            "fig.update_yaxes",
+            "fig.write_image",
+            "graf_atip.sort_values",
+            "map",
+            "max",
+            "pd.DataFrame",
+            "px.bar",
+            "replace",
+            "sl.connect",
+            "st.fragment",
+            "st.html",
+            "st.plotly_chart",
+            "sum"
+          ]
+        }
+      ],
+      "docstring": "Gera um gráfico de barras mostrando o impacto das atipicidades usando ROA como referência.\n\nArgs:\n    bd_path (str): Caminho para o banco de dados SQLite.\n    st (object): Objeto Streamlit para renderizar a interface gráfica.\n    empresa (str): Nome da empresa (não utilizado no código).\n    bd_path2 (str): Caminho para o segundo banco de dados SQLite (não utilizado no código).\n    local (str): Localização (não utilizado no código).\n    df_INCR (DataFrame): DataFrame contendo os dados de atipicidade.\n    dir_FIG (str): Diretório onde o gráfico será salvo como imagem.\n    df_ROA (DataFrame): DataFrame contendo os dados de ROA.\n\nReturns:\n    None"
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_003",
+      "tipo": "function",
+      "linha_inicio": 477,
+      "linha_fim": 1523,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_INCR",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "dir_FIG",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_ROA",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_ANLS_01",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_BPUAR",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "UTILS.max_arq",
+          "html",
+          "numpy",
+          "pandas",
+          "plotly.express",
+          "plotly.graph_objects",
+          "plotly.subplots.make_subplots",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "abs",
+          "agg",
+          "astype",
+          "between",
+          "copy",
+          "cores_abc.get",
+          "cumsum",
+          "datas_compra.diff",
+          "df_ANLS_01b.copy",
+          "df_ANLS_01b.merge",
+          "df_BPEC.copy",
+          "df_BPEC.groupby",
+          "df_BPEC.sort_values",
+          "df_deltas.groupby",
+          "df_deltas.sort_values",
+          "df_deltas1.sort_values",
+          "df_item.copy",
+          "df_item.groupby",
+          "df_mat.groupby",
+          "df_outlier.sort_values",
+          "df_plot.get",
+          "df_plot.groupby",
+          "df_plot_item.sort_values",
+          "df_representativo.sort_values",
+          "df_risco.sort_values",
+          "df_tabela_abc.iterrows",
+          "dict",
+          "drop_duplicates",
+          "dropna",
+          "dt.days.dropna",
+          "dt.to_period",
+          "dt.to_timestamp",
+          "fig.add_trace",
+          "fig.update_layout",
+          "fig.write_image",
+          "fig_deltas.add_annotation",
+          "fig_deltas.add_hrect",
+          "fig_deltas.update_layout",
+          "fig_deltas.update_traces",
+          "fig_out.add_vline",
+          "fig_out.update_layout",
+          "fig_out.update_traces",
+          "fig_rep.update_layout",
+          "fig_rep.update_traces",
+          "fillna",
+          "go.Bar",
+          "go.Figure",
+          "go.Scatter",
+          "groupby",
+          "html.escape",
+          "intervalos.max",
+          "intervalos.mean",
+          "isin",
+          "join",
+          "len",
+          "make_subplots",
+          "map",
+          "max",
+          "max_arq",
+          "mean",
+          "min",
+          "notna",
+          "np.maximum",
+          "np.minimum",
+          "np.select",
+          "np.where",
+          "nunique",
+          "ordem_sisbase.groupby",
+          "pd.DataFrame",
+          "pd.notna",
+          "pd.read_sql",
+          "pd.to_datetime",
+          "pd.to_numeric",
+          "px.bar",
+          "rename",
+          "replace",
+          "reset_index",
+          "sl.connect",
+          "sort_values",
+          "sorted",
+          "st.dataframe",
+          "st.fragment",
+          "st.html",
+          "st.plotly_chart",
+          "std",
+          "str",
+          "sum",
+          "tolist",
+          "unique"
+        ]
+      },
+      "codigo": "def _vis_003(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\", local = \"\", \n             df_INCR = pd.DataFrame(), dir_FIG = \"\", df_ROA = pd.DataFrame(),\n             df_ANLS_01 = pd.DataFrame(), df_BPUAR = pd.DataFrame()):\n    if df_ANLS_01.empty:\n        return\n    with sl.connect(bd_path) as bd:\n        st.html(\n                    \"\"\"\n                        <h2>\n                            Análise de Desvios e Tendência Combinada\n                        </h2>\n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            O gráfico abaixo apresenta o comportamento consolidado para as avaliações do tipo \n                            <span style=\"background-color: #e8f0fe; color: #1a73e8; padding: 2px 6px; border-radius: 4px; font-weight: 500; font-size: 0.85rem;\">Cd_TP_AVAL: BPR</span>. \n                            As barras indicam o <b>Delta Individual</b> de cada SisBase, permitindo identificar oscilações pontuais, \n                            enquanto a curva tracejada reflete a <b>Tendência Acumulada</b> progressiva, ordenada para destacar a trajetória macro dos desvios.\n                        </p>\n                    \"\"\", width='stretch'\n                )\n        df_deltas = df_ANLS_01[df_ANLS_01[\"Cd_TP_AVAL\"].astype(str) == \"2\"].copy()\n        df_deltas[\"Cd_SISBASE\"] = df_deltas[\"Cd_SISBASE\"].astype(str)\n    \n        df_deltas1 = (\n                        df_deltas.groupby(\"Cd_SISBASE\")[\"VAR_ABS\"].sum().reset_index()\n                    )\n    \n        df_deltas1 = df_deltas1.sort_values(by=\"VAR_ABS\", ascending=True)\n        df_deltas1[\"ACC_ABS\"] = df_deltas1[\"VAR_ABS\"].cumsum()\n    \n        df_deltas1 = df_deltas1.sort_values(by=\"ACC_ABS\", ascending=True)\n    \n    \n        cores = [\n                    \"#2b5c8f\" if val >= 0 else \"#e06d53\" for val in df_deltas1[\"VAR_ABS\"]\n                ]\n    \n    \n        fig = make_subplots(specs=[[{\"secondary_y\": True}]])\n    \n    \n        fig.add_trace(\n                        go.Bar(\n                            x=df_deltas1[\"Cd_SISBASE\"],\n                            y=df_deltas1[\"VAR_ABS\"],\n                            name=\"Delta Individual\",\n                            marker_color=cores,\n                            text=[f\"{val:+,.0f}\" for val in df_deltas1[\"VAR_ABS\"]],\n                            textposition=\"outside\",\n                            hovertemplate=\"<b>Sistema: %{x}</b><br>Delta: %{y:+,.2f}<extra></extra>\",\n                        ),\n                        secondary_y=False,\n                    )\n    \n        fig.add_trace(\n                        go.Scatter(\n                            x=df_deltas1[\"Cd_SISBASE\"],\n                            y=df_deltas1[\"ACC_ABS\"],\n                            name=\"Total Acumulado\",\n                            mode=\"lines+markers\",\n                            line=dict(\n                                color=\"#222222\", width=3, dash=\"dash\"\n                            ),\n                            marker=dict(size=8, color=\"#222222\", symbol=\"circle\"),\n                            hovertemplate=\"<b>Acumulado até %{x}:</b><br>%{y:,.2f}<extra></extra>\",\n                        ),\n                        secondary_y=True,\n                    )\n    \n    \n        fig.update_layout(\n                            title={\n                                \"text\": \"Análise Combinada: Deltas vs. Evolução Acumulada\",\n                                \"y\": 0.95,\n                                \"x\": 0.5,\n                                \"xanchor\": \"center\",\n                                \"font\": {\"size\": 18, \"color\": \"#111111\"},\n                            },\n                            paper_bgcolor=\"rgba(0,0,0,0)\",\n                            plot_bgcolor=\"rgba(0,0,0,0)\",\n                            xaxis=dict(\n                                title=\"Código Sisbase (Cd_SISBASE)\",\n                                type=\"category\",\n                                tickangle=-45,\n                            ),\n                            yaxis=dict(\n                                title=\"Delta Individual (VAR_ABS)\",\n                                showgrid=True,\n                                gridcolor=\"#eeeeee\",\n                                zeroline=True,\n                                zerolinecolor=\"#999999\",\n                                zerolinewidth=1.5,\n                            ),\n                            yaxis2=dict(\n                                title=\"Tendência Acumulada (ACC_ABS)\",\n                                showgrid=False,\n                            ),\n                            legend=dict(\n                                orientation=\"h\", yanchor=\"bottom\", y=1.05, xanchor=\"right\", x=1\n                            ),\n                            margin=dict(l=60, r=60, t=100, b=80),\n                            height=600,\n                        )\n        st.plotly_chart(fig, width='stretch')\n        fig.write_image(\n                            f\"{dir_FIG}/EVL_ACM_SISBASE.png\",\n                            width=1920,\n                            height=1080,\n                            scale=2\n                        )\n    \n        df_deltas = df_ANLS_01[df_ANLS_01[\"Cd_TP_AVAL\"].astype(str) == \"2\"].copy()\n        df_deltas[\"Cd_SISBASE\"] = df_deltas[\"Cd_SISBASE\"].astype(str)\n        \n        df_deltas = df_deltas.sort_values(by=[\"VAR_ABS\"], ascending=False)\n        \n        cores = [\n                    \"#2b5c8f\" if val >= 0 else \"#e06d53\" for val in df_deltas[\"VAR_ABS\"]\n                ]\n    \n        fig_deltas = go.Figure(\n                                go.Bar(\n                                    x=df_deltas[\"Cd_SISBASE\"].astype(str),\n                                    y=df_deltas[\"VAR_ABS\"],\n                                    marker_color=cores, \n                                    text=[f\"{val:+,.0f}\" for val in df_deltas[\"VAR_ABS\"]],\n                                    textposition=\"outside\",\n                                    hovertemplate=\"<b>Sistema: %{x}</b><br>Delta: %{y:+,.2f}<extra></extra>\",\n                                )\n                            )\n        fig_deltas.update_layout(\n                                    title={\n                                        \"text\": \"Variação Absoluta (Deltas) por Cd_Sisbase\",\n                                        \"y\": 0.95,\n                                        \"x\": 0.5,\n                                        \"xanchor\": \"center\",\n                                        \"font\": {\"size\": 18, \"color\": \"#111111\"},\n                                    },\n                                    paper_bgcolor=\"rgba(0,0,0,0)\",  # Fundo transparente para o Streamlit\n                                    plot_bgcolor=\"rgba(0,0,0,0)\",\n                                    xaxis=dict(\n                                        title=\"Código Sisbase (Cd_Sisbase)\",\n                                        type=\"category\",\n                                        tickangle=-45,\n                                        linecolor=\"#cccccc\",\n                                    ),\n                                    yaxis=dict(\n                                        title=\"Delta (VAR_ABS)\",\n                                        showgrid=True,\n                                        gridcolor=\"#eeeeee\",\n                                        zeroline=True,\n                                        zerolinecolor=\"#999999\",\n                                        zerolinewidth=1.5,\n                                    ),\n                                    margin=dict(l=60, r=40, t=80, b=80),\n                                    height=550,\n                                )\n        \n        st.html(\n                    \"\"\"\n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            O gráfico abaixo, por sua vez, apresenta o comportamento aberto para as avaliações do tipo \n                            <span style=\"background-color: #e8f0fe; color: #1a73e8; padding: 2px 6px; border-radius: 4px; font-weight: 500; font-size: 0.85rem;\">Cd_TP_AVAL: BPR</span>. \n                            As barras indicam o <b>Delta Individual</b> de cada SisBase.\n                        </p>\n                    \"\"\", width='stretch'\n                )\n        st.plotly_chart(fig_deltas, width='stretch')\n        fig.write_image(\n                            f\"{dir_FIG}/VAR_ABS_SISBASE.png\",\n                            width=1920,\n                            height=1080,\n                            scale=2\n                        )\n    \n        st.html(\n                    \"\"\"\n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            O gráfico abaixo apresenta a decomposição da <b>variação absoluta</b> observada nas avaliações do tipo \n                            <span style=\"background-color: #e8f0fe; color: #1a73e8; padding: 2px 6px; border-radius: 4px; font-weight: 500; font-size: 0.85rem;\">Cd_TP_AVAL: BPR</span>, \n                            considerando simultaneamente o <b>material instalado</b> e os custos associados à sua instalação. \n                            Cada barra horizontal representa um <b>Cd_SISBASE</b>, que consolida o custo de mão de obra e de componentes menores utilizados no processo de instalação, \n                            enquanto as segmentações internas da barra indicam a contribuição de cada <b>Id_BP</b>, correspondente ao material instalado.\n                            Como a quantidade de materiais pode ser elevada, a legenda foi removida para preservar a leitura visual do gráfico; \n                            a identificação de cada <b>Id_BP</b> pode ser consultada diretamente ao posicionar o cursor sobre os segmentos da barra.\n                        </p>\n                    \"\"\",\n                    width=\"stretch\"\n                )\n    \n        df_deltas = df_ANLS_01[df_ANLS_01[\"Cd_TP_AVAL\"].astype(str) == \"2\"].copy()\n        df_deltas[\"Cd_SISBASE\"] = df_deltas[\"Cd_SISBASE\"].astype(str)\n        df_deltas[\"Id_BP\"] = df_deltas[\"Id_BP\"].astype(str)\n        df_deltas[\"Nr_TI\"] = df_deltas[\"Nr_TI\"].astype(str)\n    \n        df_plot = (\n                        df_deltas\n                        .groupby([\"Nr_TI\", \"Cd_SISBASE\", \"Id_BP\"], as_index=False)[\"VAR_ABS\"]\n                        .sum()\n                        .sort_values([\"Nr_TI\", \"VAR_ABS\"], ascending=[True, True])\n                    )\n    \n        ordem_sisbase = (\n                            df_plot\n                            .groupby([\"Nr_TI\", \"Cd_SISBASE\"])[\"VAR_ABS\"]\n                            .sum()\n                            .reset_index()\n                            .sort_values([\"Nr_TI\", \"VAR_ABS\"], ascending=[True, True])\n                        )\n    \n        ordem_sisbase_lista = ordem_sisbase[\"Cd_SISBASE\"].tolist()\n    \n        fig_deltas = px.bar(\n                                df_plot,\n                                x=\"VAR_ABS\",\n                                y=\"Cd_SISBASE\",\n                                color=\"Id_BP\",\n                                orientation=\"h\",\n                                category_orders={\"Cd_SISBASE\": ordem_sisbase_lista},\n                                text=df_plot[\"VAR_ABS\"].map(lambda v: f\"{v:+,.0f}\"),\n                                title=\"Variação Absoluta por Cd_Sisbase e Id_BP\",\n                                labels={\n                                    \"VAR_ABS\": \"Delta (VAR_ABS)\",\n                                    \"Cd_SISBASE\": \"Código Sisbase\",\n                                    \"Id_BP\": \"Id_BP\"\n                                },\n                            )\n        \n        cores_faixa = [\n                        \"rgba(173,216,230,1)\",\n                        \"rgba(245,245,245,1)\"\n                    ]\n    \n        ifaixa = 0\n        for nr_ti, grupo in ordem_sisbase.groupby(\"Nr_TI\", sort=False):\n    \n            primeiro_sisbase = grupo[\"Cd_SISBASE\"].iloc[0]\n            ultimo_sisbase = grupo[\"Cd_SISBASE\"].iloc[-1]\n    \n            fig_deltas.add_hrect(\n                                    y0=primeiro_sisbase,\n                                    y1=ultimo_sisbase,\n                                    fillcolor=cores_faixa[ifaixa % 2],\n                                    opacity=0.10,\n                                    layer=\"below\",\n                                    line_width=3,\n                                    line_color=\"black\",\n                                )\n    \n            fig_deltas.add_annotation(\n                                        x=1.01,\n                                        xref=\"paper\",\n                                        y=grupo[\"Cd_SISBASE\"].iloc[len(grupo) // 2],\n                                        yref=\"y\",\n                                        text=f\"{nr_ti}\",\n                                        showarrow=False,\n                                        xanchor=\"left\",\n                                        font=dict(size=11),\n                                    )\n            ifaixa += 1\n    \n        fig_deltas.update_traces(\n                                    hovertemplate=\n                                    \"<b>SisBase:</b> %{y}<br>\" +\n                                    \"<b>Id_BP:</b> %{fullData.name}<br>\" +\n                                    \"<b>Delta:</b> %{x:+,.2f}<extra></extra>\"\n                                )\n    \n        fig_deltas.update_layout(\n                                    barmode=\"relative\",\n                                    paper_bgcolor=\"rgba(0,0,0,0)\",\n                                    plot_bgcolor=\"rgba(0,0,0,0)\",\n                                    xaxis=dict(\n                                        title=\"Delta (VAR_ABS)\",\n                                        showgrid=True,\n                                        gridcolor=\"#eeeeee\",\n                                        zeroline=True,\n                                        zerolinecolor=\"#999999\",\n                                        zerolinewidth=1.5,\n                                    ),\n                                    yaxis=dict(\n                                        title=\"Código Sisbase (Cd_SISBASE)\",\n                                        type=\"category\",\n                                    ),\n                                    showlegend=False,\n                                    margin=dict(l=120, r=40, t=90, b=60),\n                                    height=max(550, 22 * df_plot[\"Cd_SISBASE\"].nunique()),\n                                )\n    \n    \n        st.plotly_chart(fig_deltas, width=\"stretch\")\n        fig.write_image(\n                            f\"{dir_FIG}/VAR_ABS_SISBASE_idBP.png\",\n                            width=1920,\n                            height=1080,\n                            scale=2\n                        )\n    \n        st.html(\n                    \"\"\"\n\n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            Os dados tabulares empregados são apresentados abaixo.\n                        </p>\n                    \"\"\", width='stretch'\n                )\n        st.dataframe(df_ANLS_01, width='stretch', hide_index=True)\n    \n        df_ANLS_01['VL_VF_AT'] = df_ANLS_01['VL_VF_UNIT_AT'] * df_ANLS_01['Qtd']\n        df_ANLS_01b = (df_ANLS_01[df_ANLS_01[\"Cd_TP_AVAL\"].astype(str) == \"2\"]\n                    .groupby(['Id_BP', 'Cd_UND_AIS'], dropna=False)[['Qtd_AIS','VL_VOC_VFa','Qtd','VL_VF_AT']]\n                    .sum()\n                    .reset_index()\n                    .rename(columns={'Qtd':'Qtd_BPUAR'}))\n        df_PROV = df_INCR[['Id_BP', 'Txt_DESC_TECN']].drop_duplicates(subset=['Id_BP'], keep='first')\n        df_ANLS_01b = df_ANLS_01b.merge(df_PROV, how='left', on = 'Id_BP')\n        df_ANLS_01b['VL_VF_VOC_UNIT_AT'] = df_ANLS_01b['VL_VOC_VFa'] / df_ANLS_01b['Qtd_AIS']\n        df_ANLS_01b['VL_VF_UNIT_AT'] = df_ANLS_01b['VL_VF_AT'] / (df_ANLS_01b['Qtd_BPUAR'] + 1e-4)\n        df_ANLS_01b = df_ANLS_01b[['Id_BP', 'Txt_DESC_TECN', 'Cd_UND_AIS','Qtd_AIS','VL_VF_VOC_UNIT_AT','Qtd_BPUAR','VL_VF_UNIT_AT']]\n    \n    \n        df_mat = df_ANLS_01b.copy()\n    \n        cols_num = [\n                        \"VL_VF_VOC_UNIT_AT\",\n                        \"VL_VF_UNIT_AT\",\n                        \"Qtd_AIS\",\n                        \"Qtd_BPUAR\",\n                    ]\n    \n        df_mat[\"Id_BP\"] = df_mat[\"Id_BP\"].astype(str)\n        df_mat[\"Txt_DESC_TECN\"] = df_mat[\"Txt_DESC_TECN\"].astype(str)\n    \n        df_plot = (\n                        df_mat\n                        .groupby([\"Id_BP\", \"Txt_DESC_TECN\"], as_index=False)\n                        .agg(\n                            VL_VF_VOC_UNIT_AT=(\"VL_VF_VOC_UNIT_AT\", \"mean\"),\n                            VL_VF_UNIT_AT=(\"VL_VF_UNIT_AT\", \"mean\"),\n                            Qtd_AIS=(\"Qtd_AIS\", \"sum\"),\n                            Qtd_BPUAR=(\"Qtd_BPUAR\", \"sum\"),\n                        )\n                    )\n    \n        df_plot[\"DELTA_UNIT\"] = (\n                                    df_plot[\"VL_VF_UNIT_AT\"] - df_plot[\"VL_VF_VOC_UNIT_AT\"]\n                                )\n    \n        df_plot[\"VAR_PERC_UNIT\"] = np.where(\n                                                df_plot[\"VL_VF_VOC_UNIT_AT\"] != 0,\n                                                (df_plot[\"VL_VF_UNIT_AT\"] / df_plot[\"VL_VF_VOC_UNIT_AT\"] - 1) * 100,\n                                                np.nan\n                                            )\n    \n        df_plot[\"PESO_COMPRAS_PERC\"] = np.where(\n                                                    df_plot[\"Qtd_AIS\"] != 0,\n                                                    (df_plot[\"Qtd_BPUAR\"] / df_plot[\"Qtd_AIS\"]) * 100,\n                                                    np.nan\n                                                )\n    \n        df_plot[\"ADERENCIA_VOLUME\"] = np.where(\n                                                    (df_plot[\"Qtd_AIS\"] > 0) & (df_plot[\"Qtd_BPUAR\"] > 0),\n                                                    np.minimum(df_plot[\"Qtd_AIS\"], df_plot[\"Qtd_BPUAR\"])\n                                                    / np.maximum(df_plot[\"Qtd_AIS\"], df_plot[\"Qtd_BPUAR\"]),\n                                                    0\n                                                )\n    \n        df_plot[\"ADERENCIA_VOLUME_PERC\"] = df_plot[\"ADERENCIA_VOLUME\"] * 100\n        df_plot[\"IMPACTO_POTENCIAL\"] = (\n                                            df_plot[\"DELTA_UNIT\"] * df_plot[\"Qtd_AIS\"]\n                                        )\n        LIMIAR_REPRESENTATIVIDADE = 0.50\n    \n        df_plot[\"LIMIAR_REPRESENTATIVIDADE\"] = (\n                                                    df_plot[\"ADERENCIA_VOLUME\"] < LIMIAR_REPRESENTATIVIDADE\n                                                )\n        \n        df_plot[\"FAIXA_ADERENCIA\"] = np.select(\n                                                [\n                                                    df_plot[\"PESO_COMPRAS_PERC\"].between(80, 120),\n    \n                                                    (\n                                                        df_plot[\"PESO_COMPRAS_PERC\"].between(50, 80, inclusive=\"left\")\n                                                    ) | (\n                                                        df_plot[\"PESO_COMPRAS_PERC\"].between(120, 150, inclusive=\"right\")\n                                                    ),\n    \n                                                    (\n                                                        df_plot[\"PESO_COMPRAS_PERC\"].between(20, 50, inclusive=\"left\")\n                                                    ) | (\n                                                        df_plot[\"PESO_COMPRAS_PERC\"].between(150, 300, inclusive=\"right\")\n                                                    ),\n                                                ],\n                                                [\n                                                    \"Alta\",\n                                                    \"Moderada\",\n                                                    \"Baixa\",\n                                                ],\n                                                default=\"Crítica\"\n                                            )\n    \n        cores_aderencia = {\n                                \"Alta\": \"#2b8a3e\",\n                                \"Moderada\": \"#aff04e\",\n                                \"Baixa\": \"#fdbf14\",\n                                \"Crítica\": \"#fc0303\"\n                            }\n        df_representativo = df_plot[\n                                        ~df_plot[\"LIMIAR_REPRESENTATIVIDADE\"]\n                                    ].copy()\n    \n        df_outlier = df_plot[\n                                df_plot[\"LIMIAR_REPRESENTATIVIDADE\"]\n                            ].copy()\n        st.html(\n                    f\"\"\"\n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            A análise a seguir busca avaliar a representatividade do preço de compra dos materiais frente ao volume \n                            efetivamente imobilizado. Para isso, calcula-se uma métrica de aderência entre o volume comprado \n                            (<b>Qtd_BPUAR</b>) e o volume instalado (<b>Qtd_AIS</b>), considerando a razão entre o menor e o maior \n                            volume observado. Dessa forma, situações em que compras e imobilizações apresentam magnitudes semelhantes \n                            tendem a possuir alta aderência, enquanto diferenças relevantes entre esses volumes reduzem a \n                            representatividade do preço de aquisição como referência para o custo instalado.\n    \n                            Com base nesse indicador, os materiais foram segmentados utilizando um limiar de aderência de <b>50%</b>. \n                            Acima desse patamar, considera-se que o preço de compra possui representatividade suficiente para \n                            suportar análises econômicas da base instalada. Abaixo desse limite, recomenda-se análise \n                            dos resultados, uma vez que os volumes movimentados no período podem não refletir adequadamente a \n                            composição do ativo imobilizado.\n    \n                            A aderência entre os volumes comprados e imobilizados descreve sobre a eficiência do ciclo de utilização \n                            dos materiais. Baixos níveis de aderência podem indicar que parte relevante dos itens adquiridos permanece \n                            em estoque ou em ordens em curso por períodos prolongados antes de seu reconhecimento tarifário, ou, em \n                            sentido contrário, que as imobilizações estão sendo realizadas com base em estoques constituídos em \n                            ciclos anteriores.\n    \n                            Sob a perspectiva gerencial, a redução do intervalo entre a aquisição dos materiais e sua efetiva \n                            imobilização tende a aumentar a aderência observada, tornando os preços de compra mais representativos \n                            dos investimentos realizados. Além de melhorar a qualidade das análises econômicas e da formação de \n                            custos, reduzindo capital imobilizado, custos de armazenagem, riscos de obsolescência e distorções entre \n                            os movimentos de compra e a execução dos investimentos e os custos reconhecidos na base.\n    \n                        </p>\n                    \"\"\",\n                    width=\"stretch\"\n                )\n    \n        df_rep_plot = df_representativo.sort_values(\n                                                        \"IMPACTO_POTENCIAL\",\n                                                        ascending=True\n                                                    )\n        df_rep_plot[\"COR\"] = (\n                                df_rep_plot[\"FAIXA_ADERENCIA\"]\n                                .map(cores_aderencia)\n                            )\n        fig_rep = px.bar(\n                            df_rep_plot,\n                            x=\"IMPACTO_POTENCIAL\",\n                            y=\"Id_BP\",\n                            orientation=\"h\",\n                            custom_data=[\n                                \"Txt_DESC_TECN\",\n                                \"VL_VF_VOC_UNIT_AT\",\n                                \"VL_VF_UNIT_AT\",\n                                \"DELTA_UNIT\",\n                                \"VAR_PERC_UNIT\",\n                                \"Qtd_AIS\",\n                                \"Qtd_BPUAR\",\n                                \"PESO_COMPRAS_PERC\",\n                                \"ADERENCIA_VOLUME_PERC\",\n                            ],\n                            title=\"Materiais representativos: impacto potencial da variação de preço\",\n                            labels={\n                                \"IMPACTO_POTENCIAL\": \"Impacto potencial\",\n                                \"Id_BP\": \"Material instalado\",\n                                \"color\": \"\",\n                            },\n                        )\n    \n        fig_rep.update_traces(\n                                    text=df_rep_plot[\"IMPACTO_POTENCIAL\"].map(lambda v: f\"{v:+,.0f}\"),\n                                    textposition=\"outside\",\n                                    marker_color=df_rep_plot[\"COR\"],\n                                    hovertemplate=\n                                        \"<b>Material instalado:</b> %{y}<br>\"\n                                        \"<b>Descrição:</b> %{customdata[0]}<br><br>\"\n                                        \"<b>Impacto potencial:</b> %{x:+,.2f}<br>\"\n                                        \"<b>Custo unitizado instalado:</b> %{customdata[1]:,.2f}<br>\"\n                                        \"<b>Custo médio aquisição:</b> %{customdata[2]:,.2f}<br>\"\n                                        \"<b>Delta unitário:</b> %{customdata[3]:+,.2f}<br>\"\n                                        \"<b>Variação unitária:</b> %{customdata[4]:+,.2f}%<br><br>\"\n                                        \"<b>Qtd imobilizada:</b> %{customdata[5]:,.2f}<br>\"\n                                        \"<b>Qtd compras:</b> %{customdata[6]:,.2f}<br>\"\n                                        \"<b>Peso compras/base:</b> %{customdata[7]:,.2f}%<br>\"\n                                        \"<b>Aderência de volume:</b> %{customdata[8]:,.2f}%\"\n                                        \"<extra></extra>\"\n                                )\n    \n        fig_rep.update_layout(\n                                showlegend=False,\n                                paper_bgcolor=\"rgba(0,0,0,0)\",\n                                plot_bgcolor=\"rgba(0,0,0,0)\",\n                                xaxis=dict(\n                                    title=\"Impacto potencial = Delta unitário × Qtd_AIS\",\n                                    showgrid=True,\n                                    gridcolor=\"#eeeeee\",\n                                    zeroline=True,\n                                    zerolinecolor=\"#999999\",\n                                    zerolinewidth=1.5,\n                                ),\n                                yaxis=dict(\n                                    title=\"Material instalado (Id_BP)\",\n                                    type=\"category\",\n                                ),\n                                margin=dict(l=160, r=60, t=90, b=80),\n                                height=max(550, 22 * df_rep_plot[\"Id_BP\"].nunique()),\n                            )\n    \n        st.plotly_chart(fig_rep, width=\"stretch\")\n    \n        df_out_plot = df_outlier.sort_values(\n                                                \"ADERENCIA_VOLUME_PERC\",\n                                                ascending=True\n                                            )\n    \n        fig_out = px.bar(\n                            df_out_plot,\n                            x=\"ADERENCIA_VOLUME_PERC\",\n                            y=\"Id_BP\",\n                            orientation=\"h\",\n                            custom_data=[\n                                \"Txt_DESC_TECN\",\n                                \"Qtd_AIS\",\n                                \"Qtd_BPUAR\",\n                                \"PESO_COMPRAS_PERC\",\n                                \"VL_VF_VOC_UNIT_AT\",\n                                \"VL_VF_UNIT_AT\",\n                                \"VAR_PERC_UNIT\",\n                                \"IMPACTO_POTENCIAL\",\n                            ],\n                            title=\"Materiais não representativos: baixa aderência entre compras e imobilização\",\n                            labels={\n                                \"ADERENCIA_VOLUME_PERC\": \"Aderência de volume (%)\",\n                                \"Id_BP\": \"Material instalado\",\n                            },\n                        )\n    \n        fig_out.update_traces(\n                                    marker_color=\"#e06d53\",\n                                    text=df_out_plot[\"ADERENCIA_VOLUME_PERC\"].map(lambda v: f\"{v:,.1f}%\"),\n                                    textposition=\"outside\",\n                                    hovertemplate=\n                                        \"<b>Material instalado:</b> %{y}<br>\"\n                                        \"<b>Descrição:</b> %{customdata[0]}<br><br>\"\n                                        \"<b>Aderência de volume:</b> %{x:,.2f}%<br>\"\n                                        \"<b>Qtd imobilizada:</b> %{customdata[1]:,.2f}<br>\"\n                                        \"<b>Qtd compras:</b> %{customdata[2]:,.2f}<br>\"\n                                        \"<b>Peso compras/base:</b> %{customdata[3]:,.2f}%<br><br>\"\n                                        \"<b>Custo unitizado instalado:</b> %{customdata[4]:,.2f}<br>\"\n                                        \"<b>Custo médio aquisição:</b> %{customdata[5]:,.2f}<br>\"\n                                        \"<b>Variação unitária:</b> %{customdata[6]:+,.2f}%<br>\"\n                                        \"<b>Impacto potencial:</b> %{customdata[7]:+,.2f}\"\n                                        \"<extra></extra>\"\n                                )\n    \n        fig_out.add_vline(\n                            x=LIMIAR_REPRESENTATIVIDADE * 100,\n                            line_width=2,\n                            line_dash=\"dash\",\n                            line_color=\"#999999\",\n                            annotation_text=f\"Limite Representatividade: {LIMIAR_REPRESENTATIVIDADE:.2%}\",\n                            annotation_position=\"top right\"\n                        )\n    \n        fig_out.update_layout(\n                                showlegend=False,\n                                paper_bgcolor=\"rgba(0,0,0,0)\",\n                                plot_bgcolor=\"rgba(0,0,0,0)\",\n                                xaxis=dict(\n                                    title=\"Aderência = min(Qtd_AIS, Qtd_BPUAR) / max(Qtd_AIS, Qtd_BPUAR)\",\n                                    range=[0, max(5, min(100, LIMIAR_REPRESENTATIVIDADE * 100 * 1.4))],\n                                    showgrid=True,\n                                    gridcolor=\"#eeeeee\",\n                                    zeroline=True,\n                                    zerolinecolor=\"#999999\",\n                                ),\n                                yaxis=dict(\n                                    title=\"Material instalado (Id_BP)\",\n                                    type=\"category\",\n                                ),\n                                margin=dict(l=160, r=60, t=90, b=80),\n                                height=max(450, 24 * df_out_plot[\"Id_BP\"].nunique()),\n                            )\n    \n        st.plotly_chart(fig_out, width=\"stretch\")\n        faixas_risco = [\"Baixa\", \"Crítica\"]\n        df_risco = df_plot[\n                                (\n                                    df_plot[\"FAIXA_ADERENCIA\"].isin(faixas_risco)\n                                )\n                                | (\n                                    df_plot.get(\"OUTLIER_REPRESENTATIVIDADE\", False)\n                                )\n                            ].copy()\n    \n        df_risco[\"IMPACTO_ABS\"] = df_risco[\"IMPACTO_POTENCIAL\"].abs()\n        df_risco = df_risco.sort_values(\n                                            \"IMPACTO_ABS\",\n                                            ascending=False\n                                        )\n        total = df_risco[\"IMPACTO_ABS\"].sum()\n        df_risco[\"PARTICIPACAO\"] = (\n                                        df_risco[\"IMPACTO_ABS\"] / total\n                                    )\n        df_risco[\"PARTICIPACAO_ACUM\"] = (\n                                            df_risco[\"PARTICIPACAO\"].cumsum()\n                                        )\n        df_risco[\"CLASSE_ABC\"] = np.select(\n                                            [\n                                                df_risco[\"PARTICIPACAO_ACUM\"] <= 0.80,\n                                                df_risco[\"PARTICIPACAO_ACUM\"] <= 0.95,\n                                            ],\n                                            [\n                                                \"A\",\n                                                \"B\",\n                                            ],\n                                            default=\"C\"\n                                        )\n        \n        df_tabela_abc = (\n                            df_risco[\n                                [\"Id_BP\", \"Txt_DESC_TECN\", \"IMPACTO_ABS\", \"CLASSE_ABC\"]\n                            ]\n                            .sort_values([\"CLASSE_ABC\", \"IMPACTO_ABS\"], ascending=[True, False])\n                            .copy()\n                        )\n    \n        cores_abc = {\n                        \"A\": {\"bg\": \"#fdecea\", \"fg\": \"#b42318\"},\n                        \"B\": {\"bg\": \"#fff4e5\", \"fg\": \"#b54708\"},\n                        \"C\": {\"bg\": \"#eaf7ef\", \"fg\": \"#1f7a3f\"},\n                    }\n    \n        linhas_html = \"\"\n    \n        for _, row in df_tabela_abc.iterrows():\n            classe = row[\"CLASSE_ABC\"]\n            cor = cores_abc.get(classe, {\"bg\": \"#f2f4f7\", \"fg\": \"#344054\"})\n    \n            linhas_html += f\"\"\"\n                                <tr>\n                                    <td>{html.escape(str(row[\"Id_BP\"]))}</td>\n                                    <td>{html.escape(str(row[\"Txt_DESC_TECN\"]))}</td>\n                                    <td style=\"text-align:right;\">{row[\"IMPACTO_ABS\"]:,.2f}</td>\n                                    <td style=\"text-align:center;\">\n                                        <span style=\"\n                                            background-color:{cor[\"bg\"]};\n                                            color:{cor[\"fg\"]};\n                                            padding:4px 10px;\n                                            border-radius:999px;\n                                            font-weight:600;\n                                            font-size:0.80rem;\n                                        \">\n                                            Classe {html.escape(str(classe))}\n                                        </span>\n                                    </td>\n                                </tr>\n                            \"\"\"\n    \n        st.html(\n                    f\"\"\"\n                            <p style=\"text-align: justify;text-indent: 40px\">\n                                A tabela abaixo apresenta os materiais classificados pelo método <b>ABC</b>, considerando o \n                                <b>impacto potencial absoluto</b>. A classe <b>A</b> reúne os itens de maior relevância econômica, \n                                responsáveis pela maior parcela acumulada do impacto; a classe <b>B</b> representa relevância \n                                intermediária; e a classe <b>C</b> concentra os itens de menor contribuição individual.\n                            </p>\n\n                        <div style=\"\n                            overflow-x:auto;\n                            border:1px solid #e5e7eb;\n                            border-radius:10px;\n                        \">\n                            <table style=\"\n                                width:100%;\n                                border-collapse:collapse;\n                                font-size:0.88rem;\n                            \">\n                                <thead>\n                                    <tr style=\"background-color:#f8fafc;\">\n                                        <th style=\"text-align:left; padding:10px 12px; border-bottom:1px solid #e5e7eb;\">Id_BP</th>\n                                        <th style=\"text-align:left; padding:10px 12px; border-bottom:1px solid #e5e7eb;\">Descrição técnica</th>\n                                        <th style=\"text-align:right; padding:10px 12px; border-bottom:1px solid #e5e7eb;\">Impacto absoluto</th>\n                                        <th style=\"text-align:center; padding:10px 12px; border-bottom:1px solid #e5e7eb;\">Classe ABC</th>\n                                    </tr>\n                                </thead>\n                                <tbody>\n                                    {linhas_html}\n                                </tbody>\n                            </table>\n                        </div><br>\n                        <div style=\"\n                            margin-bottom:12px;\n                            padding:18px 20px;\n                            background:linear-gradient(90deg, rgba(43, 92, 143, 0.06) 0%, rgba(255,255,255,0) 100%);\n                            border-left:4px solid #2b5c8f;\n                            border-radius:0 8px 8px 0;\n                        \">\n                            <p style=\"\n                                margin:0;\n                                color:#555555;\n                                font-size:0.95rem;\n                                line-height:1.6;\n                                text-align:justify;\n                            \">\n                                A tabela abaixo apresenta os dados brutos empregados.\n                            </p>\n                        </div>\n                    \"\"\",\n                    width=\"stretch\"\n                )\n        \n        st.dataframe(df_risco, width='stretch', hide_index=True)\n    \n        ids_classe_a = (\n                            df_risco.loc[\n                                df_risco[\"CLASSE_ABC\"] == \"A\",\n                                \"Id_BP\"\n                            ]\n                            .astype(str)\n                            .unique()\n                        )\n    \n        df_BPUAR[\"Id_BP\"] = df_BPUAR[\"Id_BP\"].astype(str)\n        df_BPUAR_A = (\n                        df_BPUAR[\n                            df_BPUAR[\"Id_BP\"].isin(ids_classe_a)\n                        ]\n                        .copy()\n                    )\n        cod_itens = \"', '\".join(df_BPUAR_A['COD_ITEM'])\n    \n        dt_ARQ = max_arq(\"BP_EC\", bd, empresa, st)\n        if dt_ARQ:\n            SQLq = f\"\"\"SELECT \n                                Dt_NF,\n                                COD_ITEM,\n                                Txt_Desc_Mat,\n                                FLG_TPNF * Qtd AS Qtd,\n                                Cd_Unid,\n                                VL_TOT_LIQ,\n                                VL_TOT_ICMS,\n                                VL_TOT_IPI,\n                                VL_DIFAL,\n                                VL_ST\n                        FROM \n                            BP_EC \n                        WHERE \n                            Dt_ARQ = '{dt_ARQ}' AND COD_ITEM in ('{cod_itens}') AND FLG_TP = 1 AND FLG_BPR = 1\n                        ORDER BY\n                            COD_ITEM, Dt_NF\"\"\"\n            df_BPEC = pd.read_sql(SQLq, bd)\n            for campo in ['Dt_NF']:\n                df_BPEC[campo] = pd.to_datetime(df_BPEC[campo], errors=\"coerce\", format=\"%Y-%m-%d\")\n            for campo in ['Qtd','VL_TOT_LIQ','VL_TOT_ICMS','VL_TOT_IPI','VL_DIFAL','VL_ST']:\n                df_BPEC[campo] = pd.to_numeric(df_BPEC[campo], errors=\"coerce\")\n    \n            df_BPEC = (df_BPEC\n                    .groupby(['COD_ITEM','Txt_Desc_Mat','Cd_Unid','Dt_NF'], dropna=False)[['Qtd','VL_TOT_LIQ',\n                                'VL_TOT_ICMS','VL_TOT_IPI','VL_DIFAL','VL_ST']]\n                        .sum()\n                        .reset_index())\n                                \n            df_BPEC['VL_UNIT_HIST'] = (\n                                        (df_BPEC['VL_TOT_LIQ'].fillna(0) +\n                                        df_BPEC['VL_TOT_ICMS'].fillna(0) +\n                                        df_BPEC['VL_TOT_IPI'].fillna(0) +\n                                        df_BPEC['VL_ST'].fillna(0))  / df_BPEC['Qtd'].fillna(1)\n                                    )\n            df_BPEC = df_BPEC.sort_values(by=['COD_ITEM','Dt_NF'])\n            \n            df_hist_base = df_BPEC.copy()\n    \n            df_hist_base[\"COD_ITEM\"] = df_hist_base[\"COD_ITEM\"].astype(str)\n            df_hist_base = df_hist_base[\n                                            (df_hist_base[\"Dt_NF\"].notna()) &\n                                            (df_hist_base[\"Qtd\"] > 0) &\n                                            (df_hist_base[\"VL_UNIT_HIST\"].notna())\n                                        ].copy()\n    \n            df_hist_base[\"PERIODO\"] = df_hist_base[\"Dt_NF\"].dt.to_period(\"M\").dt.to_timestamp()\n    \n            df_hist_base[\"VL_TOTAL_HIST\"] = (\n                                                df_hist_base[\"Qtd\"] * df_hist_base[\"VL_UNIT_HIST\"]\n                                            )\n            \n            st.html(\n                        \"\"\"\n                            <p style=\"text-align: justify;text-indent: 40px\">\n                                Os gráficos a seguir detalham o histórico de aquisições dos materiais classificados como \n                                <b>Classe A</b> na análise ABC de impacto potencial. O objetivo é compreender a dinâmica temporal \n                                das compras e avaliar em que medida os preços observados no período recente são representativos da \n                                formação de custo desses materiais ao longo do tempo.\n                            </p>\n    \n                            <p style=\"text-align: justify;text-indent: 40px\">\n                                Em cada gráfico, as barras representam as quantidades adquiridas em cada período e os rótulos sobre \n                                elas indicam o valor médio unitário histórico das compras realizadas. A linha tracejada mostra a \n                                evolução do valor médio acumulado histórico, permitindo identificar a influência de compras relevantes \n                                na formação do custo médio do material. Os indicadores apresentados abaixo de cada gráfico complementam \n                                a análise ao evidenciar aspectos como concentração das aquisições, frequência dos ciclos de compra, \n                                estabilidade dos preços e idade média do estoque.\n                            </p>\n    \n                            <p style=\"text-align: justify;text-indent: 40px\">\n                                Os indicadores apresentados abaixo de cada gráfico complementam essa análise. A <b>Quantidade Total Comprada</b> \n                                representa o volume acumulado de aquisições observado no histórico. O indicador <b>Maior Compra / Total</b> \n                                mede o grau de concentração das aquisições, evidenciando a dependência de eventos específicos de compra. \n                                O <b>Tempo Médio entre Compras</b> indica a frequência típica dos ciclos de reposição. A <b>Idade Média Ponderada</b> \n                                estima há quanto tempo, em média, os materiais atualmente considerados foram adquiridos, ponderando os volumes \n                                comprados em cada período. Por fim, o <b>Coeficiente de Variação (CV) do Preço Histórico</b> mede a estabilidade \n                                dos preços praticados ao longo do tempo, permitindo distinguir materiais com comportamento de custo mais previsível \n                                daqueles sujeitos a maior volatilidade.\n                            </p>\n    \n                            <p style=\"text-align: justify;text-indent: 40px\">\n                                Em conjunto, essas informações permitem identificar materiais cujos preços são formados por poucas compras de \n                                grande volume, materiais com aquisições recorrentes e estáveis, bem como situações em que o custo atualmente \n                                observado pode refletir decisões de compra realizadas há vários anos. Sob a ótica da gestão de estoques, a análise \n                                auxilia na avaliação do sincronismo entre aquisição e utilização dos materiais, contribuindo para a compreensão dos \n                                efeitos do ciclo de suprimento sobre os custos dos ativos e para a identificação de oportunidades de redução do tempo \n                                entre a compra e sua efetiva imobilização.\n                            </p>\n                        \"\"\",\n                        width=\"stretch\"\n                    )\n            for cod_item in sorted(df_hist_base[\"COD_ITEM\"].unique()):\n    \n                df_item = df_hist_base[\n                                            df_hist_base[\"COD_ITEM\"] == cod_item\n                                        ].copy()\n    \n                desc_item = (\n                                df_item[\"Txt_Desc_Mat\"].dropna().astype(str).iloc[0]\n                                if not df_item[\"Txt_Desc_Mat\"].dropna().empty\n                                else \"\"\n                            )\n    \n                cd_unid = (\n                                df_item[\"Cd_Unid\"].dropna().astype(str).iloc[0]\n                                if \"Cd_Unid\" in df_item.columns and not df_item[\"Cd_Unid\"].dropna().empty\n                                else \"\"\n                            )\n    \n                df_plot_item = (\n                                    df_item\n                                    .groupby(\"PERIODO\", as_index=False)\n                                    .agg(\n                                        QTD_COMPRA=(\"Qtd\", \"sum\"),\n                                        VL_TOTAL_HIST=(\"VL_TOTAL_HIST\", \"sum\"),\n                                    )\n                                )\n    \n                df_plot_item[\"VL_MEDIO_HIST\"] = np.where(\n                                                            df_plot_item[\"QTD_COMPRA\"] != 0,\n                                                            df_plot_item[\"VL_TOTAL_HIST\"] / df_plot_item[\"QTD_COMPRA\"],\n                                                            np.nan\n                                                        )\n    \n                df_plot_item = df_plot_item.sort_values(\"PERIODO\")\n    \n                df_plot_item[\"QTD_ACUM\"] = df_plot_item[\"QTD_COMPRA\"].cumsum()\n                df_plot_item[\"VL_TOTAL_ACUM\"] = df_plot_item[\"VL_TOTAL_HIST\"].cumsum()\n    \n                df_plot_item[\"VL_MEDIO_ACUM_HIST\"] = np.where(\n                                                                    df_plot_item[\"QTD_ACUM\"] != 0,\n                                                                    df_plot_item[\"VL_TOTAL_ACUM\"] / df_plot_item[\"QTD_ACUM\"],\n                                                                    np.nan\n                                                                )\n    \n                fig = make_subplots(specs=[[{\"secondary_y\": True}]])\n    \n                fig.add_trace(\n                                go.Bar(\n                                    x=df_plot_item[\"PERIODO\"],\n                                    y=df_plot_item[\"QTD_COMPRA\"],\n                                    name=\"Quantidade comprada\",\n                                    text=df_plot_item[\"VL_MEDIO_HIST\"].map(lambda v: f\"{v:,.2f}\"),\n                                    textposition=\"outside\",\n                                    hovertemplate=\n                                        \"<b>Período:</b> %{x|%m/%Y}<br>\"\n                                        \"<b>Qtd comprada:</b> %{y:,.2f}<br>\"\n                                        \"<b>Valor médio histórico:</b> %{text}<extra></extra>\",\n                                ),\n                                secondary_y=False,\n                            )\n    \n                fig.add_trace(\n                                go.Scatter(\n                                    x=df_plot_item[\"PERIODO\"],\n                                    y=df_plot_item[\"VL_MEDIO_ACUM_HIST\"],\n                                    name=\"Valor médio acumulado histórico\",\n                                    mode=\"lines+markers\",\n                                    line=dict(width=3, dash=\"dash\"),\n                                    marker=dict(size=7),\n                                    hovertemplate=\n                                        \"<b>Período:</b> %{x|%m/%Y}<br>\"\n                                        \"<b>Valor médio acumulado:</b> %{y:,.2f}<extra></extra>\",\n                                ),\n                                secondary_y=True,\n                            )\n    \n                fig.update_layout(\n                    title={\n                        \"text\": f\"Histórico de compras — {cod_item} | {desc_item}\",\n                        \"x\": 0.5,\n                        \"xanchor\": \"center\",\n                        \"font\": {\"size\": 15},\n                    },\n                    paper_bgcolor=\"rgba(0,0,0,0)\",\n                    plot_bgcolor=\"rgba(0,0,0,0)\",\n                    xaxis=dict(\n                        title=\"Período da compra\",\n                        tickformat=\"%m/%Y\",\n                        showgrid=False,\n                    ),\n                    yaxis=dict(\n                        title=f\"Quantidade comprada {f'({cd_unid})' if cd_unid else ''}\",\n                        showgrid=True,\n                        gridcolor=\"#eeeeee\",\n                        zeroline=True,\n                        zerolinecolor=\"#999999\",\n                    ),\n                    yaxis2=dict(\n                        title=\"Valor médio acumulado histórico\",\n                        showgrid=False,\n                    ),\n                    legend=dict(\n                        orientation=\"h\",\n                        yanchor=\"bottom\",\n                        y=1.02,\n                        xanchor=\"right\",\n                        x=1,\n                    ),\n                    margin=dict(l=70, r=70, t=90, b=70),\n                    height=520,\n                )\n    \n                st.plotly_chart(fig, width=\"stretch\")\n                qtd_total = df_plot_item[\"QTD_COMPRA\"].sum()\n                maior_compra = df_plot_item[\"QTD_COMPRA\"].max()\n                pct_maior_compra = (\n                                        maior_compra / qtd_total * 100\n                                        if qtd_total != 0\n                                        else 0\n                                    )\n    \n                datas_compra = df_plot_item.loc[\n                                                    df_plot_item[\"QTD_COMPRA\"] > 0,\n                                                    \"PERIODO\"\n                                                ].sort_values()\n    \n                intervalos = datas_compra.diff().dt.days.dropna()\n                tempo_medio_entre_compras = (\n                                                intervalos.mean()\n                                                if not intervalos.empty\n                                                else np.nan\n                                            )\n    \n                maior_intervalo_sem_compras = (\n                                                    intervalos.max()\n                                                    if not intervalos.empty\n                                                    else np.nan\n                                                )\n    \n                cv_preco = (\n                                df_plot_item[\"VL_MEDIO_HIST\"].std()\n                                / df_plot_item[\"VL_MEDIO_HIST\"].mean()\n                                * 100\n                                if df_plot_item[\"VL_MEDIO_HIST\"].mean() != 0\n                                else np.nan\n                            )\n    \n                data_ref = df_hist_base[\"Dt_NF\"].max()\n    \n                df_idade = df_item.copy()\n                df_idade[\"IDADE_DIAS\"] = (\n                                            data_ref - df_idade[\"Dt_NF\"]\n                                        ).dt.days\n    \n                idade_media_ponderada = (\n                                            (df_idade[\"IDADE_DIAS\"] * df_idade[\"Qtd\"]).sum()\n                                            / df_idade[\"Qtd\"].sum()\n                                            if df_idade[\"Qtd\"].sum() != 0\n                                            else np.nan\n                                        )\n    \n                idade_media_anos = idade_media_ponderada / 365 if pd.notna(idade_media_ponderada) else np.nan\n                qtd_total = f\"{qtd_total:,.0f}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n                pct_maior_compra = f\"{pct_maior_compra:,.1f}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n                tempo_medio_entre_compras = f\"{tempo_medio_entre_compras:,.0f}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n                idade_media_anos = f\"{idade_media_anos:,.1f}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n                cv_preco = f\"{cv_preco:,.1f}\".replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\")\n    \n                st.html(\n                            f\"\"\"\n                            <div style=\"\n                                font-family:'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;\n                                display:grid;\n                                grid-template-columns:repeat(5, 1fr);\n                                gap:12px;\n                                margin-top:-10px;\n                                margin-bottom:35px;\n                            \">\n                                <div style=\"padding:14px 16px; border:1px solid #e5e7eb; border-radius:10px; background:#ffffff;\">\n                                    <div style=\"font-size:0.75rem; color:#667085; margin-bottom:4px;\">Qtd total comprada</div>\n                                    <div style=\"font-size:1.25rem; font-weight:700; color:#111827;\">{qtd_total}</div>\n                                </div>\n    \n                                <div style=\"padding:14px 16px; border:1px solid #e5e7eb; border-radius:10px; background:#ffffff;\">\n                                    <div style=\"font-size:0.75rem; color:#667085; margin-bottom:4px;\">Maior compra / total</div>\n                                    <div style=\"font-size:1.25rem; font-weight:700; color:#111827;\">{pct_maior_compra}%</div>\n                                </div>\n    \n                                <div style=\"padding:14px 16px; border:1px solid #e5e7eb; border-radius:10px; background:#ffffff;\">\n                                    <div style=\"font-size:0.75rem; color:#667085; margin-bottom:4px;\">Tempo médio entre compras</div>\n                                    <div style=\"font-size:1.25rem; font-weight:700; color:#111827;\">\n                                        {tempo_medio_entre_compras} dias\n                                    </div>\n                                </div>\n    \n                                <div style=\"padding:14px 16px; border:1px solid #e5e7eb; border-radius:10px; background:#ffffff;\">\n                                    <div style=\"font-size:0.75rem; color:#667085; margin-bottom:4px;\">Idade média ponderada</div>\n                                    <div style=\"font-size:1.25rem; font-weight:700; color:#111827;\">\n                                        {idade_media_anos} anos\n                                    </div>\n                                </div>\n    \n                                <div style=\"padding:14px 16px; border:1px solid #e5e7eb; border-radius:10px; background:#ffffff;\">\n                                    <div style=\"font-size:0.75rem; color:#667085; margin-bottom:4px;\">CV do preço histórico</div>\n                                    <div style=\"font-size:1.25rem; font-weight:700; color:#111827;\">\n                                        {cv_preco}%\n                                    </div>\n                                </div>\n                            </div>\n                            \"\"\",\n                            width=\"stretch\"\n                        )"
+    },
+    "documentacao": {
+      "nome": "funcao",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_INCR",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "dir_FIG",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_ROA",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_ANLS_01",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_BPUAR",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "dependencias": {
+        "imports": [
+          "UTILS.max_arq",
+          "html",
+          "numpy",
+          "pandas",
+          "plotly.express",
+          "plotly.graph_objects",
+          "plotly.subplots.make_subplots",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "abs",
+          "agg",
+          "astype",
+          "between",
+          "copy",
+          "cores_abc.get",
+          "cumsum",
+          "datas_compra.diff",
+          "df_ANLS_01b.copy",
+          "df_ANLS_01b.merge",
+          "df_BPEC.copy",
+          "df_BPEC.groupby",
+          "df_BPEC.sort_values",
+          "df_deltas.groupby",
+          "df_deltas.sort_values",
+          "df_deltas1.sort_values",
+          "df_item.copy",
+          "df_item.groupby",
+          "df_mat.groupby",
+          "df_outlier.sort_values",
+          "df_plot.get",
+          "df_plot.groupby",
+          "df_plot_item.sort_values",
+          "df_representativo.sort_values",
+          "df_risco.sort_values",
+          "df_tabela_abc.iterrows",
+          "dict",
+          "drop_duplicates",
+          "dropna",
+          "dt.days.dropna",
+          "dt.to_period",
+          "dt.to_timestamp",
+          "fig.add_trace",
+          "fig.update_layout",
+          "fig.write_image",
+          "fig_deltas.add_annotation",
+          "fig_deltas.add_hrect",
+          "fig_deltas.update_layout",
+          "fig_deltas.update_traces",
+          "fig_out.add_vline",
+          "fig_out.update_layout",
+          "fig_out.update_traces",
+          "fig_rep.update_layout",
+          "fig_rep.update_traces",
+          "fillna",
+          "go.Bar",
+          "go.Figure",
+          "go.Scatter",
+          "groupby",
+          "html.escape",
+          "intervalos.max",
+          "intervalos.mean",
+          "isin",
+          "join",
+          "len",
+          "make_subplots",
+          "map",
+          "max",
+          "max_arq",
+          "mean",
+          "min",
+          "notna",
+          "np.maximum",
+          "np.minimum",
+          "np.select",
+          "np.where",
+          "nunique",
+          "ordem_sisbase.groupby",
+          "pd.DataFrame",
+          "pd.notna",
+          "pd.read_sql",
+          "pd.to_datetime",
+          "pd.to_numeric",
+          "px.bar",
+          "rename",
+          "replace",
+          "reset_index",
+          "sl.connect",
+          "sort_values",
+          "sorted",
+          "st.dataframe",
+          "st.fragment",
+          "st.html",
+          "st.plotly_chart",
+          "std",
+          "str",
+          "sum",
+          "tolist",
+          "unique"
+        ]
+      }
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "_vis_004",
+      "tipo": "function",
+      "linha_inicio": 1526,
+      "linha_fim": 2199,
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "empresa",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "local",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_INCR",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "dir_FIG",
+          "tipo": null,
+          "default": "''",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_ROA",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_ANLS_01",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_BPUAR",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        },
+        {
+          "nome": "df_BAIXAS",
+          "tipo": null,
+          "default": "pd.DataFrame()",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [
+        "st.fragment()"
+      ],
+      "dependencias": {
+        "imports": [
+          "SRC.calculos",
+          "UTILS.imp_tbl_forma_001",
+          "numpy",
+          "pandas",
+          "plotly.express",
+          "plotly.graph_objects",
+          "plotly.subplots.make_subplots",
+          "sqlite3",
+          "streamlit"
+        ],
+        "chamadas": [
+          "abs",
+          "astype",
+          "between",
+          "clcpr.tst_cod_sisbase",
+          "clip",
+          "copy",
+          "df_AISant.groupby",
+          "df_AISant_gr.merge",
+          "df_AISat.groupby",
+          "df_ANLS_01a.merge",
+          "df_ANLS_02.drop",
+          "df_ANLS_02.merge",
+          "df_ANLS_02a.groupby",
+          "df_ANLS_02a.merge",
+          "df_ANLS_03.drop",
+          "df_ANLS_03.merge",
+          "df_bar.iterrows",
+          "df_bar.sort_values",
+          "df_base.copy",
+          "df_long.extend",
+          "df_long_tab.rename",
+          "df_long_tab.sort_values",
+          "df_long_tab.to_csv",
+          "df_sub.sort_values",
+          "dict",
+          "dict.fromkeys",
+          "drop_duplicates",
+          "enumerate",
+          "eq",
+          "fig.add_hline",
+          "fig.add_trace",
+          "fig.add_vline",
+          "fig.update_layout",
+          "fig.update_xaxes",
+          "fig.update_yaxes",
+          "fillna",
+          "go.Bar",
+          "groupby",
+          "imp_tbl_forma_001",
+          "isnull",
+          "len",
+          "list",
+          "make_subplots",
+          "max",
+          "np.select",
+          "np.stack",
+          "np.where",
+          "ordem_y.extend",
+          "pd.Categorical",
+          "pd.DataFrame",
+          "pd.read_csv",
+          "pd.to_numeric",
+          "px.scatter",
+          "rename",
+          "replace",
+          "reset_index",
+          "sl.connect",
+          "sort_values",
+          "st.dataframe",
+          "st.fragment",
+          "st.html",
+          "st.plotly_chart",
+          "str.rjust",
+          "sum",
+          "tolist"
+        ]
+      },
+      "codigo": "def _vis_004(bd_path=\"\", st=None, empresa = \"\", bd_path2=\"\", local = \"\", \n             df_INCR = pd.DataFrame(), dir_FIG = \"\", df_ROA = pd.DataFrame(),\n             df_ANLS_01 = pd.DataFrame(), df_BPUAR = pd.DataFrame(),\n             df_BAIXAS = pd.DataFrame()):\n    if df_BAIXAS.empty:\n        return\n    with sl.connect(bd_path) as bd:\n        df_ANLS_02 = (df_BAIXAS[(df_BAIXAS['FLG_AJST_CTB'].astype(str)=='0')]\n                    .groupby(['Nr_TI', 'Nr_TUC', 'Nr_A1', 'Nr_A2', 'Nr_A3', \n                    'Nr_A4', 'Nr_A5', 'Nr_A6', 'Cd_UAR', 'Cd_UND_AIS'], dropna=False)[['Qtd_INI','Qtd_FIN','VL_VOC_INI','VL_VOC_FIN']]\n                    .sum()\n                    .reset_index())\n            \n        \n        df_ANLS_02['Qtd_BAIXAS'] = df_ANLS_02['Qtd_INI'].fillna(0) - df_ANLS_02['Qtd_FIN'].fillna(0)\n        df_ANLS_02['Cd_SISBASE'] =\"ND\"\n        LST_TUC = df_ANLS_02[(df_ANLS_02['Cd_UAR'] != 'UAR')][['Nr_TI','Nr_TUC','Nr_A1','Nr_A2',\n                                                'Nr_A3','Nr_A4','Nr_A5','Nr_A6','Cd_SISBASE']].drop_duplicates()\n    \n        LST_TUC = clcpr.tst_cod_sisbase(LST_TUC, st.session_state.dt_fim, st=st)\n        df_ANLS_02 = df_ANLS_02.merge(LST_TUC[['Nr_TI','Nr_TUC','Nr_A1','Nr_A2',\n                                                'Nr_A3','Nr_A4','Nr_A5','Nr_A6','Cd_SISBASE_SFF','Cd_FOR_COGE_SFF',\n                                                'Nr_FAM_SFF']], how='left', on =['Nr_TI','Nr_TUC','Nr_A1','Nr_A2',\n                                                'Nr_A3','Nr_A4','Nr_A5','Nr_A6'])\n        df_ANLS_02 = df_ANLS_02.drop(columns='Cd_SISBASE')\n        df_ANLS_02['Cd_SISBASE_SFF'] = df_ANLS_02['Cd_SISBASE_SFF'].fillna(\"ND\")\n        for n in [1,2,3,4,5,6]:\n            df_ANLS_01[f\"Nr_A{n}\"] = (\n                                        df_ANLS_01[f\"Nr_A{n}\"].astype(str).str.rjust(2, \"0\")\n                                    )\n        df_ANLS_01a = (df_ANLS_01[df_ANLS_01['Cd_SISBASE'] != \"ND\"].groupby([\"Cd_TP_AVAL\",\"Nr_TI\",\"Nr_TUC\",'Nr_A1','Nr_A2','Nr_A3','Nr_A4','Nr_A5','Nr_A6',\n                                        \"Cd_SISBASE\",\"Cd_UAR\",\"Cd_UND_AIS\"],dropna=False)[[\"Qtd_AIS\",\"VL_VOC_VFa\",\"VL_VOCa\",\n                                        \"VL_VNR_UC\"]].sum().reset_index())\n        df_ANLS_02 = df_ANLS_01a.merge(df_ANLS_02[df_ANLS_02['Cd_SISBASE_SFF'] != \"ND\"][[\n                                'Nr_TI','Nr_TUC','Nr_A1','Nr_A2','Nr_A3','Nr_A4','Nr_A5','Nr_A6','Cd_SISBASE_SFF','Cd_FOR_COGE_SFF',\n                                'Nr_FAM_SFF','Cd_UND_AIS','Qtd_BAIXAS']], how='outer', on =['Nr_TI','Nr_TUC','Nr_A1',\n                                'Nr_A2','Nr_A3','Nr_A4','Nr_A5','Nr_A6'], suffixes =(\"_INCR\", \"_BAIXAS\"), \n                                indicator=True)  \n        df_ANLS_02.loc[df_ANLS_02['Cd_SISBASE'].isnull(), 'Cd_SISBASE'] = df_ANLS_02.loc[df_ANLS_02['Cd_SISBASE'].isnull(), 'Cd_SISBASE_SFF']\n        df_ANLS_02a = df_ANLS_02[['Nr_TI','Nr_TUC','Nr_A1','Nr_A2','Nr_A3','Nr_A4','Nr_A5','Nr_A6','Cd_SISBASE',\n                            'Qtd_AIS','Cd_UND_AIS_INCR','Qtd_BAIXAS','Cd_UND_AIS_BAIXAS']].copy()\n        \n        df_ANLS_02a['Qtd_BAIXAS'] = df_ANLS_02a['Qtd_BAIXAS'].fillna(0)\n        df_ANLS_02a['Qtd_AIS'] = df_ANLS_02a['Qtd_AIS'].fillna(0)\n        df_ANLS_02a = df_ANLS_02a.groupby(['Nr_TI','Cd_SISBASE'], dropna=False)[['Qtd_AIS','Qtd_BAIXAS']].sum().reset_index()\n    \n        tbl_sisbase = pd.read_csv(rf\"tabelas/tbl_nomes_sisbase.csv\", sep=\"|\", encoding=\"utf-8\")\n        df_ANLS_02a = df_ANLS_02a.merge(tbl_sisbase, how='left', on = 'Cd_SISBASE').rename(columns={'Qtd_AIS':'Qtd_INC'})\n    \n        st.html(\n                    \"\"\"\n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            A análise a seguir busca comparar os movimentos de <b>adição</b> e <b>baixa</b> dos ativos, com o objetivo \n                            de identificar possíveis padrões de substituição, renovação ou desmobilização dos investimentos realizados. \n                            Em condições ideais, essa comparação seria efetuada diretamente no nível dos materiais instalados. Contudo, \n                            o arquivo de baixas não possui a identificação do material (<b>COD_ITEM</b>), impossibilitando a associação \n                            direta entre os itens adicionados e posteriormente baixados.\n                        </p>\n    \n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            Diante dessa limitação, a análise foi conduzida utilizando o <b>Cd_SISBASE</b> como elemento comum entre as \n                            duas bases de dados. Dessa forma, as adições passam a ser avaliadas de forma agregada por sistema, deixando-se \n                            de lado a segregação por <b>COD_ITEM</b>. Essa abordagem é particularmente adequada porque uma mesma adição pode \n                            envolver a instalação conjunta de diversos materiais, enquanto as baixas são registradas apenas no nível do sistema.\n                        </p>\n    \n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            Assim, os resultados apresentados devem ser interpretados como uma comparação entre os volumes e valores de \n                            adições e baixas associados a cada <b>Cd_SISBASE</b>, permitindo avaliar a dinâmica de renovação dos ativos e \n                            identificar sistemas nos quais os investimentos recentes podem estar associados à substituição de componentes \n                            anteriormente instalados ou à expansão da base existente.\n                        </p>\n                    \"\"\",\n                    width=\"stretch\"\n                )\n        st.dataframe(df_ANLS_02a, width='stretch', hide_index=True)\n        \n        df_AISant = imp_tbl_forma_001(\"AISant\", SQLq=None, con=bd, st=st, Empresa=empresa)\n        df_AISat = imp_tbl_forma_001(\"AIS\", SQLq=None, con=bd, st=st, Empresa=empresa)\n        df_AISant['Qtd_AIS'] = pd.to_numeric(df_AISant['Qtd_AIS'].astype(str), errors='coerce')\n        df_AISat['Qtd_AIS'] = pd.to_numeric(df_AISat['Qtd_AIS'].astype(str), errors='coerce')\n    \n        df_AISant_gr = (df_AISant\n                        .groupby(by=['Nr_TI','Nr_TUC','Nr_A1','Nr_A2',\n                                    'Nr_A3','Nr_A4','Nr_A5','Nr_A6',\n                                    'Cd_UND_AIS','Cd_UAR'], dropna=False)['Qtd_AIS']\n                        .sum()\n                        .reset_index()\n                        .rename(columns={'Qtd_AIS':'Qtd_AIS_ANT'}))\n        df_AISant_gr[\"Cd_UAR\"] = (\n                                    df_AISant_gr[\"Cd_UAR\"]\n                                    .astype(str)\n                                    .replace({\"000\": \"TUC\", \"UC\" : \"TUC\"})\n                                )\n    \n        df_AISant_gr.loc[\n                            df_AISant_gr[\"Cd_UAR\"] != \"TUC\",\n                            \"Cd_UAR\"\n                        ] = \"UAR\"\n        df_AISat_gr = (df_AISat\n                        .groupby(by=['Nr_TI','Nr_TUC','Nr_A1','Nr_A2',\n                                    'Nr_A3','Nr_A4','Nr_A5','Nr_A6',\n                                    'Cd_UND_AIS','Cd_UAR'], dropna=False)['Qtd_AIS']\n                        .sum()\n                        .reset_index()\n                        .rename(columns={'Qtd_AIS':'Qtd_AIS_AT'}))\n        \n        df_ANLS_03 = df_AISant_gr.merge(df_AISat_gr, how='outer', on = ['Nr_TI','Nr_TUC','Nr_A1','Nr_A2',\n                                    'Nr_A3','Nr_A4','Nr_A5','Nr_A6',\n                                    'Cd_UND_AIS','Cd_UAR'], indicator=True)\n        df_ANLS_03['Cd_SISBASE'] =\"ND\"\n        LST_TUC = df_ANLS_03[(df_ANLS_03['Cd_UAR'] != 'UAR')][['Nr_TI','Nr_TUC','Nr_A1','Nr_A2',\n                                                'Nr_A3','Nr_A4','Nr_A5','Nr_A6','Cd_SISBASE']].drop_duplicates()\n    \n        LST_TUC = clcpr.tst_cod_sisbase(LST_TUC, st.session_state.dt_fim, st=st)\n        df_ANLS_03 = df_ANLS_03.merge(LST_TUC[['Nr_TI','Nr_TUC','Nr_A1','Nr_A2',\n                                                'Nr_A3','Nr_A4','Nr_A5','Nr_A6','Cd_SISBASE_SFF','Cd_FOR_COGE_SFF',\n                                                'Nr_FAM_SFF']], how='left', on =['Nr_TI','Nr_TUC','Nr_A1','Nr_A2',\n                                                'Nr_A3','Nr_A4','Nr_A5','Nr_A6'])\n        df_ANLS_03 = df_ANLS_03.drop(columns='Cd_SISBASE')\n        df_ANLS_03['Cd_SISBASE_SFF'] = df_ANLS_03['Cd_SISBASE_SFF'].fillna(\"ND\")\n    \n        df_ANLS_03['Txt_AIS'] = np.where(\n                                            df_ANLS_03[\"_merge\"] == \"both\",\n                                            \"Presente em ambos os períodos\",\n                                            np.where(\n                                                df_ANLS_03[\"_merge\"] == \"left_only\",\n                                                \"Inexiste no AIS atual, 100% baixado\",\n                                                \"Inexiste no AIS anterior, novo ativo\"\n                                            )\n                                        )\n        df_ANLS_03 = df_ANLS_03.drop(columns=['_merge','Cd_FOR_COGE_SFF','Nr_FAM_SFF']).rename(columns={'Cd_SISBASE_SFF':'Cd_SISBASE'})\n        df_ANLS_03[\"Qtd_AIS_ANT\"] = pd.to_numeric(df_ANLS_03[\"Qtd_AIS_ANT\"], errors=\"coerce\")\n        df_ANLS_03[\"Qtd_AIS_AT\"]  = pd.to_numeric(df_ANLS_03[\"Qtd_AIS_AT\"], errors=\"coerce\")\n        \n        df_ANLS_03 = (df_ANLS_03[(df_ANLS_03['Cd_UAR'] != 'UAR') & (df_ANLS_03['Cd_SISBASE'] != 'ND')]\n                    .groupby(['Nr_TI','Cd_SISBASE'], dropna=False)[['Qtd_AIS_ANT','Qtd_AIS_AT']]\n                    .sum()\n                    .reset_index())\n        df_ANLS_03 = df_ANLS_02a.merge(df_ANLS_03, how='outer', on=['Nr_TI','Cd_SISBASE'], indicator=True)\n        \n        denominador = df_ANLS_03[\"Qtd_AIS_ANT\"].replace(0, np.nan)\n    \n        divergencia = (\n                            (df_ANLS_03[\"Qtd_AIS_ANT\"] - df_ANLS_03[\"Qtd_AIS_AT\"]).abs()\n                            / denominador\n                        ).fillna(0)\n    \n        df_ANLS_03[\"Txt_AIS\"] = np.where(\n                                            df_ANLS_03[\"_merge\"].eq(\"both\"),\n                                            \"Executado movimentação no período incremental.\",\n                                            np.where(\n                                                df_ANLS_03[\"Qtd_AIS_ANT\"] > 0.01,\n                                                np.where(\n                                                    divergencia > 0.01,\n                                                    \"Arquivos AIS, atual e anterior, divergem, verificar.\",\n                                                    \"Inexiste movimentação no período incremental.\"\n                                                ),\n                                                \"Ativo não existente na posição anterior do AIS.\"\n                                            )\n                                        )\n        \n        \n        df_ANLS_03 = df_ANLS_03.drop(columns=['_merge','Txt_desc_geral'])\n        df_ANLS_03 = df_ANLS_03.merge(tbl_sisbase, how='left', on = 'Cd_SISBASE')\n        df_ANLS_03['Qtd_INC'] = df_ANLS_03['Qtd_INC'].fillna(0)\n        df_ANLS_03['Qtd_BAIXAS'] = df_ANLS_03['Qtd_BAIXAS'].fillna(0)\n    \n        cols_num = [\n                        \"Cd_SISBASE\",\n                        \"Qtd_AIS_ANT\",\n                        \"Qtd_AIS_AT\",\n                        \"Qtd_INC\",\n                        \"Qtd_BAIXAS\",\n                    ]\n        df_base = df_ANLS_03[df_ANLS_03['Cd_SISBASE'] != \"ND\"][cols_num].copy()\n        df_base[\"SALDO_ESPERADO\"] = (\n                                        df_base[\"Qtd_AIS_ANT\"]\n                                        + df_base[\"Qtd_INC\"]\n                                        - df_base[\"Qtd_BAIXAS\"]\n                                    )\n        \n        df_base[\"DIF_CONCILIACAO\"] = (\n                                        df_base[\"Qtd_AIS_AT\"] - df_base[\"SALDO_ESPERADO\"]\n                                    )\n        df_base[\"TAXA_EXPANSAO\"] = np.where(\n                                                df_base[\"Qtd_AIS_ANT\"] != 0,\n                                                df_base[\"Qtd_INC\"] / df_base[\"Qtd_AIS_ANT\"] * 100,\n                                                np.nan\n                                            )\n        df_base[\"TAXA_RENOVACAO\"] = np.where(\n                                                df_base[\"Qtd_AIS_ANT\"] != 0,\n                                                df_base[\"Qtd_BAIXAS\"] / df_base[\"Qtd_AIS_ANT\"] * 100,\n                                                np.nan\n                                            )\n    \n        df_base[\"CRESCIMENTO_LIQ\"] = np.where(\n                                                df_base[\"Qtd_AIS_ANT\"] != 0,\n                                                (df_base[\"Qtd_INC\"] - df_base[\"Qtd_BAIXAS\"]) / df_base[\"Qtd_AIS_ANT\"] * 100,\n                                                np.nan\n                                            )\n    \n        df_base[\"INDICE_SUBSTITUICAO\"] = np.where(\n                                                        df_base[\"Qtd_INC\"] != 0,\n                                                        df_base[\"Qtd_BAIXAS\"] / df_base[\"Qtd_INC\"] * 100,\n                                                        np.nan\n                                                    )\n        df_base[\"DINAMICA_BASE\"] = np.select(\n                                                [\n                                                    (df_base[\"CRESCIMENTO_LIQ\"] > 10) & (df_base[\"INDICE_SUBSTITUICAO\"] < 50),\n                                                    (df_base[\"CRESCIMENTO_LIQ\"] > 10) & (df_base[\"INDICE_SUBSTITUICAO\"] >= 50),\n                                                    (df_base[\"CRESCIMENTO_LIQ\"].between(-10, 10)) & (df_base[\"INDICE_SUBSTITUICAO\"] >= 50),\n                                                    (df_base[\"CRESCIMENTO_LIQ\"] < -10),\n                                                ],\n                                                [\n                                                    \"Expansão\",\n                                                    \"Expansão com renovação\",\n                                                    \"Renovação\",\n                                                    \"Contração\",\n                                                ],\n                                                default=\"Estabilidade\"\n                                            )\n        st.html(\n                    \"\"\"\n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            Em complemento, a seguir se avalia a dinâmica da base instalada a partir da posição inicial, das adições, das baixas\n                            e da posição final dos ativos. O objetivo é identificar se os movimentos observados representam expansão,\n                            renovação, substituição ou contração da base, considerando o <b>Cd_SISBASE</b> como unidade comum de comparação\n                            entre os arquivos de adições e baixas.\n                        </p>\n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            No gráfico, o eixo horizontal representa a taxa de renovação, medida pelas baixas em relação à base inicial,\n                            enquanto o eixo vertical apresenta o crescimento líquido, calculado pela diferença entre adições e baixas\n                            sobre a base inicial. Pontos acima de zero indicam expansão da base, enquanto pontos abaixo de zero indicam\n                            redução líquida. O tamanho dos pontos representa a posição final da base instalada.\n                        </p>\n                    \"\"\",\n                    width=\"stretch\"\n                )\n        df_base[\"Qtd_AIS_AT\"] = pd.to_numeric(\n                                                df_base[\"Qtd_AIS_AT\"],\n                                                errors=\"coerce\"\n                                            ).fillna(0)\n    \n        df_base[\"Qtd_AIS_AT_SIZE\"] = df_base[\"Qtd_AIS_AT\"].clip(lower=0)\n        df_base[\"TAXA_RENOVACAO\"] = df_base[\"TAXA_RENOVACAO\"].replace([np.inf, -np.inf], np.nan).fillna(0)\n        df_base[\"CRESCIMENTO_LIQ\"] = df_base[\"CRESCIMENTO_LIQ\"].replace([np.inf, -np.inf], np.nan).fillna(0)\n        df_base[\"x\"] = df_base[\"Qtd_BAIXAS\"]\n        df_base[\"y\"] = df_base[\"Qtd_INC\"] - df_base[\"Qtd_BAIXAS\"]\n        fig = px.scatter(\n                            df_base,\n                            x=\"x\",\n                            y=\"y\",\n                            size=\"Qtd_AIS_AT_SIZE\",\n                            color=\"DINAMICA_BASE\",\n                            hover_data=[\n                                \"Cd_SISBASE\",\n                                \"Qtd_AIS_ANT\",\n                                \"Qtd_INC\",\n                                \"Qtd_BAIXAS\",\n                                \"Qtd_AIS_AT\",\n                                \"INDICE_SUBSTITUICAO\",\n                                \"DIF_CONCILIACAO\",\n                            ],\n                            title=\"Dinâmica da Base Instalada por Cd_SISBASE\",\n                            labels={\n                                \"x\": \"Baixas\",\n                                \"y\": \"Variação líquida dos ativos (INCR - BAIXAS)\",\n                                \"Qtd_AIS_AT\": \"Base final\",\n                                \"DINAMICA_BASE\": \"Dinâmica\",\n                            },\n                        )\n    \n        fig.add_hline(y=0, line_dash=\"dash\", line_color=\"#999999\")\n        fig.add_vline(x=0, line_dash=\"dash\", line_color=\"#999999\")\n    \n        fig.update_layout(\n                            paper_bgcolor=\"rgba(0,0,0,0)\",\n                            plot_bgcolor=\"rgba(0,0,0,0)\",\n                            height=650,\n                            legend=dict(\n                                orientation=\"h\",\n                                yanchor=\"bottom\",\n                                y=1.02,\n                                xanchor=\"right\",\n                                x=1,\n                            ),\n                        )\n    \n        st.plotly_chart(fig, width=\"stretch\")\n    \n        df_resumo = df_base[\n                            [\n                                \"Cd_SISBASE\",\n                                \"Qtd_AIS_ANT\",\n                                \"Qtd_INC\",\n                                \"Qtd_BAIXAS\",\n                                \"Qtd_AIS_AT\",\n                                \"CRESCIMENTO_LIQ\",\n                                \"TAXA_EXPANSAO\",\n                                \"TAXA_RENOVACAO\",\n                                \"INDICE_SUBSTITUICAO\",\n                                \"DIF_CONCILIACAO\",\n                                \"DINAMICA_BASE\",\n                            ]\n                        ].sort_values(\"CRESCIMENTO_LIQ\", ascending=False)\n    \n        st.dataframe(df_resumo, width=\"stretch\", hide_index=True)\n    \n        df_bar = df_base.copy()\n        df_bar[\"Cd_SISBASE\"] = df_bar[\"Cd_SISBASE\"].astype(str)\n        df_bar[\"Qtd_AIS_ANT\"] = df_bar[\"Qtd_AIS_ANT\"].fillna(0)\n        df_bar[\"Qtd_AIS_AT\"] = df_bar[\"Qtd_AIS_AT\"].fillna(0)\n        df_bar[\"BASE_APOS_ADICOES\"] = df_bar[\"Qtd_AIS_ANT\"] + df_bar[\"Qtd_INC\"]\n        df_bar[\"BASE_APOS_BAIXAS\"] = (\n                                            df_bar[\"BASE_APOS_ADICOES\"] - df_bar[\"Qtd_BAIXAS\"]\n                                        ).clip(lower=0)\n        df_bar[\"DIF_CONCILIACAO\"] = df_bar[\"Qtd_AIS_AT\"] - df_bar[\"BASE_APOS_BAIXAS\"]\n        df_bar[\"DIF_CONCILIACAO_ABS\"] = df_bar[\"DIF_CONCILIACAO\"].abs()\n        df_bar[\"DIF_CONCILIACAO_PERC\"] = np.where(\n                                                    df_bar[\"Qtd_AIS_AT\"] != 0,\n                                                    df_bar[\"DIF_CONCILIACAO\"] / df_bar[\"Qtd_AIS_AT\"] * 100,\n                                                    np.nan\n                                                )\n        df_bar[\"MOV_TOTAL\"] = (\n                                    df_bar[\"Qtd_INC\"].abs()\n                                    + df_bar[\"Qtd_BAIXAS\"].abs()\n                                )\n        df_bar[\"RELEVANCIA\"] = (\n                                    df_bar[\"MOV_TOTAL\"]\n                                    + df_bar[\"DIF_CONCILIACAO_ABS\"]\n                                )\n        df_bar[\"DINAMICA\"] = np.select(\n                                            [\n                                                df_bar[\"Qtd_INC\"] > df_bar[\"Qtd_BAIXAS\"],\n                                                df_bar[\"Qtd_INC\"] < df_bar[\"Qtd_BAIXAS\"],\n                                                df_bar[\"Qtd_INC\"] == df_bar[\"Qtd_BAIXAS\"],\n                                            ],\n                                            [\n                                                \"Expansão líquida\",\n                                                \"Redução líquida\",\n                                                \"Renovação / estabilidade\",\n                                            ],\n                                            default=\"Sem movimento\",\n                                        )\n    \n        df_bar[\"ALERTA_CONCILIACAO\"] = np.where(\n                                                    df_bar[\"DIF_CONCILIACAO_ABS\"] > 0,\n                                                    \"Com diferença\",\n                                                    \"Conciliado\",\n                                                )\n    \n        df_bar[\"ESCALA\"] = np.select(\n                                        [\n                                            df_bar[\"Qtd_AIS_AT\"] >= 1_000_000,\n                                            df_bar[\"Qtd_AIS_AT\"].between(100_000, 1_000_000, inclusive=\"left\"),\n                                            df_bar[\"Qtd_AIS_AT\"].between(10_000, 100_000, inclusive=\"left\"),\n                                        ],\n                                        [\n                                            \"Acima de 1 milhão\",\n                                            \"Entre 100 mil e 1 milhão\",\n                                            \"Entre 10 mil e 100 mil\",\n                                        ],\n                                        default=\"Abaixo de 10 mil\",\n                                    )\n        df_bar = df_bar.sort_values(\"BASE_APOS_BAIXAS\", ascending=True)\n        df_long = []\n        for _, row in df_bar.iterrows():\n            sis = row[\"Cd_SISBASE\"]\n            df_long.extend([\n                            {\n                                \"Cd_SISBASE\": sis,\n                                \"ESCALA\": row[\"ESCALA\"],\n                                \"Etapa\": \"1. AIS inicial\",\n                                \"BASE_TRANSPARENTE\": 0,\n                                \"VALOR_TOTAL\": row[\"Qtd_AIS_ANT\"],\n                                \"VALOR_COLORIDO\": row[\"Qtd_AIS_ANT\"],\n                                \"COR\": \"#2b5c8f\",\n                                \"TEXTO\": f'{row[\"Qtd_AIS_ANT\"]:,.2f}'.replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\"),\n                                \"DIF_CONCILIACAO\": row[\"DIF_CONCILIACAO\"],\n                                \"DIF_CONCILIACAO_PERC\": row[\"DIF_CONCILIACAO_PERC\"],\n                                \"DINAMICA\": row[\"DINAMICA\"],\n                                \"ALERTA_CONCILIACAO\": row[\"ALERTA_CONCILIACAO\"],\n                                \"RELEVANCIA\": row[\"RELEVANCIA\"],\n                            },\n                            {\n                                \"Cd_SISBASE\": sis,\n                                \"ESCALA\": row[\"ESCALA\"],\n                                \"Etapa\": \"2. Adições\",\n                                \"BASE_TRANSPARENTE\": row[\"Qtd_AIS_ANT\"],\n                                \"VALOR_TOTAL\": row[\"BASE_APOS_ADICOES\"],\n                                \"VALOR_COLORIDO\": row[\"Qtd_INC\"],\n                                \"COR\": \"#4c78a8\",\n                                \"TEXTO\": f'+{row[\"Qtd_INC\"]:,.2f}'.replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\"),\n                                \"DIF_CONCILIACAO\": row[\"DIF_CONCILIACAO\"],\n                                \"DIF_CONCILIACAO_PERC\": row[\"DIF_CONCILIACAO_PERC\"],\n                                \"DINAMICA\": row[\"DINAMICA\"],\n                                \"ALERTA_CONCILIACAO\": row[\"ALERTA_CONCILIACAO\"],\n                                \"RELEVANCIA\": row[\"RELEVANCIA\"],\n                            },\n                            {\n                                \"Cd_SISBASE\": sis,\n                                \"ESCALA\": row[\"ESCALA\"],\n                                \"Etapa\": \"3. Baixas\",\n                                \"BASE_TRANSPARENTE\": row[\"BASE_APOS_BAIXAS\"],\n                                \"VALOR_TOTAL\": row[\"BASE_APOS_ADICOES\"],\n                                \"VALOR_COLORIDO\": row[\"Qtd_BAIXAS\"],\n                                \"COR\": \"#e06d53\",\n                                \"TEXTO\": f'-{row[\"Qtd_BAIXAS\"]:,.2f}'.replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\"),\n                                \"DIF_CONCILIACAO\": row[\"DIF_CONCILIACAO\"],\n                                \"DIF_CONCILIACAO_PERC\": row[\"DIF_CONCILIACAO_PERC\"],\n                                \"DINAMICA\": row[\"DINAMICA\"],\n                                \"ALERTA_CONCILIACAO\": row[\"ALERTA_CONCILIACAO\"],\n                                \"RELEVANCIA\": row[\"RELEVANCIA\"],\n                            },\n                            {\n                                \"Cd_SISBASE\": sis,\n                                \"ESCALA\": row[\"ESCALA\"],\n                                \"Etapa\": \"4. AIS final informado\",\n                                \"BASE_TRANSPARENTE\": 0,\n                                \"VALOR_TOTAL\": row[\"Qtd_AIS_AT\"],\n                                \"VALOR_COLORIDO\": row[\"Qtd_AIS_AT\"],\n                                \"COR\": \"#2b8a3e\",\n                                \"TEXTO\": f'{row[\"Qtd_AIS_AT\"]:,.2f}'.replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\"),\n                                \"DIF_CONCILIACAO\": row[\"DIF_CONCILIACAO\"],\n                                \"DIF_CONCILIACAO_PERC\": row[\"DIF_CONCILIACAO_PERC\"],\n                                \"DINAMICA\": row[\"DINAMICA\"],\n                                \"ALERTA_CONCILIACAO\": row[\"ALERTA_CONCILIACAO\"],\n                                \"RELEVANCIA\": row[\"RELEVANCIA\"],\n                            },\n                            {\n                                \"Cd_SISBASE\": sis,\n                                \"ESCALA\": row[\"ESCALA\"],\n                                \"Etapa\": \"5. Dif. conciliação\",\n                                \"BASE_TRANSPARENTE\": 0,\n                                \"VALOR_COLORIDO\": row[\"DIF_CONCILIACAO_ABS\"],\n                                \"VALOR_TOTAL\": row[\"DIF_CONCILIACAO\"],\n                                \"COR\": \"#7b2cbf\" if row[\"DIF_CONCILIACAO_ABS\"] > 0 else \"#d0d5dd\",\n                                \"TEXTO\": f'{row[\"DIF_CONCILIACAO\"]:+,.0f}'.replace(\",\",\"x\").replace(\".\",\",\").replace(\"x\",\".\"),\n                                \"DIF_CONCILIACAO\": row[\"DIF_CONCILIACAO\"],\n                                \"DIF_CONCILIACAO_PERC\": row[\"DIF_CONCILIACAO_PERC\"],\n                                \"DINAMICA\": row[\"DINAMICA\"],\n                                \"ALERTA_CONCILIACAO\": row[\"ALERTA_CONCILIACAO\"],\n                                \"RELEVANCIA\": row[\"RELEVANCIA\"],\n                            },\n                        ])\n    \n        df_long = pd.DataFrame(df_long)\n        df_long[\"EIXO_Y\"] = (\n                                df_long[\"Cd_SISBASE\"]\n                                + \" | \"\n                                + df_long[\"Etapa\"]\n                            )\n        \n        ordem_escalas = [\n                            \"Acima de 1 milhão\",\n                            \"Entre 100 mil e 1 milhão\",\n                            \"Entre 10 mil e 100 mil\",\n                            \"Abaixo de 10 mil\",\n                        ]\n        \n        fig = make_subplots(\n                                rows=4,\n                                cols=1,\n                                shared_xaxes=False,\n                                vertical_spacing=0.025,\n                                subplot_titles=ordem_escalas,\n                            )\n        \n        for i, escala in enumerate(ordem_escalas, start=1):\n            df_sub = df_long[df_long[\"ESCALA\"] == escala].copy()\n            if df_sub.empty:\n                continue\n            ordem_sis = (\n                            df_bar[df_bar[\"ESCALA\"] == escala]\n                            .sort_values([\"DIF_CONCILIACAO_ABS\", \"MOV_TOTAL\"], ascending=[True, True])\n                            [\"Cd_SISBASE\"]\n                            .tolist()\n                        )\n            ordem_y = []\n            for sis in ordem_sis:\n                ordem_y.extend([\n                                    f\"{sis} | 1. AIS inicial\",\n                                    f\"{sis} | 2. Adições\",\n                                    f\"{sis} | 3. Baixas\",\n                                    f\"{sis} | 4. AIS final informado\",\n                                    f\"{sis} | 5. Dif. conciliação\",\n                                ])\n            ordem_y = list(dict.fromkeys(ordem_y))\n            df_sub[\"EIXO_Y\"] = pd.Categorical(\n                                                df_sub[\"EIXO_Y\"],\n                                                categories=ordem_y,\n                                                ordered=True,\n                                            )\n            df_sub = df_sub.sort_values(\"EIXO_Y\", ascending=False)\n    \n            fig.add_trace(\n                            go.Bar(\n                                x=df_sub[\"BASE_TRANSPARENTE\"],\n                                y=df_sub[\"EIXO_Y\"],\n                                orientation=\"h\",\n                                marker_color=\"rgba(0,0,0,0)\",\n                                hoverinfo=\"skip\",\n                                showlegend=False,\n                            ),\n                            row=i,\n                            col=1,\n                        )\n            fig.add_trace(\n                            go.Bar(\n                                x=df_sub[\"VALOR_COLORIDO\"],\n                                y=df_sub[\"EIXO_Y\"],\n                                orientation=\"h\",\n                                marker_color=df_sub[\"COR\"],\n                                text=df_sub[\"TEXTO\"],\n                                textposition=\"outside\",\n                                customdata=np.stack([\n                                    df_sub[\"Cd_SISBASE\"],\n                                    df_sub[\"Etapa\"],\n                                    df_sub[\"VALOR_TOTAL\"],\n                                    df_sub[\"DIF_CONCILIACAO\"],\n                                    df_sub[\"DIF_CONCILIACAO_PERC\"],\n                                    df_sub[\"DINAMICA\"],\n                                    df_sub[\"ALERTA_CONCILIACAO\"],\n                                ], axis=-1),\n                                hovertemplate=\n                                    \"<b>Cd_SISBASE:</b> %{customdata[0]}<br>\"\n                                    \"<b>Etapa:</b> %{customdata[1]}<br>\"\n                                    \"<b>Parcela destacada:</b> %{x:,.0f}<br>\"\n                                    \"<b>Valor total / saldo:</b> %{customdata[2]:,.0f}<br><br>\"\n                                    \"<b>Dif. conciliação:</b> %{customdata[3]:+,.0f}<br>\"\n                                    \"<b>Dif. conciliação %:</b> %{customdata[4]:+,.2f}%<br>\"\n                                    \"<b>Dinâmica:</b> %{customdata[5]}<br>\"\n                                    \"<b>Status:</b> %{customdata[6]}\"\n                                    \"<extra></extra>\",\n                                showlegend=False,\n                            ),\n                            row=i,\n                            col=1,\n                        )\n    \n            fig.update_yaxes(\n                                title_text=\"\",\n                                automargin=True,\n                                row=i,\n                                col=1,\n                            )\n    \n            fig.update_xaxes(\n                                title_text=\"Quantidade\",\n                                showgrid=True,\n                                gridcolor=\"#eeeeee\",\n                                zeroline=True,\n                                zerolinecolor=\"#999999\",\n                                row=i,\n                                col=1,\n                            )\n        fig.update_layout(\n                            title={\n                                \"text\": \"Dinâmica da Base Instalada, quantidade, por Cd_SISBASE — por faixa de escala\",\n                                \"x\": 0.5,\n                                \"xanchor\": \"center\",\n                            },\n                            barmode=\"stack\",\n                            paper_bgcolor=\"rgba(0,0,0,0)\",\n                            plot_bgcolor=\"rgba(0,0,0,0)\",\n                            margin=dict(l=250, r=90, t=120, b=80),\n                            height=max(700, 5 * len(df_long)),\n                        )\n        st.html(\n                    \"\"\"\n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            O gráfico a seguir apresenta a dinâmica da base instalada por <b>Cd_SISBASE</b>, comparando a posição\n                            inicial dos ativos, as adições realizadas ao longo do período, as baixas registradas e a posição final\n                            observada. Como o arquivo de baixas não possui identificação dos materiais individuais\n                            (<b>COD_ITEM</b>), a análise foi conduzida em nível de sistema, utilizando o <b>Cd_SISBASE</b> como\n                            elemento comum entre as bases de adições e baixas.\n                        </p>\n    \n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            Para cada sistema são apresentadas cinco etapas: posição inicial, adições, baixas, posição final \n                            informada e diferença de conciliação.\n                        </p>\n    \n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            Essa visualização permite identificar sistemas em processo de expansão, renovação ou\n                            redução da base instalada. Sistemas com adições significativamente superiores às baixas\n                            tendem a indicar crescimento da infraestrutura. Já sistemas com elevados volumes de\n                            baixas acompanhados de adições sugerem processos de substituição ou renovação de ativos.\n                            Diferenças relevantes entre a posição final calculada e a posição final informada podem,\n                            ainda, indicar a existência de reclassificações, ajustes cadastrais ou movimentos não\n                            capturados diretamente pelas bases analisadas.\n                        </p>\n                    \"\"\",\n                    width=\"stretch\"\n                )\n        st.plotly_chart(fig, width=\"stretch\")\n        st.html(\n                    \"\"\"\n                    <div style=\"\n                        font-family:'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;\n                        display:flex;\n                        flex-wrap:wrap;\n                        gap:18px;\n                        align-items:center;\n                        margin-top:-10px;\n                        margin-bottom:20px;\n                        font-size:0.88rem;\n                        color:#555;\n                    \">\n                        <span><b style=\"color:#2b5c8f;\">■</b> AIS inicial</span>\n                        <span><b style=\"color:#4c78a8;\">■</b> Adições</span>\n                        <span><b style=\"color:#e06d53;\">■</b> Baixas</span>\n                        <span><b style=\"color:#2b8a3e;\">■</b> AIS final informado</span>\n                        <span><b style=\"color:#7b2cbf;\">■</b> Diferença de conciliação</span>\n                        <span><b style=\"color:#d0d5dd;\">■</b> Sem diferença</span>\n                    </div>\n                    \"\"\",\n                    width=\"stretch\"\n                )\n        \n        st.html(\n                    \"\"\"\n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            A tabela abaixo apresenta, em formato tabular, as mesmas etapas utilizadas na visualização gráfica da \n                            dinâmica da base instalada por <b>Cd_SISBASE</b>. Para cada sistema, são detalhadas a posição inicial, \n                            as adições, as baixas, a posição final informada e a diferença de conciliação entre o saldo esperado \n                            e o saldo efetivamente registrado.\n                        </p>\n    \n                        <p style=\"text-align: justify;text-indent: 40px\">\n                            Essa visão permite consultar os valores de forma analítica, facilitando a identificação de sistemas com \n                            maior movimentação, diferenças de conciliação, expansão líquida, redução da base ou renovação/estabilidade. \n                            A tabela complementa o gráfico ao permitir ordenações, filtros e inspeções pontuais dos registros.\n                        </p>\n                    \"\"\",\n                    width=\"stretch\"\n                )\n        df_long_tab = df_bar[\n                                [\n                                    \"Cd_SISBASE\",\n                                    \"ESCALA\",\n                                    \"Qtd_AIS_ANT\",\n                                    \"Qtd_INC\",\n                                    \"Qtd_BAIXAS\",\n                                    \"BASE_APOS_BAIXAS\",\n                                    \"Qtd_AIS_AT\",\n                                    \"DIF_CONCILIACAO\",\n                                    \"DIF_CONCILIACAO_PERC\",\n                                    \"DINAMICA\",\n                                    \"ALERTA_CONCILIACAO\",\n                                ]\n                            ].copy()\n    \n        df_long_tab = df_long_tab.rename(\n                                        columns={\n                                            \"ESCALA\": \"Faixa de escala\",\n                                            \"Qtd_AIS_ANT\": \"AIS inicial\",\n                                            \"Qtd_INC\": \"Adições\",\n                                            \"Qtd_BAIXAS\": \"Baixas\",\n                                            \"BASE_APOS_BAIXAS\": \"Saldo esperado\",\n                                            \"Qtd_AIS_AT\": \"AIS final informado\",\n                                            \"DIF_CONCILIACAO\": \"Dif. conciliação\",\n                                            \"DIF_CONCILIACAO_PERC\": \"Dif. conciliação (%)\",\n                                            \"DINAMICA\": \"Dinâmica\",\n                                            \"ALERTA_CONCILIACAO\": \"Status conciliação\",\n                                        }\n                                    )\n        \n        df_long_tab = df_long_tab.sort_values(\n                                                [\"Dif. conciliação (%)\", \"Faixa de escala\", \"Cd_SISBASE\"], ascending=False\n                                            )\n        df_long_tab.to_csv(rf\"{local}/RELATORIOS/mutacao_AIS.csv\", index=False, encoding='utf-8', sep = \"|\")\n        st.dataframe(df_long_tab[df_long_tab['Dif. conciliação (%)'].abs() >= 1], width=\"stretch\", hide_index=True)"
+    },
+    "documentacao": {
+      "nome": "mutacao_AIS",
+      "categoria": "função",
+      "parametros": [
+        {
+          "nome": "bd_path",
+          "tipo": "string",
+          "default": "''"
+        },
+        {
+          "nome": "st",
+          "tipo": "objeto",
+          "default": "None"
+        },
+        {
+          "nome": "empresa",
+          "tipo": "string",
+          "default": "''"
+        },
+        {
+          "nome": "bd_path2",
+          "tipo": "string",
+          "default": "''"
+        },
+        {
+          "nome": "local",
+          "tipo": "string",
+          "default": "''"
+        },
+        {
+          "nome": "df_INCR",
+          "tipo": "DataFrame",
+          "default": "pd.DataFrame()"
+        },
+        {
+          "nome": "dir_FIG",
+          "tipo": "string",
+          "default": "''"
+        },
+        {
+          "nome": "df_ROA",
+          "tipo": "DataFrame",
+          "default": "pd.DataFrame()"
+        },
+        {
+          "nome": "df_ANLS_01",
+          "tipo": "DataFrame",
+          "default": "pd.DataFrame()"
+        },
+        {
+          "nome": "df_BPUAR",
+          "tipo": "DataFrame",
+          "default": "pd.DataFrame()"
+        },
+        {
+          "nome": "df_BAIXAS",
+          "tipo": "DataFrame",
+          "default": "pd.DataFrame()"
+        }
+      ],
+      "retorno": null,
+      "dependencias": [
+        "SRC.calculos",
+        "UTILS.imp_tbl_forma_001",
+        "numpy",
+        "pandas",
+        "plotly.express",
+        "plotly.graph_objects",
+        "plotly.subplots.make_subplots",
+        "sqlite3",
+        "streamlit"
+      ],
+      "chamadas": [
+        "abs",
+        "astype",
+        "between",
+        "clcpr.tst_cod_sisbase",
+        "clip",
+        "copy",
+        "df_AISant.groupby",
+        "df_AISant_gr.merge",
+        "df_AISat.groupby",
+        "df_ANLS_01a.merge",
+        "df_ANLS_02.drop",
+        "df_ANLS_02.merge",
+        "df_ANLS_02a.groupby",
+        "df_ANLS_02a.merge",
+        "df_ANLS_03.drop",
+        "df_ANLS_03.merge",
+        "df_bar.iterrows",
+        "df_bar.sort_values",
+        "df_base.copy",
+        "df_long.extend",
+        "df_long_tab.rename",
+        "df_long_tab.sort_values",
+        "df_long_tab.to_csv",
+        "df_sub.sort_values",
+        "dict",
+        "dict.fromkeys",
+        "drop_duplicates",
+        "enumerate",
+        "eq",
+        "fig.add_hline",
+        "fig.add_trace",
+        "fig.add_vline",
+        "fig.update_layout",
+        "fig.update_xaxes",
+        "fig.update_yaxes",
+        "fillna",
+        "go.Bar",
+        "groupby",
+        "imp_tbl_forma_001",
+        "isnull",
+        "len",
+        "list",
+        "make_subplots",
+        "max",
+        "np.select",
+        "np.stack",
+        "np.where",
+        "ordem_y.extend",
+        "pd.Categorical",
+        "pd.DataFrame",
+        "pd.read_csv",
+        "pd.to_numeric",
+        "px.scatter",
+        "rename",
+        "replace",
+        "reset_index",
+        "sl.connect",
+        "sort_values",
+        "st.dataframe",
+        "st.fragment",
+        "st.html",
+        "st.plotly_chart",
+        "str.rjust",
+        "sum",
+        "tolist"
+      ]
+    },
+    "status": "sucesso"
+  },
+  {
+    "funcao": {
+      "nome": "visualizador_BPR",
+      "tipo": "function",
+      "linha_inicio": 2201,
+      "linha_fim": 2231,
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": null,
+          "default": "None",
+          "categoria": "posicional"
+        }
+      ],
+      "retorno": null,
+      "decorators": [],
+      "dependencias": {
+        "imports": [
+          "MANIFESTO.inicializa_database",
+          "MANIFESTO.inicializa_detalhes",
+          "MANIFESTO.inicializar_rastreamento",
+          "UTILS.bsc_dados_reg",
+          "UTILS.executar_vis",
+          "pathlib.Path",
+          "streamlit"
+        ],
+        "chamadas": [
+          "Path",
+          "bsc_dados_reg",
+          "caminho_manifesto.parent.mkdir",
+          "drop_duplicates",
+          "executar_vis",
+          "inicializa_database",
+          "inicializa_detalhes",
+          "inicializar_rastreamento",
+          "st.html",
+          "str",
+          "to_list"
+        ]
+      },
+      "codigo": "def visualizador_BPR(st = None):\n    if not'tra_dir' in st.session_state:\n        st.html(\"\"\"\n                    <p style=\"text-align: justify;text-indent: 40px\">\n                    Você deve configurar o diretório de trabalho, empresa e período\n                    na aba <i>Criar Pasta de Trabalho</i>, barra lateral.</p>\n                \"\"\")\n        return\n\n    local = st.session_state.tra_dir\n    empresa = st.session_state.nm_empr\n    ano = st.session_state.dt_fim.year\n    css = bsc_dados_reg(\"estilo_001\", tipo=\"Estilo_CSS\")\n    dds = bsc_dados_reg('TBL_EMPRESAS')\n    lst_emp = dds['Nm_EMPRESA'].drop_duplicates().to_list()\n    st.html(f\"<style>{css}</style>\")\n    raiz = Path(local)\n    caminho_manifesto = raiz / \"MANIFESTO\" / \"TRILHA_EXEC\" / \"execucoes.db\"\n    caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)\n    inicializa_database(str(caminho_manifesto))\n    inicializa_detalhes(str(caminho_manifesto))\n    inicializar_rastreamento(str(caminho_manifesto))\n    database = str(caminho_manifesto)\n    bd_path = f'{local}/BD_LOCAL/{empresa}_{ano}.db'\n    bd_BDGDAT_path = f'{local}/BD_LOCAL/BDGD_AT_{empresa}_{ano}.db'\n    bd_BDGDANT_path = f'{local}/BD_LOCAL/BDGD_ANT_{empresa}_{ano}.db'\n    bd_EFD_path = f'{local}\\BD_LOCAL\\EFD_ICMS_{empresa}_{ano}.db'\n    df_INCR, dir_FIG, df_ROA, df_ANLS_01, df_BPUAR, df_BAIXAS = executar_vis(_vis_001, bd_path, st, empresa, bd_EFD_path, local)\n    executar_vis(_vis_002, bd_path, st, empresa, bd_EFD_path, local, df_INCR, dir_FIG, df_ROA)\n    executar_vis(_vis_003, bd_path, st, empresa, bd_EFD_path, local, df_INCR, dir_FIG, df_ROA, df_ANLS_01, df_BPUAR)\n    executar_vis(_vis_004, bd_path, st, empresa, bd_EFD_path, local, df_INCR, dir_FIG, df_ROA, df_ANLS_01, df_BPUAR, df_BAIXAS)"
+    },
+    "documentacao": {
+      "resumo": "Visualiza dados utilizando uma interface Streamlit.",
+      "descricao": "A função visualizador_BPR é responsável por configurar e inicializar um ambiente de visualização de dados, carregando informações necessárias e executando várias visualizações específicas. Ela utiliza o Streamlit para criar a interface do usuário e interage com bancos de dados e arquivos.",
+      "parametros": [
+        {
+          "nome": "st",
+          "tipo": "objeto",
+          "categoria": "posicional",
+          "descricao": "Objeto Streamlit usado para criar a interface da aplicação."
+        }
+      ],
+      "retorno": null,
+      "excecoes": [],
+      "dependencias": [
+        {
+          "nome": "MANIFESTO.inicializa_database",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializa_detalhes",
+          "tipo": "função"
+        },
+        {
+          "nome": "MANIFESTO.inicializar_rastreamento",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.bsc_dados_reg",
+          "tipo": "função"
+        },
+        {
+          "nome": "UTILS.executar_vis",
+          "tipo": "função"
+        },
+        {
+          "nome": "pathlib.Path",
+          "tipo": "classe"
+        },
+        {
+          "nome": "streamlit",
+          "tipo": "biblioteca"
+        }
+      ],
+      "docstring": "Visualiza dados utilizando uma interface Streamlit.\n\nArgs:\n    st (objeto): Objeto Streamlit usado para criar a interface da aplicação.\n\nReturns:\n    None\n\nNotes:\n    A função configura e inicializa um ambiente de visualização de dados, carregando informações necessárias e executando várias visualizações específicas. Ela utiliza o Streamlit para criar a interface do usuário e interage com bancos de dados e arquivos."
+    },
+    "status": "sucesso"
+  }
+]

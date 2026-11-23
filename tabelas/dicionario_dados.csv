@@ -1,0 +1,911 @@
+COL|Variável|Descrição da Variável|Tipo
+1|ALIQ_COFINS|Alíquota COFINS, percentual no formato decimal|Duplo
+2|ALIQ_ICMS|Alíquota ICMS, percentual no formato decimal|Duplo
+3|ALIQ_IPI|Alíquota IPI, percentual no formato decimal|Duplo
+4|ALIQ_ISS|Percentual aplicado conforme município/serviço|Duplo
+5|ALIQ_PIS|Alíquota PIS, percentual no formato decimal|Duplo
+6|Ano_Ref|Ano de referência (aaaa)|Inteiro
+7|Cd_ABCC|Código de abertura contábil|VarChar(25)
+8|Cd_AJST|Código do tipo de lançamento: 0, Normal; 1, Estorno; 2, Mutação; 3, Ajuste.|Inteiro
+9|Cd_ANEEL|Código da empresa na Aneel|Inteiro
+10|Cd_ATIP|Código de atipicidade: 1 : Expansão em linha viva; 2 : Recondutoramento de circuitos; 3 : Recapacitação de linhas; 4 : Instalação ou substituição de UAR que não seja a própria UC; 5 : Redes e linhas de distribuição subterrâneas ou submersas (todas as TUC associadas); 6 : Estruturas tipo torre (TUC 255.02); 7 : Estruturas tipo poste em Linhas de Distribuição (TUC 255.01); 8 : Sistemas especiais de medição; 9 : Novas tecnologias, ainda não modularizadas; 10 : Outros.|Inteiro
+11|Cd_ATRB|Especificar a ordem do atributo: A1, A2, A3, A4, A5, A6|VarChar(2)
+12|Cd_CA|Tipo do CA: 1 : Frete/Transporte; 2 : Projeto; 3 : Gerenciamento; 4 : Fiscalização; 5 : Montagem; 6 : Custo de Suporte.|Inteiro
+13|Cd_CAP|Código que identifica as funcionalidades disponíveis: medição de consumo (kW e kVAr), de níveis de tensão, de valores de corrente, bidirecional, capacidades de comunicação (RF, RS485, PLC, etc.), etc..|Inteiro
+14|Cd_CC|Código conforme Manual de Contabilidade do Setor Elétrico, até nove algarismos (sem pontos)|Inteiro
+15|Cd_CFOP|Código Fiscal de Operações e de Prestações|Inteiro
+16|Cd_CICLO|Identificador do ciclo: BB1 (ciclo 1), BB2 (ciclo 2), BB3 (ciclo 3), BB4 (ciclo 4), RBSE, RBNI_C1 (para o primeiro ciclo)|VarChar(10)
+17|Cd_Cls_Custo|Classe de custo|VarChar(25)
+18|Cd_CMU_ST|Instalação referente a COM: 1 : VL_ST_ChFus_RAR_Unit, , explicando:Valor de instalação de chave fusível em rede aérea rural; 2 : VL_ST_ChFus_RAU_Unit, , explicando:Valor de instalação de chave fusível em rede aérea urbana; 3 : VL_ST_Crzta_RAR_Unit, , explicando:Valor de instalação de cruzeta em rede aérea rural; 4 : VL_ST_Crzta_RAU_Unit, , explicando:Valor de instalação de cruzeta em rede aérea urbana; 5 : VL_ST_Haste_RAR_Unit, , explicando:Valor de instalação de haste de aterramento em rede aérea rural; 6 : VL_ST_Haste_RAU_Unit, , explicando:Valor de instalação de haste de aterramento em rede aérea urbana; 7 : VL_ST_Isol_Dis_RAR_Unit, , explicando:Valor de instalação de isolador de disco em rede aérea rural; 8 : VL_ST_Isol_Dis_RAU_Unit, , explicando:Valor de instalação de isolador de disco em rede aérea urbana; 9 : VL_ST_Isol_Pin_RAR_Unit, , explicando:Valor de instalação de isolador de pino em rede aérea rural; 10 : VL_ST_Isol_Pin_RAU_Unit, , explicando:Valor de instalação de isolador de pino em rede aérea urbana; 11 : VL_ST_Pin_RAR_Unit, , explicando:Valor de instalação de pino em rede aérea rural; 12 : VL_ST_Pin_RAU_Unit, , explicando:Valor de instalação de pino em rede aérea urbana; 13 : VL_ST_Praio_RAR_Unit, , explicando:Valor de instalação de para-raio em rede aérea rural; 14 : VL_ST_Praio_RAU_Unit, , explicando:Valor de instalação de para-raio em rede aérea urbana|Inteiro
+19|Cd_Cna_Ccd|É o código do contrato de concessão|VarChar(25)
+20|Cd_CNTR|Código do contrato de prestação de serviços|VarChar(100)
+21|Cd_CONC|Conciliado=1; Sobra Contábil=2; Sobra física=3|Inteiro
+22|Cd_CONJ|Código do conjunto, de acordo com a BDGD|VarChar(50)
+23|Cd_DE_PARA|Código de equivalência|VarChar(25)
+24|Cd_DEF_EMP|Código do atributo, conforme definido na Tabela I, MCPSE|VarChar(25)
+25|Cd_Depto|Código do departamento a que se vincula o trabalhador|VarChar(25)
+26|Cd_DIG_INC|Dígito de incorporação|Inteiro
+27|Cd_DIG_INC_ANT|Código do dígito de incorporação anterior|Inteiro
+28|Cd_DIG_INC_AT|Código do dígito de incorporação atual|Inteiro
+29|Cd_EXTIPI|Código da exceção e é utilizada na tabela TIPI|Inteiro
+30|Cd_Forn|Código do Fornecedor|VarChar(255)
+31|Cd_ID_BDGD|Quando se tratar de bem individual, indicar o código da BDGD associado ao equipamento. No caso de bens de massa ou de bens não modelados na BDGD, colocar “NA”|VarChar(1000)
+32|Cd_ID_BDIT|Quando se tratar de bem individual, indicar o código da BDIT associado ao equipamento. No caso de bens de massa ou de bens não modelados na BDIT, colocar “NA”|VarChar(1000)
+33|Cd_Matricula|Código identificador do trabalhador no sistema da empresa|VarChar(25)
+34|Cd_MED|Código do medidor|VarChar(25)
+35|Cd_MUN|Código do município na malha municipal digital do IBGE, associado ao item do incremental, pelo Cd_SubODI, se aplicável|Inteiro
+36|Cd_NCM|Código da nomenclatura comum do Mercosul|Inteiro
+37|Cd_NFe|Código da nota fiscal eletrônica, se disponível|VarChar(255)
+38|Cd_NG|Natureza de Gasto do ajuste: 1 : Material – UAR; 2 : Material – COM; 3 : Mão de obra própria; 4 : Serviço de terceiros; 5 : Juros sobre obras em andamento; 6 : Outros; 7: materiais não capitalizáveis (energia comprada para revenda, por exemplo).|Inteiro
+39|CD_Nm_Reg|Código da descrição padrão para racionalização de COM, em redes: 1 : Condutor Nu (rede primária); 2 : Condutor Isolado (rede primária); 3 : Banco de Capacitores; 4 : Chave Fusível; 5 : Chave Seccionadora; 6 : Chave Seccionadora Carga; 7 : Cruzeta; 8 : Haste de Aterramento; 9 : Isolador Disco; 10 : Isolador Pino; 11 : Para-raios; 12 : Pino; 13 : Poste; 14 : Regulador de Tensão; 15 : Religador Monofásico; 16 : Religador Trifásico; 17 : Seccionalizador de cerca; 18 : Seccionalizador Monofásico; 19 : Seccionalizador Trifásico; 20 : Torre; 21 : Transformador Distribuição Bifásico; 22 : Transformador Distribuição Monofásico; 23 : Transformador Distribuição Trifásico.|Inteiro
+40|CD_Nm_Reg_ST|Código da descrição padrão para racionalização de serviços: 1 : Condutor nu; 2 : Condutor Protegido; 3 : Banco de Capacitores; 4 : Chave Fusível; 5 : Chave Seccionadora; 6 : Chave Seccionadora Carga; 7 : Cruzeta; 8 : Haste de Aterramento; 9 : Isolador Disco; 10 : Isolador Pino; 11 : Para-raios; 12 : Pino; 13 : Poste; 14 : Regulador de Tensão; 15 : Religador Monofásico; 16 : Religador Trifásico; 17 : Seccionalizador de cerca; 18 : Seccionalizador Monofásico; 19 : Seccionalizador Trifásico; 20 : Torre; 21 : Transformador Distribuição Bifásico; 22 : Transformador Distribuição Monofásico; 23 : Transformador Distribuição Trifásico; 24 : Medidor; 25 : Transformador de Força; 26 : Transformador de Corrente; 27 : Transformador de Potencial; 28 : Disjuntor; 29 : Fibra Óptica; 30 : Ramal; 31 : Demais isoladores; 32 : Estrutura; 33 : Controle de Religador.|Inteiro
+41|Cd_NT|Código da Norma Técnica da empresa aplicada no projeto|VarChar(25)
+42|Cd_NumFIS|Código de numeração física|VarChar(25)
+43|Cd_OD(x)|Número da OD(X) em que X, sem parênteses, é I, se investimento; D, se desativação; e S, se serviço.|VarChar(25)
+44|Cd_ODD|Código da ODD|VarChar(25)
+45|CD_ODI|Ordem de imobilização|VarChar(25)
+46|Cd_ODI_ENG|Código de ODI da ENGENHARIA|VarChar(25)
+47|Cd_ODI_Ori|Número do Projeto|VarChar(25)
+48|Cd_ODS|Número da ODS, ordem de serviço.|VarChar(25)
+49|Cd_PAT_ANT|Número patrimônio anterior|VarChar(50)
+50|Cd_PAT_AT|Número patrimônio atual|VarChar(50)
+51|Cd_PAT_LAUDO|Código do patrimônio empregado no laudo, ciclo anterior|VarChar(25)
+52|Cd_Patrim|Número patrimônio|VarChar(25)
+53|Cd_Pedido|Número do Pedido|VarChar(255)
+54|Cd_PROJ|Código de projeto se houver|VarChar(50)
+55|Cd_Q5|Código do quadro 5, empregado pela distribuidora no laudo blindado|VarChar(10)
+56|Cd_Q7|Código do quadro 7, empregado pela transmissora no laudo blindado|VarChar(10)
+57|Cd_SERV|Código do serviço prestado segundo legislação municipal|VarChar (20)
+58|Cd_SISBASE|Informar o código do Banco de Preços Referenciais, conforme Anexo V|VarChar(6)
+59|CD_SubODI|Código da SubODI|VarChar(25)
+60|Cd_SubODI_AIS|Número da Sub-ODI do AIS|VarChar(255)
+61|Cd_SubODI_MUT|Código da SubODI que recebe/doa a mutação, se AIS ou AIC|VarChar(25)
+62|Cd_SubODI_ROS|Número da Sub-ODI do ROS|VarChar(255)
+63|Cd_TIP_MED|Tipologia: Eletrônico=1; Eletromecânico=0|Booleano
+64|Cd_Tipo_Obra|Tipo da obra: 1 : Ampliação/Expansão (1), Investimento, explicando:Pode ser aumento de capacidade (ampliação) ou inserção de novos ativos (expansão).; 2 : Construção, Investimento, explicando:Nova obra, inserção de ativos.; 3 : Manutenção (1), Manutenção, explicando:Troca de ativos queimados/defeituosos, o fator para mudança não foi de ordem técnica, em geral não há projeto associado.; 4 : Melhoria/Reforma (1), Investimento, explicando:Obra que melhora desempenho ou estende vida útil do ativo.; 5 : Administrativo, Investimento, explicando:Obras de apoio administrativo, mas ainda capitalizáveis como investimento.; 6 : Administrativo (1), Manutenção, explicando:Obras de apoio administrativo, associadas a manutenção, mas ainda capitalizáveis como investimento.; 7 : Incorporação, Investimento, explicando:Inclusão de ativo já existente (por doação, incorporação etc.).; 8 : PEE, Investimento, explicando:Projetos de Eficiência Energética ? inserem ativos novos.; 9 : PED, Investimento, explicando:Projetos de Pesquisa e Desenvolvimento ? geram novos ativos/protótipos.; 10 : Manutenção (1), Investimento, explicando:Troca de ativos, não defeituosos, o fator para mudança foi de ordem técnica, em geral há projeto associado.; 11 : Medição, Investimento, explicando:Nova instalação de medidores.; 12 : Medição (1), Manutenção, explicando:Substituição de medidores já existentes.|VarChar(25)
+65|Cd_Tipo_OE|Código de atipicidade de OE, conforme: 0: NA; 1: PlPT; 2: MLA; 3: Subvenção de CCC; 4: Doações; 5: Participação Financeira do Consumidor; 6: Repasses de Recursos dos Governos Federal, Estadual, Distrital e Municipal; 7: Incorporação; 8: Outros. Se AIS ou AIC|Inteiro
+66|Cd_TP_AVAL|Atualizado=1; BPR=2; BPC=3; ORÇAMENTO=4; 5-BPC-PLPT.|Inteiro
+67|Cd_TP_MED|Tipo de medição: Direta=1; Indireta=0|Booleano
+68|Cd_UAR|Preencher com TUC ou UAR|VarChar(3)
+69|Cd_UC|IdUC|VarChar(25)
+70|Cd_UND|Unidade|VarChar(10)
+71|Cd_UND_AIS|Unidade empregada na contabilidade|VarChar(10)
+72|Cd_Unid|Unidade comercial empregada para o item, Nota Fiscal|VarChar(10)
+73|Cd_Unid_US|Unidade de Serviço|VarChar (10)
+74|CHV_NFSe|Chave única da NFS-e para validação no portal da Prefeitura|VarChar (50)
+75|CNPJ_Forn|CNPJ do emissor da nota|VarChar (14)
+76|COD_CCUS|Código do centro de custos que foi registrado a mão de obra|VarChar(25)
+77|COD_CTA|Código da conta analítica/grupo de contas, conforme ECD|Inteiro
+78|COD_ITEM|Código do material, tabela 3c|VarChar(25)
+79|COD_ITEM_CDS|Código do material/serviço no caderno de serviços da empresa|VarChar(25)
+80|COD_ITEM_DE|Código do item anterior, tabela 3c|VarChar(25)
+81|COD_ITEM_SPD|Código do material conforme informado no SPED|VarChar(25)
+82|COD_RUBRICA|Código ou identificação de um tipo específico de lançamento que representa uma verba — ou seja, um item financeiro individual dentro da folha, seja de crédito (pagamento ao trabalhador) ou de débito (desconto). Usar a Tabela 03 - Natureza das Rubricas da Folha de Pagamento (disponível em https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/leiautes-esocial-v-1-1-beta/tabelas.html#03)|Inteiro
+83|CST_COFINS|Código de Situação tributário do COFINS|Inteiro
+84|CST_ICMS|Código de Situação tributário do ICMS|Inteiro
+85|CST_IPI|Código de Situação tributário do IPI|Inteiro
+86|CST_PIS|Código de Situação tributário do PIS|Inteiro
+87|Desc_SERV|Texto descritivo do serviço prestado, se Cd_NG = 7/4|VarChar (1000)
+88|DESCR_ITEM|Descrição completa dos serviços associados|VarChar(1000)
+89|Dsc_Cargo|Descrição do cargo do trabalhador|VarChar(255)
+90|DT_ALT|Data de inclusão ou alteração no plano de contas|Data (aaaa/mm/dd)
+91|Dt_AUT|Data de autorização de deslocamento de equipe|Data (aaaa/mm/dd)
+92|Dt_Baixa|Data da Baixa|Data (aaaa/mm/dd)
+93|Dt_BX|Data da baixa|Data (aaaa/mm/dd)
+94|Dt_CHEG|Data de chegada de equipe|Data (aaaa/mm/dd)
+95|Dt_CMPT|Data de competência da Folha|aaaa/mm
+96|Dt_CNTB_AJST|Data ajustada pela avaliadora, caso houve depreciação adicional (deve ser a do laudo)|Data (aaaa/mm/dd)
+97|Dt_CONT_INC_REDE|Data Contabilização Incorporação Rede|Data (aaaa/mm/dd)
+98|Dt_Energ|Data de energização|Data (aaaa/mm/dd)
+99|DT_FIN|Data de fim do período|Data (aaaa/mm/dd)
+100|Dt_Imob|Data imobilização|Data (aaaa/mm/dd)
+101|Dt_INI|Data do conhecimento da ocorrência|Data (aaaa/mm/dd)
+102|Dt_Inic_Proj|Data início do projeto|Data (aaaa/mm/dd)
+103|Dt_LCMTO|Data do lançamento|Data (aaaa/mm/dd)
+104|Dt_MUT|Data em que ocorreu a mutação|Data (aaaa/mm/dd)
+105|Dt_NF|Data da Emissão da Nota Fiscal|Data (aaaa/mm/dd)
+106|Dt_Operacao|Data de entrada em operação comercial da obra|Data (aaaa/mm/dd)
+107|Dt_PMTO|Data de pagamento da parcela|Data (aaaa/mm/dd)
+108|Dt_REF|Data de referência do dado|Data (aaaa/mm/dd)
+109|Dt_Ref_AIS|Data de referência do AIS|Data (aaaa/mm/dd)
+110|Dt_REF_DADOS|Data de referência dos dados apresentados|Data (aaaa/mm/dd)
+111|Dt_REF_VNR_Vigente|Data de referência do VNR vigente|Data (aaaa/mm/dd)
+112|Dt_REST|Data de restabelecimento|Data (aaaa/mm/dd)
+113|Dt_RET_AMX|Data de Retorno ao Almoxarifado|Data (aaaa/mm/dd)
+114|Dt_RFM|Data da Reforma|Data (aaaa/mm/dd)
+115|Dt_RIMB|Data de Reimobilização|Data (aaaa/mm/dd)
+116|Dt_TLD|É a data de licença definitiva|Data (aaaa/mm/dd
+117|Dt_TLP|É a data de licença provisória|Data (aaaa/mm/dd
+118|Dt_TLP_TLR|É a data do primeiro termo de liberação com pendências ou termo de liberação de receita emitido, se houver|Data (aaaa/mm/dd
+119|Dt_Uniti|Data unitização, se AIS|Data (aaaa/mm/dd)
+120|FAT_CONV|Fator de conversão: fator utilizado para converter (multiplicar) a unidade a ser convertida na unidade adotada no AIS|Duplo
+121|FLG_AGR|0, se for bens idênticos; 1 se for bem similar|Booleano
+122|FLG_AJST_CTB|Indica se o ajuste é decorrente de equalização, 1, ou baixa ordinária, 0|Booleano
+123|FLG_BLINDADO|Indica se o registro correspondente já foi objeto de revisão (1) ou não (0)|Booleano
+124|FLG_BPR|Item considerado no BPR: (1) SIM, (0) NÃO|Booleano
+125|FLG_CLS|Classificação definida pela avaliadora: se UC/UAR, 1; caso COM, 0.|Booleano
+126|FLG_DOA_OE|DOAÇÃO (Sim=1; Não=0)|Booleano
+127|FLG_ELI|É elegível, 1; não 0 (atende as condições regulatórias)|Booleano
+128|FLG_ELIG|ELEGÍVEL=1, INELEGÍVEL=0 (pode ter alterado)|Booelano
+129|FLG_ICMS|Especificar se participa do rateio do ICMS: (1) SIM, (0) NÃO|Booleano
+130|FLG_IMP|Especifica se é importação, 0, ou não, 1.|Booleano
+131|FLG_INC|Período incremental, 1; período blindado, 0|Booleando
+132|FLG_INCOR_OE|INCORPORAÇÃO (Sim=1; Não=0)|Booleano
+133|FLG_LIMBO|Indica se o registro correspondente representa uma “melhoria limbo” (1) ou não (0)|Booleano
+134|FLG_MDL_COMPLETO|Indica se o registro correspondente representa uma unidade modular completa (1) ou não (0)|Booleano
+135|FLG_OAT|Caso o serviço seja de obra atípica indicar com 1, caso não zero|Booleano
+136|FLG_OE|Indica se o registro correspondente é obrigação especial (1) ou não (0)|Booleano
+137|FLG_PER|Indica se período incremental (1) e (0) para blindada|Booleano
+138|FLG_PLPT|PLPT (Sim=1; Não=0)|Booleano
+139|FLG_PLPT_OE|PLPT (Sim=1; Não=0)|Booleano
+140|FLG_RAP_PREVIA|Indica se o registro correspondente possui receita previamente estabelecida (1) ou não (0)|Booleano
+141|FLG_REG|Regularizado=1; a regularizar=0|Booleano
+142|FLG_REIDI|Indica se o registro correspondente possui REIDI (1) ou não (0)|Booleano
+143|FLG_RET|Indica se o ISS foi retido na fonte|Duplo
+144|FLG_RSV|Se equipamento de reserva=1; se não=0 (ENGENHARIA)|Booleano
+145|FLG_TP|Especificar se: (1) NOVO, (0) REFORMA|Booleano
+146|FLG_TPNF|Especifica se a nota é complementar, 0, ou normal, 1.|Booleano
+147|Fr_INI|Como se detectou: (1) Reclamação; (2) Informação; (3) Automático; (4) Outro|Inteiro
+148|FT_CNV_ST_MAT|Fator de conversão do serviço para material, isto é, fator que multiplicado pelo serviço resulta em uma unidade inteira do material associado.|Duplo
+149|HIST|Histórico completo da partida ou histórico complementar|VarChar(65535)
+150|Hr_AUT|Hora de autorização de deslocamento de equipe|Tempo (HH:MM:SS)
+151|Hr_CAPEX|Quantidade de horas associadas às ODI|Duplo
+152|Hr_CHEG|Hora de chegada de equipe|Tempo (HH:MM:SS)
+153|Hr_Efetivas|Quantidade de horas efetivas do funcionário, considerados para elaboração da FOPAG|Duplo
+154|Hr_INI|Hora do conhecimento da ocorrência|Tempo (HH:MM:SS)
+155|Hr_ODD|Quantidade de horas associadas às ODD|Duplo
+156|Hr_ODI|Número de horas trabalhadas lançadas para ODI|Duplo
+157|Hr_OPEX|Quantidade de horas associadas ao OPEX (exclui ODI e ODD)|Duplo
+158|Hr_REST|Hora de restabelecimento|Tempo (HH:MM:SS)
+159|Hr_TOT|Número de horas trabalhadas total|Duplo
+160|Id_AIS|Identificador do lançamento na tabela do AIS da empresa|Inteiro longo
+161|Id_Arranjo|Conforme tabela de domínio anexa, D2|Inteiro
+162|Id_BP|Identificador Linha|Inteiro
+163|Id_BP_FP|Identificador Linha|Inteiro
+164|Id_BX_INC|Identificador|Inteiro longo
+165|Id_DT_ENERG|Identificador de linha|Inteiro
+166|Id_EQP|Conforme tabela de domínio anexa, D3|Inteiro
+167|Id_Ext_CMP|Identificador de linha do registro apresentado no extrato de compras|Inteiro
+168|Id_Ext_MOP_FOPAG|Identificador da linha da tabela FOPAG|VarChar(25)
+169|Id_Ext_MOP_ITEM|Identificador de Linha|Inteiro
+170|Id_Ext_MOP_RUB|Identificador de Linha|Inteiro
+171|Id_Ext_SRV|Identificador Linha|Inteiro
+172|Id_Ext_SRV_ABT|Identificador Linha|Inteiro
+173|Id_MAT_OBR_EM|Identificador da obra emergencial, chave primária da tabela|Inteiro
+174|Id_Modulo|Conforme tabela de domínio anexa, D1|Inteiro
+175|Id_MUD_PAT|Identificador de linha|Inteiro longo
+176|Id_NRM_COM|Identificador de linha|Inteiro
+177|Id_OBR_EM|Identificador da obra emergencial, chave primária da tabela|Inteiro
+178|Id_ODI|Identificador|Inteiro longo
+179|Id_OE|Identificador Linha|Inteiro
+180|Id_OE_AJS|Identificador Linha|Inteiro longo
+181|Id_RFM|Identificador de linha|Inteiro longo
+182|Id_SEQ_AO|Identificador|Inteiro longo
+183|Id_SEQ_BI_VREGUL|Identificador|Inteiro longo
+184|Id_SEQ_DePara|Identificador|Inteiro longo
+185|Id_SEQ_INC|Identificador|Inteiro longo
+186|Id_SEQ_LCMTO|Identificador da tabela, chave primária, número sequencial|Inteiro longo
+187|Id_SEQ_PP|Identificador|Inteiro longo
+188|Id_SEQ_PTD|Identificador da tabela, chave primária, número sequencial|Inteiro longo
+189|Id_SEQ_SDS|Identificador da tabela, chave primária, número sequencial|Inteiro longo
+190|Id_SEQ_UC_DOM|Identificador|Inteiro longo
+191|Id_Tensao|Conforme tabela de domínio anexa, D4|Inteiro
+192|Id_TP_MDL|Conforme tabela de domínio anexa, D7|Inteiro
+193|Id_TP_OBRA|1 : Substituição; 2 : Instalação; 3 : Leilão|Inteiro
+194|Ide_AIS|Chave estrangeira, que identifica o ativo no AIS|Inteiro longo
+195|Ide_ALI_AO|Identificador de linha|Inteiro longo
+196|Ide_CMU_ST|Identificador linha|Inteiro
+197|Ide_COM_MED|Identificador de linha|Inteiro longo
+198|Ide_CTB_FIS|Identificador de linha|Inteiro longo
+199|Ide_Mdl|É o código do módulo, padrão SIGET|VarChar(25)
+200|Ide_ODD|Identificador de linha|Inteiro longo
+201|Ide_Rct|É o código da receita, padrão SIGET|VarChar(25)
+202|Ide_Rct_SGPMR|É o código da receita, padrão SIGET OU o código SGPMR para o caso das melhorias e reforços de pequeno porte sem receita prévia (FLG_RAP_PREVIA = 0)|VarChar(25)
+203|Ide_RO_Analitico|Identificador de linha|Inteiro longo
+204|Ide_RO_Sintetico|Identificador de linha|Inteiro longo
+205|IND_CAPEX|Critério para alocação como CAPEX: 1, direto; 2, indireto; 3, tempo padrão.|Inteiro
+206|IND_DC|Indicador da natureza:|VarChar(1)
+207|IND_DC_FIN|Indicador da situação do saldo final:|VarChar(1)
+208|IND_DC_INI|Indicador da situação do saldo inicial:|VarChar(1)
+209|IND_FL|Indicador do tipo de Folha: 1, folha normal; 2, folha de 13º salário; 3, folha de férias; 4, folha complementar à normal; 5, folha complementar ao 13º; e 6 outras folhas; 7, PROVISÕES|Inteiro
+210|IND_LCMTO|Indicador do tipo de lançamento: N – Lançamento normal (todos os lançamentos, exceto os de encerramento das contas de resultado); E – Lançamento de encerramento de contas de resultado. X – Lançamento extemporâneo.|VarChar(1)
+211|IND_RUBR|Indicação de Provento ou Desconto: 1, desconto; 2, Provento ou Vantagem; 3, outros|Inteiro
+212|Nm_Ato|Número do documento que autoriza a execução da obra|VarChar(255)
+213|Nm_Empresa|É o nome da concessionária|VarChar(15)
+214|Nm_MUN|Localidade onde o serviço foi prestado|VarChar (100)
+215|Nm_SE|Nome da SE, caso não seja um módulo de linha de transmissão|VarChar(255)
+216|Nm_ST|Nome da empresa prestadora do serviço|VarChar r(150)
+217|Nm_Variavel|Nome da variável|VarChar(50)
+218|Nr_A1|Número do atributo A1|Inteiro
+219|Nr_A1_AT|Número do atributo A1|Inteiro
+220|Nr_A2|Número do atributo A2|Inteiro
+221|Nr_A2_AT|Número do atributo A2|Inteiro
+222|Nr_A3|Número do atributo A3|Inteiro
+223|Nr_A3_AT|Número do atributo A3|Inteiro
+224|Nr_A4|Número do atributo A4|Inteiro
+225|Nr_A4_AT|Número do atributo A4|Inteiro
+226|Nr_A5|Número do atributo A5|Inteiro
+227|Nr_A5_AT|Número do atributo A5|Inteiro
+228|Nr_A6|Número do atributo A6|Inteiro
+229|Nr_A6_AT|Número do atributo A6|Inteiro
+230|Nr_CM|Número do centro modular|Inteiro
+231|Nr_DOC_COMP|Número do documento de compensação do pagamento, do ERP da empresa. Deve ser compatível com o informado no ECD. No caso de haverem mais de um lançamento, declarar todos, separados por vírgula {exemplo: 1234, 2345).|(VarChar(50))
+232|Nr_Fases|Número de fases|Inteiro longo
+233|Nr_FC|Fator de conversão, no caso de condutores|Duplo
+234|Nr_FORM|Informar o código da fórmula paramétrica da COGE, conforme Anexo III|VarChar(6)
+235|Nr_Item_NF|Número do item da NFSe|Inteiro
+236|Nr_ItemNF|Número do Item na Nota Fiscal|VarChar(10)
+237|Nr_NF|Identificação sequencial da nota fiscal|VarChar (20)
+238|Nr_Ordem|Número da ordem de serviço do sistema da distribuidora|VarChar(25)
+239|Nr_Parcela|Identificador sequencial da parcela|Inteiro
+240|Nr_SerieNF|Número de Série da Nota Fiscal|VarChar(10)
+241|Nr_TI|Código do tipo de instalação conforme MCPSE|Inteiro
+242|Nr_TI_Ori|Tipos de instalação de Origem|Inteiro
+243|Nr_TUC|Número da unidade de cadastro|Inteiro
+244|Nr_TUC_AT|TUC|Inteiro
+245|NUM_LCTO|Número ou Código de identificação único do lançamento contábil, compatível com o livro diário|VarChar(50)
+246|OBS_AVAL|Observações da avaliadora sobre os dados apresentados.|VarChar(2000)
+247|OBS_AVL|Observações relevantes sobre particularidades de cálculo|VarChar(2000)
+248|OBS_AVL_ELI|Observações sobre a eligibilidade|VarChar(2000)
+249|Pct_IA|Percentual do índice de aproveitamento|Duplo
+250|Pct_IAI|O índice de aproveitamento pode ter se alterado|Duplo
+251|Pct_ODD|Percentual alocado na ODD|Duplo
+252|Pct_OE|Percentual de OE, associado ao ativo|Duplo
+253|Pct_PROJ_ORI|E valor percentual, em decimal, do Projeto de Origem Unitizado|Duplo
+254|Pct_SubODI|Percentual alocado na SubODI/ODI|Duplo
+255|Qtd|Quantidade|Duplo
+256|QTD_AIC_ANT|Quantidade no AIC no início do período incremental|Duplo
+257|QTD_AIC_AT|Quantidade no AIC no fim do período incremental|Duplo
+258|Qtd_AIS|Qtd|Duplo
+259|Qtd_AISa|Quantidade após movimentações|Duplo
+260|QTD_ALM_ANT|Quantidade no almoxarifado no início do período incremental|Duplo
+261|QTD_ALM_AT|Quantidade no almoxarifado no fim do período incremental|Duplo
+262|Qtd_AT|Quantidade|Duplo
+263|Qtd_BC_CHFUS_RAR|Quantidade de chaves fusíveis usadas em banco de capacitores em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+264|Qtd_BC_CHFUS_RAU|Quantidade de chaves fusíveis usadas em banco de capacitores em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+265|Qtd_BC_CRZT_CNV_RAR|Quantidade de cruzetas usadas em banco de capacitores em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+266|Qtd_BC_CRZT_CNV_RAU|Quantidade de cruzetas usadas em banco de capacitores em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+267|Qtd_BC_HA_RAR|Quantidade de hastes de aterramentos usados em banco de capacitores em redes convencionais aéreas urbana conforme padrão da distribuidora|Duplo
+268|Qtd_BC_HA_RAU|Quantidade de hastes de aterramentos usados em banco de capacitores em redes convencionais aéreas urbana conforme padrão da distribuidora|Duplo
+269|Qtd_BC_PR_RAR|Quantidade de para-raios usadas em banco de capacitores em redes convencionais aéreas rural conforme padrão da distribuidora|Duplo
+270|Qtd_BC_PR_RAU|Quantidade de para-raios usadas em banco de capacitores em redes convencionais aéreas urbana conforme padrão da distribuidora|Duplo
+271|Qtd_CHFUS_CRZT_CNV_RAR|Quantidade de cruzetas usadas em chaves fusíveis em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+272|Qtd_CHFUS_CRZT_CNV_RAU|Quantidade de cruzetas usadas em chaves fusíveis em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+273|Qtd_CHFUS_RD_CNV_RAR|Quantidade, 1 Conjunto a cada x metros, de chaves fusíveis em redes aéreas convencionais rural conforme padrão da distribuidora (explicar em nota explicativa o padrão)|Duplo
+274|Qtd_CHFUS_RD_CNV_RAU|Quantidade, 1 Conjunto a cada x metros, de chaves fusíveis em redes aéreas convencionais urbana conforme padrão da distribuidora (explicar em nota explicativa o padrão)|Duplo
+275|Qtd_CHSECC_CRZT_CNV_RAR|Quantidade de cruzetas usadas em chaves seccionadoras em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+276|Qtd_CHSECC_CRZT_CNV_RAU|Quantidade de cruzetas usadas em chaves seccionadoras em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+277|Qtd_CHSECC_PR_RAR|Quantidade de para-raios usadas em chaves seccionadoras em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+278|Qtd_CHSECC_PR_RAU|Quantidade de para-raios usadas em chaves seccionadoras em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+279|Qtd_CHSECCc_CHFUS_RAR|Quantidade de chaves fusíveis usadas em chaves seccionadoras sob carga em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+280|Qtd_CHSECCc_CHFUS_RAU|Quantidade de chaves fusíveis usadas em chaves seccionadoras sob carga em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+281|Qtd_CHSECCc_CRZT_CH_RAR|Quantidade de cruzetas usadas em chaves seccionadoras sob carga em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+282|Qtd_CHSECCc_CRZT_CH_RAU|Quantidade de cruzetas usadas em chaves seccionadoras sob carga em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+283|Qtd_CHSECCc_HA_RAR|Quantidade de hastes de aterramento usadas em chaves seccionadoras sob carga em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+284|Qtd_CHSECCc_HA_RAU|Quantidade de hastes de aterramento usadas em chaves seccionadoras sob carga em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+285|Qtd_CHSECCc_PR_RAR|Quantidade de para-raios usadas em chaves seccionadoras sob carga em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+286|Qtd_CHSECCc_PR_RAU|Quantidade de para-raios usadas em chaves seccionadoras sob carga em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+287|QTD_CMP|Quantidade de itens comprados, deve ser conciliado com a tabela 7a|Duplo
+288|QTD_DOA|Quantidade de ativos provenientes de doações|Duplo
+289|Qtd_FIN|Quantidade final|Duplo
+290|QTD_INC|Quantidade de ativos provenientes de incorporações|Duplo
+291|Qtd_INI|Quantidade Inicial|Duplo
+292|Qtd_km_Desl|Quantidade de quilometros deslocados pela equipe|Duplo
+293|Qtd_MAT|Quantidade de material na NFSe|Duplo
+294|Qtd_MAX_CRUZT_PST_RDR|Quantidade máxima de cruzetas por poste em rede aérea rural|Duplo
+295|Qtd_MAX_CRUZT_PST_RDU|Quantidade máxima de cruzetas por poste em rede aérea urbana|Duplo
+296|Qtd_MAX_ISOL_DIS_PST_RDR|Quantidade máxima de isoladores de disco por poste em rede aérea rural|Duplo
+297|Qtd_MAX_ISOL_DIS_PST_RDU|Quantidade máxima de isoladores de disco por poste em rede aérea urbana|Duplo
+298|Qtd_MAX_ISOL_PIN_PST_RDR|Quantidade máxima de isoladores de pino por poste em rede aérea rural|Duplo
+299|Qtd_MAX_ISOL_PIN_PST_RDU|Quantidade máxima de isoladores de pino por poste em rede aérea urbana|Duplo
+300|QTD_NORM|Quantidade de acordo com a norma|Duplo
+301|Qtd_PR_CRZT_CNV_RAR|Quantidade de cruzetas usadas em suporte de para-raios em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+302|Qtd_PR_CRZT_CNV_RAU|Quantidade de cruzetas usadas em suporte de para-raios em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+303|Qtd_PR_HA_RAR|Quantidade de hastes de aterramento usadas em suporte de para-raios em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+304|Qtd_PR_HA_RAU|Quantidade de hastes de aterramento usadas em suporte de para-raios em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+305|Qtd_PR_RD_CNV_RAR|Quantidade, 1 Conjunto a cada x metros, de para-raios em redes aéreas convencionais rural conforme padrão da distribuidora (explicar em nota explicativa o padrão)|Duplo
+306|Qtd_PR_RD_CNV_RAU|Quantidade, 1 Conjunto a cada x metros, de para-raios em redes aéreas convencionais urbana conforme padrão da distribuidora (explicar em nota explicativa o padrão)|Duplo
+307|QTD_REAP|Quantidade de ativos reutilizados após baixas, por estarem em boas condições|Duplo
+308|QTD_REF|Quantidade de itens reformados, deve ser conciliado com a tabela 7d|Duplo
+309|Qtd_REG_CHFUS_RAR|Quantidade de chaves fusíveis usadas em reguladores em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+310|Qtd_REG_CHFUS_RAU|Quantidade de chaves fusíveis usadas em reguladores em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+311|Qtd_REG_CRZT_ESC_RAR|Quantidade de cruzetas usadas em suporte de escada em reguladores em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+312|Qtd_REG_CRZT_ESC_RAU|Quantidade de cruzetas usadas em suporte de escada em reguladores em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+313|Qtd_REG_CRZT_REG_RAR|Quantidade de cruzetas usadas em suporte de reguladores em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+314|Qtd_REG_CRZT_REG_RAU|Quantidade de cruzetas usadas em suporte de reguladores em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+315|Qtd_REG_HA_RAR|Quantidade de hastes de aterramento usadas em reguladores em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+316|Qtd_REG_HA_RAU|Quantidade de hastes de aterramento usadas em reguladores em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+317|Qtd_REG_PR_RAR|Quantidade de para-raios usado em reguladores em redes aéreas convencionais rural conforme padrão da distribuidora|Duplo
+318|Qtd_REG_PR_RAU|Quantidade de para-raios usados em reguladores em redes aéreas convencionais urbana conforme padrão da distribuidora|Duplo
+319|Qtd_REL1_CHFUS_RAR|Quantidade de chaves fusíveis usadas em religadores em redes aéreas convencionais monofásicas urbana conforme padrão da distribuidora|Duplo
+320|Qtd_REL1_CHFUS_RAU|Quantidade de chaves fusíveis usadas em religadores em redes aéreas convencionais monofásicas rurais conforme padrão da distribuidora|Duplo
+321|Qtd_REL1_CRZT_CNV_RAR|Quantidade de cruzetas usadas em religadores em redes aéreas convencionais monofásicas urbana conforme padrão da distribuidora|Duplo
+322|Qtd_REL1_CRZT_CNV_RAU|Quantidade de cruzetas usadas em religadores em redes aéreas convencionais monofásicas rurais conforme padrão da distribuidora|Duplo
+323|Qtd_REL1_HA_RAR|Quantidade de haste de aterramento usadas em religadores em redes aéreas convencionais monofásicas urbana conforme padrão da distribuidora|Duplo
+324|Qtd_REL1_HA_RAU|Quantidade de haste de aterramento usadas em religadores em redes aéreas convencionais monofásicas rurais conforme padrão da distribuidora|Duplo
+325|Qtd_REL1_PR_RAR|Quantidade de para-raios usadas em religadores em redes aéreas convencionais monofásicas urbana conforme padrão da distribuidora|Duplo
+326|Qtd_REL1_PR_RAU|Quantidade de para-raios usadas em religadores em redes aéreas convencionais monofásicas rurais conforme padrão da distribuidora|Duplo
+327|Qtd_REL3_CHFUS_RAR|Quantidade de chaves fusíveis usadas em religadores em redes aéreas convencionais trifásicas urbana conforme padrão da distribuidora|Duplo
+328|Qtd_REL3_CHFUS_RAU|Quantidade de chaves fusíveis usadas em religadores em redes aéreas convencionais trifásicas rurais conforme padrão da distribuidora|Duplo
+329|Qtd_REL3_CRZT_CNV_RAR|Quantidade de cruzetas usadas em religadores em redes aéreas convencionais trifásicas urbana conforme padrão da distribuidora|Duplo
+330|Qtd_REL3_CRZT_CNV_RAU|Quantidade de cruzetas usadas em religadores em redes aéreas convencionais trifásicas rurais conforme padrão da distribuidora|Duplo
+331|Qtd_REL3_HA_RAR|Quantidade de haste de aterramento usadas em religadores em redes aéreas convencionais trifásicas urbana conforme padrão da distribuidora|Duplo
+332|Qtd_REL3_HA_RAU|Quantidade de haste de aterramento usadas em religadores em redes aéreas convencionais trifásicas rurais conforme padrão da distribuidora|Duplo
+333|Qtd_REL3_PR_RAR|Quantidade de para-raios usadas em religadores em redes aéreas convencionais trifásicas urbana conforme padrão da distribuidora|Duplo
+334|Qtd_REL3_PR_RAU|Quantidade de para-raios usadas em religadores em redes aéreas convencionais trifásicas rurais conforme padrão da distribuidora|Duplo
+335|Qtd_SECC1_CHFUS_RAR|Quantidade chaves fusíveis por seccionalizador monofásico em redes aéreas rurais|Duplo
+336|Qtd_SECC1_CHFUS_RAU|Quantidade chaves fusíveis por seccionalizador monofásico em redes aéreas urbanas|Duplo
+337|Qtd_SECC1_CRZT_CH_RAR|Quantidade cruzetas por seccionalizador monofásico em redes aéreas rurais|Duplo
+338|Qtd_SECC1_CRZT_CH_RAU|Quantidade cruzetas por seccionalizador monofásico em redes aéreas urbanas|Duplo
+339|Qtd_SECC1_HA_RAR|Quantidade hastes de aterramento por seccionalizador monofásico em redes aéreas rurais|Duplo
+340|Qtd_SECC1_HA_RAU|Quantidade hastes de aterramento por seccionalizador monofásico em redes aéreas urbanas|Duplo
+341|Qtd_SECC1_PR_RAR|Quantidade para-raios por seccionalizador monofásico em redes aéreas rurais|Duplo
+342|Qtd_SECC1_PR_RAU|Quantidade para-raios por seccionalizador monofásico em redes aéreas urbanas|Duplo
+343|Qtd_SECC3_CHFUS_RAR|Quantidade chaves fusíveis por seccionalizador trifásico em redes aéreas rurais|Duplo
+344|Qtd_SECC3_CHFUS_RAU|Quantidade chaves fusíveis por seccionalizador trifásico em redes aéreas urbanas|Duplo
+345|Qtd_SECC3_CRZT_CH_RAR|Quantidade cruzetas por seccionalizador trifásico em redes aéreas rurais|Duplo
+346|Qtd_SECC3_CRZT_CH_RAU|Quantidade cruzetas por seccionalizador trifásico em redes aéreas urbanas|Duplo
+347|Qtd_SECC3_HA_RAR|Quantidade hastes de aterramento por seccionalizador trifásico em redes aéreas rurais|Duplo
+348|Qtd_SECC3_HA_RAU|Quantidade hastes de aterramento por seccionalizador trifásico em redes aéreas urbanas|Duplo
+349|Qtd_SECC3_PR_RAR|Quantidade para-raios por seccionalizador trifásico em redes aéreas rurais|Duplo
+350|Qtd_SECC3_PR_RAU|Quantidade para-raios por seccionalizador trifásico em redes aéreas urbanas|Duplo
+351|Qtd_ST|Quantidade de serviços executados|Duplo
+352|Qtd_TRD1_CHFUS_RAR|Quantidade chaves fusíveis por transformador monofásico em redes aéreas rurais|Duplo
+353|Qtd_TRD1_CHFUS_RAU|Quantidade chaves fusíveis por transformador monofásico em redes aéreas urbanas|Duplo
+354|Qtd_TRD1_CRZT_CNV_RAR|Quantidade cruzetas por transformador monofásico em redes aéreas rurais|Duplo
+355|Qtd_TRD1_CRZT_CNV_RAU|Quantidade cruzetas por transformador monofásico em redes aéreas urbanas|Duplo
+356|Qtd_TRD1_HA_RAR|Quantidade de hastes de aterramento por transformador monofásico em redes aéreas rurais|Duplo
+357|Qtd_TRD1_HA_RAU|Quantidade de hastes de aterramento por transformador monofásico em redes aéreas urbanas|Duplo
+358|Qtd_TRD1_PR_RAR|Quantidade para-raios por transformador monofásico em redes aéreas rurais|Duplo
+359|Qtd_TRD1_PR_RAU|Quantidade para-raios por transformador monofásico em redes aéreas urbanas|Duplo
+360|Qtd_TRD2_CHFUS_RAR|Quantidade chaves fusíveis por transformador bifásico em redes aéreas rurais|Duplo
+361|Qtd_TRD2_CHFUS_RAU|Quantidade chaves fusíveis por transformador bifásico em redes aéreas urbanas|Duplo
+362|Qtd_TRD2_CRZT_CNV_RAR|Quantidade cruzetas por transformador bifásico em redes aéreas rurais|Duplo
+363|Qtd_TRD2_CRZT_CNV_RAU|Quantidade cruzetas por transformador bifásico em redes aéreas urbanas|Duplo
+364|Qtd_TRD2_HA_RAR|Quantidade de hastes de aterramento por transformador bifásico em redes aéreas rurais|Duplo
+365|Qtd_TRD2_HA_RAU|Quantidade de hastes de aterramento por transformador bifásico em redes aéreas urbanas|Duplo
+366|Qtd_TRD2_PR_RAR|Quantidade para-raios por transformador bifásico em redes aéreas rurais|Duplo
+367|Qtd_TRD2_PR_RAU|Quantidade para-raios por transformador bifásico em redes aéreas urbanas|Duplo
+368|Qtd_TRD3_CHFUS_RAR|Quantidade chaves fusíveis por transformador trifásico em redes aéreas rurais|Duplo
+369|Qtd_TRD3_CHFUS_RAU|Quantidade chaves fusíveis por transformador trifásico em redes aéreas urbanas|Duplo
+370|Qtd_TRD3_CRZT_CNV_RAR|Quantidade cruzetas por transformador trifásico em redes aéreas rurais|Duplo
+371|Qtd_TRD3_CRZT_CNV_RAU|Quantidade cruzetas por transformador trifásico em redes aéreas urbanas|Duplo
+372|Qtd_TRD3_HA_RAR|Quantidade de hastes de aterramento por transformador trifásico em redes aéreas rurais|Duplo
+373|Qtd_TRD3_HA_RAU|Quantidade de hastes de aterramento por transformador trifásico em redes aéreas urbanas|Duplo
+374|Qtd_TRD3_PR_RAR|Quantidade para-raios por transformador trifásico em redes aéreas rurais|Duplo
+375|Qtd_TRD3_PR_RAU|Quantidade para-raios por transformador trifásico em redes aéreas urbanas|Duplo
+376|QTD_TURN|Quantidade de ativos adquiridos em contrato por empreitada global|Duplo
+377|Qtd_US|Quantidade de unidades de Serviço|Duplo
+378|TP_AJST|Tipo de ajuste executado na SubODI após fiscalização: 1 : Fluxo temporal; 2 : Racionalização (COM ou ST); 3 : Rubrica indevida; 4 : Lançamento indevido; 5 : Mutação de projeto; 6 : Limite JOA; 7 : Despesa; 8 : Duplicidade; 9 : Ajuste de quantidade; 10 : Erro de parametrização do sistema; 11 : Valor diferente dos registros auxiliares; 12 : Outros.|Inteiro
+379|TP_ALOC|Método de alocação na ODD/ODI: 1, direta; 2, indireta|Inteiro
+380|TP_AVAL|0 : VOC; 1 : Banco Completo; 2 : Banco Parcial|Inteiro
+381|TP_AVL|BPR, 0; VOC, 1|Booleano
+382|TP_BASE|Classificação do tipo de base: BRR ou BAR.|VarChar(3)
+383|TP_BEM|Essencial=1; Acessório=2; Infraestrutura=3; BAR=4|Inteiro
+384|TP_EQP|Tipo de equipe: LEVE, MÉDIA, PESADA, VIVA|VarChar(25)
+385|TP_FAT|1, medição (time-sheet); 2, turn-key; 3, Unidades de Serviço; 4, marcos contratuais; 5, desempenho; 6, resultado; 7, híbrido; 8, recorrente; 9, licença; 10, outros|Inteiro
+386|TP_INST|Tipo de instalação (RB - Rede Básica, DIT : Demais instalações de rede básica, etc.)|VarChar(6)
+387|TP_MDL|Tipo do Módulo|VarChar(3)
+388|TP_OE|Classificação do dado de OE: PLPT, IR (incorporação de redes), CCC (subvenção), Outros (não explicitados), Tx_MED_AMORT (taxa de amortização aplicada no mês)|VarChar(9)
+389|TP_REC|Tipo da Receita|VarChar(6)
+390|TP_SERV|Tipo de serviço conforme tabela de domínio : 1 : Aferição; 2 : Desativação; 3 : Instalação; 4 : Ligação; 5 : Gerenciamento; 6 : Substituição; 7 : Vistoria; 8 : Projeto; 9 : Montagem; 10 : Construção; 11 : Outros.|Inteiro
+391|TX_DEP|Taxa de depreciação média, anual, em decimal|Duplo
+392|Tx_JOA|Taxa do JOA aplicada, decimal|Duplo
+393|Txt_AJS|Explicação sobre o ajuste efetuado|VarChar(1000)
+394|Txt_Ativ_Exec|Descrição das atividades executadas pelo funcionário|VarChar(2000)
+395|Txt_Causa|Descrição da causa da ocorrência|VarChar(1000)
+396|Txt_Cls_Custo|Descrição da classe de custo|VarChar(1000)
+397|Txt_CLS_TNS|Classe de tensão (ENGENHARIA)|VarChar(1000)
+398|Txt_DEF_EMP|Descrição do atributo, conforme definido na Tabela I, MCPSE|VarChar(255)
+399|Txt_Desc_Bem|Descrição do bem|VarChar(1000)
+400|Txt_Desc_Bem_AT|Descrição do bem|VarChar(1000)
+401|Txt_Desc_Mat|Descrição do material |VarChar(1000)
+402|Txt_DESC_OBRA|Descrição da obra executada|VarChar(1000)
+403|Txt_DESC_ODI|Descrição da ODI|VarChar(1000)
+404|Txt_Desc_PRJ|Descrição do projeto ou serviço|VarChar(1000)
+405|Txt_Desc_Serv|Descrição do material ou do serviço|VarChar(1000)
+406|Txt_DESC_TECN|Descrição técnica do bem (ENGENHARIA)|VarChar(255)
+407|Txt_Doc|Descrição do pedido|VarChar(1000)
+408|Txt_Forma_Aval|Descrição da Forma de Avaliação adotada|VarChar(255)
+409|Txt_JUST_ODD|Justificativa quando não houve apropriação de valores de ODD|VarChar(1000)
+410|Txt_LOCAL|Se for em um Estado, colocar a sigla do Estado. Caso, envolva mais de um Estado, mas na mesma região, colocar a sigla da região. Caso envolva Estados de mais de uma região colocar “BR”. Lista: AC : Acre; AL : Alagoas; AP : Amapá; AM : Amazonas; BA : Bahia; CE : Ceará; DF : Distrito Federal; GO : Goiás; ES : Espírito Santo; MA : Maranhão; MT : Mato Grosso; MS : Mato Grosso do Sul; MG : Minas Gerais; PA : Pará; PB : Paraíba; PR : Paraná; PE : Pernambuco; PI : Piauí; RJ : Rio de Janeiro; RN : Rio Grande do Norte; RS : Rio Grande do Sul; RO : Rondônia; RR : Roraima; SP : São Paulo; SC : Santa Catarina; SE : Sergipe; TO : Tocantins; N : Norte; S : Sul; SU : Sudeste; NO : Nordeste; CO : Centro-oeste; BR : Brasil.|VarChar(2)
+411|Txt_Nom_Forn|Nome do fornecedor do material|VarChar(1000)
+412|Txt_OBS|Observações sobre o registro|VarChar(255)
+413|Txt_OBS_ODD|Justificativa para não estar associado à ODD|VarChar(255)
+414|Txt_OBS_PP|Justificativa para não estar associado ao laudo|VarChar(255)
+415|Txt_OCORR|Descrição da ocorrência|VarChar(1000)
+416|Txt_RFM|Descrição da Reforma realizada|VarChar(1000)
+417|Txt_Tipo|Tipo do atributo, conforme definido na Tabela I, MCPSE|VarChar(25)
+418|UNID_AIS|Unidade do imobilizado|VarChar(10)
+419|UNID_CONV|Unidade comercial do material a ser convertida para a unidade do imobilizado|VarChar(10)
+420|Unidade|Unidade|VarChar(55)
+421|Unidade_AT|Unidade|VarChar(55)
+422|VL_100DEP_UC|Valor 100% depreciado (R$)|Duplo
+423|VL_AJST|Valor do ajuste executado na SubODI após fiscalização|Duplo
+424|VL_ALI_ANO_01|Valor Total das Alienações no Ciclo 1 (2018-2019 ou 2019-2020). Se zero, declarar zero.|Duplo
+425|VL_ALI_ANO_02|Valor Total das Alienações no Ciclo 2 (2019-2020 ou 2020-2021). Se zero, declarar zero.|Duplo
+426|VL_ALI_ANO_03|Valor Total das Alienações no Ciclo 3 (2020-2021 ou 2021-2022). Se zero, declarar zero.|Duplo
+427|VL_ALI_ANO_04|Valor Total das Alienações no Ciclo 4 (2021-2022 ou 2022-2023). Se zero, declarar zero.|Duplo
+428|VL_ALI_ANO_05|Valor Total das Alienações no Ciclo 5 (2022-2023 ou 2023-2024). Se zero, declarar zero.|Duplo
+429|VL_AO|Valor em unidades monetárias do almoxarifado de operação.|Duplo
+430|VL_BASE_ISS|Valor sobre o qual incide o ISS|Duplo
+431|VL_BC|Valor da base de cálculo do imposto de importação|Duplo
+432|VL_BC_COFINS|Valor da base de cálculo do COFINS|Duplo
+433|VL_BC_PIS|Valor da base de cálculo do PIS|Duplo
+434|VL_BPR_AT|Valor do BPR (UC+COM+CA), atualizado, R$|Duplo
+435|VL_CA_AT|Valor do CA e COM atualizado, módulos incompletos, R$|Duplo
+436|VL_CA_MOP_ODD|Valor total na ODD de custos com mão de obra própria |Duplo
+437|VL_CA_ST_ODD|Valor total na ODD de custos com serviço de terceiros |Duplo
+438|VL_COM_FISC|Valor total da natureza de gasto COM do projeto, após fiscalização|Duplo
+439|VL_COM_ROA|Valor total da natureza de gasto COM do projeto, contabilizado|Duplo
+440|VL_CRED|Valor total dos créditos do período|Duplo
+441|VL_DAC_UC|Valor da depreciação acumulada (R$)|Duplo
+442|VL_DC|Valor da partida ou contra-partida, em unidades monetárias|Duplo
+443|VL_DEB|Valor total dos débitos do período|Duplo
+444|VL_DEP_ACUM|Depreciação acumulada, após conciliação, (R$)|Duplo
+445|VL_DEP_ACUM_MV|Depreciação acumulada da mais valia aplicada ao lançamento|Duplo
+446|VL_DESC_CON|Descontos que dependem de condição (não reduzem a base de cálculo)|Duplo
+447|VL_DESC_INC|Descontos concedidos sem condições (abatem a base de cálculo)|Duplo
+448|VL_Desp_ADU|Valor de despesas aduaneiras|Duplo
+449|VL_DIFAL|Valor DIFAL|Duplo
+450|VL_FOPAG|Valor total, em unidades monetárias, da folha de pagamento na competência|Duplo
+451|VL_FOPAG_CAPEX|Valor CAPEX, em unidades monetárias, da folha de pagamento na competência|Duplo
+452|VL_FOPAG_ODD|Valor ODD, em unidades monetárias, da folha de pagamento na competência|Duplo
+453|VL_FOPAG_OPEX|Valor OPEX, em unidades monetárias, da folha de pagamento na competência|Duplo
+454|VL_IAD_UC|Valor do índice de não aproveitamento integral depreciado (R$), após movimentação no período incremental|Duplo
+455|VL_IAI_UC|Valor do índice de não aproveitamento integral (R$)|Duplo
+456|VL_ICMS|Parcela de ICMS a ser incorporada no VF, conforme PRORET 2.3 (R$)|Duplo
+457|VL_II|Valor do imposto de importação|Duplo
+458|VL_IOF|Valor do imposto sobre obrigações financeiras|Duplo
+459|VL_ISS|Valor calculado do imposto|Duplo
+460|VL_JOA_AT|Valor resultante da aplicação do JOA, R$ (sobre VL_REIDI_AT)|Duplo
+461|VL_JOA_FISC|Valor total da natureza de gasto JOA do projeto, após fiscalização|Duplo
+462|VL_JOA_ROA|Valor total da natureza de gasto JOA do projeto, contabilizado|Duplo
+463|VL_LCMTO|Valor do lançamento|Duplo
+464|VL_LIQ_NFE|Valor final a pagar após deduções e retenções|Duplo
+465|VL_MAT|Valor em unidades monetárias do material|Duplo
+466|VL_MAT_AT|Valor para UC, módulos incompletos, R$|Duplo
+467|VL_Mes_n|Valor em R$ no mês n do período. n sempre será um número.|Duplo
+468|VL_MOP_FISC|Valor total da natureza de gasto MOP do projeto, após fiscalização|Duplo
+469|VL_MOP_ODD|Valor em unidades monetárias de custos adicionais, mão de obra, associados a desativação|Duplo
+470|VL_MOP_ROA|Valor total da natureza de gasto MOP do projeto, contabilizado|Duplo
+471|VL_ODC|Parcela de ODC a ser incorporada no VF, conforme PRORET 2.3 (R$)|Duplo
+472|VL_OE_BRUTA|Valor da Obrigação Especial Bruta (R$)|Duplo
+473|VL_OE_LIQUIDA|Valor da Obrigação Especial Líquida (R$)|Duplo
+474|VL_OUT_FISC|Valor total da natureza de gasto OUT do projeto, após fiscalização|Duplo
+475|VL_OUT_ROA|Valor total da natureza de gasto OUT do projeto, contabilizado|Duplo
+476|VL_Parcela|Valor da parcela, R$|Duplo
+477|VL_PROJ_ORI|Valor Unitizado do Projeto de Origem|Duplo
+478|VL_RAM_MIN_RAR|Distância mínima para ramal da distribuidora, em rede aérea rural|Duplo
+479|VL_RAM_MIN_RAU|Distância mínima para ramal da distribuidora, em rede aérea urbana|Duplo
+480|VL_REIDI_AT|Valor resultante da aplicação do REIDI, R$ (sobre VL_VAL_AT)|Duplo
+481|VL_RET_ISS|Valor do ISS retido|Duplo
+482|VL_RFM|Custo da Reforma, em unidades monetárias|Duplo
+483|VL_RUBR|Valor monetário da rúbrica|Duplo
+484|VL_SALDO_AJS|Valor em R$ do ajuste aplicado|Duplo
+485|VL_SERV|Valor bruto do serviço (sem deduções)|Duplo
+486|VL_SLD_FIN|Valor do saldo final da conta contábil, no mês de competência|Duplo
+487|VL_SLD_REAV|Valor da reavaliação da OE|Duplo
+488|VL_ST|Valor Substituição Tarifária|Duplo
+489|VL_ST_FISC|Valor total da natureza de gasto ST do projeto, após fiscalização|Duplo
+490|VL_ST_ODD|Valor em unidades monetárias de custos adicionais, serviços de terceiros, associados a desativação|Duplo
+491|VL_ST_ROA|Valor total da natureza de gasto ST do projeto, contabilizado|Duplo
+492|VL_TEN|Valor da tensão eficaz de linha, em kV, se AIS ou AIC|Duplo
+493|VL_TERRENOS_SERV|Valor de terrenos e servidões (R$)|Duplo
+494|VL_tot|Valor do registro do razão (R$)|Duplo
+495|VL_TOT_COFINS|Valor total recolhido para o COFINS|Duplo
+496|VL_TOT_FISC|Valor total do projeto, após fiscalização|Duplo
+497|VL_TOT_ICMS|Valor total do item com ICMS (R$)|Duplo
+498|VL_TOT_IPI|Valor total do item com IPI (R$)|Duplo
+499|VL_TOT_LIQ|Valor total, líquido de IPI e ICMS (R$)|Duplo
+500|VL_TOT_PIS|Valor total recolhido para o PIS|Duplo
+501|VL_TOT_ROA|Valor total do projeto, contabilizado|Duplo
+502|VL_Total|Valor total em R$|Duplo
+503|VL_UAR_FISC|Valor total da natureza de gasto UC/UAR do projeto, após fiscalização|Duplo
+504|VL_UC_ODD_REU|Valor em unidades monetárias de material, valor contábil não depreciado, associados a desativação e reutilizados (inclui almoxarifado)|Duplo
+505|VL_UC_ODD_SD|Valor em unidades monetárias de material, valor contábil não depreciado, associados a desativação e destinados a sucata ou a alienação|Duplo
+506|VL_UC_ROA|Valor total da natureza de gasto UC/UAR do projeto, contabilizado|Duplo
+507|VL_US_ST|Custo Unitário de Instalação|Duplo
+508|VL_VAL_AT|Valor resultante da valoração, sem JOA e REIDI, atualizado, R$|Duplo
+509|VL_VAO_MIN_RAR|Distância mínima para vão da distribuidora em rede aérea rural|Duplo
+510|VL_VAO_MIN_RAU|Distância mínima para vão da distribuidora em rede aérea urbana|Duplo
+511|VL_VAO_RDR|Distância entre vãos em redes aéreas rurais|Duplo
+512|VL_VAO_RDU|Distância entre vãos em redes aéreas urbanas|Duplo
+513|VL_VBR_UC|Valor da base de remuneração bruta (R$)|Duplo
+514|VL_VF|Valor de fábrica do bem (R$), líquido de ICMS e de ODC|Duplo
+515|VL_VF_UNIT_AT|Valor de fábrica unitário atualizado (R$)|Duplo
+516|VL_VMU_UC|Valor do mercado em uso (R$)|Duplo
+517|VL_VNR_CA_UNIT|Valor de CA unitário do VNR (R$)|Duplo
+518|VL_VNR_COM_UNIT|Valor de COM unitário do VNR (R$)|Duplo
+519|VL_VNR_JOA|Valor do JOA do VNR (R$)|Duplo
+520|VL_VNR_UC|Valor novo de reposição (R$)|Duplo
+521|VL_VNR_VF_UNIT|Valor de fábrica unitário do VNR (R$)|Duplo
+522|VL_VNR_Vigente_UC|Valor novo de reposição (R$) atualmente vigente|Duplo
+523|VL_VOC|Valor (R$)|Duplo
+524|VL_VOC_CA|Valor de CA do VOC (R$), AIS (apenas se FLG_BLINDADO = 0)|Duplo
+525|VL_VOC_CA_AVAL|Valor de CA do VOC (R$), após análise da avaliadora|Duplo
+526|VL_VOC_COM|Valor de COM do VOC (R$), AIS (apenas se FLG_BLINDADO = 0)|Duplo
+527|VL_VOC_COM_AVAL|Valor de COM do VOC (R$), após análise da avaliadora|Duplo
+528|VL_VOC_FIN|Valor original contábil final (R$)|Duplo
+529|VL_VOC_INI|Valor original contábil inicial (R$)|Duplo
+530|VL_VOC_JOA|Valor de JOA do VOC (R$), AIS (apenas se FLG_BLINDADO = 0)|Duplo
+531|VL_VOC_JOA_AVAL|Valor de JOA do VOC (R$), após análise da avaliadora|Duplo
+532|VL_VOC_MV|Valor da mais valia aplicada ao lançamento (R$)|Duplo
+533|VL_VOC_SAN|Valor original contábil após ajustes(R$)|Duplo
+534|VL_VOC_VF|Valor de fábrica do VOC (R$), AIS (apenas se FLG_BLINDADO = 0)|Duplo
+535|VL_VOC_VF_AVAL|Valor de fábrica do VOC (R$), após análise da avaliadora|Duplo
+536|VL_VOCa|Valor original contábil, após movimentações (R$)|Duplo
+537|VL_SLD_INI|Valor contábil da OE|Duplo
+538|1|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+539|2|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+540|3|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+541|4|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+542|5|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+543|6|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+544|7|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+545|8|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+546|9|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+547|10|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+548|11|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+549|12|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+550|13|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+551|14|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+552|15|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+553|16|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+554|17|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+555|18|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+556|19|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+557|20|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+558|21|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+559|22|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+560|23|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+561|24|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+562|25|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+563|26|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+564|27|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+565|28|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+566|29|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+567|30|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+568|31|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+569|32|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+570|33|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+571|34|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+572|35|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+573|36|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+574|37|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+575|38|Na leitura de arquivos SPED, o layout depende do bloco. Assim, as colunas recebem um acronimo genérico, assumindo seu valor apenas quando da filtragem do bloco.|TEXT
+576|A1|Código do atributo A1, conforme definido no MCPSE para a UC do registro. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+577|A2|Código do atributo A2, conforme definido no MCPSE para a UC do registro. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+578|A3|Código do atributo A3, conforme definido no MCPSE para a UC do registro. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+579|A4|Código do atributo A4, conforme definido no MCPSE para a UC do registro. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+580|A5|Código do atributo A5, conforme definido no MCPSE para a UC do registro. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+581|A6|Código do atributo A6, conforme definido no MCPSE para a UC do registro. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+582|ALIQ_DIFAL|Alíquota do DIFAL, em percentual, formato duplo|TEXT
+583|ALIQ_ICMS_EC|Alíquota do ICMS, em percentual, formato decimal, do extrato de compra|TEXT
+584|ALIQ_ICMS_SPED|Alíquota do ICMS, em percentual, formato decimal, do SPED|REAL
+585|ALIQ_IPI_EC|Alíqutota do imposto sobre produto industrializado, IPI, em percentual, formato decimal, declarado no extrato de compras.|TEXT
+586|ALIQ_IPI_SPED|Alíqutota do imposto sobre produto industrializado, IPI, em percentual, formato decimal, declarado no SPED.|REAL
+587|ALIQ_ST|Alíquota de substituição tributária, ST, em percentual, no formato decimal|TEXT
+588|ALT|Altura do item modelado no registro, conforme tabela TESTALT. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+589|ARE_LOC|Referência da Área de Localização do registro. Se urbano é UB; se não urbano é NU; 0 se não informado. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+590|BANC|Indica se a unidade é composta de um banco de equipamentos. Se sim, 1, se não 0.|INTEGER
+591|BRR|Bairro da unidade consumidora|TEXT
+592|CAP_ELO|Tipo de Capacidade de Elo Fusível, confrome tabela TCAPELFU. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|TEXT
+593|CAR_INST|Carga instalada (kW). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+594|Cd_ANL|Código da análise|TEXT
+595|Cd_Emp|Código da empresa na Aneel|TEXT
+596|Cd_FOR_COGE|É o código da fórmula da Fundação COGE, usada para atualizar o item associado ao registro.|TEXT
+597|Cd_FOR_COGE_SFF|Código de atualização COGE, conforme fiscalização|TEXT
+598|Cd_NG_EC|Código da natureza de gasto declarada no extrato de compra.|TEXT
+599|Cd_NG_SPED|Código da Natureza de gasto estimada para o SPED|TEXT
+600|Cd_Q1A|Código do quadro 1A|TEXT
+601|Cd_SISBASE_SFF|Código SISBASE estimado pela fiscalização|TEXT
+602|Cd_TI|Código da TI. Descrição está na TBL_TI.|TEXT
+603|CEG_GD|Código do gerador outorgado ou da GD do consumidor no mesmo ponto de acesso|TEXT
+604|CEP|CEP da unidade consumidora|TEXT
+605|CHV_001|Chave de conciliação número 1, entre SPED e Extrato de compras, EC.|TEXT
+606|CHV_NFE_SPED|Chave da NFE obtida diretamente do SPED.|TEXT
+607|CLAS_SUB|Tipo de Classe e Subclasse, conforme tabela TCLASUBCLA. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+608|CLAS_TEN|Tipo de Classe de Tensão, conforme tabela TCLATEN. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+609|CM|É o código do centro modular. Só existe se for em subestação. Para buscar temos de levar em consideração se é anterior, ANT no nome da tabela, dado na data base do último processo. Atual, AT no nome da tabela, é o dado na data base do processo analisado. |TEXT
+610|CNAE|Código da atividade econômica|TEXT
+611|CNPJ|CNPJ do fornecedor|TEXT
+612|CNPJ_SPED|CNPJ obtido do SPED|TEXT
+613|COD_ID|É a chave primária do registro na tabela. É o identificador único da entidade. Usado em diversas tabelas para fazer associação. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+614|COD_ITEM_EC|Código do item no extrato de compra.|TEXT
+615|COD_PART|Código do fornecedor conforme declarado no SPED.|TEXT
+616|COD_SIT|Código da situação do documento conforme tabela 4.1.2 do SPED: 00 : Documento regular, 01 : Escrituração extemporânea de documento regular, 02 : Documento cancelado, 03 : Escrituração extemporânea de documento cancelado, 04 : NF-e, NFC-e ou CT-e - denegado, 05 : NF-e, NFC-e ou CT-e - Numeração inutilizada, 06 : Documento Fiscal Complementar, 07 : Escrituração extemporânea de documento complementar, 08 : Documento Fiscal emitido com base em Regime Especial ou Norma Específica.|TEXT
+617|COMP|Comprimento em metros, do registro. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+618|CONJ|É o código do conjunto de unidades consumidoras no cadastro ANEEL. Para obter os dados do conjunto, basta avaliar a tabela CONJ_ANT ou CONJ_AT. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |INTEGER
+619|COR_NOM|Tipo de Corrente Nominal, conforme TCOR. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|TEXT
+620|CT_COD_OP|Código operacional do circuito no segmento (Código da Linha ou Alimentador)|TEXT
+621|CTAT|É a chave primária que conecta o registro a tabela CTAT. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+622|CTB_txt_Desc_Bem|Texto que descreve o registro o bem pelo lado contábil|TEXT
+623|CTMT|É o código do circuito de média tensão, chave primária da tabela CTMT. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+624|DAT_CON|Data de conexão, informada pela empresa. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+625|DAT_IMO|Data de imobilização do registro, conforme informação da distribuidora . Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+626|DATA|Data de referência do registro|DATE
+627|DELTA|Divergência entre dois elementos do registro. Avaliar pelo código.|REAL
+628|DEM_01|DEM para o mês 01. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+629|DEM_02|DEM para o mês 02. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+630|DEM_03|DEM para o mês 03. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+631|DEM_04|DEM para o mês 04. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+632|DEM_05|DEM para o mês 05. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+633|DEM_06|DEM para o mês 06. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+634|DEM_07|DEM para o mês 07. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+635|DEM_08|DEM para o mês 08. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+636|DEM_09|DEM para o mês 09. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+637|DEM_10|DEM para o mês 10. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+638|DEM_11|DEM para o mês 11. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+639|DEM_12|DEM para o mês 12. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+640|DEM_CONT|Demanda Contratada (kW) . Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+641|DEM_F_01|DEM na fora da ponta para o mês 01. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+642|DEM_F_02|DEM na fora da ponta para o mês 02. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+643|DEM_F_03|DEM na fora da ponta para o mês 03. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+644|DEM_F_04|DEM na fora da ponta para o mês 04. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+645|DEM_F_05|DEM na fora da ponta para o mês 05. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+646|DEM_F_06|DEM na fora da ponta para o mês 06. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+647|DEM_F_07|DEM na fora da ponta para o mês 07. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+648|DEM_F_08|DEM na fora da ponta para o mês 08. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+649|DEM_F_09|DEM na fora da ponta para o mês 09. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+650|DEM_F_10|DEM na fora da ponta para o mês 10. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+651|DEM_F_11|DEM na fora da ponta para o mês 11. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+652|DEM_F_12|DEM na fora da ponta para o mês 12. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+653|DEM_P_01|DEM na ponta para o mês 01. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+654|DEM_P_02|DEM na ponta para o mês 02. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+655|DEM_P_03|DEM na ponta para o mês 03. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+656|DEM_P_04|DEM na ponta para o mês 04. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+657|DEM_P_05|DEM na ponta para o mês 05. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+658|DEM_P_06|DEM na ponta para o mês 06. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+659|DEM_P_07|DEM na ponta para o mês 07. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+660|DEM_P_08|DEM na ponta para o mês 08. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+661|DEM_P_09|DEM na ponta para o mês 09. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+662|DEM_P_10|DEM na ponta para o mês 10. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+663|DEM_P_11|DEM na ponta para o mês 11. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+664|DEM_P_12|DEM na ponta para o mês 12. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+665|DESCR|Descrição livre do registro. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+666|DESCR_COMPL|Descrição completa do item do registro|TEXT
+667|DIC_01|DIC apurado no 01º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+668|DIC_02|DIC apurado no 02º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+669|DIC_03|DIC apurado no 03º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+670|DIC_04|DIC apurado no 04º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+671|DIC_05|DIC apurado no 05º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+672|DIC_06|DIC apurado no 06º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+673|DIC_07|DIC apurado no 07º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+674|DIC_08|DIC apurado no 08º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+675|DIC_09|DIC apurado no 09º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+676|DIC_10|DIC apurado no 10º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+677|DIC_11|DIC apurado no 11º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+678|DIC_12|DIC apurado no 12º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+679|DIST|Código da distribuidora no cadastro ANEEL. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |INTEGER
+680|DscJustificativa|Justificativa para o lançamento do registro|TEXT
+681|dt_ARQ|Data da extração do arquivo.|TEXT
+682|DT_DOC|Data do documento.|DATE
+683|DT_E_S|Data de entrada e de saída do item associado ao registro.|DATE
+684|DT_FIM|Data final, de algum cálculo ou atualização feita no registro|TIMESTAMP
+685|DthCompetenciaPagamento|Data de competência do documento associado ao registro|TIMESTAMP
+686|DthEfetivaPagamento|Data de liquidação da obrigação referente ao registro|TIMESTAMP
+687|ENE_01|Energia apurado no 01º mês. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+688|ENE_02|Energia apurado no 02º mês. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+689|ENE_03|Energia apurado no 03º mês. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+690|ENE_04|Energia apurado no 04º mês. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+691|ENE_05|Energia apurado no 05º mês. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+692|ENE_06|Energia apurado no 06º mês. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+693|ENE_07|Energia apurado no 07º mês. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+694|ENE_08|Energia apurado no 08º mês. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+695|ENE_09|Energia apurado no 09º mês. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+696|ENE_10|Energia apurado no 10º mês. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+697|ENE_11|Energia apurado no 11º mês. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+698|ENE_12|Energia apurado no 12º mês. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+699|ENE_F_01|ENE na fora da ponta para o mês 01. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+700|ENE_F_02|ENE na fora da ponta para o mês 02. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+701|ENE_F_03|ENE na fora da ponta para o mês 03. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+702|ENE_F_04|ENE na fora da ponta para o mês 04. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+703|ENE_F_05|ENE na fora da ponta para o mês 05. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+704|ENE_F_06|ENE na fora da ponta para o mês 06. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+705|ENE_F_07|ENE na fora da ponta para o mês 07. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+706|ENE_F_08|ENE na fora da ponta para o mês 08. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+707|ENE_F_09|ENE na fora da ponta para o mês 09. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+708|ENE_F_10|ENE na fora da ponta para o mês 10. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+709|ENE_F_11|ENE na fora da ponta para o mês 11. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+710|ENE_F_12|ENE na fora da ponta para o mês 12. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+711|ENE_P_01|ENE na ponta para o mês 01. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+712|ENE_P_02|ENE na ponta para o mês 02. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+713|ENE_P_03|ENE na ponta para o mês 03. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+714|ENE_P_04|ENE na ponta para o mês 04. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+715|ENE_P_05|ENE na ponta para o mês 05. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+716|ENE_P_06|ENE na ponta para o mês 06. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+717|ENE_P_07|ENE na ponta para o mês 07. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+718|ENE_P_08|ENE na ponta para o mês 08. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+719|ENE_P_09|ENE na ponta para o mês 09. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+720|ENE_P_10|ENE na ponta para o mês 10. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+721|ENE_P_11|ENE na ponta para o mês 11. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+722|ENE_P_12|ENE na ponta para o mês 12. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+723|ESF|Código de referência do esforço da estrutura, conforme TESTESF. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+724|FAS_CON|É o tipo das fases de conexão. Sua tradução pode ser obtido da tabela TFASCON. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+725|FAS_CON_P|Código de referência das fases de conexão primária, conforme TFASCON. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+726|FAS_CON_S|Código de referência das fases de conexão secundária, conforme TFASCON. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+727|FAS_CON_T|Código de referência das fases de conexão terciária, conforme TFASCON. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+728|FIC_01|FIC apurado no 01º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+729|FIC_02|FIC apurado no 02º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+730|FIC_03|FIC apurado no 03º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+731|FIC_04|FIC apurado no 04º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+732|FIC_05|FIC apurado no 05º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+733|FIC_06|FIC apurado no 06º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+734|FIC_07|FIC apurado no 07º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+735|FIC_08|FIC apurado no 08º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+736|FIC_09|FIC apurado no 09º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+737|FIC_10|FIC apurado no 10º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+738|FIC_11|FIC apurado no 11º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+739|FIC_12|FIC apurado no 12º período (horas). Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+740|FIS_Txt_Desc_ODI|Texto que descreve o registro pelo lado físico, ROA|TEXT
+741|FT_AJS|Fator de ajuste 90/110 dos itens do BPR.|REAL
+742|GRU_TAR|Tipo de Grupo Tarifário, tabela TGRUTAR. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+743|GRU_TEN| Código do Grupo de Tensão cujo domínio é dado pela tabela TGRUTEN. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+744|ICMS_APROP|Valor do ICMS apropriado no item, em unidades monetárias|REAL
+745|Id_OE_AMT|Chave primária|TEXT
+746|Id_OE_MOV|Chave primária|TEXT
+747|Ide_Atributo|Chave primária do atributo|INTEGER
+748|IdeArquivoCVA|Código de origem do arquivo de CVA|REAL
+749|IdeTipoPagamento|Tipo de pagamento do registro. Código numérico que identifica: (1) Faturamento, (2) Repactuação, (3) Liminar, (4) CCEARd Receita Fixa, (5) CCEARd Receita Variável, (6) CCEARd Ressarcimento, (7) CCEARd Ajuste, (8) CCEARd Recontabilização. |REAL
+750|IDUC|Código do controle patrimonial (individualizador da unidade de cadastro)|TEXT
+751|IND_ARQ|Os SPED podem ser informados em base mensal. Quando isso ocorre fazemos um processo de conjunção dos arquivos mensais e para isso, normalizamos os arquivos mensais em ordem, de 0 a n. Para isso precisamos o dado de IND_ARQ do arquivo de origem.|INTEGER
+752|IND_FRT|Indicador do tipo do frete: 0 - Por conta de terceiros; 1 - Por conta do emitente; 2 - Por conta do destinatário; 9 - Sem cobrança de frete|REAL
+753|IND_MOV|Indicador de movimento: 0- Bloco com dados informados; 1- Bloco sem dados informados.|REAL
+754|IND_PER_SAI|Índice de participação do valor do somatório das saídas tributadas e saídas para exportação no valor total de saídas|REAL
+755|IND_PGTO|Indicador do tipo de pagamento: 0 - À vista; 1 - A prazo; 9 - Sem pagamento.|REAL
+756|index|Chave primária da tabela|INTEGER
+757|LGRD|Logradouro da unidade consumidora|TEXT
+758|LIG|Código de referência do esquema de ligação, conforme TLIG. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+759|LIG_FAS_P|Código de referência do esquema de ligação do primário, conforme TLIG. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+760|LIG_FAS_S|Código de referência do esquema de ligação do secundário, conforme TLIG. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+761|LIV|Indica se é consumidor livre ou parcialmente livre. Se sim 1, se não 0.|INTEGER
+762|MUN|É o código da malha municipal do IBGE. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+763|Nm_Arq|Nome do arquivo de origem|TEXT
+764|Nm_ATVD|Nome da atividade|TEXT
+765|Nm_CLASS|Nome da classificação|TEXT
+766|Nm_EMP|Nome da empresa fornecedora|TEXT
+767|Nm_RZ_ANAL|Nome do razão analítico|TEXT
+768|Nm_RZ_SINT|Nome do razão sintético|TEXT
+769|NOME|Nome dado ao registro. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|TEXT
+770|Nr_FAM_SFF|Número da família do BPR a qual o item pertence, estimado pela SFF|TEXT
+771|NUM_DOC|É o número do documento que modela o lançamento no ERP que faz a contabilidade da empresa.|TEXT
+772|NUM_DOC_SPED|Número do documento da NF no SPED|TEXT
+773|NumContaContabil|É o número do documento do lançamento de liquidação na contabilidade da empresa.|TEXT
+774|NumParcela|É o número da parcela, quando o pagamento é parcelado.|REAL
+775|OBJECTID|Chave primária da tabela. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+776|OBS_FISC|Observação da fiscalização em relação ao registro.|TEXT
+777|ODI|Número da ordem de investimento. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+778|P_N_OPE|Tipo de Posição Normal de Operação, conforme tabela TNOROPE. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+779|PAC|Ponto de acoplamento comum elétrico . Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+780|PAC_1|Ponto de acoplamento comum elétrico 1. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+781|PAC_2|Ponto de acoplamento comum elétrico 2. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+782|PAC_3|Ponto de acoplamento comum elétrico 3, conectada com tabela PONNOT. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+783|PAC_INI|Ponto de acoplamento comum elétrico inicial|TEXT
+784|Pct_OE_ROS|Percentual de OE do projeto, conforme declarado pela empresa|REAL
+785|PER_FER|Percentual de perda no ferro (%) . Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+786|PER_TOT|Percentual de perda total (%) . Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|REAL
+787|PN_CON|Chave primária da tabela PONNOT, ponto notável. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+788|PN_CON_1|Código do ponto notável 1 conectado, conforme tabela PONNOT. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|TEXT
+789|PN_CON_2|Código do ponto notável 2 conectado, correspondência com tabela PONNOT. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|TEXT
+790|POS|É a posse do item modelado no registro: 0 é não informado, PD é posse da distribuidora, OD é posse de outra distribuidora, T é posse da transmissora, G é da geradora, CS é da unidade consumidora, CO é da cooperativa, A é de autorizada e O é outro agente. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+791|POT|Potência aparente (kVA)|TEXT
+792|POT_F01|Potência nominal com ventilação forçada 01 (kVA)|REAL
+793|POT_F02|Potência nominal com ventilação forçada 02 (kVA)|REAL
+794|POT_INST|Potência instalada (kW)|REAL
+795|POT_NOM|Tipo de Potência Reativa, tabela TPOTRTV. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+796|Qtd_BAIXAS|Quantidade do item, no lado do arquivo de baixas|REAL
+797|Qtd_BDGD|Quantidade de itens obtidos da BDGD para o registro.|REAL
+798|QTD_EC|Quantidade do item associado ao registro informado no extrato de compra.|REAL
+799|Qtd_ROA|É a quantidade na base física do registro, no ROA.|REAL
+800|Qtd_ROD|Quantidade do item, no lado do razão de desativação|REAL
+801|QTD_SPED|É a quantidade do item modelada no SPED|REAL
+802|QtdTotalPagamentosEfetuados|É o número de pagamentos da obrigação associada ao registro.|REAL
+803|R|Resistência ôhmica do equipamento (%)|REAL
+804|REG|Bloco do SPED, origem do dado declarado no item|TEXT
+805|SALDO_IN_ICMS|Saldo inicial de ICMS do CIAP, composto por ICMS de bens que entraram anteriormente ao período de apuração (somatório dos campos 05 a 08 dos registros G125)|REAL
+806|SEMRED|Indica se o consumidor não possui rede associada de baixa tensão. 1, sim; 0, não.|INTEGER
+807|SER|É o número de série da Nota Fiscal, física ou eletrônica.|TEXT
+808|SER_SPED|Número de série da Nfe no SPED|TEXT
+809|SIT_ATIV|É a situação do ativo: 0 é não aplicável; AT é ativada e DS é desativada.  Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+810|SITCONT|É o tipo da situação contábil conforme tabela TSITCONT. Para buscar temos de levar em consideração se é anterior, ANT no nome da tabela, dado na data base do último processo. Atual, AT no nome da tabela, é o dado na data base do processo analisado. |TEXT
+811|SOM_ICMS_OC|Valor de outros créditos a ser apropriado na Apuração do ICMS, correspondente ao somatório do campo 09 do registro G126.|INTEGER
+812|SOM_PARC|Somatório das parcelas de ICMS passível de apropriação de cada bem (campo 10 do G125)|REAL
+813|SUB|Código da subestação. Pode ser obtido os dados da subestação na tabela SUB_ANT ou SUB_AT. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+814|TEN|Valor de tensão|TEXT
+815|TEN_CON|Tipo de Tensão, conforme tabela TTEN. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+816|TEN_FORN|Tipo de Tensão de fornecimento, conforme TTEN. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+817|TEN_NOM|Tipo de Tensão, conforme tabela TTEN.Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+818|TEN_PRI|Código da referência da tensão nominal do primário, tabela TTEN. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+819|TEN_SEC|Código da referência da tensão nominal do secundário, tabela TTEN. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+820|TEN_TER|Código da referência da tensão nominal do terciário, tabela TTEN. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+821|TESTE|Teste executado sobre dois campos, resultado|TEXT
+822|TESTE_Cd|Resultado do teste de código da fórmula COGE no registro|TEXT
+823|TI|Código da TI. Para saber a descrição basta usar a tabela TBL_TI. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |REAL
+824|TIP_CC|Código da tipologia de curva de carga associada, conforme COD_ID da tabela CRVCRG. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+825|TIP_CND|Tipo de Segmento Condutor, confrome tabela SEGCON. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado.|TEXT
+826|TIP_INST|É o tipo de instalação conforme tabela TINST. Para buscar temos de levar em consideração se é anterior, ANT no nome da tabela, dado na data base do último processo. Atual, AT no nome da tabela, é o dado na data base do processo analisado. |TEXT
+827|TIP_SIST|Tipo de Sistema de Atendimento, conforme tabela TSIST. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+828|TIP_TRAFO|Código de referência do tipo do transformador, tabela TTRANF. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+829|TIP_UNID|É o tipo de unidade conforme tabela TUNI. Para buscar temos de levar em consideração se é anterior, ANT no nome da tabela, dado na data base do último processo. Atual, AT no nome da tabela, é o dado na data base do processo analisado. |TEXT
+830|TLCD|Indica se a unidade é telecomandada. 0 é não e 1 é sim.|INTEGER
+831|TP_JOA|Tipo de JOA, conforme PRORET: RD, LD ou SE e grupo da empresa.|TEXT
+832|TST|Teste executado sobre dois campos, resultado|TEXT
+833|TUC|É o número da TUC. Pode ser lido da TBL_TUC.|TEXT
+834|Txt_Class|Texto explicando classificação do item|TEXT
+835|Txt_Desc|Texto que descreve o registro|TEXT
+836|Txt_Desc_A4|Descrição do atributo da tabela VIII_MCPSE, A4|TEXT
+837|Txt_Desc_A6|Descrição do atributo da tabela VIII_MCPSE, A6|TEXT
+838|Txt_Desc_TAB_IV|Descrição do atributo da tabela IIIA_MCPSE, TAB IV|TEXT
+839|UAR|Unidade de Adição e Retirada conforme tabela TUAR. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+840|UC_UG|Usuário vinculado ao medidor|TEXT
+841|UNI_TR_AT|Código da unidade transformadora de alta tensão da tabela UNTRAT. Deve ser observado se é Anterior, ANT no nome da tabela, é o dado na data base do último processo. Atual, AT no nome da tabela, é o dado na data base do processo analisado. |TEXT
+842|UNI_TR_MT|Código da unidade transformadora de média tensão, chave primária da tabela UNTRMT. Anterior, ANT, é o dado na data base do último processo. Atual, AT, é o dado na data base do processo analisado. |TEXT
+843|UNID_EC|Unidade do registro no extrato de compra|TEXT
+844|UNID_SPED|Unidade do registro no SPED|TEXT
+845|Valor|Valor|REAL
+846|VL_ABAT_NT|Valor do abatimento, desconto, do item do registro|REAL
+847|VL_BC_IPI|Valor da base de cálculo do IPI|REAL
+848|VL_BPRC_TOT|Valor total do BPR, em unidades monetárias|REAL
+849|VL_COM_TOT|Valor total do COM, em unidades monetárias|REAL
+850|VL_DESC|Valor do desconto do item, em unidades monetárias|REAL
+851|VL_DESC_NF|Valor do desconto da nota fiscal, conforme SPED|REAL
+852|VL_DOC|Valor do documento fiscal, em unidades monetárias|REAL
+853|VL_FRT|Valor do frete, em unidades monetárias|REAL
+854|VL_ICMS_COMPL|Valor do ICMS, complementar, em unidades monetárias|REAL
+855|VL_ICMS_FIN|Valor do ICMS, final, em unidades monetárias|REAL
+856|VL_ICMS_ST|Valor do ICMS, substituição tributária, em unidades monetárias|REAL
+857|VL_ICMS_ST_NF|Valor do ICMS, substituição tributária,da nota fiscal, em unidades monetárias|REAL
+858|VL_IPI|É o valor do imposto sobre produtos industrializados, IPI,  do registro.|REAL
+859|VL_ITEM|Valor, em unidades monetárias, do item associado ao registro|REAL
+860|VL_JOA_TOT|Valor total do JOA|REAL
+861|VL_MAX|Valor máximo do registro|INTEGER
+862|VL_MERC|Valor da mercadoria do documento da nota fiscal, em unidades monetárias|REAL
+863|VL_Mes_1|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+864|VL_Mes_10|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+865|VL_Mes_11|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+866|VL_Mes_12|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+867|VL_Mes_13|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+868|VL_Mes_14|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+869|VL_Mes_15|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+870|VL_Mes_16|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+871|VL_Mes_17|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+872|VL_Mes_18|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+873|VL_Mes_19|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+874|VL_Mes_2|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+875|VL_Mes_20|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+876|VL_Mes_21|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+877|VL_Mes_22|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+878|VL_Mes_23|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+879|VL_Mes_24|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+880|VL_Mes_25|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+881|VL_Mes_26|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+882|VL_Mes_27|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+883|VL_Mes_3|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+884|VL_Mes_4|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+885|VL_Mes_5|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+886|VL_Mes_6|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+887|VL_Mes_7|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+888|VL_Mes_8|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+889|VL_Mes_9|Valor em unidades monetárias para o mês n, considerando n meses a menos considerando a data de referência do registro, Dt_REF, como ponto inicial.|TEXT
+890|VL_MIN|Valor mínimo do registro|INTEGER
+891|VL_OUT_DA|Outros valores associados ao item, em unidades monetárias|REAL
+892|VL_PC_AT|Valor da parcela de pagamento atualizada conforme indice da COGE|REAL
+893|VL_ROD_COM|Valor, em unidades monetárias, no razão de desativação, dos componentes menores associados ao registro|REAL
+894|VL_ROD_JOA|Valor, em unidades monetárias, no razão de desativação, de juros sobre obras em andamento associados ao registro|REAL
+895|VL_ROD_MOP|Valor, em unidades monetárias, no razão de desativação, de mão de obra associados ao registro|REAL
+896|VL_ROD_Outros|Valor, em unidades monetárias, no razão de desativação, de outras naturezas associados ao registro|REAL
+897|VL_ROD_ST|Valor, em unidades monetárias, no razão de desativação, de serviço de terceiro associados ao registro|REAL
+898|VL_ROD_UC|Valor, em unidades monetárias, no razão de desativação, dos ativos principais e secundários associados ao registro|REAL
+899|VL_ROS_MOP|Valor, em unidades monetárias, no razão sintético, de mão de obra associados ao registro|REAL
+900|VL_ROS_ST|Valor, em unidades monetárias, no razão sintético, de serviço de terceiro associados ao registro|REAL
+901|VL_SEG|Valor do seguro, em unidades monetárias|REAL
+902|VL_TRIB_EXP|Valor do somatório das saídas tributadas e saídas para exportação|REAL
+903|VL_UNI_AT|Valor unitário atualizado, em unidades monetárias|REAL
+904|VL_VOCsjoa_IMB_AT|Valor total do item unitizado, no AIS, desconsiderando JOA. Valor está atualizado para a data de referência.|REAL
+905|VlrMontante|Valor do montante, em MWh, de energia contabilizada no registro|REAL
+906|VlrPagamentoLiquido|Valor do pagamento líquido do registro, sem tributos, em unidades monetárias|REAL
+907|VlrRessarcimento|Valor do ressarcimento do registro, em unidades monetárias. Em CVA, há situações que os geradores são penalizados fazendo com devolvam valores para a distribuidora.|REAL
+908|VlrTributo|Valor do tributo do registro, em unidades monetárias|REAL
+909|WACCp|Custo do capital médio ponderado para o período de análise da empresa. É o valor médio da taxa mensal vigente em cada mês do período incremental.|TEXT
+910|XHL|Reatância do primário para o secundário (%)|REAL

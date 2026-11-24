@@ -16,14 +16,14 @@ Antes de iniciar, verifique se o computador possui:
 - Python 3.12 ou uma versão compatível com as dependências do projeto;
 - Visual Studio Code (para a Opção A);
 - Anaconda ou Miniconda (para a Opção B);
-- Git, caso o projeto seja obtido por meio do GitLab;
+- Git, caso o projeto seja obtido por meio do GitLab/Github;
 - Acesso à internet para instalar as dependências.
 
 **Observação:** o ambiente utilizado no desenvolvimento também pode ser criado com Python 3.11. Recomenda-se utilizar a versão do Python que tenha sido validada com o `requirements.txt` do projeto.
 
 ## 2. Obter os arquivos do projeto
 
-Clone o repositório do GitLab ou obtenha uma cópia dos arquivos do projeto.
+Clone o repositório do GitLab/Github ou obtenha uma cópia dos arquivos do projeto.
 
 Abra o terminal e navegue até a pasta principal, onde estão localizados `main.py` e `requirements.txt`.
 
@@ -321,6 +321,3 @@ O projeto disponibiliza documentação complementar em HTML:
 
 Abra o arquivo no navegador para consultar o fluxo das telas Streamlit e as funcionalidades documentadas.
 
----
-
-**Observação para versionamento:** o ambiente virtual não deve ser incluído no repositório GitLab. Mantenha o código-fonte, a documentação, o `requirements.txt` e o `.gitignore` versionados.
